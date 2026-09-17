@@ -29,10 +29,10 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
   },
   {
     id: 'cap-rate',
-    name: 'Capitalization Rate (Cap Rate)',
-    formula: '(NOI ÷ Property Value) × 100',
-    measures: 'The asset yield over a one-year horizon based on an all-cash purchase.',
-    whyTracks: 'By combining your dynamic NOI with estimated or appraised asset values, PaperWorking instantly surfaces Cap Rates across your entire portfolio, making it simple to spot underperforming assets that are ripe for repositioning or disposal.',
+    name: 'Capitalization Rate (Market Cap Rate & Cap Rate on Cost)',
+    formula: 'Market Cap Rate: (NOI ÷ Value) × 100 | Cap Rate on Cost: (NOI ÷ Cost Basis) × 100',
+    measures: 'The asset yield over a one-year horizon based on an all-cash purchase, distinguishing Market Cap Rate from Cap Rate on Cost (Yield on Cost).',
+    whyTracks: 'By combining your dynamic NOI with estimated asset values and cost basis, PaperWorking surfaces Market Cap Rates and Cap Rates on Cost across your portfolio, making it simple to spot underperforming assets that are ripe for repositioning or disposal.',
     category: 'financial',
   },
   {
@@ -56,7 +56,7 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
     name: 'Cash Flow',
     formula: 'Total Income − Total Expenses',
     measures: 'The literal liquidity moving through your property, accounting for debt service and CapEx that NOI excludes.',
-    // TODO(VERIFY): Confirm Plaid/account-connection live status before launch; revise if not live.
+    // NOTE(INTEGRATION): Plaid/account-connection relies on configured bank feed credentials; falls back to verified journal entry tracking.
     whyTracks: 'PaperWorking connects directly to your financial accounts to track everyday liquidity, warning you of near-term cash crunches or signaling a safe surplus for your next acquisition down payment.',
     category: 'financial',
   },

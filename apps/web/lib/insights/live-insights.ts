@@ -16,6 +16,8 @@ export interface LiveComparisonPoint {
   projectId: string;
   projectName: string;
   value: number;
+  dataProvenance?: 'computed' | 'illustrative_demo';
+  isDemo?: boolean;
 }
 
 /**
@@ -23,6 +25,14 @@ export interface LiveComparisonPoint {
  */
 export function hasUnderwritingInputs(project?: ProjectSummary | null): boolean {
   if (!project) return false;
+  const snap = (project as any).underwritingSnapshot;
+  if (
+    snap?.inputs &&
+    typeof snap.inputs.purchasePrice === 'number' &&
+    snap.inputs.purchasePrice > 0
+  ) {
+    return true;
+  }
   if (
     project.underwriting?.acquisition &&
     typeof project.underwriting.acquisition.purchasePrice === 'number' &&
@@ -50,6 +60,39 @@ export function buildProjectEngineData(project: ProjectSummary): Record<string, 
       gross_scheduled_rent: 0,
       loan_amount: 0,
       underwriting: null,
+    };
+  }
+
+  const snap = (project as any).underwritingSnapshot;
+  if (snap?.inputs) {
+    const inp = snap.inputs;
+    const out = snap.outputs;
+    const purchasePrice = inp.purchasePrice;
+    const closingCosts =
+      inp.buyerClosingCostsAmount ??
+      Math.round(purchasePrice * ((inp.buyerClosingCostsPct ?? 2.0) / 100));
+    const rehabCosts = inp.rehabBudget ?? 0;
+    const arv = inp.estimatedARV ?? null;
+    const loanAmount =
+      out?.loanAmount ?? Math.round(purchasePrice * ((inp.targetLtvPct ?? 75.0) / 100));
+    const grossRent = (inp.grossMonthlyRent ?? inp.grossRentMonthly ?? 0) * 12;
+
+    return {
+      id: project.id,
+      purchase_price: purchasePrice,
+      closing_costs: closingCosts,
+      rehab_costs: rehabCosts,
+      property_value: arv || purchasePrice,
+      arv,
+      gross_scheduled_rent: grossRent,
+      other_income: (inp.otherMonthlyIncome ?? 0) * 12,
+      vacancy_rate: inp.vacancyRatePct ?? 5.0,
+      operatingExpenseRatio: inp.operatingExpenseRatioPct ?? 35.0,
+      loan_amount: loanAmount,
+      interest_rate: inp.interestRatePct ?? 6.5,
+      loan_term_years: inp.amortizationYears ?? 30,
+      underwriting: project.underwriting || undefined,
+      underwritingSnapshot: snap,
     };
   }
 
@@ -214,7 +257,7 @@ export function buildLiveKpiSections(
   const rawDebtService = metrics.derived.totalDebtService;
   const debtServiceVal = rawDebtService !== null ? Math.round(rawDebtService * scale) : null;
 
-  const rawMaxLoan = metrics.derived.maxSupportableLoan ?? null;
+  const rawMaxLoan = metrics.derived.maxSupportableLoan;
 
   return [
     {
@@ -243,7 +286,7 @@ export function buildLiveKpiSections(
         },
         {
           id: 'cap_rate',
-          name: 'Cap Rate',
+          name: 'Cap Rate on Cost',
           value: metrics.scorecard.capRate.value,
           unit: 'percent',
           higherIsBetter: true,
@@ -280,12 +323,12 @@ export function buildLiveKpiSections(
         {
           id: 'ltc',
           name: 'Loan-to-Cost (LTC)',
-          value: metrics.derived.ltc ?? null,
+          value: metrics.derived.ltc,
           unit: 'percent',
           higherIsBetter: false,
           formula: 'Loan Amount ÷ Total Project Cost Basis',
           description: 'Leverage ratio measured against all-in project basis (acquisition + rehab).',
-          prior: metrics.derived.ltc != null ? Number((metrics.derived.ltc + 1.0).toFixed(1)) : null,
+          prior: metrics.derived.ltc !== null ? Number((metrics.derived.ltc + 1.0).toFixed(1)) : null,
         },
         {
           id: 'dscr',
@@ -300,12 +343,12 @@ export function buildLiveKpiSections(
         {
           id: 'debt_yield',
           name: 'Debt Yield',
-          value: metrics.derived.debtYield ?? null,
+          value: metrics.derived.debtYield,
           unit: 'percent',
           higherIsBetter: true,
           formula: 'NOI ÷ Total Loan Amount',
           description: 'Lender cash-on-cash yield if the asset is foreclosed at current NOI.',
-          prior: metrics.derived.debtYield != null ? Number((metrics.derived.debtYield - 0.3).toFixed(2)) : null,
+          prior: metrics.derived.debtYield !== null ? Number((metrics.derived.debtYield - 0.3).toFixed(2)) : null,
         },
       ],
     },
@@ -316,12 +359,12 @@ export function buildLiveKpiSections(
         {
           id: 'break_even_occupancy',
           name: 'Break-Even Occupancy',
-          value: metrics.derived.breakEvenOccupancy ?? null,
+          value: metrics.derived.breakEvenOccupancy,
           unit: 'percent',
           higherIsBetter: false,
           formula: '(Operating Expenses + Debt Service) ÷ Gross Scheduled Rent',
           description: 'Minimum occupancy percentage required to satisfy all operating and debt obligations.',
-          prior: metrics.derived.breakEvenOccupancy != null ? Number((metrics.derived.breakEvenOccupancy + 2.0).toFixed(1)) : null,
+          prior: metrics.derived.breakEvenOccupancy !== null ? Number((metrics.derived.breakEvenOccupancy + 2.0).toFixed(1)) : null,
         },
         {
           id: 'cash_flow',
@@ -362,12 +405,12 @@ export function buildLiveKpiSections(
         {
           id: 'unlevered_irr',
           name: 'Unlevered IRR',
-          value: metrics.derived.unleveredIrr ?? null,
+          value: metrics.derived.unleveredIrr,
           unit: 'percent',
           higherIsBetter: true,
           formula: 'Discount rate equating all-in basis to unlevered operational NOI & exit value',
           description: 'Asset performance independent of financing or leverage terms.',
-          prior: metrics.derived.unleveredIrr != null ? Number((metrics.derived.unleveredIrr - 0.3).toFixed(1)) : null,
+          prior: metrics.derived.unleveredIrr !== null ? Number((metrics.derived.unleveredIrr - 0.3).toFixed(1)) : null,
         },
         {
           id: 'equity_multiple',
@@ -486,13 +529,16 @@ export function buildProjectComparisonPoints(
           val = res.scorecard.capRate.value || 0;
       }
     } else {
-      val = p.purchasePrice > 0 ? 6.5 : 0;
+      val = 0;
     }
 
+    const isDemo = p.id.startsWith('deal-') || Boolean((p as any).isDemo);
     return {
       projectId: p.id,
       projectName: p.propertyName || p.address || 'Untitled Project',
       value: Number(val.toFixed(2)),
+      dataProvenance: isDemo ? 'illustrative_demo' : 'computed',
+      isDemo,
     };
   });
 }

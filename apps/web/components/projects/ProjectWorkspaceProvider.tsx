@@ -1,22 +1,23 @@
 'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, useCallback, type ReactNode } from 'react';
 import ProjectWorkspaceShell from '@/components/projects/ProjectWorkspaceShell';
 import type { ProjectWorkspace } from '@/lib/projects/types';
-import { normalizeProjectWorkspace } from '@/lib/projects/normalize-workspace';
 import { bffFetch } from '@/lib/api/bff-fetch';
 
 interface ProjectWorkspaceContextValue {
   project: ProjectWorkspace | null;
   loading: boolean;
   error: string | null;
-  updateProject: (next: ProjectWorkspace) => void;
+  refetch: () => Promise<void>;
+  updateProject: (updated: ProjectWorkspace) => void;
 }
 
 const ProjectWorkspaceContext = createContext<ProjectWorkspaceContextValue>({
   project: null,
   loading: true,
   error: null,
+  refetch: async () => {},
   updateProject: () => {},
 });
 
@@ -35,46 +36,34 @@ export default function ProjectWorkspaceProvider({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function loadProject() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await bffFetch(`/api/projects/${projectId}`, {
-          credentials: 'include',
-          cache: 'no-store',
-        });
-        const body = (await response.json()) as {
-          project?: Record<string, unknown>;
-          error?: string;
-        };
-        if (!response.ok) throw new Error(body.error ?? 'Project not found');
-        if (!cancelled) {
-          setProject(body.project ? normalizeProjectWorkspace(body.project) : null);
-        }
-      } catch (loadError) {
-        if (!cancelled) {
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load project');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+  const loadProject = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await bffFetch(`/api/projects/${projectId}`, {
+        cache: 'no-store',
+      });
+      const body = (await response.json()) as { project?: ProjectWorkspace; error?: string };
+      if (!response.ok) throw new Error(body.error ?? 'Project not found');
+      setProject(body.project ?? null);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : 'Failed to load project');
+    } finally {
+      setLoading(false);
     }
-    loadProject();
-    return () => {
-      cancelled = true;
-    };
   }, [projectId]);
 
+  useEffect(() => {
+    loadProject();
+  }, [loadProject]);
+
+  const updateProject = useCallback((updated: ProjectWorkspace) => {
+    setProject(updated);
+  }, []);
+
   const value = useMemo(
-    () => ({
-      project,
-      loading,
-      error,
-      updateProject: (next: ProjectWorkspace) => setProject(next),
-    }),
-    [project, loading, error],
+    () => ({ project, loading, error, refetch: loadProject, updateProject }),
+    [project, loading, error, loadProject, updateProject],
   );
 
   if (loading) {

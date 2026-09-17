@@ -69,9 +69,7 @@ export default function UnderwritingInputsForm({
             ...prev.acquisition,
             purchasePrice: price,
             buyerClosingCosts: closingCosts,
-            estimatedARV: dirtyFields.has('acquisition.estimatedARV')
-              ? prev.acquisition.estimatedARV
-              : Math.round(price * 1.25),
+            estimatedARV: prev.acquisition.estimatedARV,
           },
           debt: {
             ...prev.debt,
@@ -242,9 +240,21 @@ export default function UnderwritingInputsForm({
   const headlineEstimates = useMemo(() => {
     const { purchasePrice, buyerClosingCosts, rehabBudget } = values.acquisition;
     const totalBasis = purchasePrice + buyerClosingCosts + rehabBudget;
-    const { grossScheduledRent, vacancyRate, operatingExpenseRatio } = values.rentRoll;
+    const { grossScheduledRent, vacancyRate, operatingExpenseRatio, stabilizationMonths, monthsVacantAtClose, concessionsMonths, leaseUpRentRampPct } = values.rentRoll;
     const annualGrossRent = grossScheduledRent * 12;
-    const effectiveGrossIncome = annualGrossRent * (1 - vacancyRate / 100);
+    const mStab = Math.min(12, stabilizationMonths ?? 0);
+    let effectiveGrossIncome = annualGrossRent * (1 - vacancyRate / 100);
+    if (mStab > 0) {
+      const mVac = Math.min(mStab, monthsVacantAtClose ?? 0);
+      const mActive = mStab - mVac;
+      const ramp = (leaseUpRentRampPct ?? 100) / 100;
+      const activeRent = mActive * grossScheduledRent * ramp;
+      const concessions = (concessionsMonths ?? 0) * grossScheduledRent;
+      const leaseUpRent = Math.max(0, activeRent - concessions);
+      const mPost = 12 - mStab;
+      const postRent = mPost * grossScheduledRent * (1 - vacancyRate / 100);
+      effectiveGrossIncome = leaseUpRent + postRent;
+    }
     const annualOpEx = annualGrossRent * (operatingExpenseRatio / 100);
     const estimatedNOI = Math.max(0, effectiveGrossIncome - annualOpEx);
     const quickCapRate = purchasePrice > 0 ? (estimatedNOI / purchasePrice) * 100 : 0;
@@ -316,7 +326,7 @@ export default function UnderwritingInputsForm({
             </p>
           </div>
           <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">Quick Cap Rate</span>
+            <span className="text-[10px] uppercase tracking-wider text-white/45" title="Market Cap Rate: Est. NOI divided by Purchase Price">Market Cap Rate</span>
             <p className="mt-0.5 font-mono text-sm font-bold text-[#00DD94] tabular-nums">
               {headlineEstimates.quickCapRate}%
             </p>
@@ -445,8 +455,10 @@ export default function UnderwritingInputsForm({
                 <label className="text-xs font-semibold text-white/80">
                   Estimated After Repair Value (ARV)
                 </label>
-                {!dirtyFields.has('acquisition.estimatedARV') && (
-                  <span className="text-[10px] font-medium text-white/40">Default — edit to refine</span>
+                {!values.acquisition.estimatedARV && (
+                  <span className="text-[10px] font-medium text-amber-400">
+                    ARV not provided — enter ARV to compute equity/MAO.
+                  </span>
                 )}
               </div>
               <div className="relative mt-1">
@@ -459,7 +471,12 @@ export default function UnderwritingInputsForm({
                   step={1000}
                   value={values.acquisition.estimatedARV ?? ''}
                   placeholder="e.g. 620000"
-                  onChange={(e) => updateField('acquisition.estimatedARV', Number(e.target.value))}
+                  onChange={(e) =>
+                    updateField(
+                      'acquisition.estimatedARV',
+                      e.target.value === '' ? undefined : Number(e.target.value),
+                    )
+                  }
                   className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-[#00DD94] focus:outline-none"
                 />
               </div>
@@ -586,6 +603,95 @@ export default function UnderwritingInputsForm({
               <p className="mt-1 text-[10px] text-white/45">
                 Includes property taxes, insurance, management, repairs, turnover, and utilities.
               </p>
+            </div>
+
+            {/* Lease-Up & Stabilization (W2-11) */}
+            <div className="col-span-full pt-3 border-t border-white/5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-white/80">
+                  Lease-Up &amp; Stabilization
+                </span>
+                <span className="text-[10px] font-mono text-[#00DD94]">
+                  {!values.rentRoll.stabilizationMonths || values.rentRoll.stabilizationMonths === 0
+                    ? 'Stabilized (0 mo)'
+                    : `${values.rentRoll.stabilizationMonths}-mo lease-up`}
+                </span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="text-[11px] font-medium text-white/50">Stabilization (Months)</label>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min={0}
+                      max={36}
+                      data-testid="project-leaseup-stabilization-months"
+                      value={values.rentRoll.stabilizationMonths ?? 0}
+                      onChange={(e) => updateField('rentRoll.stabilizationMonths', Number(e.target.value))}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-[#00DD94] focus:outline-none"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      mos
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium text-white/50">Rent Ramp (% during ramp)</label>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      data-testid="project-leaseup-ramp-pct"
+                      value={values.rentRoll.leaseUpRentRampPct ?? 100}
+                      onChange={(e) => updateField('rentRoll.leaseUpRentRampPct', Number(e.target.value))}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-[#00DD94] focus:outline-none"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      %
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {values.rentRoll.stabilizationMonths && values.rentRoll.stabilizationMonths > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2 mt-3 animate-in fade-in duration-200">
+                  <div>
+                    <label className="text-[11px] font-medium text-white/50">Months Vacant at Close</label>
+                    <div className="relative mt-1">
+                      <input
+                        type="number"
+                        min={0}
+                        max={24}
+                        data-testid="project-leaseup-vacant-months"
+                        value={values.rentRoll.monthsVacantAtClose ?? 0}
+                        onChange={(e) => updateField('rentRoll.monthsVacantAtClose', Number(e.target.value))}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-[#00DD94] focus:outline-none"
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        mos
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-medium text-white/50">Concessions (Months Free)</label>
+                    <div className="relative mt-1">
+                      <input
+                        type="number"
+                        min={0}
+                        max={12}
+                        data-testid="project-leaseup-concessions-months"
+                        value={values.rentRoll.concessionsMonths ?? 0}
+                        onChange={(e) => updateField('rentRoll.concessionsMonths', Number(e.target.value))}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-[#00DD94] focus:outline-none"
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        mos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
@@ -781,6 +887,134 @@ export default function UnderwritingInputsForm({
                 </div>
               </div>
             </div>
+
+            {/* Loan Structure (Amortizing / Interest-Only / ARM) */}
+            <div className="sm:col-span-2 pt-2 border-t border-white/5 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-white/80">Loan Structure</label>
+                <span className="text-[10px] font-mono text-[#00DD94]">
+                  {values.debt.loanType === 'interest_only'
+                    ? `${Math.round((values.debt.ioPeriodMonths ?? 60) / 12)}-yr IO`
+                    : values.debt.loanType === 'arm'
+                      ? `${values.debt.armFixedPeriodYears ?? 5}/1 ARM`
+                      : 'Amortizing'}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateField('debt.loanType', 'amortizing')}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    (values.debt.loanType ?? 'amortizing') === 'amortizing'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  Amortizing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateField('debt.loanType', 'interest_only');
+                    if (!values.debt.ioPeriodMonths) {
+                      updateField('debt.ioPeriodMonths', 60);
+                    }
+                  }}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    values.debt.loanType === 'interest_only'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  Interest-Only
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateField('debt.loanType', 'arm');
+                    if (!values.debt.armFixedPeriodYears) {
+                      updateField('debt.armFixedPeriodYears', 5);
+                    }
+                    if (values.debt.armAdjustmentPct === undefined) {
+                      updateField('debt.armAdjustmentPct', 2.0);
+                    }
+                  }}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    values.debt.loanType === 'arm'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  ARM
+                </button>
+              </div>
+
+              {values.debt.loanType === 'interest_only' && (
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-white/80">
+                      Interest-Only Period (Years)
+                    </label>
+                    <span className="text-[10px] font-mono text-white/40">
+                      Converts to amortizing for remaining {Math.max(1, values.debt.amortizationYears - Math.round((values.debt.ioPeriodMonths ?? 60) / 12))} yrs
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={1}
+                      max={30}
+                      value={Math.round((values.debt.ioPeriodMonths ?? 60) / 12)}
+                      onChange={(e) => updateField('debt.ioPeriodMonths', Number(e.target.value) * 12)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      years
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {values.debt.loanType === 'arm' && (
+                <div className="grid grid-cols-2 gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                  <div>
+                    <label className="text-xs font-semibold text-white/80 mb-1.5 block">
+                      ARM Fixed Period
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min={1}
+                        max={30}
+                        value={values.debt.armFixedPeriodYears ?? 5}
+                        onChange={(e) => updateField('debt.armFixedPeriodYears', Number(e.target.value))}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        years
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-white/80 mb-1.5 block">
+                      Assumed Rate Adjustment
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step={0.1}
+                        value={values.debt.armAdjustmentPct ?? 2.0}
+                        onChange={(e) => updateField('debt.armAdjustmentPct', Number(e.target.value))}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-8 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        %
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -797,6 +1031,48 @@ export default function UnderwritingInputsForm({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
+            <div className="sm:col-span-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-white/80">Terminal Valuation Method</label>
+                <span className="text-[10px] font-medium text-white/40">Required — explicit exit discipline</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateField('exit.terminalValueMethod', 'appreciation_pct')}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    (values.exit.terminalValueMethod ?? 'appreciation_pct') === 'appreciation_pct'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  Appreciation %
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('exit.terminalValueMethod', 'exit_cap')}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    values.exit.terminalValueMethod === 'exit_cap'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  Exit Cap Rate
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateField('exit.terminalValueMethod', 'per_unit')}
+                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                    values.exit.terminalValueMethod === 'per_unit'
+                      ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                      : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                  }`}
+                >
+                  Per Unit Value
+                </button>
+              </div>
+            </div>
+
             <div>
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-white/80">Hold Period</label>
@@ -819,28 +1095,113 @@ export default function UnderwritingInputsForm({
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-white/80">Exit Cap Rate</label>
-                {!dirtyFields.has('exit.exitCapRate') && (
-                  <span className="text-[10px] font-medium text-white/40">Default — edit to refine</span>
-                )}
+            {(values.exit.terminalValueMethod ?? 'appreciation_pct') === 'exit_cap' && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-white/80">Exit Cap Rate</label>
+                  {!dirtyFields.has('exit.exitCapRate') && (
+                    <span className="text-[10px] font-medium text-white/40">Default — edit to refine</span>
+                  )}
+                </div>
+                <div className="relative mt-1">
+                  <input
+                    type="number"
+                    min={0.1}
+                    max={20}
+                    step={0.25}
+                    value={values.exit.exitCapRate}
+                    onChange={(e) => updateField('exit.exitCapRate', Number(e.target.value))}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  />
+                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                    %
+                  </span>
+                </div>
               </div>
-              <div className="relative mt-1">
-                <input
-                  type="number"
-                  min={0.1}
-                  max={20}
-                  step={0.25}
-                  value={values.exit.exitCapRate}
-                  onChange={(e) => updateField('exit.exitCapRate', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
-                />
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
-                  %
-                </span>
+            )}
+
+            {(values.exit.terminalValueMethod ?? 'appreciation_pct') === 'appreciation_pct' && (
+              <div className="space-y-3">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-white/80">Appreciation Base</label>
+                    <span className="text-[10px] font-medium text-white/40">
+                      {((values.exit as any)?.appreciationBase ?? 'purchase_price') === 'arv' ? 'ARV Base' : 'Purchase Price Base'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      data-testid="appreciation-base-purchase-price"
+                      onClick={() => updateField('exit.appreciationBase' as any, 'purchase_price')}
+                      className={`rounded-xl border p-2 text-center text-xs font-medium transition-all ${
+                        ((values.exit as any)?.appreciationBase ?? 'purchase_price') === 'purchase_price'
+                          ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                          : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Purchase Price
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="appreciation-base-arv"
+                      onClick={() => updateField('exit.appreciationBase' as any, 'arv')}
+                      className={`rounded-xl border p-2 text-center text-xs font-medium transition-all ${
+                        (values.exit as any)?.appreciationBase === 'arv'
+                          ? 'border-[#00DD94] bg-[#00DD94]/10 text-white font-bold'
+                          : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                      }`}
+                    >
+                      ARV
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-white/80">Annual Appreciation</label>
+                    {!dirtyFields.has('exit.annualAppreciationPct') && (
+                      <span className="text-[10px] font-medium text-white/40">Default — edit to refine</span>
+                    )}
+                  </div>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min={0}
+                      max={25}
+                      step={0.5}
+                      value={values.exit.annualAppreciationPct ?? 3.0}
+                      onChange={(e) => updateField('exit.annualAppreciationPct' as any, Number(e.target.value))}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      %
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {values.exit.terminalValueMethod === 'per_unit' && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-white/80">Exit Value Per Unit</label>
+                </div>
+                <div className="relative mt-1">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-mono text-sm text-white/40">
+                    $
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={5000}
+                    value={values.exit.perUnitExitValue ?? 250000}
+                    onChange={(e) => updateField('exit.perUnitExitValue' as any, Number(e.target.value))}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <div className="flex items-center justify-between">

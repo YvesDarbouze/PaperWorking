@@ -23,6 +23,8 @@ interface KpiDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   triggerRef?: React.RefObject<HTMLElement | null>;
+  isDemo?: boolean;
+  dataProvenance?: 'computed' | 'illustrative_demo';
 }
 
 export function KpiDetailModal({
@@ -33,6 +35,8 @@ export function KpiDetailModal({
   isOpen,
   onClose,
   triggerRef,
+  isDemo = false,
+  dataProvenance,
 }: KpiDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [downloadToast, setDownloadToast] = useState<string | null>(null);
@@ -99,6 +103,16 @@ export function KpiDetailModal({
   }, [isOpen, onClose, triggerRef]);
 
   if (!isOpen || !kpi) return null;
+
+  const isDemoProject =
+    Boolean(isDemo) ||
+    dataProvenance === 'illustrative_demo' ||
+    (kpi as any)?.dataProvenance === 'illustrative_demo' ||
+    Boolean((project as any)?.isDemo) ||
+    Boolean((project as any)?.isSeed) ||
+    String(project?.id || '').startsWith('deal-') ||
+    String(project?.id || '').startsWith('demo') ||
+    String(metrics?.projectId || '').includes('demo');
 
   const rawVal = kpi.getValue(metrics, period);
 
@@ -233,7 +247,7 @@ export function KpiDetailModal({
   return (
     <div
       role="presentation"
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/75 p-0 md:p-6 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -247,10 +261,15 @@ export function KpiDetailModal({
         aria-modal="true"
         aria-labelledby="kpi-modal-title"
         tabIndex={-1}
-        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[var(--bg-elevated,#18151c)] shadow-2xl transition-all duration-200"
+        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl border-t md:border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[var(--bg-elevated,#18151c)] shadow-2xl transition-all duration-200 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-0"
       >
+        {/* Mobile Drag Handle */}
+        <div className="flex justify-center pt-2.5 pb-1 md:hidden">
+          <div className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden="true" />
+        </div>
+
         {/* MODAL HEADER */}
-        <div className="flex items-start justify-between border-b border-[var(--border-subtle,rgba(255,255,255,0.08))] p-6">
+        <div className="flex items-start justify-between border-b border-[var(--border-subtle,rgba(255,255,255,0.08))] p-4 sm:p-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium tracking-wide text-[var(--text-muted,#9ca3af)]">
@@ -259,6 +278,14 @@ export function KpiDetailModal({
               <span className="text-xs font-mono text-[var(--text-muted,#6b7280)]">
                 KPI #{kpi.number}
               </span>
+              {isDemoProject && (
+                <span
+                  data-testid="modal-demo-badge"
+                  className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300"
+                >
+                  ILLUSTRATIVE DEMO DATA
+                </span>
+              )}
             </div>
             <h2
               id="kpi-modal-title"
@@ -293,7 +320,7 @@ export function KpiDetailModal({
                 if (triggerRef?.current) triggerRef.current.focus();
               }}
               aria-label="Close details"
-              className="rounded-lg p-1.5 text-[var(--text-muted,#9ca3af)] transition-colors hover:bg-white/10 hover:text-[var(--text-primary,#ffffff)]"
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--text-muted,#9ca3af)] hover:bg-white/10 hover:text-[var(--text-primary,#ffffff)] transition active:scale-95 touch-press"
             >
               <span className="material-symbols-outlined text-xl">close</span>
             </button>
@@ -723,6 +750,8 @@ export function KpiDetailModal({
                   className="space-y-2"
                   role="region"
                   aria-label="Underwriting Stress Curve Analysis"
+                  data-provenance="illustrative_stress_scenario"
+                  title="Illustrative stress scenario — values are modeled sensitivity outputs, not observed market data"
                 >
                   <div className="flex justify-between text-xs text-[var(--text-muted,#9ca3af)]">
                     <span>Stress Level</span>

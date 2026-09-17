@@ -34,8 +34,10 @@ const nextConfig: NextConfig = {
       { source: '/dashboard/command-center', destination: '/dashboard', permanent: false },
       { source: '/dashboard/projects', destination: '/projects', permanent: false },
       { source: '/dashboard/projects/:id', destination: '/project/:id', permanent: false },
-      { source: '/deal-analyzer', destination: '/dashboard/deals', permanent: false },
-      { source: '/dashboard/deal-analyzer', destination: '/dashboard/deals', permanent: false },
+      // Historical alias redirects for renamed legacy deal-analyzer routes
+      { source: '/deal-analyzer', destination: '/deal-calculator', permanent: true },
+      { source: '/dashboard/deal-analyzer', destination: '/deal-calculator', permanent: true },
+      { source: '/dashboard/deal-calculator', destination: '/deal-calculator', permanent: true },
     ];
   },
 };

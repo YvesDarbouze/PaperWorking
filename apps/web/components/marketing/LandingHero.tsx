@@ -1,194 +1,133 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
-import { resolveAppHomeRoute } from '@/lib/auth/post-auth-redirect';
+import {
+  heroHeadline,
+  heroSubheadline,
+  heroBody,
+  heroInsurance,
+  heroKicker,
+} from '@/lib/marketing/copy';
+import HeroProductShowcase from './HeroProductShowcase';
 
-// TODO(VERIFY): Confirm demo KPIs show real, non-zero values before promoting demo content.
+const REIL_PHASES = [
+  {
+    label: 'PHASE 01',
+    name: 'Acquisition',
+    copy: 'Acquisition: Decide if the deal works before you buy. The Deal Calculator pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
+  },
+  {
+    label: 'PHASE 02',
+    name: 'Fund',
+    copy: 'Fund: Get the money and paperwork lined up. Track contingency deadlines and earnest money, keep contracts in one vault, get alerted before dates go hard.',
+  },
+  {
+    label: 'PHASE 03',
+    name: 'Hold',
+    copy: 'Hold: Own it and improve it. Link milestones to your budget, log expenses as they happen, watch holding costs and budget-vs-actual in real time.',
+  },
+  {
+    label: 'PHASE 04',
+    name: 'Exit',
+    copy: 'Exit: Sell it or keep it as a rental, and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.',
+  },
+];
 
-/* ─── Above-fold product preview card (1247 Elm Street demo data) ─── */
-function HeroDealCard() {
-  return (
-    <div className="glass-card rounded-[28px] overflow-hidden w-full border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.4)]">
-
-      {/* Card header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
-        <div>
-          <div className="font-jetbrains text-[9px] text-on-surface-variant/40 uppercase tracking-widest mb-0.5 type-eyebrow">
-            Deal Analyzer
-          </div>
-          <div className="text-[13px] font-semibold text-on-surface">1247 Elm Street, Austin TX</div>
-        </div>
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 type-caption">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          DEMO DATA
-        </span>
-      </div>
-
-      {/* Metrics 2×2 */}
-      <div className="grid grid-cols-2 gap-2.5 p-5">
-        {[
-          { label: 'Purchase Price',    value: '$485,000' },
-          { label: 'After Repair Value', value: '$620,000' },
-          { label: 'Rehab Budget',      value: '$68,000'  },
-          { label: 'Cap Rate',          value: '6.2%'     },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-surface-container-low/60 rounded-2xl px-4 py-3.5 border border-white/5">
-            <div className="font-jetbrains text-[9px] text-on-surface-variant/40 uppercase tracking-widest mb-1.5 type-eyebrow">
-              {label}
-            </div>
-            <div className="text-[17px] font-bold text-on-surface type-metric">{value}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* IRR highlight */}
-      <div className="px-5">
-        <div className="bg-primary/8 border border-primary/15 rounded-2xl px-5 py-4">
-          <div className="flex items-end justify-between mb-3">
-            <div>
-              <div className="font-jetbrains text-[9px] text-primary/50 uppercase tracking-widest mb-1 type-eyebrow">
-                Projected IRR
-              </div>
-              <div className="text-[38px] font-extrabold text-primary luminous-text tracking-tighter leading-none type-metric">
-                24.8%
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="font-jetbrains text-[9px] text-on-surface-variant/40 uppercase mb-2 type-eyebrow">
-                Confidence
-              </div>
-              <div className="font-jetbrains text-[16px] font-bold text-primary type-metric">84%</div>
-            </div>
-          </div>
-          {/* Static bar */}
-          <div className="h-2 rounded-full bg-black/10 overflow-hidden">
-            <div className="h-full w-[84%] rounded-full bg-primary/70" />
-          </div>
-        </div>
-      </div>
-
-      {/* Deadline alert */}
-      <div className="p-5">
-        <div className="bg-tertiary/6 border border-tertiary/15 rounded-2xl px-4 py-3 flex items-center gap-3">
-          <span
-            className="material-symbols-outlined text-[14px] text-tertiary/80 flex-shrink-0"
-            style={{ fontVariationSettings: "'FILL' 1" }}
-            aria-hidden
-          >
-            notifications_active
-          </span>
-          <span className="text-[12px] text-on-surface-variant leading-tight type-caption">
-            <span className="font-semibold text-tertiary">Alert:</span> Appraisal contingency expires in 3 days
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Hero Component (Section 1) ─── */
 export default function LandingHero() {
-  const { authenticated, loading, profile } = useAuth();
-  const appHomeHref = resolveAppHomeRoute(profile?.accountType);
-
   return (
-    <section className="relative w-full overflow-hidden" style={{ paddingTop: 72 }}>
-
-      {/* Ambient glow */}
+    <section className="relative w-full overflow-hidden bg-[#0a0a0f] pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-16 lg:pb-20" aria-label="Hero">
+      {/* Ambient background glow */}
       <div
-        className="absolute top-0 right-0 w-[700px] h-[600px] bg-primary/8 blur-[160px] rounded-full pointer-events-none"
+        className="pointer-events-none absolute right-0 top-0 h-[600px] w-[700px] rounded-full bg-[color:var(--color-primary)]/[0.06] blur-[160px]"
         aria-hidden
       />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-8 pt-8 pb-12 md:pt-12 md:pb-16 lg:pt-16 lg:pb-20 grid grid-cols-1 lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-10 lg:gap-14 items-center">
-
-        {/* ── LEFT: Verbatim Section 1 Copy ────────────────── */}
-        <div className="flex flex-col items-start text-left">
-
-          {/* Eyebrow (pill) */}
-          <span className="inline-flex items-center gap-2 glass-panel px-4 py-1.5 rounded-full mb-8 border border-white/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="font-jetbrains text-[10px] uppercase tracking-widest text-on-surface-variant type-eyebrow">
-              Real Estate Investment Terminal
+      <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-8">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-10">
+          
+          {/* Left Text Column */}
+          <div className="order-1 lg:order-none lg:col-start-1 lg:row-start-1 flex flex-col items-start text-left space-y-6">
+            {/* Kicker bar */}
+            <span className="inline-block text-[14px] font-medium uppercase tracking-[0.08em] text-[color:var(--color-primary)]">
+              {heroKicker}
             </span>
-          </span>
 
-          {/* Headline — verbatim COPY-L1 (medium-weight 500-600, clamp scale, tight tracking) */}
-          <h1 className="leading-[1.05] font-semibold tracking-[-0.025em] text-on-surface mb-6 type-display">
-            Finally, Project Management software made for serious real estate investors and Investments teams.
-          </h1>
+            {/* Headline */}
+            <h1 className="text-4xl font-medium tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.05]">
+              {heroHeadline}
+            </h1>
 
-          {/* Body — verbatim approved copy */}
-          <p className="text-[16px] md:text-[18px] leading-[1.65] font-normal text-on-surface-variant max-w-[560px] type-body-lg">
-            Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you&apos;re already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.
-          </p>
-        </div>
+            {/* Subheadline */}
+            <h2 className="text-[20px] leading-relaxed text-white/70">
+              {heroSubheadline}
+            </h2>
 
-        {/* ── RIGHT: Product proof Deal Card + Two CTAs Directly Underneath ── */}
-        <div className="relative w-full lg:w-auto flex flex-col items-center gap-5">
-          <div className="relative w-full">
-            <div
-              className="absolute inset-0 bg-primary/6 blur-[60px] rounded-3xl pointer-events-none"
-              aria-hidden
-            />
-            <div className="relative">
-              <HeroDealCard />
+            {/* Body and Insurance paragraphs */}
+            <div className="space-y-4">
+              <p className="text-[16px] leading-[1.65] text-white/50">
+                {heroBody}
+              </p>
+              <p className="text-[16px] leading-[1.65] text-white/50">
+                {heroInsurance}
+              </p>
             </div>
-          </div>
 
-          {/* TWO buttons directly underneath the demo KPI card + microcopy */}
-          <div className="flex flex-col items-center gap-2 w-full">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
-              {!loading && authenticated ? (
-                <Link
-                  href={appHomeHref}
-                  className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
-                >
-                  <span
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-                    aria-hidden
-                  />
-                  <span className="material-symbols-outlined text-[18px]">dashboard</span>
-                  <span>Go to Dashboard</span>
-                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                    arrow_forward
-                  </span>
-                </Link>
-              ) : (
-                <Link
-                  href="/pricing"
-                  className="luminous-button relative overflow-hidden px-6 py-3 min-h-[44px] rounded-full font-semibold text-[14px] tracking-[-0.01em] inline-flex items-center justify-center gap-2 group cursor-pointer type-cta w-full sm:w-auto text-center"
-                >
-                  <span
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/12 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-                    aria-hidden
-                  />
-                  <span>Start Free 14-Day Trial</span>
-                  <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
-                    arrow_forward
-                  </span>
-                </Link>
-              )}
-
+            {/* CTA row */}
+            <div className="flex w-full flex-col gap-3.5 sm:flex-row sm:w-auto">
               <Link
-                href="/support/metrics"
-                className="px-6 py-3 min-h-[44px] rounded-full border border-white/15 text-on-surface text-[14px] font-semibold hover:border-primary/40 hover:text-primary transition-all inline-flex items-center justify-center gap-2 type-cta w-full sm:w-auto text-center"
+                href="/pricing"
+                className="inline-flex min-h-[44px] items-center justify-center bg-[color:var(--color-primary)] text-[#0a0a0f] px-6 py-3 text-[14px] font-semibold rounded-[10px] hover:brightness-110 transition shadow-[0_0_24px_-4px_rgba(0,221,148,0.35)]"
               >
-                <span>See the 33 metrics</span>
-                <span className="material-symbols-outlined text-[18px]">
-                  bar_chart
-                </span>
+                Get started
+              </Link>
+              <Link
+                href="#deal-calculator"
+                className="inline-flex min-h-[44px] items-center justify-center border border-white/15 hover:border-white/30 text-white px-6 py-3 text-[14px] font-semibold rounded-[10px] transition"
+              >
+                See how it works
               </Link>
             </div>
-            <p className="text-[12px] text-on-surface-variant/70 text-center type-caption">
-              {!loading && authenticated
-                ? 'Welcome back — pick up where you left off.'
-                : 'Free 14-day trial.'}
-            </p>
           </div>
-        </div>
 
+          {/* REIL 4-Phase Block (Directly beneath hero header on mobile and row-2 span on desktop) */}
+          <div className="order-2 lg:order-none lg:col-span-2 lg:row-start-2 w-full mt-6 lg:mt-4 pt-8 border-t border-white/5">
+            <div className="mb-6 max-w-3xl">
+              <p className="mb-3 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
+                Built on the Real Estate Investment Life Cycle
+              </p>
+              <h2 className="text-xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-2xl md:text-3xl">
+                Acquisition, Fund, Hold, Exit. Four phases. One system.
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {REIL_PHASES.map((p) => (
+                <div
+                  key={p.name}
+                  className="glass-card flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 backdrop-blur-xl"
+                >
+                  <div>
+                    <span className="mb-2 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]/80">
+                      {p.label}
+                    </span>
+                    <h3 className="mb-2.5 text-lg sm:text-xl font-semibold text-white">{p.name}</h3>
+                    <p className="text-xs sm:text-sm leading-[1.65] text-white/60">{p.copy}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Visual Column (Beside headline on desktop row-1 col-2; stacked after phase block on mobile) */}
+          <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-1 relative flex justify-center lg:justify-end w-full">
+            <div
+              className="pointer-events-none absolute inset-0 rounded-3xl bg-[color:var(--color-primary)]/[0.04] blur-[50px]"
+              aria-hidden
+            />
+            <HeroProductShowcase />
+          </div>
+
+        </div>
       </div>
     </section>
   );

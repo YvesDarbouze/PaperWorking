@@ -1,106 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { loadDashboardOverview } from '@/lib/data';
+import Button, { type ButtonVariant } from '@/components/ui/Button';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import {
+  ACTIVE_PROJECT_PROGRESS,
+  ASSIGNED_TASKS,
+  ATTENTION_ITEMS,
+  OPERATIONAL_ALERTS,
+  PHASE_LEGEND,
+  PIPELINE_SNAPSHOT,
+  PORTFOLIO_SUMMARY,
+  PROFILE_CARD,
+  RECENT_ACTIVITY,
+  RECENT_MESSAGES,
+  TOP_PERFORMERS,
+} from '@/lib/dashboard/content';
+import { listSeedProjectSummaries } from '@/lib/projects/seed-data';
 
 const panel =
   'rounded-2xl border border-white/10 bg-[#121014]/90 shadow-[0_8px_32px_rgba(0,0,0,0.12)]';
 
-type PortfolioSummary = {
-  activeDeals: number;
-  portfolioValue: string;
-  totalNoi: string;
-  monthlyCashFlow: string;
-  capitalDeployed: string;
-  portfolioIrr: string;
-  equityMultiple?: string;
-  needsAttention?: number;
-  sparklineGrowth?: string;
-};
-
-type ProfileCard = {
-  displayName: string;
-  role: string;
-  followers: number;
-  company?: string;
-  teamCount?: number;
-  followerPreview?: Array<{ id: string; name: string; dealName: string }>;
-};
-
-type AssignedTask = { id: string; title: string; project: string; done: boolean };
-type RecentMessage = { id: string; from: string; preview: string; time: string };
-type OperationalAlert = {
-  id: string;
-  label: string;
-  count: number;
-  actionLabel: string;
-  actionHref: string;
-  secondaryLabel?: string;
-  secondaryHref?: string;
-  tone: string;
-};
-type AttentionItem = { id: string; title: string; project: string };
-type PipelineDeal = {
-  id: string;
-  name: string;
-  city: string;
-  phase: string;
-  status: string;
-  phaseColor: string;
-};
-type TopPerformer = { id: string; name: string; metric: string; note: string };
-type PhaseLegendItem = { label: string; color: string };
-type ActivityItem = { id: string; title: string; detail: string; time: string };
-type ProjectSummaryRow = {
-  id: string;
-  name?: string;
-  propertyName?: string;
-  status?: string | null;
-  currentPhase?: string;
-  phaseCompletionPct?: number;
-  dealId?: string | null;
-  dealSlug?: string | null;
-  dealAddress?: string | null;
-  address?: string;
-};
-
-type DashboardOverview = {
-  portfolioSummary: PortfolioSummary;
-  projectSummaries: ProjectSummaryRow[];
-  profileCard: ProfileCard;
-  pipelineSnapshot: PipelineDeal[];
-  attentionItems: AttentionItem[];
-  assignedTasks: AssignedTask[];
-  operationalAlerts: OperationalAlert[];
-  recentActivity: ActivityItem[];
-  recentMessages: RecentMessage[];
-  topPerformers: TopPerformer[];
-  activeProjectProgress: unknown[];
-  phaseLegend: PhaseLegendItem[];
-};
-
-const EMPTY_SUMMARY: PortfolioSummary = {
-  activeDeals: 0,
-  portfolioValue: '—',
-  totalNoi: '—',
-  monthlyCashFlow: '—',
-  capitalDeployed: '—',
-  portfolioIrr: '—',
-  equityMultiple: '—',
-  needsAttention: 0,
-  sparklineGrowth: '—',
-};
-
-const EMPTY_PROFILE: ProfileCard = {
-  displayName: 'Account',
-  role: 'Investor',
-  followers: 0,
-  company: '',
-  teamCount: 0,
-  followerPreview: [],
-};
+function formatUsd(value: number): string {
+  if (!Number.isFinite(value)) return '—';
+  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(value) >= 1_000) return `$${Math.round(value / 1000)}K`;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
 
 function SectionHeading({
   title,
@@ -123,83 +55,168 @@ function SectionHeading({
   );
 }
 
-function EmptyBlock({ message }: { message: string }) {
-  return <p className="py-6 text-center text-xs text-white/45">{message}</p>;
+interface PortfolioMetricsPayload {
+  success?: boolean;
+  portfolio?: {
+    totalActiveProjects?: number;
+    totalPortfolioValue?: number;
+    totalCashInvested?: number;
+    portfolioNoi?: number;
+    portfolioCashFlow?: number;
+    portfolioCapRate?: number;
+  };
 }
 
-export default function CommandCenterPanel() {
-  const { profile } = useAuth();
-  const [overview, setOverview] = useState<DashboardOverview | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface MarketplaceProfilePayload {
+  profile?: {
+    displayName?: string;
+    publicBio?: string;
+    location?: string;
+    followerCount?: number;
+  };
+}
+
+export interface CommandCenterSummary {
+  activeDeals?: number;
+  capitalDeployed?: string;
+  portfolioIrr?: string;
+  portfolioCapRate?: string;
+  equityMultiple?: string;
+  totalNoi?: string;
+  monthlyCashFlow?: string;
+  needsAttention?: number;
+  portfolioValue?: string;
+  sparklineGrowth?: string;
+}
+
+export interface CommandCenterPanelProps {
+  initialSummary?: Partial<CommandCenterSummary>;
+  initialTasks?: ReadonlyArray<(typeof ASSIGNED_TASKS)[number]>;
+  initialMessages?: ReadonlyArray<(typeof RECENT_MESSAGES)[number]>;
+  initialProjects?: ReturnType<typeof listSeedProjectSummaries>;
+  initialAlerts?: ReadonlyArray<(typeof OPERATIONAL_ALERTS)[number]>;
+  initialFollowers?: ReadonlyArray<(typeof PROFILE_CARD['followerPreview'])[number]>;
+}
+
+export default function CommandCenterPanel({
+  initialSummary,
+  initialTasks,
+  initialMessages,
+  initialProjects,
+  initialAlerts,
+  initialFollowers,
+}: CommandCenterPanelProps = {}) {
+  const { profile, authenticated, loading } = useAuth();
+  const [metrics, setMetrics] = useState<PortfolioMetricsPayload['portfolio'] | null>(null);
+  const [mpProfile, setMpProfile] = useState<MarketplaceProfilePayload['profile'] | null>(null);
 
   useEffect(() => {
+    if (loading || !authenticated) return;
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
-      setError(null);
+    async function loadLive() {
       try {
-        const data = (await loadDashboardOverview()) as DashboardOverview;
-        if (!cancelled) setOverview(data);
-      } catch (err) {
-        if (!cancelled) {
-          setOverview(null);
-          setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+        const [metricsRes, profileRes] = await Promise.all([
+          bffFetch('/api/portfolio/metrics?period=monthly', { cache: 'no-store' }),
+          bffFetch('/api/marketplace/profile', { cache: 'no-store' }),
+        ]);
+
+        if (metricsRes.ok) {
+          const body = (await metricsRes.json()) as PortfolioMetricsPayload;
+          if (!cancelled) setMetrics(body.portfolio ?? null);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
+        if (profileRes.ok) {
+          const body = (await profileRes.json()) as MarketplaceProfilePayload;
+          if (!cancelled) setMpProfile(body.profile ?? null);
+        }
+      } catch {
+        // Keep seed fallbacks when live adapters are unavailable.
       }
     }
 
-    void load();
+    loadLive();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loading, authenticated]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center px-5 py-16 text-sm text-white/50">
-        Loading portfolio…
-      </div>
-    );
-  }
+  const tasks = initialTasks ?? ASSIGNED_TASKS;
+  const messages = initialMessages ?? RECENT_MESSAGES;
+  const projects = initialProjects ?? listSeedProjectSummaries();
+  const alerts = initialAlerts ?? OPERATIONAL_ALERTS;
+  const followers = initialFollowers ?? PROFILE_CARD.followerPreview;
 
-  if (error) {
-    return (
-      <div className="mx-auto max-w-[1400px] px-5 py-16 lg:px-8">
-        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-200">
-          Unable to load dashboard: {error}
-        </div>
-      </div>
-    );
-  }
+  const summary = useMemo(() => {
+    const base = { ...PORTFOLIO_SUMMARY, ...initialSummary };
+    if (initialSummary?.portfolioIrr !== undefined) {
+      return base;
+    }
+    const activeDeals = metrics?.totalActiveProjects ?? base.activeDeals;
+    const portfolioValue = metrics?.totalPortfolioValue
+      ? formatUsd(metrics.totalPortfolioValue)
+      : base.portfolioValue;
+    const totalNoi = metrics?.portfolioNoi
+      ? formatUsd(metrics.portfolioNoi)
+      : base.totalNoi;
+    const monthlyCashFlow = metrics?.portfolioCashFlow
+      ? formatUsd(metrics.portfolioCashFlow)
+      : base.monthlyCashFlow;
+    const capitalDeployed = metrics?.totalCashInvested
+      ? formatUsd(metrics.totalCashInvested)
+      : base.capitalDeployed;
+    const portfolioCapRate =
+      metrics?.portfolioCapRate != null
+        ? `${metrics.portfolioCapRate.toFixed(1)}%`
+        : undefined;
+    const portfolioIrr = base.portfolioIrr;
 
-  const summary: PortfolioSummary = {
-    ...EMPTY_SUMMARY,
-    ...(overview?.portfolioSummary ?? {}),
-  };
-  const profileCard: ProfileCard = {
-    ...EMPTY_PROFILE,
-    ...(overview?.profileCard ?? {}),
-  };
-  const assignedTasks = overview?.assignedTasks ?? [];
-  const recentMessages = overview?.recentMessages ?? [];
-  const operationalAlerts = overview?.operationalAlerts ?? [];
-  const attentionItems = overview?.attentionItems ?? [];
-  const pipelineSnapshot = overview?.pipelineSnapshot ?? [];
-  const topPerformers = overview?.topPerformers ?? [];
-  const phaseLegend = overview?.phaseLegend ?? [];
-  const recentActivity = overview?.recentActivity ?? [];
-  const projectSummaries = overview?.projectSummaries ?? [];
+    return {
+      ...base,
+      activeDeals,
+      portfolioValue,
+      totalNoi,
+      monthlyCashFlow,
+      capitalDeployed,
+      portfolioIrr,
+      portfolioCapRate,
+    };
+  }, [metrics, initialSummary]);
 
-  const displayName = profileCard.displayName || 'Account';
+  const hasPortfolioIrr = Boolean(
+    summary.portfolioIrr &&
+      /\d/.test(summary.portfolioIrr) &&
+      !/^[\s\u2014\u2013\-—–]+$/.test(summary.portfolioIrr) &&
+      summary.portfolioIrr !== 'N/A' &&
+      summary.portfolioIrr.trim() !== ''
+  );
+
+  const displayName = mpProfile?.displayName || PROFILE_CARD.displayName;
   const roleLabel =
-    profile?.accountType === 'vendor' ? 'Vendor Partner' : profileCard.role || 'Investor';
-  const pendingTasks = assignedTasks.filter((task) => !task.done).length;
-  const followerCount = profileCard.followers ?? 0;
-  const followerPreview = profileCard.followerPreview ?? [];
+    profile?.accountType === 'vendor' ? 'Vendor Partner' : PROFILE_CARD.role;
+  const pendingTasks = tasks.filter((task) => !task.done).length as number;
+  const followerCount = mpProfile?.followerCount ?? PROFILE_CARD.followers;
+
+  // Contextual primary resolution:
+  // While auth/profile is loading or role is unresolved, both buttons render as secondary (width-stable, no CLS).
+  // Once role resolves:
+  // - operator/admin/team -> "Create New Project" is primary
+  // - investor (or default when role is known) -> "Explore Deals" is primary
+  const isReady = !loading;
+  const normalizedRole = (profile?.accountType || '').toLowerCase();
+  const isOperatorRole =
+    normalizedRole === 'operator' || normalizedRole === 'admin' || normalizedRole === 'team';
+
+  const exploreDealsVariant: ButtonVariant = !isReady
+    ? 'secondary'
+    : isOperatorRole
+      ? 'secondary'
+      : 'primary';
+
+  const createProjectVariant: ButtonVariant = !isReady
+    ? 'secondary'
+    : isOperatorRole
+      ? 'primary'
+      : 'secondary';
 
   return (
     <div className="w-full min-h-full">
@@ -213,8 +230,8 @@ export default function CommandCenterPanel() {
               </h1>
               <span className="mt-0.5 flex items-center gap-1">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--status-live)] opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--status-live)]" />
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/45">
                   Live
@@ -228,7 +245,7 @@ export default function CommandCenterPanel() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F06543] opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#F06543]" />
                 </span>
-                {summary.needsAttention ?? 0} Caution
+                {summary.needsAttention} Caution
               </Link>
             </div>
             <p className="text-[13px] text-white/55">
@@ -237,25 +254,28 @@ export default function CommandCenterPanel() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <Link
+            <Button
               href="/dashboard/deals"
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-semibold text-white/70 no-underline transition-colors hover:text-white"
+              variant="secondary"
+              size="sm"
+              icon={<span className="material-symbols-outlined text-[15px]">query_stats</span>}
             >
-              <span className="material-symbols-outlined text-[15px]">storefront</span>
-              Browse Deals
-            </Link>
-            <Link
-              href="/projects/new?source=dashboard"
-              className="flex items-center gap-1.5 rounded-lg border border-white/12 bg-[#454955]/90 px-3.5 py-2 text-[12px] font-semibold text-[#fdfffc] no-underline"
+              Deal Calculator
+            </Button>
+            <Button
+              href="/projects"
+              variant="secondary"
+              size="sm"
+              icon={<span className="material-symbols-outlined text-[15px]">add</span>}
             >
-              <span className="material-symbols-outlined text-[15px]">add</span>
               New Project
-            </Link>
+            </Button>
           </div>
         </header>
 
-        {/* Quick Launch Actions */}
+        {/* Quick Launch Actions: Deals Marketplace & Create new Project */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {/* Deals Marketplace card */}
           <div
             className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
             style={{
@@ -271,7 +291,7 @@ export default function CommandCenterPanel() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-[#fdfffc]">Deals Marketplace</h3>
-                  <span className="rounded border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-emerald-400">
+                  <span className="rounded border border-[var(--accent)]/40 bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-extrabold uppercase text-[var(--accent)]">
                     Exclusive
                   </span>
                 </div>
@@ -281,16 +301,20 @@ export default function CommandCenterPanel() {
               </div>
             </div>
             <div className="flex items-center justify-end">
-              <Link
+              <Button
                 href="/dashboard/deals"
-                className="flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-950 no-underline shadow-md hover:bg-emerald-400 transition"
+                variant={exploreDealsVariant}
+                size="md"
+                data-testid="quick-launch-explore-deals"
+                icon={<span className="material-symbols-outlined text-[16px]">arrow_forward</span>}
+                iconPosition="right"
               >
                 Explore Deals
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </Link>
+              </Button>
             </div>
           </div>
 
+          {/* Create new Project CTA card */}
           <div
             className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
             style={{
@@ -300,13 +324,13 @@ export default function CommandCenterPanel() {
             }}
           >
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/15 text-[#00DD94]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--accent)]/30 bg-[var(--accent-subtle)] text-[var(--accent)]">
                 <span className="material-symbols-outlined text-[24px]">create_new_folder</span>
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-[#fdfffc]">Create new Project</h3>
-                  <span className="rounded border border-[#00DD94]/40 bg-[#00DD94]/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-[#00DD94]">
+                  <span className="rounded border border-[var(--accent)]/40 bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-extrabold uppercase text-[var(--accent)]">
                     3-Step Flow
                   </span>
                 </div>
@@ -316,13 +340,16 @@ export default function CommandCenterPanel() {
               </div>
             </div>
             <div className="flex items-center justify-end">
-              <Link
+              <Button
                 href="/projects/new?source=dashboard"
-                className="flex items-center gap-2 rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#0a0a0f] no-underline shadow-md hover:brightness-110 transition"
+                variant={createProjectVariant}
+                size="md"
+                data-testid="quick-launch-create-project"
+                icon={<span className="material-symbols-outlined text-[16px]">add</span>}
+                iconPosition="left"
               >
-                <span className="material-symbols-outlined text-[16px]">add</span>
                 Create new Project
-              </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -353,21 +380,18 @@ export default function CommandCenterPanel() {
                       .join('')
                       .toUpperCase()}
                   </div>
-                  <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-[#121014]" />
+                  <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-[var(--status-live)] ring-2 ring-[#121014]" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate text-[15px] font-bold leading-snug text-[#fdfffc]">
                     {displayName}
                   </h2>
-                  {profileCard.company ? (
-                    <p className="mt-0.5 truncate text-[11px] text-white/45">{profileCard.company}</p>
-                  ) : null}
+                  <p className="mt-0.5 truncate text-[11px] text-white/45">{PROFILE_CARD.company}</p>
                   <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#627C85]">
                     {roleLabel}
                   </p>
                   <p className="mt-0.5 text-[10px] text-white/45">
-                    {followerCount} Followers
-                    {profileCard.teamCount != null ? ` · ${profileCard.teamCount} Team` : null}
+                    {followerCount} Followers · {PROFILE_CARD.teamCount} Team
                   </p>
                 </div>
               </div>
@@ -375,11 +399,9 @@ export default function CommandCenterPanel() {
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/55">
                 Followers
               </h3>
-              {followerPreview.length === 0 ? (
-                <EmptyBlock message="No followers yet." />
-              ) : (
+              {followers.length > 0 ? (
                 <div className="space-y-1">
-                  {followerPreview.map((follower) => (
+                  {followers.map((follower) => (
                     <div
                       key={follower.id}
                       className="flex items-center gap-3 border-b border-white/6 py-2 last:border-0"
@@ -398,6 +420,8 @@ export default function CommandCenterPanel() {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <p className="py-3 text-xs text-white/40">No followers yet.</p>
               )}
             </div>
           </article>
@@ -416,14 +440,24 @@ export default function CommandCenterPanel() {
               </span>
             </div>
             {pendingTasks === 0 ? (
-              <EmptyBlock message="You're all caught up! No pending tasks assigned to you." />
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-subtle)] text-[var(--accent)]">
+                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                </div>
+                <p className="mt-2 text-xs font-medium text-white/70">
+                  You&apos;re all caught up!
+                </p>
+                <p className="mt-0.5 text-[11px] text-white/40">
+                  No pending tasks assigned to you.
+                </p>
+              </div>
             ) : (
               <ul className="space-y-2.5">
-                {assignedTasks.map((task) => (
+                {tasks.map((task) => (
                   <li key={task.id} className="flex items-start gap-2.5 text-xs">
                     <span
                       className={`mt-0.5 material-symbols-outlined text-[16px] ${
-                        task.done ? 'text-emerald-400' : 'text-white/35'
+                        task.done ? 'text-[var(--accent)]' : 'text-white/35'
                       }`}
                     >
                       {task.done ? 'check_circle' : 'radio_button_unchecked'}
@@ -449,13 +483,13 @@ export default function CommandCenterPanel() {
                   Recent Messages
                 </span>
               </div>
-              <Link href="/dashboard/inbox" className="text-[11px] font-semibold text-[#7A9EAA] no-underline">
+              <Link href="/dashboard/inbox" className="text-[11px] font-semibold text-[#7A9EAA] no-underline hover:text-white">
                 Inbox
               </Link>
             </div>
-            {recentMessages.length > 0 ? (
+            {messages.length > 0 ? (
               <ul className="space-y-3">
-                {recentMessages.map((message) => (
+                {messages.map((message) => (
                   <li key={message.id} className="border-b border-white/6 pb-2.5 last:border-0">
                     <div className="flex items-center justify-between gap-2">
                       <p className="truncate text-[12px] font-semibold text-white/85">{message.from}</p>
@@ -466,7 +500,19 @@ export default function CommandCenterPanel() {
                 ))}
               </ul>
             ) : (
-              <EmptyBlock message="No recent messages." />
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
+                  <span className="material-symbols-outlined text-[18px]">mail</span>
+                </div>
+                <p className="mt-2 text-xs text-white/50 max-w-[220px]">
+                  Messages from your deals and team will appear here.
+                </p>
+                <div className="mt-3">
+                  <Button href="/dashboard/inbox" variant="tertiary" size="sm">
+                    Open inbox →
+                  </Button>
+                </div>
+              </div>
             )}
           </article>
 
@@ -478,38 +524,59 @@ export default function CommandCenterPanel() {
                 Featured Metric
               </span>
             </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-                Portfolio IRR
-              </p>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-[#fdfffc]">
-                {summary.portfolioIrr}
-              </p>
-              <p className="mt-2 text-[11px] text-white/45">
-                Live portfolio metrics from your workspace.
-              </p>
+            {hasPortfolioIrr || summary.portfolioCapRate ? (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+                  {summary.portfolioCapRate ? 'Market Cap Rate (Weighted)' : 'Portfolio IRR'}
+                </p>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-[#fdfffc]">
+                  {summary.portfolioCapRate || summary.portfolioIrr}
+                </p>
+                <p className="mt-2 text-[11px] text-white/45">
+                  {summary.portfolioCapRate
+                    ? 'Weighted average across active portfolio asset values.'
+                    : 'Seed highlight — live KPI engine wires in a later wave.'}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-4 text-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
+                  <span className="material-symbols-outlined text-[18px]">insights</span>
+                </div>
+                <p className="mt-2 text-xs text-white/50 max-w-[200px]">
+                  Your portfolio metrics appear here once you add your first deal.
+                </p>
+              </div>
+            )}
+            <div className="mt-4">
+              <Button
+                href="/dashboard/insights"
+                variant="tertiary"
+                size="sm"
+                className="px-0 text-[11px] font-semibold text-[#7A9EAA] hover:text-white"
+              >
+                Open insights →
+              </Button>
             </div>
-            <Link
-              href="/dashboard/insights"
-              className="mt-4 text-[11px] font-semibold text-[#7A9EAA] no-underline hover:underline"
-            >
-              Open insights →
-            </Link>
           </article>
 
           {/* Operational alerts */}
           <article className={`${panel} p-5 lg:col-span-6`}>
             <div className="mb-3 flex items-center gap-2 border-b border-white/8 pb-3">
-              <span className="material-symbols-outlined text-[18px] text-rose-400">warning</span>
+              <span
+                className={`material-symbols-outlined text-[18px] ${
+                  alerts.length > 0 ? 'text-rose-400' : 'text-white/40'
+                }`}
+              >
+                {alerts.length > 0 ? 'warning' : 'notifications_none'}
+              </span>
               <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
                 Operational Alerts
               </span>
             </div>
-            {operationalAlerts.length === 0 ? (
-              <EmptyBlock message="No operational alerts." />
-            ) : (
+            {alerts.length > 0 ? (
               <div className="space-y-2.5">
-                {operationalAlerts.map((alert) => (
+                {alerts.map((alert) => (
                   <div
                     key={alert.id}
                     className="space-y-2 rounded-lg border border-white/5 bg-white/[0.02] p-2.5"
@@ -526,17 +593,17 @@ export default function CommandCenterPanel() {
                         {alert.count}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 pt-1">
                       <Link
                         href={alert.actionHref}
-                        className="rounded-md bg-white/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/80 no-underline"
+                        className="inline-flex min-h-[36px] items-center rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white no-underline transition hover:bg-white/15 touch-press"
                       >
                         {alert.actionLabel}
                       </Link>
-                      {alert.secondaryLabel && alert.secondaryHref ? (
+                      {'secondaryLabel' in alert && alert.secondaryLabel && 'secondaryHref' in alert && alert.secondaryHref ? (
                         <Link
                           href={alert.secondaryHref}
-                          className="rounded-md border border-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white/55 no-underline"
+                          className="inline-flex min-h-[36px] items-center rounded-lg border border-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white/70 no-underline transition hover:border-white/30 hover:text-white touch-press"
                         >
                           {alert.secondaryLabel}
                         </Link>
@@ -544,6 +611,11 @@ export default function CommandCenterPanel() {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5 py-4 text-xs text-white/40">
+                <span className="material-symbols-outlined text-[18px] text-white/30">task_alt</span>
+                <span>No operational alerts. Systems running normally.</span>
               </div>
             )}
           </article>
@@ -559,78 +631,83 @@ export default function CommandCenterPanel() {
               </div>
               <Link
                 href="/projects/new?source=dashboard"
-                className="text-[11px] font-semibold text-[#00DD94] no-underline hover:underline"
+                className="text-[11px] font-semibold text-[var(--accent)] no-underline hover:underline"
               >
                 + New Project
               </Link>
             </div>
-            {projectSummaries.length === 0 ? (
-              <EmptyBlock message="No active projects yet." />
-            ) : (
+            {projects.length > 0 ? (
               <div className="space-y-3">
-                {projectSummaries.map((project) => {
-                  const label = project.propertyName || project.name || project.id;
-                  return (
-                    <div
-                      key={project.id}
-                      className="rounded-xl border border-white/5 bg-white/[0.02] p-3 transition hover:border-white/10"
-                    >
-                      <div className="mb-1.5 flex items-center justify-between text-xs">
-                        <Link
-                          href={`/project/${project.id}`}
-                          className="font-medium text-white/90 hover:text-white transition"
-                        >
-                          {label}
-                        </Link>
-                        <span className="text-white/45 capitalize">
-                          {project.currentPhase || project.status || '—'}
-                        </span>
-                      </div>
-
-                      <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-white/8">
-                        <div
-                          className="h-full rounded-full bg-[#00DD94]"
-                          style={{ width: `${project.phaseCompletionPct ?? 0}%` }}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px]">
-                        {project.dealSlug ? (
-                          <Link
-                            href={`/deals/${project.dealSlug}/detail`}
-                            className="flex items-center gap-1 text-[#00DD94] hover:underline"
-                          >
-                            <span className="material-symbols-outlined text-[14px]">location_on</span>
-                            <span className="truncate max-w-[200px]">
-                              {project.dealAddress || project.address || 'Linked deal'}
-                            </span>
-                          </Link>
-                        ) : project.dealId ? (
-                          <span className="flex items-center gap-1 truncate text-white/55">
-                            <span className="material-symbols-outlined text-[14px]">location_on</span>
-                            <span className="truncate max-w-[200px]">
-                              {project.dealAddress || project.address || 'Linked deal'}
-                            </span>
-                          </span>
-                        ) : (
-                          <Link
-                            href={`/projects/new?step=2&projectId=${project.id}`}
-                            className="inline-flex items-center gap-1 rounded-md border border-[#00DD94]/30 bg-[#00DD94]/10 px-2 py-0.5 font-semibold text-[#00DD94] hover:bg-[#00DD94]/20 transition"
-                          >
-                            <span className="material-symbols-outlined text-[12px]">add_link</span>
-                            Link a deal
-                          </Link>
-                        )}
-                        <Link
-                          href={`/project/${project.id}`}
-                          className="text-white/40 hover:text-white/70 transition"
-                        >
-                          Workspace →
-                        </Link>
-                      </div>
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="rounded-xl border border-white/5 bg-white/[0.02] p-3 transition hover:border-white/10"
+                  >
+                    <div className="mb-1.5 flex items-center justify-between text-xs">
+                      <Link
+                        href={`/project/${project.id}`}
+                        className="font-medium text-white/90 hover:text-white transition"
+                      >
+                        {project.propertyName}
+                      </Link>
+                      <span className="text-white/45 capitalize">{project.currentPhase}</span>
                     </div>
-                  );
-                })}
+
+                    <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-white/8">
+                      <div
+                        className="h-full rounded-full bg-[var(--accent)]"
+                        style={{ width: `${project.phaseCompletionPct ?? 45}%` }}
+                      />
+                    </div>
+
+                    {/* Backlink or Link a deal CTA */}
+                    <div className="flex items-center justify-between text-[11px]">
+                      {project.dealId || project.dealSlug ? (
+                        <Link
+                          href={`/deals/${project.dealSlug || '1247elmst'}/detail`}
+                          className="flex items-center gap-1 text-[var(--accent)] hover:underline"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">location_on</span>
+                          <span className="truncate max-w-[200px]">{project.dealAddress || project.address}</span>
+                        </Link>
+                      ) : (
+                        <Link
+                          href={`/projects/new?step=2&projectId=${project.id}`}
+                          className="inline-flex items-center gap-1 rounded-md border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2 py-0.5 font-semibold text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition"
+                        >
+                          <span className="material-symbols-outlined text-[12px]">add_link</span>
+                          Link a deal
+                        </Link>
+                      )}
+                      <Link
+                        href={`/project/${project.id}`}
+                        className="text-white/40 hover:text-white/70 transition"
+                      >
+                        Workspace →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
+                  <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                </div>
+                <p className="mt-2.5 text-xs text-white/55 max-w-[260px]">
+                  Launch your first project workspace to start tracking a deal.
+                </p>
+                <div className="mt-3.5">
+                  <Button
+                    href="/projects/new?source=dashboard"
+                    variant="secondary"
+                    size="sm"
+                    icon={<span className="material-symbols-outlined text-[14px]">add</span>}
+                    iconPosition="left"
+                  >
+                    + New Project
+                  </Button>
+                </div>
               </div>
             )}
           </article>
@@ -645,7 +722,7 @@ export default function CommandCenterPanel() {
                 </span>
               </div>
               <span className="rounded-full bg-slate-800/40 px-2.5 py-0.5 font-mono text-xs font-bold text-slate-300">
-                {summary.sparklineGrowth ?? '—'} Growth
+                {summary.sparklineGrowth} Growth
               </span>
             </div>
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -694,8 +771,8 @@ export default function CommandCenterPanel() {
               },
               {
                 label: 'Blended Portfolio IRR',
-                value: summary.portfolioIrr,
-                meta: 'annualized · on track',
+                value: hasPortfolioIrr ? summary.portfolioIrr : 'Pending first deal',
+                meta: hasPortfolioIrr ? 'annualized · on track' : 'Add a deal to model returns',
                 icon: 'trending_up',
               },
             ].map((kpi) => (
@@ -720,90 +797,76 @@ export default function CommandCenterPanel() {
           <div className="lg:col-span-12">
             <SectionHeading title="Action Center" href="/projects" linkLabel="All projects" />
             <div className={`${panel} space-y-3 p-5`}>
-              {attentionItems.length === 0 ? (
-                <EmptyBlock message="Nothing needs attention right now." />
-              ) : (
-                attentionItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3"
-                  >
-                    <p className="text-sm font-medium text-[#fdfffc]">{item.title}</p>
-                    <p className="text-xs text-white/55">{item.project}</p>
-                  </div>
-                ))
-              )}
+              {ATTENTION_ITEMS.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3"
+                >
+                  <p className="text-sm font-medium text-[#fdfffc]">{item.title}</p>
+                  <p className="text-xs text-white/55">{item.project}</p>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Pipeline + Top performers */}
           <div className="lg:col-span-8">
             <SectionHeading title="Active Pipeline" href="/projects" linkLabel="Manage" />
-            {phaseLegend.length > 0 ? (
-              <div className="mb-3 flex flex-wrap items-center gap-4">
-                {phaseLegend.map((phase) => (
-                  <span key={phase.label} className="flex items-center gap-1.5 text-[11px] text-white/45">
-                    <span
-                      className="h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: phase.color }}
-                    />
-                    {phase.label}
-                  </span>
-                ))}
-              </div>
-            ) : null}
+            <div className="mb-3 flex flex-wrap items-center gap-4">
+              {PHASE_LEGEND.map((phase) => (
+                <span key={phase.label} className="flex items-center gap-1.5 text-[11px] text-white/45">
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: phase.color }}
+                  />
+                  {phase.label}
+                </span>
+              ))}
+            </div>
             <div className={`${panel} space-y-2 p-4`}>
-              {pipelineSnapshot.length === 0 ? (
-                <EmptyBlock message="No pipeline deals yet." />
-              ) : (
-                pipelineSnapshot.map((deal) => (
-                  <Link
-                    key={deal.id}
-                    href={`/project/${deal.id}`}
-                    className="flex items-center justify-between rounded-xl border border-white/6 px-4 py-3 no-underline transition-colors hover:border-white/14"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: deal.phaseColor }}
-                      />
-                      <div>
-                        <p className="font-medium text-[#fdfffc]">{deal.name}</p>
-                        <p className="text-sm text-white/55">{deal.city}</p>
-                      </div>
+              {PIPELINE_SNAPSHOT.map((deal) => (
+                <Link
+                  key={deal.id}
+                  href={`/project/${deal.id}`}
+                  className="flex items-center justify-between rounded-xl border border-white/6 px-4 py-3 no-underline transition-colors hover:border-white/14"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: deal.phaseColor }}
+                    />
+                    <div>
+                      <p className="font-medium text-[#fdfffc]">{deal.name}</p>
+                      <p className="text-sm text-white/55">{deal.city}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-[#fdfffc]">{deal.phase}</p>
-                      <p className="text-xs text-white/45">{deal.status}</p>
-                    </div>
-                  </Link>
-                ))
-              )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-[#fdfffc]">{deal.phase}</p>
+                    <p className="text-xs text-white/45">{deal.status}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
 
           <div className="lg:col-span-4">
             <SectionHeading title="Top Performers" />
             <div className={`${panel} space-y-3 p-4`}>
-              {topPerformers.length === 0 ? (
-                <EmptyBlock message="No performers to show." />
-              ) : (
-                topPerformers.map((row) => (
-                  <Link
-                    key={row.id}
-                    href={`/project/${row.id}`}
-                    className="block rounded-xl border border-white/6 px-3 py-3 no-underline hover:border-white/14"
-                  >
-                    <p className="text-sm font-semibold text-[#fdfffc]">{row.name}</p>
-                    <p className="mt-1 text-xs font-medium text-emerald-400">{row.metric}</p>
-                    <p className="text-[11px] text-white/45">{row.note}</p>
-                  </Link>
-                ))
-              )}
+              {TOP_PERFORMERS.map((row) => (
+                <Link
+                  key={row.id}
+                  href={`/project/${row.id}`}
+                  className="block rounded-xl border border-white/6 px-3 py-3 no-underline hover:border-white/14"
+                >
+                  <p className="text-sm font-semibold text-[#fdfffc]">{row.name}</p>
+                  <p className="mt-1 text-xs font-medium text-[var(--accent)]">{row.metric}</p>
+                  <p className="text-[11px] text-white/45">{row.note}</p>
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Heatmap placeholder */}
+          {/* Heatmap visual search section */}
           <div className="lg:col-span-12">
             <SectionHeading
               title="Marketplace Heatmap & Visual Search"
@@ -816,11 +879,12 @@ export default function CommandCenterPanel() {
               <span className="material-symbols-outlined text-4xl text-white/25">map</span>
               <p className="text-sm font-medium text-white/70">Deal map preview</p>
               <p className="max-w-md text-xs text-white/45">
-                Live map tiles connect when Bridge/MLS adapters are wired.
+                Live map tiles connect when Bridge/MLS adapters are wired. Explore vendor marketplace
+                for the current seed surface.
               </p>
               <Link
                 href="/dashboard/marketplace"
-                className="mt-2 text-xs font-semibold text-emerald-400 no-underline hover:underline"
+                className="mt-2 text-xs font-semibold text-[var(--accent)] no-underline hover:underline"
               >
                 Open marketplace →
               </Link>
@@ -831,19 +895,15 @@ export default function CommandCenterPanel() {
           <div className="lg:col-span-12">
             <SectionHeading title="Recent Activity" href="/dashboard/inbox" linkLabel="Inbox" />
             <div className={`${panel} divide-y divide-white/6`}>
-              {recentActivity.length === 0 ? (
-                <EmptyBlock message="No recent activity." />
-              ) : (
-                recentActivity.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
-                    <div>
-                      <p className="text-sm font-medium text-white/85">{item.title}</p>
-                      <p className="text-xs text-white/45">{item.detail}</p>
-                    </div>
-                    <span className="shrink-0 text-[11px] text-white/40">{item.time}</span>
+              {RECENT_ACTIVITY.map((item) => (
+                <div key={item.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
+                  <div>
+                    <p className="text-sm font-medium text-white/85">{item.title}</p>
+                    <p className="text-xs text-white/45">{item.detail}</p>
                   </div>
-                ))
-              )}
+                  <span className="shrink-0 text-[11px] text-white/40">{item.time}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -858,14 +918,14 @@ export default function CommandCenterPanel() {
               {
                 label: 'Portfolio IRR',
                 icon: 'trending_up',
-                value: summary.portfolioIrr,
-                meta: 'annualized',
-                chip: 'On track',
+                value: hasPortfolioIrr ? summary.portfolioIrr : 'Pending first deal',
+                meta: hasPortfolioIrr ? 'annualized' : 'Add a deal',
+                chip: hasPortfolioIrr ? 'On track' : 'Pending',
               },
               {
                 label: 'Equity Multiple',
                 icon: 'layers',
-                value: summary.equityMultiple ? `${summary.equityMultiple}×` : '—',
+                value: `${summary.equityMultiple}×`,
                 meta: 'vs. 2.5× target',
                 chip: 'On track',
               },
@@ -891,7 +951,7 @@ export default function CommandCenterPanel() {
               >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">{card.icon}</span>
-                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-400">
+                  <span className="rounded-full bg-[var(--accent-subtle)] px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--accent)]">
                     {card.chip}
                   </span>
                 </div>

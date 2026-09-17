@@ -203,9 +203,10 @@ describe('phase B9 — project browser transport audit', () => {
     );
 
     const sources = [scorecard, insights, newProject, listPanel, workspace].join('\n');
-    expect(sources).not.toMatch(/apiFetch\(['"`]\/api\/projects/);
-    expect(listPanel).toContain("bffFetch('/api/projects'");
-    expect(workspace).toContain('bffFetch(`/api/projects/${projectId}`');
+    expect(sources).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(sources).not.toContain('run.app');
+    expect(listPanel).toMatch(/bffFetch\('\/api\/projects'/);
+    expect(workspace).toMatch(/bffFetch\(`\/api\/projects\/\$\{projectId\}`/);
     expect(newProject).toContain('createProjectFromBff');
   });
 });

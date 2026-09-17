@@ -1,3 +1,6 @@
+import { seedTestUsers } from './fixtures/test-user-seed.js';
+
 export default async function globalSetup() {
-  process.env.ENABLE_MOCK_AUTH = 'true';
+  // Seed dedicated test users with real password hashes for real auth verification
+  seedTestUsers();
 }

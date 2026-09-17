@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { useOptionalAuth } from '@/context/AuthContext';
 import {
   PERIOD_REPORT_OPTIONS,
   formatReportMoney,
   resolveSeedProjectName,
 } from '@/lib/reports/adapters';
-import { getPeriodReportFromBff } from '@/lib/reports/reports-api';
 
 interface PeriodReportPayload {
   period: string;
@@ -36,17 +37,23 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const auth = useOptionalAuth();
+  const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
+
   useEffect(() => {
+    if (!isAuthed) return;
     let cancelled = false;
 
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        // Auth + project ACL on Nest — never hardcode organizationId.
-        const body = (await getPeriodReportFromBff(period, projectId)) as PeriodReportPayload & {
-          error?: string;
-        };
+        const response = await bffFetch(
+          `/api/reports/${period}?organizationId=org-1&projectId=${projectId}`,
+          { cache: 'no-store' },
+        );
+        const body = (await response.json()) as PeriodReportPayload & { error?: string };
+        if (!response.ok) throw new Error(body.error ?? 'Failed to load period report');
         if (!cancelled) setPayload(body);
       } catch (loadError) {
         if (!cancelled) {
@@ -65,7 +72,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-8 text-sm text-white/65">
+      <div className="rounded-2xl border border-border-subtle bg-surface p-8 text-sm text-text-secondary">
         Loading project report…
       </div>
     );
@@ -73,7 +80,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
 
   if (error || !payload) {
     return (
-      <div className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
+      <div className="rounded-2xl border border-danger/30 bg-danger/10 p-6 text-sm text-danger">
         {error ?? 'Report unavailable'}
       </div>
     );
@@ -82,14 +89,15 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
   return (
     <div className="space-y-6">
       <section>
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted">
           Project reports
         </p>
-        <h2 className="text-2xl font-semibold tracking-[-0.02em]">
+        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-text-primary">
           {resolveSeedProjectName(projectId)}
         </h2>
-        <p className="mt-2 text-sm text-white/65">
-          Period ledger — {payload.periodStart.slice(0, 10)} to {payload.periodEnd.slice(0, 10)}.
+        <p className="mt-2 text-sm text-text-secondary">
+          Period ledger via `handleReportsPeriodGet` — {payload.periodStart.slice(0, 10)} to{' '}
+          {payload.periodEnd.slice(0, 10)}.
         </p>
       </section>
 
@@ -101,8 +109,8 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
             onClick={() => setPeriod(option.value)}
             className={`rounded-full px-4 py-2 text-sm transition ${
               period === option.value
-                ? 'bg-white text-black'
-                : 'border border-white/15 text-white/70 hover:bg-white/5'
+                ? 'bg-accent text-surface font-semibold'
+                : 'border border-border-subtle text-text-secondary hover:bg-elevated'
             }`}
           >
             {option.label}
@@ -117,16 +125,16 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
           { label: 'Revenue', value: formatReportMoney(payload.totals.totalRevenue) },
           { label: 'Net flow', value: formatReportMoney(payload.totals.netFlow) },
         ].map((item) => (
-          <article key={item.label} className="rounded-2xl border border-white/8 bg-black/25 p-4">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">{item.label}</p>
-            <p className="mt-2 text-xl font-semibold">{item.value}</p>
+          <article key={item.label} className="rounded-2xl border border-border-subtle bg-surface p-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-text-muted">{item.label}</p>
+            <p className="mt-2 text-xl font-semibold text-text-primary">{item.value}</p>
           </article>
         ))}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/10">
+      <section className="overflow-hidden rounded-2xl border border-border-subtle">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-white/[0.04] text-white/55">
+          <thead className="bg-surface text-text-muted border-b border-border-subtle">
             <tr>
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium">Payee</th>
@@ -134,19 +142,19 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
               <th className="px-4 py-3 font-medium">Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {payload.transactions.map((transaction) => (
-              <tr key={transaction.id} className="border-t border-white/8">
-                <td className="px-4 py-3 text-white/70">{transaction.transactionDate}</td>
-                <td className="px-4 py-3">{transaction.payee}</td>
-                <td className="px-4 py-3 text-white/70">{transaction.category}</td>
-                <td className="px-4 py-3 font-medium">{formatReportMoney(Math.abs(transaction.amount))}</td>
+              <tr key={transaction.id} className="hover:bg-elevated/40">
+                <td className="px-4 py-3 text-text-secondary">{transaction.transactionDate}</td>
+                <td className="px-4 py-3 text-text-primary">{transaction.payee}</td>
+                <td className="px-4 py-3 text-text-secondary">{transaction.category}</td>
+                <td className="px-4 py-3 font-medium text-text-primary">{formatReportMoney(Math.abs(transaction.amount))}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {payload.count === 0 ? (
-          <p className="px-4 py-6 text-sm text-white/55">No transactions in this period.</p>
+          <p className="px-4 py-6 text-sm text-text-muted">No transactions in this period.</p>
         ) : null}
       </section>
     </div>

@@ -1644,4 +1644,29 @@ export { circuitBreakers } from './lib/circuit-breaker.js';
 export { calculateKPIs } from './lib/insights/kpi-engine.js';
 export { aggregatePortfolioData, type ReportPeriod } from './lib/reports/aggregation.js';
 
+export {
+  RentCastPropertyAdapter,
+  RequiresCredentialsError,
+  type PropertyComparableSale,
+  type UnifiedPropertyLookupResult,
+  type PropertyDataRecord,
+  type IPropertyDataProvider,
+  type RentCastAdapterOptions,
+} from './lib/property-data/rentcast-adapter.js';
+
+export {
+  ALLOWED_ACQUISITION_TRANSITIONS,
+  VALID_DEAD_REASONS,
+  canTransitionAcquisitionStatus,
+  validateAcquisitionTransition,
+  AcquisitionStateError,
+  IllegalStateTransitionError,
+  DeadReasonRequiredError,
+  MissingContractDataError,
+  computeContingencyAlerts,
+  type ContingencyAlert,
+  type AcquisitionTransitionContext,
+  type TransitionValidationResult,
+} from './lib/reil/acquisition-state-machine.js';
+
 export const API_APP_STATUS = 'phase-4aa' as const;

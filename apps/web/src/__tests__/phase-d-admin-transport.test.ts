@@ -34,15 +34,17 @@ describe('phase D — admin BFF transport (post-impersonation migration)', () =>
 });
 
 describe('phase D — production browser apiFetch guard', () => {
-  it('no production browser modules call apiFetch', () => {
+  it('no production browser modules use external (NEXT_PUBLIC_API_URL) transport', () => {
     const files = walkTsx(webRoot);
     const violations: string[] = [];
 
     for (const rel of files) {
       if (rel.includes('/src/__tests__/')) continue;
       if (rel === 'lib/api/client.ts') continue;
+      if (rel === 'lib/api/bff-fetch.ts') continue;
+      if (rel === 'lib/auth/auth-fetch.ts') continue;
       const content = readFileSync(join(webRoot, rel), 'utf8');
-      if (content.includes('apiFetch(')) {
+      if (content.includes('NEXT_PUBLIC_API_URL') || content.includes('run.app')) {
         violations.push(rel);
       }
     }

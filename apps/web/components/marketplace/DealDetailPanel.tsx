@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { bffFetch } from '@/lib/api/bff-fetch';
 import {
   calculateFundingProgress,
   formatDealCurrency,
-} from '@/lib/marketplace/format';
+} from '@/lib/marketplace/seed-data';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
-import { getDealBySlugFromBff } from '@/lib/deals/deal-api';
 
 interface DealPreview {
   id: string;
@@ -15,7 +15,7 @@ interface DealPreview {
   name: string;
   address: string;
   price: number;
-  roi: number | null;
+  roi: number;
   status: string;
   visibility?: string;
   creatorName: string;
@@ -25,33 +25,6 @@ interface DealPreview {
   subStrategy?: string;
   projectId?: string | null;
   projectName?: string | null;
-}
-
-function asFiniteNumber(value: unknown): number | null {
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : null;
-}
-
-function mapExistsDealToPreview(raw: Record<string, unknown>): DealPreview {
-  const purchase = asFiniteNumber(raw.purchasePrice ?? raw.price) ?? 0;
-  const rehab = asFiniteNumber(raw.rehabCost) ?? 0;
-  return {
-    id: String(raw.id ?? ''),
-    slug: String(raw.slug ?? ''),
-    name: String(raw.propertyName || raw.name || raw.address || 'Deal'),
-    address: String(raw.address ?? ''),
-    price: purchase,
-    roi: asFiniteNumber(raw.projectedRoi ?? raw.roi),
-    status: String(raw.status ?? 'draft'),
-    visibility: raw.visibility != null ? String(raw.visibility) : undefined,
-    creatorName: String(raw.creatorName || raw.creatorId || '—'),
-    committed: asFiniteNumber(raw.committedAmount ?? raw.committed) ?? 0,
-    target: asFiniteNumber(raw.fundingTarget ?? raw.target) ?? purchase + rehab,
-    assetClass: raw.assetClass != null ? String(raw.assetClass) : undefined,
-    subStrategy: raw.subStrategy != null ? String(raw.subStrategy) : undefined,
-    projectId: raw.projectId != null && raw.projectId !== '' ? String(raw.projectId) : null,
-    projectName: raw.projectName != null ? String(raw.projectName) : null,
-  };
 }
 
 export default function DealDetailPanel({ slug }: { slug: string }) {
@@ -67,9 +40,17 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
       setLoading(true);
       setError(null);
       try {
-        const record = await getDealBySlugFromBff(slug);
-        if (!record) throw new Error('Deal not found or not visible');
-        if (!cancelled) setDeal(mapExistsDealToPreview(record as Record<string, unknown>));
+        const response = await bffFetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`, {
+          cache: 'no-store',
+        });
+        const body = (await response.json()) as {
+          exists: boolean;
+          deal: DealPreview | null;
+          error?: string;
+        };
+        if (!response.ok) throw new Error(body.error ?? 'Failed to load deal');
+        if (!body.exists || !body.deal) throw new Error('Deal not found or not visible');
+        if (!cancelled) setDeal(body.deal);
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'Failed to load deal');
@@ -113,7 +94,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
       ? 'border-slate-500/30 bg-slate-500/10 text-slate-300'
       : deal.visibility === 'invitation_only'
         ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
-        : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
+        : 'border-[var(--accent)]/30 bg-[var(--accent-subtle)] text-[var(--accent)]';
 
   return (
     <div className="mx-auto max-w-[960px] space-y-8 px-4 py-8 md:px-8">
@@ -133,12 +114,8 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
           </button>
 
           <Link
-            href={
-              deal.projectId
-                ? `/project/${deal.projectId}`
-                : `/dashboard?linkDeal=${encodeURIComponent(deal.slug)}`
-            }
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#00DD94] px-3 py-1.5 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110"
+            href={`/dashboard?linkDeal=${encodeURIComponent(deal.slug)}`}
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110"
           >
             <span className="material-symbols-outlined text-[16px]">folder_open</span>
             Open Project Workspace
@@ -162,8 +139,8 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
         {deal.projectId && (
           <div className="mt-2.5">
             <Link
-              href={`/project/${deal.projectId}`}
-              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#00DD94]/20 bg-[#00DD94]/10 px-3 py-1 text-sm font-medium text-[#00DD94] transition hover:bg-[#00DD94]/20"
+              href={`/projects/${deal.projectId}`}
+              className="inline-flex items-center gap-1.5 rounded-[8px] border border-[var(--accent)]/20 bg-[var(--accent-subtle)] px-3 py-1 text-sm font-medium text-[var(--accent)] transition hover:bg-[var(--accent-subtle)]"
             >
               <span className="material-symbols-outlined text-[16px]">folder_open</span>
               Linked to Project: {deal.projectName || deal.name}
@@ -192,10 +169,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
           { label: 'Purchase price', value: formatDealCurrency(deal.price) },
           { label: 'Funding target', value: formatDealCurrency(deal.target) },
           { label: 'Committed', value: formatDealCurrency(deal.committed) },
-          {
-            label: 'Projected ROI',
-            value: deal.roi == null ? 'N/A' : `${deal.roi.toFixed(1)}%`,
-          },
+          { label: 'Projected ROI', value: `${deal.roi.toFixed(1)}%` },
         ].map((item) => (
           <article key={item.label} className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">{item.label}</p>
@@ -211,12 +185,12 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-[#00DD94]"
+            className="h-full rounded-full bg-[var(--accent)]"
             style={{ width: `${progress}%` }}
           />
         </div>
         <p className="mt-4 text-sm text-white/65">
-          Deal numbers come from the stored underwriting baseline. Visibility follows marketplace, invitation-only, and private rules.
+          Resolved via `handleDealsExistsGet` with visibility rules for marketplace, invitation-only, and private deals.
         </p>
       </section>
 
@@ -224,7 +198,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
         dealId={deal.id}
         dealName={deal.name}
         dealAddress={deal.address}
-        dealRoi={deal.roi ?? 0}
+        dealRoi={deal.roi}
         isOpen={broadcastOpen}
         onClose={() => setBroadcastOpen(false)}
       />

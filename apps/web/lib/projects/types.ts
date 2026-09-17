@@ -1,3 +1,21 @@
+import type {
+  UnderwritingInputs,
+  AcquisitionPipelineStatus,
+  DeadRecord,
+  AcquisitionTask,
+  ContingencyItem,
+  UnderwritingSnapshot,
+} from '@paperworking/validation';
+
+export type {
+  UnderwritingInputs,
+  AcquisitionPipelineStatus,
+  DeadRecord,
+  AcquisitionTask,
+  ContingencyItem,
+  UnderwritingSnapshot,
+};
+
 export type LegacyProjectPhase = 'acquisition' | 'purchase' | 'hold' | 'exit';
 
 export type ProjectDisposition = 'SALE' | 'RENT' | 'MIXED';
@@ -31,11 +49,32 @@ export interface ProjectSummary {
   estimatedIrr?: number;
   phaseCompletionPct?: number;
   ownershipPercentage?: number;
-  estimatedExitValue?: number;
+  estimatedExitValue?: number | null;
+  isIllustrativeExitValue?: boolean;
   dealId?: string | null;
   dealSlug?: string | null;
   dealAddress?: string | null;
-  underwriting?: import('@paperworking/validation').UnderwritingInputs | null;
+  underwriting?: UnderwritingInputs | null;
+  acquisitionStatus?: AcquisitionPipelineStatus;
+  tasks?: AcquisitionTask[];
+  deadRecord?: DeadRecord | null;
+  contingencies?: ContingencyItem[];
+  underwritingSnapshot?: UnderwritingSnapshot | null;
+  isArchived?: boolean;
+  funding?: ProjectFundingTerms | null;
+}
+
+export interface ProjectFundingTerms {
+  loanAmount?: number;
+  interestRatePct?: number;
+  amortizationYears?: number;
+  downPayment?: number;
+  closingCosts?: number;
+  actualCashToClose?: number;
+  fundingStatus?: string;
+  lenderName?: string;
+  loanType?: string;
+  monthlyDebtService?: number;
 }
 
 export interface ProjectWorkspace extends ProjectSummary {
@@ -51,11 +90,20 @@ export interface ProjectWorkspace extends ProjectSummary {
   storageQuotaBytes: number;
   todos: ProjectTodo[];
   documents: ProjectDocument[];
+  underwriting?: UnderwritingInputs | null;
+  statusHistory?: any[];
+  organizationId?: string;
+  offers?: any[];
+  earnestMoney?: any;
+  checklistItems?: any[];
+  teamMembers?: any[];
+  underwritingRecord?: Record<string, unknown> | null;
   financials?: Record<string, unknown> | null;
 }
 
 export const PROJECT_SUBROUTES = [
   { slug: '', label: 'Overview' },
+  { slug: 'underwriting', label: 'Underwriting' },
   { slug: 'insights', label: 'Insights' },
   { slug: 'documents', label: 'Documents' },
   { slug: 'reports', label: 'Reports' },
@@ -63,3 +111,4 @@ export const PROJECT_SUBROUTES = [
 ] as const;
 
 export type ProjectSubrouteSlug = (typeof PROJECT_SUBROUTES)[number]['slug'];
+

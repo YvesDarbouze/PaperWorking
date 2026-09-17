@@ -1,0 +1,47 @@
+{
+  "e2e@paperworking.test": {
+    "uid": "e2e-test-user-1",
+    "email": "e2e@paperworking.test",
+    "passwordHash": "e1024b5707ef408c8610c03f1048573c:a02b3d6d0497f297dc424439ae32e95f379f68fc4b5dd1ed0da84a7f48ea5fcadb9a112c8e8863f1ad38dfccd5e7fc1a6d5dc04acbc8ede1889434441699a118",
+    "accountType": "investor",
+    "subscriptionPlan": "Individual",
+    "subscriptionStatus": "active",
+    "displayName": "E2E Test User"
+  },
+  "investor@paperworking.test": {
+    "uid": "dev-user-investor",
+    "email": "investor@paperworking.test",
+    "passwordHash": "e1024b5707ef408c8610c03f1048573c:a02b3d6d0497f297dc424439ae32e95f379f68fc4b5dd1ed0da84a7f48ea5fcadb9a112c8e8863f1ad38dfccd5e7fc1a6d5dc04acbc8ede1889434441699a118",
+    "accountType": "investor",
+    "subscriptionPlan": "Individual",
+    "subscriptionStatus": "active",
+    "displayName": "Dev Investor"
+  },
+  "admin@paperworking.test": {
+    "uid": "dev-user-admin",
+    "email": "admin@paperworking.test",
+    "passwordHash": "e1024b5707ef408c8610c03f1048573c:a02b3d6d0497f297dc424439ae32e95f379f68fc4b5dd1ed0da84a7f48ea5fcadb9a112c8e8863f1ad38dfccd5e7fc1a6d5dc04acbc8ede1889434441699a118",
+    "accountType": "admin",
+    "subscriptionPlan": "Team",
+    "subscriptionStatus": "active",
+    "displayName": "Dev Admin"
+  },
+  "vendor@paperworking.test": {
+    "uid": "dev-user-vendor",
+    "email": "vendor@paperworking.test",
+    "passwordHash": "e1024b5707ef408c8610c03f1048573c:a02b3d6d0497f297dc424439ae32e95f379f68fc4b5dd1ed0da84a7f48ea5fcadb9a112c8e8863f1ad38dfccd5e7fc1a6d5dc04acbc8ede1889434441699a118",
+    "accountType": "vendor",
+    "subscriptionPlan": "Vendor Network",
+    "subscriptionStatus": "active",
+    "displayName": "Dev Vendor"
+  },
+  "investment_team@paperworking.test": {
+    "uid": "dev-user-investment-team",
+    "email": "investment_team@paperworking.test",
+    "passwordHash": "e1024b5707ef408c8610c03f1048573c:a02b3d6d0497f297dc424439ae32e95f379f68fc4b5dd1ed0da84a7f48ea5fcadb9a112c8e8863f1ad38dfccd5e7fc1a6d5dc04acbc8ede1889434441699a118",
+    "accountType": "admin",
+    "subscriptionPlan": "Team",
+    "subscriptionStatus": "active",
+    "displayName": "Dev Investment Team"
+  }
+}

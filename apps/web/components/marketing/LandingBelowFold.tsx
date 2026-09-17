@@ -2,29 +2,6 @@
 
 import Link from 'next/link';
 
-const PHASES = [
-  {
-    label: 'PHASE 01',
-    name: 'Acquisition',
-    copy: 'Acquisition: Decide if the deal works before you buy. The Deal Calculator pulls live property data, an automated valuation, and projected cap rate, IRR, and cash-on-cash.',
-  },
-  {
-    label: 'PHASE 02',
-    name: 'Fund',
-    copy: 'Fund: Get the money and paperwork lined up. Track contingency deadlines and earnest money, keep contracts in one vault, get alerted before dates go hard.',
-  },
-  {
-    label: 'PHASE 03',
-    name: 'Hold',
-    copy: 'Hold: Own it and improve it. Link milestones to your budget, log expenses as they happen, watch holding costs and budget-vs-actual in real time.',
-  },
-  {
-    label: 'PHASE 04',
-    name: 'Exit',
-    copy: 'Exit: Sell it or keep it as a rental, and prove what it made. Generate the performance record your buyer, lender, or appraiser expects.',
-  },
-];
-
 /** Below-fold landing sections — ported from PaperWorking v0 page composition. */
 export default function LandingBelowFold() {
   return (
@@ -34,38 +11,6 @@ export default function LandingBelowFold() {
           <p className="font-[family-name:var(--font-jetbrains-mono)] text-[13px] font-semibold uppercase tracking-widest text-white/70 sm:text-[14px]">
             Every deadline tracked. Every dollar logged. Every metric live.
           </p>
-        </div>
-      </section>
-
-
-
-      <section className="relative overflow-hidden border-b border-white/5 py-12 md:py-16 lg:py-20">
-        <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-          <div className="mb-10 max-w-3xl">
-            <p className="mb-4 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
-              Built on the Real Estate Investment Life Cycle
-            </p>
-            <h2 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white md:text-3xl">
-              Acquisition, Fund, Hold, Exit. Four phases. One system.
-            </h2>
-          </div>
-
-          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {PHASES.map((p) => (
-              <div
-                key={p.name}
-                className="glass-card flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-white/[0.03] p-7 backdrop-blur-xl"
-              >
-                <div>
-                  <span className="mb-2 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]/80">
-                    {p.label}
-                  </span>
-                  <h3 className="mb-3 text-xl font-semibold text-white">{p.name}</h3>
-                  <p className="text-sm leading-[1.65] text-white/60">{p.copy}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

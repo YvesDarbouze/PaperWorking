@@ -23,7 +23,8 @@ const BASE_URL = __ENV.MIGRATION_URL || 'http://localhost:3000';
 export default function () {
   group('Migration stack smoke — auth + portfolio', () => {
     const loginPayload = JSON.stringify({
-      idToken: 'mock_session_token_123',
+      email: 'investor@paperworking.test',
+      password: 'Password123!',
       accountType: 'investor',
     });
 

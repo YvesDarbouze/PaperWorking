@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getMarketplaceInvestorFromBff, setMarketplaceInvestorFollowFromBff } from '@/lib/marketplace/marketplace-api';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { useOptionalAuth } from '@/context/AuthContext';
 
 interface InvestorDetailPayload {
   profile?: {
@@ -24,16 +25,22 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   const [error, setError] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
 
+  const auth = useOptionalAuth();
+  const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
+
   useEffect(() => {
+    if (!isAuthed) return;
     let cancelled = false;
 
     async function load() {
       setLoading(true);
       setError(null);
       try {
-        const body = (await getMarketplaceInvestorFromBff(investorId)) as InvestorDetailPayload & {
-          error?: string;
-        };
+        const response = await bffFetch(`/api/marketplace/investors/${investorId}`, {
+          cache: 'no-store',
+        });
+        const body = (await response.json()) as InvestorDetailPayload & { error?: string };
+        if (!response.ok) throw new Error(body.error ?? 'Investor not found');
         if (!cancelled) {
           setPayload(body);
           setIsFollowing(Boolean(body.isFollowing));
@@ -51,18 +58,15 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
     return () => {
       cancelled = true;
     };
-  }, [investorId]);
+  }, [investorId, isAuthed]);
 
   const toggleFollow = async () => {
-    try {
-      await setMarketplaceInvestorFollowFromBff({
-        targetUid: investorId,
-        follow: !isFollowing,
-      });
-      setIsFollowing((current) => !current);
-    } catch {
-      // keep server-authoritative follow state on failure
-    }
+    const response = await bffFetch('/api/marketplace/investors/follow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUid: investorId, follow: !isFollowing }),
+    });
+    if (response.ok) setIsFollowing((current) => !current);
   };
 
   if (loading) {
@@ -84,7 +88,7 @@ export default function InvestorProfilePanel({ investorId }: { investorId: strin
   const { profile } = payload;
 
   return (
-    <div className="w-full min-w-0 space-y-8 px-4 py-6 md:px-8 md:py-8">
+    <div className="mx-auto max-w-[960px] space-y-8 px-4 py-6 md:px-8 md:py-8">
       <Link href="/dashboard/marketplace" className="text-sm text-white/60 underline-offset-4 hover:underline">
         ← Back to marketplace
       </Link>

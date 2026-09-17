@@ -9,9 +9,11 @@ import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
 import { PROFILE_CARD } from '@/lib/dashboard/content';
 
 const NAV_LINKS = [
+  { label: 'Deal Calculator', href: '/deal-calculator' },
   { label: 'How it works', href: '/#how-it-works' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Marketplace', href: '/#marketplace' },
+  { label: 'Support', href: '/support' },
 ];
 
 export default function MarketingHeader() {
@@ -64,12 +66,14 @@ export default function MarketingHeader() {
           </div>
 
           {/* Center: Nav links */}
-          <div className="hidden items-center gap-7 lg:flex">
+          <div className="hidden items-center gap-7 md:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[13.5px] font-medium text-white/70 no-underline transition-colors hover:text-white"
+                className={`text-[13.5px] font-medium no-underline transition-colors hover:text-white ${
+                  pathname === link.href ? 'text-white font-semibold' : 'text-white/70'
+                }`}
                 aria-current={pathname === link.href ? 'page' : undefined}
               >
                 {link.label}
@@ -78,28 +82,44 @@ export default function MarketingHeader() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex w-1/4 items-center justify-end gap-3.5">
+          <div className="flex items-center justify-end gap-3.5">
             {authenticated ? (
-              <UserAccountMenu
-                className="hidden lg:block"
-                displayName={PROFILE_CARD.displayName}
-                accountType={accountType}
-                role={PROFILE_CARD.role}
-                onSignOut={handleSignOut}
-              />
+              <>
+                <UserAccountMenu
+                  className="hidden md:block"
+                  displayName={PROFILE_CARD.displayName}
+                  accountType={accountType}
+                  role={PROFILE_CARD.role}
+                  onSignOut={handleSignOut}
+                />
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-white md:hidden touch-press min-h-[36px]"
+                >
+                  <span className="material-symbols-outlined text-[15px]">dashboard</span>
+                  <span>App</span>
+                </Link>
+              </>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="hidden text-[13.5px] font-medium text-white/70 no-underline hover:text-white transition-colors lg:inline-flex"
+                  className="hidden text-[13.5px] font-medium text-white/70 no-underline hover:text-white transition-colors md:inline-flex"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden items-center gap-1.5 rounded-[10px] bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition lg:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-[10px] bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition md:inline-flex"
                 >
                   Get started
+                </Link>
+                <Link
+                  href="/login"
+                  data-testid="mobile-quick-login"
+                  className="flex items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-white no-underline transition hover:bg-white/10 md:hidden touch-press min-h-[36px]"
+                >
+                  Log in
                 </Link>
               </>
             )}
@@ -107,12 +127,12 @@ export default function MarketingHeader() {
             {/* Mobile hamburger menu */}
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-white md:hidden touch-press"
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMobileOpen((open) => !open)}
             >
-              <span className="material-symbols-outlined text-[22px]">
+              <span className="material-symbols-outlined text-[24px]">
                 {mobileOpen ? 'close' : 'menu'}
               </span>
             </button>
@@ -122,7 +142,7 @@ export default function MarketingHeader() {
 
       {/* Mobile Drawer (glass slide-out drawer from right) */}
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[60] lg:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
           <button
             type="button"
@@ -152,7 +172,12 @@ export default function MarketingHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block rounded-xl px-4 py-2.5 text-[14px] font-semibold text-white/80 no-underline hover:bg-white/5 hover:text-white transition-colors"
+                  className={`block rounded-xl px-4 py-2.5 text-[14px] font-semibold no-underline transition-colors ${
+                    pathname === link.href
+                      ? 'bg-white/10 text-white font-semibold'
+                      : 'text-white/80 hover:bg-white/5 hover:text-white'
+                  }`}
+                  aria-current={pathname === link.href ? 'page' : undefined}
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}

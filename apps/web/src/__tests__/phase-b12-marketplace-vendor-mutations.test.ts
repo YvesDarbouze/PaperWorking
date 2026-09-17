@@ -81,14 +81,14 @@ describe('phase B12 — browser transport migration', () => {
       'utf8',
     );
 
-    expect(marketplace).toContain('setMarketplaceInvestorFollowFromBff');
-    expect(investorProfile).toContain('setMarketplaceInvestorFollowFromBff');
-    expect(vendorProfile).toContain('updateVendorPortalProfileFromBff');
-    expect(vendorRequests).toContain('updateVendorPortalRequestFromBff');
+    expect(marketplace).toMatch(/bffFetch\('\/api\/marketplace\/investors\/follow'/);
+    expect(investorProfile).toMatch(/bffFetch\('\/api\/marketplace\/investors\/follow'/);
+    expect(vendorProfile).toMatch(/bffFetch\('\/api\/vendor-portal\/profile'/);
+    expect(vendorRequests).toMatch(/bffFetch\('\/api\/vendor-portal\/requests'/);
 
-    expect(marketplace).not.toContain("apiFetch('/api/marketplace/investors/follow'");
-    expect(vendorProfile).not.toContain("apiFetch('/api/vendor-portal/profile'");
-    expect(vendorRequests).not.toContain("apiFetch('/api/vendor-portal/requests'");
+    expect(marketplace).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(vendorProfile).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(vendorRequests).not.toContain('NEXT_PUBLIC_API_URL');
   });
 });
 

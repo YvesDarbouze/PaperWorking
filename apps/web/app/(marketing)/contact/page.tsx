@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import ContactInquiryForm from '@/components/marketing/ContactInquiryForm';
 import { CONTACT_CHANNELS } from '@/lib/marketing/support-data';
 
 export const metadata: Metadata = {
@@ -20,7 +19,7 @@ export default function ContactPage() {
           className="mx-auto max-w-[52ch] text-base leading-relaxed"
           style={{ color: 'var(--color-on-surface-variant)' }}
         >
-          Send a message below or reach us through the channel that fits your plan.
+          Connect with our team directly through our Support Center, explore our platform guides, or request a scheduled callback.
         </p>
       </section>
 
@@ -40,17 +39,13 @@ export default function ContactPage() {
       </section>
 
       <section className="pw-card mx-auto max-w-xl p-6">
-        <h2 className="mb-2 text-xl font-semibold">General inquiry</h2>
-        <p className="mb-6 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
-          We typically respond within one business day. Investment Team accounts receive priority
-          handling during business hours.
+        <h2 className="mb-4 text-xl font-semibold">General inquiry</h2>
+        <p className="mb-4 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
+          Have a question about the REIL framework, Deal Calculator, or institutional plans? Explore our knowledge base, ask Pepper AI, or request a call back from a specialist.
         </p>
-        <ContactInquiryForm />
-        <div className="mt-6 border-t border-white/8 pt-4">
-          <Link href="/support" className="text-sm underline-offset-2 hover:underline">
-            Visit support center →
-          </Link>
-        </div>
+        <Link href="/support" className="pw-pill-cta inline-flex w-fit">
+          Visit support center
+        </Link>
       </section>
     </div>
   );

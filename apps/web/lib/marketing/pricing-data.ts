@@ -24,6 +24,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     annualPrice: 590,
     highlighted: false,
     features: [
+      'Bloomberg Terminal for Real Estate Investors — solo operator toolset',
       'Four-phase REIL project management',
       'All 33 KPI visualizations',
       'Deal Calculator with live property data',
@@ -47,6 +48,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     annualPrice: 990,
     highlighted: true,
     features: [
+      'Bloomberg Terminal for Real Estate Investors — multi-seat firm workspace',
       'Everything in Investor',
       'Up to 10 accounts',
       'Lead Investor task assignment',

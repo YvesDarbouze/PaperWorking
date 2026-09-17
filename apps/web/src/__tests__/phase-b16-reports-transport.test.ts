@@ -38,10 +38,9 @@ describe('phase B16 — reports BFF transport', () => {
   it('report panels use same-origin reports helpers', () => {
     const portfolio = readFileSync(join(webRoot, 'components/reports/PortfolioReportsPanel.tsx'), 'utf8');
     const project = readFileSync(join(webRoot, 'components/reports/ProjectReportsPanel.tsx'), 'utf8');
-    expect(portfolio).toContain('getPortfolioReportFromBff');
-    expect(portfolio).toContain('generateReportExportFromBff');
+    expect(portfolio).toContain('ReportCatalogGrid');
     expect(portfolio).not.toContain('apiFetch(');
-    expect(project).toContain('getPeriodReportFromBff');
+    expect(project).toMatch(/bffFetch\(\s*`\/api\/reports\/\$\{period\}/);
     expect(project).not.toContain('apiFetch(');
   });
 

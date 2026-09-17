@@ -1,4 +1,9 @@
 export * from './reil/phases.js';
 export * from './rbac/account-types.js';
-export type { InvestmentStrategy } from './profile/strategies.js';
-export { STRATEGY_LABELS } from './profile/strategies.js';
+export * from './rbac/roles.js';
+export * from './profile/strategies.js';
+export * from './logging/index.js';
+export * from './telemetry/index.js';
+export * from './http/index.js';
+export * from './alerts/index.js';
+

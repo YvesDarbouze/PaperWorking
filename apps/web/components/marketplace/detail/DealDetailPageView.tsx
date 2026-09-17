@@ -459,10 +459,10 @@ export default function DealDetailPageView({ deal, allDeals, operatorProfile: in
               </span>
             </div>
 
-            {/* 5. Cap Rate */}
+            {/* 5. Cap Rate on Cost */}
             <div className="col-span-2 sm:col-span-1 p-3 sm:p-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#9E9DA0] block">
-                Cap Rate
+                Cap Rate on Cost
               </span>
               <span className="font-mono text-xl font-bold text-white mt-1 block">
                 <CountUpNumber value={capRate} formatter={formatPercent} />

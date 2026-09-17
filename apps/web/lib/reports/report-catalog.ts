@@ -1,216 +1,149 @@
-export type ReportCategory = 'Monthly' | 'Quarterly' | 'Annual' | 'Lender (SREO)';
+export type ReportSection = 'Core Financial' | 'Tax Preparation';
+
+export type ReportId =
+  | 'PL'
+  | 'BALANCE_SHEET'
+  | 'CASH_FLOW'
+  | 'RENT_ROLL'
+  | 'SCHEDULE_E'
+  | 'DEPRECIATION_SCHEDULE'
+  | 'FORM_1099_SUMMARY'
+  | 'CAPEX_LOG'
+  | 'CAPEX_TRACKER'; // Alias for CAPEX_LOG
 
 export interface ReportCatalogItem {
-  id:
-    | 'PL'
-    | 'BALANCE_SHEET'
-    | 'CASH_FLOW'
-    | 'RENT_ROLL'
-    | 'SREO'
-    | 'TAX_1040ES'
-    | 'BUDGET_VS_ACTUALS'
-    | 'SCHEDULE_E'
-    | 'DEPRECIATION_SCHEDULE'
-    | 'FORM_1099_SUMMARY'
-    | 'LOG_BOOKS'
-    | 'CLOSING_DOCS_INDEX'
-    | 'CPA_PACKAGE_BUNDLE'
-    | 'CAPEX_TRACKER';
+  id: ReportId;
   title: string;
-  category: ReportCategory;
+  section: ReportSection;
+  categoryTag: string;
   description: string;
-  badge?: string;
+  dataThrough: string;
   preview?: Array<{ label: string; value: string }>;
 }
 
-/** Ported from PaperWorking `ReportCatalogGrid` REPORT_CATALOG. */
+export const REPORT_SECTIONS: ReportSection[] = [
+  'Core Financial',
+  'Tax Preparation',
+];
+
+/**
+ * Authoritative 8-report catalog for PaperWorking Reports tab.
+ * Grouped into Core Financial and Tax Preparation sections.
+ */
 export const REPORT_CATALOG: ReportCatalogItem[] = [
+  // SECTION 1: CORE FINANCIAL
   {
     id: 'PL',
     title: 'Profit & Loss Statement (P&L)',
-    category: 'Monthly',
+    section: 'Core Financial',
+    categoryTag: 'Income Statement',
     description:
-      'Consolidated or per-property P&L detailing gross rental income, itemized operating expenses, and Net Operating Income (NOI).',
-    badge: 'Core Financial',
+      'Chronological CRE income statement: gross scheduled rent, vacancy loss, other income, GOI, itemized OpEx, NOI, debt service, and cash flow before tax.',
+    dataThrough: 'Aug 2026',
     preview: [
-      { label: 'Gross rent', value: '$18,400' },
-      { label: 'OpEx', value: '$7,120' },
-      { label: 'NOI', value: '$11,280' },
+      { label: 'GSR', value: '$24,000' },
+      { label: 'NOI', value: '$12,485' },
+      { label: 'CFBT', value: '($4,444)' },
     ],
   },
   {
     id: 'BALANCE_SHEET',
     title: 'Balance Sheet',
-    category: 'Monthly',
+    section: 'Core Financial',
+    categoryTag: 'Assets & Liabilities',
     description:
-      'Current property values (assets), mortgage balances (liabilities), security deposit liabilities, and computed owner equity.',
-    badge: 'Assets & Liabilities',
+      'Asset cost basis and market value vs amortizing mortgage debt liabilities, tenant security deposits held, and computed owner equity per period.',
+    dataThrough: 'Aug 2026',
     preview: [
-      { label: 'Assets', value: '$2.64M' },
-      { label: 'Liabilities', value: '$1.81M' },
-      { label: 'Equity', value: '$830K' },
+      { label: 'Asset basis', value: '$279K' },
+      { label: 'Debt balance', value: '$223K' },
+      { label: 'Net equity', value: '$55.8K' },
     ],
   },
   {
     id: 'CASH_FLOW',
     title: 'Cash Flow Statement',
-    category: 'Monthly',
+    section: 'Core Financial',
+    categoryTag: 'Cash Flow',
     description:
-      'Spendable cash vs paper profit — starts at NOI, breaking out loan principal paydown and CapEx separately.',
-    badge: 'Cash Flow',
+      'Spendable cash vs paper accounting profit: starts at NOI, breaking out loan principal paydown, interest expense, and CapEx reserves separately.',
+    dataThrough: 'Aug 2026',
     preview: [
-      { label: 'NOI', value: '$11,280' },
-      { label: 'Debt service', value: '$6,420' },
-      { label: 'Distributable', value: '$4,860' },
+      { label: 'Operating cash', value: '$12,485' },
+      { label: 'Debt service', value: '$16,929' },
+      { label: 'CapEx reserve', value: '$1,200' },
     ],
   },
   {
     id: 'RENT_ROLL',
-    title: 'Rent Roll & Delinquency Report',
-    category: 'Monthly',
+    title: 'Rent Roll & Tenant Ledger',
+    section: 'Core Financial',
+    categoryTag: 'Leasing & Tenancy',
     description:
-      'Active tenant leases, rent amounts, lease terms, vacancies, and unit delinquency status.',
-    badge: 'Occupancy & Revenue',
+      'Unit-by-unit rent roll, tenant names, lease start/end dates, monthly rent, deposits held, occupancy %, and chronological payment ledgers.',
+    dataThrough: 'Aug 2026',
     preview: [
-      { label: 'Units', value: '12' },
-      { label: 'Occupied', value: '96.8%' },
-      { label: 'Delinquent', value: '1' },
+      { label: 'Occupancy', value: '100%' },
+      { label: 'Units', value: '1' },
+      { label: 'GPR vs leased', value: '100%' },
     ],
   },
-  {
-    id: 'TAX_1040ES',
-    title: '1040-ES Quarterly Estimated Tax Voucher',
-    category: 'Quarterly',
-    description:
-      'Estimated quarterly payment worksheet based on YTD portfolio income with mandatory CPA disclaimer.',
-    badge: 'Quarterly Tax',
-    preview: [
-      { label: 'Est. liability', value: '$18,400' },
-      { label: 'Safe harbor', value: 'Met' },
-      { label: 'Next due', value: 'Sep 15' },
-    ],
-  },
-  {
-    id: 'BUDGET_VS_ACTUALS',
-    title: 'Quarterly Budget vs. Actuals Variance Report',
-    category: 'Quarterly',
-    description:
-      'Property performance vs frozen budget baselines, itemizing repairs/maintenance variance and reserve adjustments.',
-    badge: 'Variance & Operations',
-    preview: [
-      { label: 'Budget', value: '$42,000' },
-      { label: 'Actual', value: '$44,180' },
-      { label: 'Variance', value: '+5.2%' },
-    ],
-  },
+
+  // SECTION 2: TAX PREPARATION
   {
     id: 'SCHEDULE_E',
-    title: 'Schedule E-Mapped Income Statement',
-    category: 'Annual',
+    title: 'Schedule E Summary',
+    section: 'Tax Preparation',
+    categoryTag: 'IRS Form 1040',
     description:
-      'Every income and expense category mapped to exactly one IRS Schedule E line for 1040 tax preparation.',
-    badge: 'IRS Tax Schedule',
+      'Every income and operating expense category mapped strictly to official IRS Form 1040 Schedule E line items (Line 3 through Line 19) for CPA preparation.',
+    dataThrough: 'FY 2026',
     preview: [
-      { label: 'Rents received', value: '$220,800' },
-      { label: 'Total expenses', value: '$136,600' },
-      { label: 'Net income', value: '$84,200' },
+      { label: 'Rents received', value: '$23,280' },
+      { label: 'Schedule E OpEx', value: '$10,795' },
+      { label: 'Net rental income', value: '$12,485' },
     ],
   },
   {
     id: 'DEPRECIATION_SCHEDULE',
-    title: 'Depreciation & Asset Schedule',
-    category: 'Annual',
+    title: 'Depreciation Schedule',
+    section: 'Tax Preparation',
+    categoryTag: 'MACRS Straight-Line',
     description:
-      'Property cost basis, land value separation, 27.5-year MACRS straight-line depreciation, and accumulated depreciation.',
-    badge: 'Tax Depreciation',
+      'IRS MACRS straight-line depreciation (27.5-yr residential / 39-yr commercial) with land vs improvement split, mid-month convention, and multi-asset tracking.',
+    dataThrough: 'FY 2026',
     preview: [
-      { label: 'Basis', value: '$1.92M' },
-      { label: 'Land', value: '$384K' },
-      { label: 'YTD dep.', value: '$42,500' },
+      { label: 'Improvement basis', value: '$223.2K' },
+      { label: 'Recovery period', value: '27.5 yrs' },
+      { label: 'Yr 1 depreciation', value: '$8,116' },
     ],
   },
   {
     id: 'FORM_1099_SUMMARY',
-    title: 'Form 1099 Contractor Summary',
-    category: 'Annual',
+    title: '1099 & Vendor Payments',
+    section: 'Tax Preparation',
+    categoryTag: 'Form 1099-NEC',
     description:
-      'Contractors and vendors paid over the $600 IRS reporting threshold with 1099-NEC/MISC filing requirements.',
-    badge: '1099 Tax Filing',
+      'Payments to contractors, handymen, and property managers grouped by payee with annual totals and automatic $600 IRS reporting threshold flag.',
+    dataThrough: 'FY 2026',
     preview: [
-      { label: 'Vendors >$600', value: '8' },
-      { label: 'Total paid', value: '$86,400' },
-      { label: '1099s due', value: '8' },
+      { label: 'Threshold', value: '$600' },
+      { label: 'Form', value: '1099-NEC' },
+      { label: 'Status', value: 'Requires records' },
     ],
   },
   {
-    id: 'LOG_BOOKS',
-    title: 'Mileage & REPS Time Log Books',
-    category: 'Annual',
+    id: 'CAPEX_LOG',
+    title: 'CapEx Log',
+    section: 'Tax Preparation',
+    categoryTag: 'Capital Assets',
     description:
-      'Standard mileage travel log and Real Estate Professional Status (REPS) 750-hour material participation log.',
-    badge: 'Audit & Compliance',
-  },
-  {
-    id: 'CLOSING_DOCS_INDEX',
-    title: 'Closing Statements & Loan Documents Index',
-    category: 'Annual',
-    description:
-      'Index of HUD-1 settlement statements, closing disclosures, promissory notes, and deeds for the tax year.',
-    badge: 'Document Index',
-  },
-  {
-    id: 'CPA_PACKAGE_BUNDLE',
-    title: 'One-Click CPA Annual Tax Package',
-    category: 'Annual',
-    description:
-      'Bundled package containing Schedule E, Depreciation Schedule, 1099 Summary, Log Books, and Closing Document Index.',
-    badge: 'One-Click Tax Bundle',
-  },
-  {
-    id: 'SREO',
-    title: 'Schedule of Real Estate Owned (SREO)',
-    category: 'Lender (SREO)',
-    description:
-      'Lender-compliant Schedule of Real Estate Owned listing all portfolio properties, market values, debt balances, and NOI.',
-    badge: 'Lender & Underwriting',
+      'Major capital improvements separated from routine repairs for tax basis adjustments, each linked to depreciation recovery schedules and rehab budgets.',
+    dataThrough: 'FY 2026',
     preview: [
-      { label: 'Properties', value: '3' },
-      { label: 'Market value', value: '$2.64M' },
-      { label: 'Debt', value: '$1.81M' },
-    ],
-  },
-  {
-    id: 'CAPEX_TRACKER',
-    title: 'Capital Expenditures (CapEx) Tracker',
-    category: 'Lender (SREO)',
-    description:
-      'Major renovation overhauls isolated from operating expenses with per-asset status and budget tracking.',
-    badge: 'Capital Assets',
-    preview: [
-      { label: 'In progress', value: '1' },
-      { label: 'Budget', value: '$62,000' },
-      { label: 'Spent', value: '$41,200' },
+      { label: 'Capitalized', value: '$1,200' },
+      { label: 'Expensed repairs', value: '$1,995' },
+      { label: 'Asset class', value: '15-yr QIP' },
     ],
   },
 ];
-
-export type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall' | 'By Property';
-
-export const PERIOD_TABS: PeriodTab[] = [
-  'Monthly',
-  'Quarterly',
-  'Yearly',
-  'Overall',
-  'By Property',
-];
-
-export const TAB_CATEGORIES: Record<PeriodTab, ReportCategory[]> = {
-  Monthly: ['Monthly'],
-  Quarterly: ['Quarterly'],
-  Yearly: ['Annual'],
-  Overall: ['Monthly', 'Quarterly', 'Annual', 'Lender (SREO)'],
-  'By Property': ['Monthly', 'Quarterly', 'Annual', 'Lender (SREO)'],
-};
-
-/** Fixture data lives in /mockdata — re-exported for existing catalog imports. */
-export { PHASE_BREAKDOWN_SEED } from '../../../../mockdata/reports/phase-breakdown';

@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const PORT = process.env.PORT ?? '3000';
+const BASE_URL = process.env.E2E_BASE_URL ?? `http://localhost:${PORT}`;
+
 export default defineConfig({
   testDir: './specs',
   timeout: 60_000,
@@ -13,7 +16,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
-    baseURL: process.env.E2E_BASE_URL ?? 'http://127.0.0.1:3002',
+    baseURL: BASE_URL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     headless: true,
@@ -22,15 +25,13 @@ export default defineConfig({
   webServer: process.env.E2E_SKIP_WEBSERVER
     ? undefined
     : {
-        command: 'PORT=3002 ENABLE_MOCK_AUTH=true USE_MOCK_DATA=false NEXT_PUBLIC_USE_MOCK_DATA=false npm run dev',
+        command: `npx next dev -p ${PORT}`,
         cwd: '../../apps/web',
-        url: 'http://127.0.0.1:3002',
-        reuseExistingServer: !process.env.CI,
+        url: BASE_URL,
+        reuseExistingServer: true,
         timeout: 120_000,
         env: {
-          ENABLE_MOCK_AUTH: 'true',
-          USE_MOCK_DATA: 'false',
-          NEXT_PUBLIC_USE_MOCK_DATA: 'false',
+          PORT,
           NODE_ENV: 'development',
         },
       },

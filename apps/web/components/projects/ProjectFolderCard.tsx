@@ -98,10 +98,12 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
       ? {
           label: 'Est. IRR',
           value: project.estimatedIrr ? `${(project.estimatedIrr * 100).toFixed(1)}%` : '—',
+          isIllustrative: false,
         }
       : {
           label: 'Est. Exit',
-          value: formatCurrency(project.estimatedExitValue ?? project.purchasePrice * 1.25),
+          value: project.estimatedExitValue ? formatCurrency(project.estimatedExitValue) : '—',
+          isIllustrative: Boolean(project.isIllustrativeExitValue),
         };
 
   return (
@@ -230,9 +232,16 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
             </p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
-              {headline.label}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                {headline.label}
+              </p>
+              {headline.isIllustrative && (
+                <span className="rounded bg-amber-500/20 border border-amber-500/30 px-1 py-0.5 text-[8px] font-semibold text-amber-300 uppercase tracking-tight">
+                  ILLUSTRATIVE
+                </span>
+              )}
+            </div>
             <p className="text-xs font-semibold text-[#7dd3c0]">{headline.value}</p>
           </div>
         </div>

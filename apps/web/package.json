@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Migrated web app (Next.js) — full App Router surface",
+  "description": "Migrated web app (Next.js) \u2014 full App Router surface",
   "scripts": {
     "dev": "node --env-file=../../.env --env-file=.env.local ../../node_modules/next/dist/bin/next dev",
     "build": "next build",
     "vercel-build": "cd ../.. && npm run build",
     "start": "next start",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
+    "seed:support": "tsx scripts/seed-support-firestore.ts"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^1.16.10",
+    "@googlemaps/js-api-loader": "^2.1.1",
     "@opentelemetry/api": "^1.9.1",
     "@paperworking/api": "file:../api",
     "@paperworking/authz": "file:../../packages/authz",
@@ -35,7 +36,9 @@
     "@types/google.maps": "^3.66.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "jest-environment-jsdom": "^30.5.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5.8.3"
   }
 }

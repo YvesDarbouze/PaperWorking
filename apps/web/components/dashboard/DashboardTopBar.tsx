@@ -159,7 +159,11 @@ function TopBarDropdown({
   );
 }
 
-export default function DashboardTopBar() {
+interface DashboardTopBarProps {
+  onOpenMenu?: () => void;
+}
+
+export default function DashboardTopBar({ onOpenMenu }: DashboardTopBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { profile, logout } = useAuth();
@@ -172,10 +176,19 @@ export default function DashboardTopBar() {
 
   return (
     <header
-      className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-white/8 bg-[#121014]/88 px-4 backdrop-blur-[20px] md:px-6"
+      className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-white/8 bg-[#121014]/88 px-3 backdrop-blur-[20px] md:px-6"
       style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.04)' }}
     >
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <button
+          type="button"
+          onClick={onOpenMenu}
+          aria-label="Open navigation menu"
+          data-testid="mobile-topbar-menu"
+          className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white md:hidden active:scale-95 touch-press shrink-0"
+        >
+          <span className="material-symbols-outlined text-[22px]">menu</span>
+        </button>
         <div className="hidden items-center gap-2 md:flex">
           <span className="text-xs font-bold uppercase tracking-widest text-white/35">Dashboard</span>
           <span className="material-symbols-outlined text-[14px] text-white/20">chevron_right</span>
@@ -183,7 +196,7 @@ export default function DashboardTopBar() {
             {pageLabel}
           </span>
         </div>
-        <p className="text-sm font-semibold text-[#fdfffc] md:hidden">{pageLabel}</p>
+        <p className="text-sm font-semibold text-[#fdfffc] md:hidden truncate">{pageLabel}</p>
       </div>
 
       <div className="hidden max-w-md flex-1 items-center gap-2 lg:flex">

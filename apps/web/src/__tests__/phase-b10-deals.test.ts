@@ -121,10 +121,9 @@ describe('phase B10 — Next route wiring', () => {
       'utf8',
     );
 
-    expect(marketplace).toContain('listDealsFromBff');
-    expect(marketplace).toContain('createDealFromBff');
-    expect(vendor).toContain('listDealsFromBff');
-    expect(addressSearch).toContain('checkDealExistsFromBff');
+    expect(marketplace).toMatch(/bffFetch\('\/api\/deals\?tab=discover'/);
+    expect(vendor).toMatch(/bffFetch\('\/api\/deals\?tab=discover'/);
+    expect(addressSearch).toMatch(/bffFetch\(`\/api\/deals\/exists/);
     expect(wizard).toContain('createDealFromBff');
     expect(wizard).toContain('createProjectFromBff');
     expect(wizard).toContain('dealId: dealId || undefined');
@@ -140,7 +139,7 @@ describe('phase B10 — Next route wiring', () => {
       join(here, '../../app/(marketing)/deals/[slug]/external/page.tsx'),
       'utf8',
     );
-    expect(broadcast).toContain('broadcastDealFromBff');
+    expect(broadcast).toMatch(/bffFetch\('\/api\/deals\/broadcast'/);
     expect(external).toContain('replyToDealFromBff');
   });
 });

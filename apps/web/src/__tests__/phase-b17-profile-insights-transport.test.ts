@@ -39,7 +39,7 @@ describe('phase B17 — profile & insights BFF transport', () => {
 
   it('portfolio insights panel uses same-origin insights helper', () => {
     const panel = readFileSync(join(webRoot, 'components/insights/PortfolioInsightsPanel.tsx'), 'utf8');
-    expect(panel).toContain('getPortfolioInsightsFromBff');
+    expect(panel).toMatch(/bffFetch\('\/api\/insights/);
     expect(panel).not.toContain('apiFetch(');
   });
 

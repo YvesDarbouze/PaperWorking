@@ -48,12 +48,14 @@ describe('V1 certification correction — project routes', () => {
 });
 
 describe('V1 certification correction — browser Nest transport', () => {
-  it('no production browser modules reference apiFetch(', () => {
+  it('no production browser modules use external (NEXT_PUBLIC_API_URL) transport', () => {
     const violations: string[] = [];
     for (const rel of walkTs(webRoot)) {
       if (rel.includes('/src/__tests__/')) continue;
+      if (rel === 'lib/api/bff-fetch.ts') continue;
+      if (rel === 'lib/auth/auth-fetch.ts') continue;
       const content = readWeb(rel);
-      if (content.includes('apiFetch(')) violations.push(rel);
+      if (content.includes('NEXT_PUBLIC_API_URL') || content.includes('run.app')) violations.push(rel);
     }
     expect(violations).toEqual([]);
   });

@@ -62,7 +62,7 @@ describe('phase B13 — browser transport migration', () => {
       'utf8',
     );
 
-    expect(broadcast).toContain('broadcastDealFromBff');
+    expect(broadcast).toMatch(/bffFetch\('\/api\/deals\/broadcast'/);
     expect(external).toContain('replyToDealFromBff');
     expect(external).toContain('checkDealExistsFromBff');
     expect(broadcast).not.toContain("apiFetch('/api/deals/broadcast'");

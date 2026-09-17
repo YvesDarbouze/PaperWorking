@@ -79,7 +79,7 @@ export const SUPPORT_FAQS: SupportFaq[] = [
     categoryId: 'first-deal',
     question: 'How do I reach support?',
     answer:
-      'Email hi@paperworking.co for all plans. Investor and Team tiers include live chat; Investment Team accounts get priority response during business hours.',
+      'Direct support desk available for all plans. Investor and Team tiers include live chat; Investment Team accounts get priority response during business hours.',
   },
 ];
 
@@ -88,10 +88,9 @@ export const CONTACT_CHANNELS: ContactChannel[] = [
     id: 'email',
     label: 'Email Support',
     tier: 'All plans',
-    headline: 'hi@paperworking.co',
-    description:
-      'A real person answers every message. Send your deal details and we jump straight to the issue.',
-    href: 'mailto:hi@paperworking.co',
+    headline: 'Support Desk',
+    description: 'Submit an inquiry or feature request to get dedicated support from our team.',
+    href: 'mailto:support@paperworking.co',
   },
   {
     id: 'chat',

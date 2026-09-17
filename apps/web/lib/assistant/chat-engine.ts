@@ -106,10 +106,10 @@ export async function generateAssistantResponse(
       };
     } else {
       return {
-        text: `I see you have an urgent closing question! I'm pre-drafting an urgent support request to our team at hi@paperworking.co so our closing specialists can review and respond immediately.`,
-        triggeredAction: 'escalateEmail',
-        actionLabel: 'Email Emergency Support',
-        actionUrl: 'mailto:hi@paperworking.co?subject=URGENT%20Closing%20Assistance',
+        text: `I see you have an urgent closing question! I'm pre-drafting an urgent support request to our closing desk so our specialists can review and respond immediately.`,
+        triggeredAction: 'priority_escalation',
+        actionLabel: 'Contact Closing Support Desk',
+        actionUrl: '/support#request-a-call-back',
       };
     }
   }

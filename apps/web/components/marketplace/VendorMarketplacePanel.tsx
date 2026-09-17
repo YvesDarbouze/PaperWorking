@@ -9,13 +9,8 @@ import VendorSideSheet, {
   type VendorSideSheetData,
 } from '@/components/marketplace/VendorSideSheet';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
-import { listDealsFromBff } from '@/lib/deals/deal-api';
-import {
-  listMarketplaceInvestorsFromBff,
-  listMarketplaceListingsFromBff,
-  listVendorsFromBff,
-  setMarketplaceInvestorFollowFromBff,
-} from '@/lib/marketplace/marketplace-api';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { useOptionalAuth } from '@/context/AuthContext';
 
 type FilterCategory =
   | 'All'
@@ -187,6 +182,8 @@ function VendorCard({
 }
 
 function MarketplaceContent() {
+  const auth = useOptionalAuth();
+  const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
   const cityParam = searchParams.get('city');
@@ -247,7 +244,7 @@ function MarketplaceContent() {
   }, [typeParam, cityParam]);
 
   useEffect(() => {
-    if (activeTab !== 'vendors') return;
+    if (activeTab !== 'vendors' || !isAuthed) return;
     let cancelled = false;
 
     async function fetchVendors() {
@@ -258,18 +255,42 @@ function MarketplaceContent() {
         if (apiType !== 'All') params.append('type', apiType);
         if (searchQuery.trim()) params.append('location', searchQuery.trim());
 
-        const [vendorsBody, listingsBody] = await Promise.all([
-          listVendorsFromBff(params),
-          listMarketplaceListingsFromBff(),
+        const [vendorsRes, listingsRes] = await Promise.all([
+          bffFetch(`/api/vendors?${params.toString()}`, {
+            cache: 'no-store',
+          }),
+          bffFetch('/api/marketplace/listings', {
+            cache: 'no-store',
+          }),
         ]);
 
-        if (!cancelled) {
-          setVendors((vendorsBody.vendors ?? []) as unknown as ApiVendor[]);
-          setListings((listingsBody.listings ?? []) as typeof listings);
-          setListingsCount(listingsBody.count ?? listingsBody.listings?.length ?? 0);
+        if (!cancelled && vendorsRes.ok) {
+          const data = (await vendorsRes.json()) as { vendors?: ApiVendor[] };
+          setVendors(data.vendors ?? []);
+        }
+
+        if (!cancelled && listingsRes.ok) {
+          const data = (await listingsRes.json()) as {
+            listings?: Array<{
+              id: string;
+              title: string;
+              vendorType: string;
+              city: string;
+              budgetRange: string;
+              responseTime: string;
+              isNewListing?: boolean;
+            }>;
+            count?: number;
+          };
+          setListings(data.listings ?? []);
+          setListingsCount(data.count ?? data.listings?.length ?? 0);
         }
       } catch (err) {
-        console.error('Vendor fetch error', err);
+        if (!isAuthed || (err instanceof Error && err.message.includes('Unauthorized'))) {
+          // Handled by apiFetch redirect
+        } else {
+          console.error('Vendor fetch error', err);
+        }
       } finally {
         if (!cancelled) setLoadingVendors(false);
       }
@@ -279,18 +300,22 @@ function MarketplaceContent() {
     return () => {
       cancelled = true;
     };
-  }, [activeFilter, searchQuery, activeTab]);
+  }, [activeFilter, searchQuery, activeTab, isAuthed]);
 
   useEffect(() => {
-    if (activeTab !== 'deals') return;
+    if (activeTab !== 'deals' || !isAuthed) return;
     let cancelled = false;
 
     async function fetchDeals() {
       setLoadingDeals(true);
       setDealsError(null);
       try {
-        const body = await listDealsFromBff({ tab: 'discover' });
-        if (!cancelled) setDeals((body.deals ?? []) as unknown as DealCardData[]);
+        const res = await bffFetch('/api/deals?tab=discover', {
+          cache: 'no-store',
+        });
+        const body = (await res.json()) as { deals?: DealCardData[]; error?: string };
+        if (!res.ok) throw new Error(body.error ?? 'Failed to load deals');
+        if (!cancelled) setDeals(body.deals ?? []);
       } catch (err) {
         if (!cancelled) {
           setDealsError(err instanceof Error ? err.message : 'Unable to load active deals.');
@@ -304,18 +329,26 @@ function MarketplaceContent() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab]);
+  }, [activeTab, isAuthed]);
 
   useEffect(() => {
-    if (activeTab !== 'investors') return;
+    if (activeTab !== 'investors' || !isAuthed) return;
     let cancelled = false;
 
     async function fetchInvestors() {
       setLoadingInvestors(true);
       try {
-        const body = await listMarketplaceInvestorsFromBff();
+        const res = await bffFetch('/api/marketplace/investors', {
+          cache: 'no-store',
+        });
+        const body = (await res.json()) as {
+          profiles?: InvestorProfile[];
+          following?: string[];
+          error?: string;
+        };
+        if (!res.ok) throw new Error(body.error ?? 'Failed to load investors');
         if (!cancelled) {
-          setInvestors((body.profiles ?? []) as unknown as InvestorProfile[]);
+          setInvestors(body.profiles ?? []);
           setFollowing(body.following ?? []);
         }
       } catch (err) {
@@ -329,7 +362,7 @@ function MarketplaceContent() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab]);
+  }, [activeTab, isAuthed]);
 
   const displayVendors = useMemo(() => {
     let source: DisplayVendor[] = vendors.map((v) => ({
@@ -405,17 +438,15 @@ function MarketplaceContent() {
   const toggleFollow = useCallback(
     async (targetUid: string) => {
       const isFollowing = following.includes(targetUid);
-      try {
-        await setMarketplaceInvestorFollowFromBff({
-          targetUid,
-          follow: !isFollowing,
-        });
-        setFollowing((current) =>
-          isFollowing ? current.filter((uid) => uid !== targetUid) : [...current, targetUid],
-        );
-      } catch {
-        // preserve server-authoritative follow list on failure
-      }
+      const response = await bffFetch('/api/marketplace/investors/follow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUid, follow: !isFollowing }),
+      });
+      if (!response.ok) return;
+      setFollowing((current) =>
+        isFollowing ? current.filter((uid) => uid !== targetUid) : [...current, targetUid],
+      );
     },
     [following],
   );
@@ -503,7 +534,7 @@ function MarketplaceContent() {
                   <h3 className="mt-1 text-lg font-semibold text-[#fdfffc]">{deal.propertyName}</h3>
                   <p className="mt-1 text-sm text-white/55">{deal.address || deal.city}</p>
                   {deal.projectedRoi != null ? (
-                    <p className="mt-3 text-sm text-emerald-300">ROI {deal.projectedRoi}%</p>
+                    <p className="mt-3 text-sm text-[var(--accent)]">ROI {deal.projectedRoi}%</p>
                   ) : null}
                 </Link>
               ))}

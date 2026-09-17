@@ -50,7 +50,7 @@ describe('phase B13.1 — B13 same-origin regression', () => {
       'utf8',
     );
 
-    expect(broadcast).toContain('broadcastDealFromBff');
+    expect(broadcast).toMatch(/bffFetch\('\/api\/deals\/broadcast'/);
     expect(external).toContain('replyToDealFromBff');
     expect(broadcast).not.toContain("apiFetch('/api/deals/broadcast'");
     expect(external).not.toContain("apiFetch('/api/deals/reply'");

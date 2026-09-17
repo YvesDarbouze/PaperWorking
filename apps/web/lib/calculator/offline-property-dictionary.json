@@ -1,0 +1,154 @@
+[
+  {
+    "rawAddress": "1204 E 7th St, Austin, TX 78702",
+    "normalizedAddress": "1204 e 7th st austin tx 78702",
+    "asOf": "2026-08-15T00:00:00.000Z",
+    "source": "offline",
+    "facts": {
+      "formattedAddress": "1204 E 7th St, Austin, TX 78702",
+      "squareFeet": 1850,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "yearBuilt": 2018,
+      "propertyType": "Single Family",
+      "lotSizeSqFt": 5500,
+      "sourceProvider": "offline-benchmark"
+    },
+    "estimatedValue": 685000,
+    "valueRangeLow": 650000,
+    "valueRangeHigh": 720000,
+    "estimatedRent": 3400,
+    "rentRangeLow": 3200,
+    "rentRangeHigh": 3650,
+    "comps": [
+      {
+        "address": "1210 E 7th St, Austin, TX 78702",
+        "sale_price": 690000,
+        "sale_date": "2026-06-12",
+        "sqft": 1880,
+        "distance": 0.05
+      },
+      {
+        "address": "1115 E 8th St, Austin, TX 78702",
+        "sale_price": 675000,
+        "sale_date": "2026-05-20",
+        "sqft": 1820,
+        "distance": 0.15
+      }
+    ]
+  },
+  {
+    "rawAddress": "4521 N 24th St, Phoenix, AZ 85016",
+    "normalizedAddress": "4521 n 24th st phoenix az 85016",
+    "asOf": "2026-08-15T00:00:00.000Z",
+    "source": "offline",
+    "facts": {
+      "formattedAddress": "4521 N 24th St, Phoenix, AZ 85016",
+      "squareFeet": 2100,
+      "bedrooms": 4,
+      "bathrooms": 2.5,
+      "yearBuilt": 2014,
+      "propertyType": "Single Family",
+      "lotSizeSqFt": 7200,
+      "sourceProvider": "offline-benchmark"
+    },
+    "estimatedValue": 540000,
+    "valueRangeLow": 515000,
+    "valueRangeHigh": 575000,
+    "estimatedRent": 2850,
+    "rentRangeLow": 2650,
+    "rentRangeHigh": 3050,
+    "comps": [
+      {
+        "address": "4535 N 24th St, Phoenix, AZ 85016",
+        "sale_price": 545000,
+        "sale_date": "2026-07-03",
+        "sqft": 2150,
+        "distance": 0.08
+      },
+      {
+        "address": "4410 N 25th St, Phoenix, AZ 85016",
+        "sale_price": 532000,
+        "sale_date": "2026-06-18",
+        "sqft": 2050,
+        "distance": 0.22
+      }
+    ]
+  },
+  {
+    "rawAddress": "3200 Ross Ave, Dallas, TX 75204",
+    "normalizedAddress": "3200 ross ave dallas tx 75204",
+    "asOf": "2026-08-15T00:00:00.000Z",
+    "source": "offline",
+    "facts": {
+      "formattedAddress": "3200 Ross Ave, Dallas, TX 75204",
+      "squareFeet": 1420,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "yearBuilt": 2020,
+      "propertyType": "Condominium",
+      "lotSizeSqFt": 0,
+      "sourceProvider": "offline-benchmark"
+    },
+    "estimatedValue": 425000,
+    "valueRangeLow": 405000,
+    "valueRangeHigh": 450000,
+    "estimatedRent": 2600,
+    "rentRangeLow": 2450,
+    "rentRangeHigh": 2800,
+    "comps": [
+      {
+        "address": "3215 Ross Ave, Dallas, TX 75204",
+        "sale_price": 430000,
+        "sale_date": "2026-07-15",
+        "sqft": 1450,
+        "distance": 0.04
+      },
+      {
+        "address": "3120 San Jacinto St, Dallas, TX 75204",
+        "sale_price": 418000,
+        "sale_date": "2026-05-11",
+        "sqft": 1390,
+        "distance": 0.18
+      }
+    ]
+  },
+  {
+    "rawAddress": "2845 Larimer St, Denver, CO 80205",
+    "normalizedAddress": "2845 larimer st denver co 80205",
+    "asOf": "2026-08-15T00:00:00.000Z",
+    "source": "offline",
+    "facts": {
+      "formattedAddress": "2845 Larimer St, Denver, CO 80205",
+      "squareFeet": 1750,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "yearBuilt": 2016,
+      "propertyType": "Townhouse",
+      "lotSizeSqFt": 2200,
+      "sourceProvider": "offline-benchmark"
+    },
+    "estimatedValue": 710000,
+    "valueRangeLow": 675000,
+    "valueRangeHigh": 745000,
+    "estimatedRent": 3600,
+    "rentRangeLow": 3400,
+    "rentRangeHigh": 3850,
+    "comps": [
+      {
+        "address": "2860 Larimer St, Denver, CO 80205",
+        "sale_price": 715000,
+        "sale_date": "2026-06-25",
+        "sqft": 1780,
+        "distance": 0.06
+      },
+      {
+        "address": "2730 Walnut St, Denver, CO 80205",
+        "sale_price": 702000,
+        "sale_date": "2026-04-19",
+        "sqft": 1720,
+        "distance": 0.21
+      }
+    ]
+  }
+]

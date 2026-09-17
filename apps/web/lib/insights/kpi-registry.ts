@@ -197,8 +197,8 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
     definitionSource: 'Appraisal Institute (USPAP As-Completed Fair Market Valuation)',
     formulaTemplate: 'Post-Renovation Appraised / Market Valuation',
     resolveFormulaWithValues: (m) => {
-      const arv = m?.derived.estimatedARV ?? Math.round((m?.derived.totalCostBasis || 350000) * 1.25);
-      return `Estimated ARV = ${fmtMoney(arv)}`;
+      const arv = m?.derived.estimatedARV;
+      return arv ? `Estimated ARV = ${fmtMoney(arv)}` : 'Estimated ARV = Not provided (enter ARV to compute)';
     },
     inputs: [
       {
@@ -215,7 +215,7 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
       benchmark: '70% Rule Screen',
       description: 'Maximum allowable purchase basis should typically not exceed 70% of ARV minus rehab budget.',
     },
-    getValue: (m) => m?.derived.estimatedARV ?? Math.round((m?.derived.totalCostBasis || 350000) * 1.25),
+    getValue: (m) => m?.derived.estimatedARV ?? null,
   },
   {
     number: 5,
@@ -774,8 +774,11 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
     formulaTemplate: '((Exit Valuation − Total Cost Basis) ÷ Total Cost Basis) × 100',
     resolveFormulaWithValues: (m) => {
       const basis = m?.derived.totalCostBasis || 350000;
-      const margin = m?.derived.profitMarginOnCost ?? 25.0;
-      const exitVal = m?.derived.exitValuation ?? Math.round(basis * 1.25);
+      const margin = m?.derived.profitMarginOnCost;
+      const exitVal = m?.derived.exitValuation;
+      if (exitVal === null || exitVal === undefined || margin === null || margin === undefined) {
+        return 'Margin on Cost = Valuation input required (enter ARV or exit valuation to compute)';
+      }
       return `Margin on Cost = ((${fmtMoney(exitVal)} − ${fmtMoney(basis)}) ÷ ${fmtMoney(basis)}) × 100 = ${fmtPct(margin)}`;
     },
     inputs: [
@@ -802,7 +805,7 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
       description: 'Healthy developer/operator spread required to justify execution and construction risks.',
       targetPass: (v) => (v ?? 0) >= 20.0,
     },
-    getValue: (m) => m?.derived.profitMarginOnCost ?? 25.0,
+    getValue: (m) => m?.derived.profitMarginOnCost ?? null,
   },
 
   // ── PHASE 3: DEBT SIZING & CAPITAL STACK (8 KPIs) ─────────────────────────

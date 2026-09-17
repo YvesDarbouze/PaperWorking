@@ -134,12 +134,17 @@ export default function CollisionModal({
       data-testid="collision-modal"
       aria-modal="true"
       aria-labelledby="collision-title"
-      className="fixed inset-0 z-40 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/70 p-0 md:p-4 backdrop-blur-sm"
     >
       <div
         ref={modalRef}
-        className="relative z-50 mx-auto mt-[10vh] w-full max-w-[520px] rounded-[16px] border border-white/10 bg-[#0a0a0f]/95 p-6 md:p-8 backdrop-blur-[20px] shadow-[0_24px_48px_rgba(0,0,0,0.8)]"
+        className="relative z-50 w-full max-w-[520px] rounded-t-2xl md:rounded-[16px] border-t md:border border-white/10 bg-[#0a0a0f]/95 p-5 md:p-8 backdrop-blur-[20px] shadow-[0_24px_48px_rgba(0,0,0,0.8)] pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-8 animate-in slide-in-from-bottom-6 duration-200 md:fade-in-once"
       >
+        {/* Mobile Drag Handle */}
+        <div className="flex justify-center pt-1 pb-3 md:hidden">
+          <div className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden="true" />
+        </div>
+
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -157,7 +162,7 @@ export default function CollisionModal({
                 d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
               />
             </svg>
-            <h2 id="collision-title" className="text-lg font-medium text-white">
+            <h2 id="collision-title" className="text-base sm:text-lg font-medium text-white">
               A deal already exists at this address
             </h2>
           </div>
@@ -166,27 +171,27 @@ export default function CollisionModal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/50 transition hover:bg-white/5 hover:text-white"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/60 transition hover:bg-white/10 hover:text-white active:scale-95 touch-press"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
         {/* Body */}
-        <div className="mt-6 space-y-3">
+        <div className="mt-5 space-y-3">
           <DealCard deal={dealCardData} compact={true} />
-          <p className="text-sm text-white/60">
+          <p className="text-xs sm:text-sm text-white/60">
             Listed by <span className="font-medium text-white">{deal.creatorName || 'Lead Investor'}</span>
           </p>
         </div>
 
         {/* Footer */}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mt-6 sm:mt-8 flex flex-col gap-2.5 sm:flex-row sm:items-center">
           <button
             ref={primaryButtonRef}
             type="button"
             onClick={handlePrimaryClick}
-            className="inline-flex w-full sm:w-auto items-center justify-center rounded-[10px] bg-[#00DD94] px-5 py-2.5 text-sm font-medium text-[#0a0a0f] transition hover:brightness-110"
+            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] bg-[#00DD94] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition hover:brightness-110 active:scale-[0.98] touch-press"
           >
             {isProjectLink ? 'Link to this deal' : 'View deal'}
           </button>
@@ -194,7 +199,7 @@ export default function CollisionModal({
           <button
             type="button"
             onClick={handleSecondaryClick}
-            className="inline-flex w-full sm:w-auto items-center justify-center rounded-[10px] border border-white/20 px-5 py-2.5 text-sm font-medium text-white/70 transition hover:border-white/40 hover:text-white"
+            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] border border-white/20 px-5 py-2.5 text-sm font-medium text-white/70 transition hover:border-white/40 hover:text-white active:scale-[0.98] touch-press"
           >
             {isProjectLink ? 'Create new deal for this project' : 'Create new deal anyway'}
           </button>

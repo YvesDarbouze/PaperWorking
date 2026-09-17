@@ -8,43 +8,75 @@ import { getSeedProjectById, SEED_PROJECTS } from '@/lib/projects/seed-data';
 export function seedProjectsForInsights(): Array<{
   id: string;
   propertyName: string;
+  isDemo: boolean;
   financials: Record<string, unknown>;
 }> {
-  return SEED_PROJECTS.map((project) => ({
-    id: project.id,
-    propertyName: project.propertyName,
-    financials: {
-      purchasePrice: project.purchase_price,
-      rehabBudget: project.rehab_costs,
-      projectedProfit:
-        project.dispositionType === 'SALE'
-          ? Math.round(project.rehab_costs * 0.35)
-          : undefined,
-      monthlyCashFlow: project.dispositionType === 'RENT' ? 4200 : undefined,
-      propertyType: project.dispositionType === 'RENT' ? 'multifamily' : 'single_family',
-    },
-  }));
+  return SEED_PROJECTS.map((project) => {
+    const uw = project.underwriting;
+    const snap = project.underwritingSnapshot;
+    return {
+      id: project.id,
+      propertyName: project.propertyName,
+      isDemo: true,
+      financials: {
+        purchasePrice:
+          uw?.acquisition?.purchasePrice ?? snap?.inputs?.purchasePrice ?? project.purchase_price,
+        rehabBudget:
+          uw?.acquisition?.rehabBudget ?? snap?.inputs?.rehabBudget ?? project.rehab_costs,
+        projectedProfit:
+          snap?.outputs?.projectedFlipProfit ??
+          (project.dispositionType === 'SALE'
+            ? Math.round(
+                (uw?.acquisition?.rehabBudget ?? snap?.inputs?.rehabBudget ?? project.rehab_costs) * 0.35,
+              )
+            : undefined),
+        monthlyCashFlow:
+          snap?.outputs?.monthlyNetCashFlow ??
+          (project.dispositionType === 'RENT' ? 4200 : undefined),
+        propertyType: project.dispositionType === 'RENT' ? 'multifamily' : 'single_family',
+      },
+    };
+  });
 }
 
 export function buildSeedProjectMockData(projectId: string): Record<string, unknown> {
   const project = getSeedProjectById(projectId);
   if (!project) return canonicalSeedDeal;
 
-  const cashInvested = Math.round(project.purchase_price * 0.22);
-  const loanAmount = project.purchase_price - cashInvested;
+  const uw = project.underwriting;
+  const snap = project.underwritingSnapshot;
+  const purchasePrice =
+    uw?.acquisition?.purchasePrice ?? snap?.inputs?.purchasePrice ?? project.purchase_price;
+  const loanAmount =
+    uw?.debt?.loanAmount ??
+    snap?.outputs?.loanAmount ??
+    Math.round(purchasePrice * ((snap?.inputs?.targetLtvPct ?? 75) / 100));
+  const cashInvested =
+    snap?.outputs?.cashRequired ?? Math.max(0, purchasePrice - loanAmount);
+  const rehabBudget =
+    uw?.acquisition?.rehabBudget ?? snap?.inputs?.rehabBudget ?? project.rehab_costs;
+  const grossRent =
+    uw?.rentRoll?.grossScheduledRent !== undefined
+      ? uw.rentRoll.grossScheduledRent * 12
+      : snap?.inputs?.grossMonthlyRent !== undefined
+        ? snap.inputs.grossMonthlyRent * 12
+        : project.dispositionType === 'RENT'
+          ? Math.round(purchasePrice * 0.08)
+          : canonicalSeedDeal.gross_scheduled_rent;
 
   return {
     ...canonicalSeedDeal,
-    purchase_price: project.purchase_price,
-    property_value: project.purchase_price,
+    id: project.id,
+    purchase_price: purchasePrice,
+    property_value:
+      uw?.acquisition?.estimatedARV || snap?.inputs?.estimatedARV || purchasePrice,
     down_payment_amount: cashInvested,
     total_cash_invested: cashInvested,
     loan_amount: loanAmount,
-    rehab_costs: project.rehab_costs,
-    gross_scheduled_rent:
-      project.dispositionType === 'RENT'
-        ? Math.round(project.purchase_price * 0.08)
-        : canonicalSeedDeal.gross_scheduled_rent,
+    rehab_costs: rehabBudget,
+    gross_scheduled_rent: grossRent,
+    underwriting: uw || undefined,
+    underwritingSnapshot: snap || undefined,
   };
 }
 

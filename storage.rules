@@ -1,0 +1,87 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // =========================================================================
+    // GLOBAL SECURITY POLICY: DEFAULT DENY
+    // All paths without explicit rule matches are completely forbidden.
+    // =========================================================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function isInOrg(orgId) {
+      return isAuthenticated() && (
+        request.auth.token.organizationId == orgId ||
+        request.auth.token.orgId == orgId
+      );
+    }
+
+    // =========================================================================
+    // 1. ORG-SCOPED STORAGE PATHS
+    // /orgs/{orgId}/... - Matched against custom claim organizationId or orgId.
+    // Direct client access limited to verified members of the organization.
+    // Max upload size: 50MB.
+    // =========================================================================
+    match /orgs/{orgId}/{allPaths=**} {
+      allow read: if isInOrg(orgId);
+      allow write: if isInOrg(orgId) && request.resource.size < 50 * 1024 * 1024;
+    }
+
+    // =========================================================================
+    // 2. PER-UID TEMP-UPLOAD QUARANTINE BUFFER
+    // Staging area for client uploads prior to server virus scan / ingest.
+    // Only the authenticated owner may read or write. Max upload size: 25MB.
+    // =========================================================================
+    match /temp/{uid}/{fileName} {
+      allow read: if isOwner(uid);
+      allow write: if isOwner(uid) && request.resource.size < 25 * 1024 * 1024;
+    }
+
+    match /users/{uid}/temp/{fileName} {
+      allow read: if isOwner(uid);
+      allow write: if isOwner(uid) && request.resource.size < 25 * 1024 * 1024;
+    }
+
+    // =========================================================================
+    // 3. USER AVATARS
+    // Profile images: authenticated users may read; owner may write up to 5MB.
+    // =========================================================================
+    match /users/{uid}/avatar/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(uid) && request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // =========================================================================
+    // 4. DEALS PUBLIC MEDIA (Photos / Showcase)
+    // Authenticated users may view listing marketing photos; writes server-only.
+    // =========================================================================
+    match /deals/{dealId}/media/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Server-only via Admin SDK
+    }
+
+    // =========================================================================
+    // 5. CONTRACT VAULT & DUE DILIGENCE (P-03 CLOSURE)
+    // In accordance with P-03 remediation, client-direct read on due diligence
+    // documents is strictly revoked. All sensitive project and deal paperwork
+    // is served exclusively via server API routes with <=15-minute signed URLs.
+    // =========================================================================
+    match /deals/{dealId}/documents/{fileName} {
+      allow read, write: if false; // Server-only via Admin SDK / API signed URLs
+    }
+
+    match /projects/{projectId}/{allPaths=**} {
+      allow read, write: if false; // Server-only via Admin SDK / API signed URLs
+    }
+  }
+}

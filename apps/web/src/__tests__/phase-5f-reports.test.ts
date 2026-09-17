@@ -21,7 +21,7 @@ describe('phase 5f — reports adapters', () => {
   it('seeds transactions for org and project scope', () => {
     expect(seedReportTransactions({ organizationId: 'org-1' }).length).toBeGreaterThan(0);
     expect(seedReportTransactions({ organizationId: 'org-1', projectId: 'deal-1' })).toHaveLength(3);
-    expect(seedReportProjectOptions()).toHaveLength(3);
+    expect(seedReportProjectOptions().length).toBeGreaterThanOrEqual(3);
   });
 
   it('defines period options for portfolio and ledger views', () => {

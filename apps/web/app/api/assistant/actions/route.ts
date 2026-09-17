@@ -14,13 +14,17 @@ import { addSeedDeal } from '@/lib/marketplace/seed-data';
 import { verifyAppCheckHeader } from '@/lib/firebase/app-check-server';
 import { FIRST_DEAL_COOKIE, MILESTONE_COOKIE } from '@/lib/auth/progressive-unlock';
 
+import { computeMAO } from '@paperworking/financial-engine';
+
 export interface SkeletonDealPayload {
-  action: 'buildSkeletonDeal';
+  action: 'buildSkeletonDeal' | 'getValuation';
   propertyName?: string;
   address?: string;
   purchasePrice?: number;
   rehabBudget?: number;
   expectedRent?: number;
+  arv?: number | null;
+  requestValuation?: boolean;
 }
 
 export async function POST(request: NextRequest) {
@@ -39,8 +43,51 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON payload.' }, { status: 400 });
   }
 
+  // Dedicated valuation action handler
+  if (body.action === 'getValuation') {
+    if (!body.arv || Number(body.arv) <= 0 || isNaN(Number(body.arv))) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'VALUATION_INPUT_REQUIRED',
+          message: 'Valuation requires an explicit ARV. ARV not provided — enter ARV to compute equity/MAO.',
+          requiresInput: 'arv',
+        },
+        { status: 400 },
+      );
+    }
+    const purchasePrice = Number(body.purchasePrice) > 0 ? Number(body.purchasePrice) : 485000;
+    const rehabBudget = Number(body.rehabBudget) >= 0 ? Number(body.rehabBudget) : 0;
+    const arv = Number(body.arv);
+    const maoCalc = computeMAO(arv, rehabBudget, 0.70, Math.round(purchasePrice * 0.02));
+    return NextResponse.json({
+      success: true,
+      action: 'getValuation',
+      valuation: {
+        arv,
+        purchasePrice,
+        rehabBudget,
+        projectedEquity: arv - (purchasePrice + rehabBudget),
+        maximumAllowableOffer: maoCalc.mao,
+      },
+    });
+  }
+
   if (body.action !== 'buildSkeletonDeal') {
     return NextResponse.json({ error: 'Unknown action.' }, { status: 400 });
+  }
+
+  // If client explicitly requested valuation within skeleton deal without providing ARV, refuse
+  if (body.requestValuation && (!body.arv || Number(body.arv) <= 0 || isNaN(Number(body.arv)))) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'VALUATION_INPUT_REQUIRED',
+        message: 'Valuation requires an explicit ARV. ARV not provided — enter ARV to compute equity/MAO.',
+        requiresInput: 'arv',
+      },
+      { status: 400 },
+    );
   }
 
   const propertyName = body.propertyName?.trim() || '1247 Elm Street Duplex';
@@ -48,10 +95,12 @@ export async function POST(request: NextRequest) {
   const purchasePrice = Number(body.purchasePrice) > 0 ? Number(body.purchasePrice) : 485000;
   const rehabBudget = Number(body.rehabBudget) >= 0 ? Number(body.rehabBudget) : 68000;
   const rent = Number(body.expectedRent) > 0 ? Number(body.expectedRent) : 4200;
+  const explicitArv = body.arv && Number(body.arv) > 0 ? Number(body.arv) : null;
 
   // 3. Validation parity with manual input
   const underwriting = getDefaultUnderwritingInputs(purchasePrice);
   underwriting.acquisition.rehabBudget = rehabBudget;
+  underwriting.acquisition.estimatedARV = explicitArv ?? undefined;
   underwriting.rentRoll.grossScheduledRent = rent;
 
   // Calculate standard metrics
@@ -82,6 +131,7 @@ export async function POST(request: NextRequest) {
     purchasePrice,
     purchase_price: purchasePrice,
     rehab_costs: rehabBudget,
+    estimatedExitValue: explicitArv,
     estimatedIrr: estimatedIrrPct,
     phase_completion_pct: 15,
     dealId,
@@ -90,7 +140,7 @@ export async function POST(request: NextRequest) {
     underwriting,
   });
 
-  // 5. Add corresponding Deal to marketplace seed
+  // 5. Add corresponding Deal to marketplace seed with honest explicit ARV or null
   addSeedDeal({
     id: dealId,
     slug,
@@ -99,7 +149,7 @@ export async function POST(request: NextRequest) {
     visibility: 'PUBLIC',
     purchasePrice,
     rehabCost: rehabBudget,
-    arv: Math.round(purchasePrice * 1.25),
+    arv: explicitArv ?? undefined,
     creatorId: 'user-investor-1',
     createdAt: new Date().toISOString(),
     projectId,

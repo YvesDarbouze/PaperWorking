@@ -1,4 +1,5 @@
 import { getApps, initializeApp, cert, applicationDefault, type App } from 'firebase-admin/app';
+import type { Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { getStorage, type Storage } from 'firebase-admin/storage';
 
@@ -8,6 +9,7 @@ if (typeof window !== 'undefined') {
 }
 
 let adminAppInstance: App | null = null;
+let adminAuthInstance: Auth | null = null;
 let adminFirestoreInstance: Firestore | null = null;
 let adminStorageInstance: Storage | null = null;
 
@@ -96,6 +98,18 @@ export function getAdminFirestore(): Firestore {
 }
 
 /**
+ * Returns the server-only Firebase Auth Admin instance.
+ */
+export async function getAdminAuth(): Promise<Auth> {
+  if (!adminAuthInstance) {
+    const { getAuth } = await import('firebase-admin/auth');
+    const app = getAdminApp();
+    adminAuthInstance = getAuth(app);
+  }
+  return adminAuthInstance;
+}
+
+/**
  * Returns the server-only Cloud Storage Admin instance.
  */
 export function getAdminStorage(): Storage {
@@ -127,6 +141,7 @@ export function shouldAttemptFirestore(): boolean {
  */
 export function __resetFirebaseAdminForTesting(): void {
   adminAppInstance = null;
+  adminAuthInstance = null;
   adminFirestoreInstance = null;
   adminStorageInstance = null;
 }

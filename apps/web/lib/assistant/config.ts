@@ -46,7 +46,7 @@ export const PEPPER_CONFIG: AssistantConfig = {
   // Externalized model version so upgrades do not require client deploys
   modelName: process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash',
 
-  supportEmail: 'hi@paperworking.co',
+  supportEmail: process.env.SUPPORT_EMAIL || 'support@paperworking.co',
   trialDurationDays: 14,
 
   businessHours: {

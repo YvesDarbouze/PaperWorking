@@ -43,13 +43,45 @@ export interface FundPhaseResult {
 /**
  * Calculates Internal Rate of Return (IRR) using Newton-Raphson method with fallback binary search
  */
-export function computeIRR(cashFlows: CashFlowEvent[], maxIterations = 100, precision = 1e-6): number | null {
-  if (!cashFlows || cashFlows.length < 2) return null;
+export interface DatedIrrRoot {
+  ratePct: number;
+  npvResidual: number;
+}
+
+export type DatedIrrStatus = 'converged' | 'no_sign_change' | 'multiple_roots' | 'non_convergent';
+
+export interface DatedIrrResult {
+  irrPct: number | null;
+  irrStatus: DatedIrrStatus;
+  roots: DatedIrrRoot[];
+  cashFlowEvents: CashFlowEvent[];
+}
+
+export function computeIRRWithDetails(
+  cashFlows: CashFlowEvent[],
+  maxIterations = 100,
+  precision = 1e-6,
+): DatedIrrResult {
+  if (!cashFlows || cashFlows.length < 2) {
+    return {
+      irrPct: null,
+      irrStatus: 'no_sign_change',
+      roots: [],
+      cashFlowEvents: cashFlows || [],
+    };
+  }
 
   // Verify at least one negative and one positive cash flow
-  const hasNegative = cashFlows.some(cf => cf.amount < 0);
-  const hasPositive = cashFlows.some(cf => cf.amount > 0);
-  if (!hasNegative || !hasPositive) return null;
+  const hasNegative = cashFlows.some((cf) => cf.amount < 0);
+  const hasPositive = cashFlows.some((cf) => cf.amount > 0);
+  if (!hasNegative || !hasPositive) {
+    return {
+      irrPct: null,
+      irrStatus: 'no_sign_change',
+      roots: [],
+      cashFlowEvents: cashFlows,
+    };
+  }
 
   const baseDate = new Date(cashFlows[0].date).getTime();
 
@@ -72,37 +104,115 @@ export function computeIRR(cashFlows: CashFlowEvent[], maxIterations = 100, prec
     }, 0);
   };
 
-  // 1. Newton-Raphson Search
-  let rate = 0.1; // Initial 10% guess
-  for (let i = 0; i < maxIterations; i++) {
-    const value = npv(rate);
-    if (Math.abs(value) < precision) {
-      return Number((rate * 100).toFixed(2));
+  // Phase 1: 200-point grid scan over [-0.99, 10.0]
+  const gridLow = -0.99;
+  const gridHigh = 10.0;
+  const gridPoints = 200;
+  const gridStep = (gridHigh - gridLow) / gridPoints;
+  const intervals: Array<[number, number]> = [];
+
+  let prevRate = gridLow;
+  let prevNpv = npv(prevRate);
+
+  for (let i = 1; i <= gridPoints; i++) {
+    const currRate = gridLow + i * gridStep;
+    const currNpv = npv(currRate);
+    if (prevNpv * currNpv <= 0 && isFinite(prevNpv) && isFinite(currNpv)) {
+      intervals.push([prevRate, currRate]);
     }
-    const deriv = dnpv(rate);
-    if (Math.abs(deriv) < 1e-10) break;
-    const newRate = rate - value / deriv;
-    if (isNaN(newRate) || !isFinite(newRate)) break;
-    rate = newRate;
+    prevRate = currRate;
+    prevNpv = currNpv;
   }
 
-  // 2. Fallback Bisection Method
-  let low = -0.999;
-  let high = 5.0;
-  for (let i = 0; i < 200; i++) {
-    const mid = (low + high) / 2;
-    const midNpv = npv(mid);
-    if (Math.abs(midNpv) < precision) {
-      return Number((mid * 100).toFixed(2));
+  if (intervals.length === 0) {
+    return {
+      irrPct: null,
+      irrStatus: 'no_sign_change',
+      roots: [],
+      cashFlowEvents: cashFlows,
+    };
+  }
+
+  const roots: DatedIrrRoot[] = [];
+
+  for (const [low, high] of intervals) {
+    let l = low;
+    let h = high;
+    let r = (l + h) / 2;
+    let found = false;
+
+    for (let i = 0; i < maxIterations; i++) {
+      const val = npv(r);
+      if (Math.abs(val) < precision) {
+        found = true;
+        break;
+      }
+      if (val > 0) l = r;
+      else h = r;
+
+      const deriv = dnpv(r);
+      let nextR: number;
+      if (Math.abs(deriv) > 1e-10) {
+        nextR = r - val / deriv;
+      } else {
+        nextR = (l + h) / 2;
+      }
+
+      if (nextR <= l || nextR >= h || isNaN(nextR)) {
+        nextR = (l + h) / 2;
+      }
+
+      if (Math.abs(nextR - r) < 1e-10) {
+        r = nextR;
+        found = true;
+        break;
+      }
+      r = nextR;
     }
-    if (midNpv > 0) {
-      low = mid;
-    } else {
-      high = mid;
+
+    if (found || Math.abs(npv(r)) < precision) {
+      const residual = Math.abs(npv(r));
+      if (residual < 1e-6) {
+        roots.push({
+          ratePct: Number((r * 100).toFixed(2)),
+          npvResidual: residual,
+        });
+      }
     }
   }
 
-  return Number((rate * 100).toFixed(2));
+  if (roots.length === 0) {
+    return {
+      irrPct: null,
+      irrStatus: 'non_convergent',
+      roots: [],
+      cashFlowEvents: cashFlows,
+    };
+  }
+
+  if (roots.length === 1) {
+    return {
+      irrPct: roots[0].ratePct,
+      irrStatus: 'converged',
+      roots,
+      cashFlowEvents: cashFlows,
+    };
+  }
+
+  return {
+    irrPct: null,
+    irrStatus: 'multiple_roots',
+    roots,
+    cashFlowEvents: cashFlows,
+  };
+}
+
+export function computeIRR(
+  cashFlows: CashFlowEvent[],
+  maxIterations = 100,
+  precision = 1e-6,
+): number | null {
+  return computeIRRWithDetails(cashFlows, maxIterations, precision).irrPct;
 }
 
 /**

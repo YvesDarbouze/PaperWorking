@@ -23,9 +23,9 @@ test.describe('Migration E2E — dashboard shell previews (Phase 7e)', () => {
     await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Regional Preferences' })).toBeVisible();
     await page.getByRole('link', { name: 'Profile' }).first().click();
-    await expect(page).toHaveURL(/\/dashboard\/settings\/profile/);
+    await expect(page).toHaveURL(/\/dashboard\/profile/);
     await page.goto('/dashboard/settings');
     await page.getByRole('link', { name: 'Billing' }).first().click();
-    await expect(page).toHaveURL(/\/dashboard\/settings\/billing/);
+    await expect(page).toHaveURL(/\/dashboard\/settings\?section=billing/);
   });
 });

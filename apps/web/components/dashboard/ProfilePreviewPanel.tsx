@@ -101,7 +101,7 @@ export default function ProfilePreviewPanel() {
               <div>
                 <p className="font-medium text-white/85">Two-factor authentication</p>
                 <p className="text-xs text-white/45">
-                  {PROFILE_PREVIEW.mfaEnabled ? 'Enabled' : 'Not enabled (mock)'}
+                  {PROFILE_PREVIEW.mfaEnabled ? 'Enabled' : 'Not enabled'}
                 </p>
               </div>
               <button

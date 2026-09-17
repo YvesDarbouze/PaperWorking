@@ -1,5 +1,3 @@
-import type { WaterfallResult } from './waterfall-engine.js';
-
 /**
  * Structured metric result types for the REI Metrics Engine.
  *
@@ -105,41 +103,99 @@ export type ProjectMetricsResult = {
     monthlyPrincipal: number | null;
     totalDebtService: number | null;
     adjustedBasis: number | null;
+    totalCostBasis: number | null;
     capitalGainLoss: number | null;
     holdingPeriodMonths: number | null;
     annualDepreciation: number | null;
-    /** Yves underwriting overlays — optional until engines populate them. */
-    totalCostBasis?: number | null;
+    debtYield: number | null;
+    breakEvenOccupancy: number | null;
+    ltc: number | null;
+    maxSupportableLoan: number | null;
+    unleveredIrr: number | null;
+    leveredIrr: number | null;
+    balloonBalance: number | null;
     estimatedARV?: number | null;
-    loanAmount?: number | null;
-    totalCashInvested?: number | null;
-    unleveredIrr?: number | null;
-    leveredIrr?: number | null;
     npv?: number | null;
-    debtYield?: number | null;
-    breakEvenOccupancy?: number | null;
     profitMarginOnCost?: number | null;
     exitValuation?: number | null;
-    ltc?: number | null;
-    maxSupportableLoan?: number | null;
+    netSalesProceeds?: number | null;
+    investorProfitAtExit?: number | null;
     interestRate?: number | null;
-    balloonBalance?: number | null;
+    preferredReturn?: number | null;
+    annualRentGrowth?: number | null;
+    loanAmount?: number | null;
+    totalCashInvested?: number | null;
     lpEquity?: number | null;
     gpEquity?: number | null;
     lpEquityPct?: number | null;
     gpEquityPct?: number | null;
-    preferredReturn?: number | null;
-    annualRentGrowth?: number | null;
-    netSalesProceeds?: number | null;
-    investorProfitAtExit?: number | null;
+    gpPromotePct?: number | null;
+    hurdle2Irr?: number | null;
+    gpPromote2Pct?: number | null;
     lpIrr?: number | null;
     gpIrr?: number | null;
     lpEquityMultiple?: number | null;
     gpEquityMultiple?: number | null;
-    waterfall?: WaterfallResult | null;
+    waterfall?: import('./waterfall-engine.js').WaterfallResult | null;
+    /** W2-06: Method chosen for terminal valuation */
+    terminalValueMethod?: 'appreciation_pct' | 'exit_cap' | 'per_unit' | null;
+    /** W2-06: Method label (e.g. Exit @ 6.5% cap on Y5 NOI) */
+    terminalValueLabel?: string | null;
+    /** W2-07: Market Cap Rate alias */
+    capRate?: number | null;
+    /** W2-07: Cap Rate on Total Cost Basis (NOI ÷ Total Cost Basis) */
+    capRateOnCost?: number | null;
+    /** W2-07: Market Cap Rate on Current Asset Value (NOI ÷ Property Value) */
+    capRateOnValue?: number | null;
+    /** W2-08: Annual debt constant / loan constant percentage */
+    loanConstantPct?: number | null;
+    /** W2-08: Yield on cost percentage (same as capRateOnCost) */
+    yieldOnCostPct?: number | null;
+    /** W2-08: True when yield on cost < loan constant OR cash-on-cash < 0 */
+    isNegativeLeverage?: boolean;
   };
   sensitivity?: SensitivityResults;
+  /** W2-12: Server-computed 2D sensitivity grids (Rent vs Exit Valuation & Rent vs Rate) */
+  sensitivityGrids?: import('@paperworking/validation').SensitivityGridsResult;
 };
+
+export interface ExitCapSensitivityPoint {
+  capRatePct: number;
+  deltaBps: number;
+  exitValuation: number;
+  unleveredIrr: number | null;
+  leveredIrr: number | null;
+}
+
+export interface RentGrowthSensitivityPoint {
+  rentShockPct: number;
+  annualGrossRent: number;
+  noi: number;
+  cashFlow: number;
+  dscr: number | null;
+}
+
+export interface VacancyStressPoint {
+  vacancyPct: number;
+  effectiveGrossIncome: number;
+  noi: number;
+  cashFlow: number;
+  dscr: number | null;
+}
+
+export interface HoldPeriodSensitivityPoint {
+  holdPeriodYears: number;
+  unleveredIrr: number | null;
+  leveredIrr: number | null;
+  equityMultiple: number | null;
+}
+
+export interface SensitivityResults {
+  exitCapSensitivity: ExitCapSensitivityPoint[];
+  rentGrowthSensitivity: RentGrowthSensitivityPoint[];
+  vacancyStressTest: VacancyStressPoint[];
+  holdPeriodSensitivity: HoldPeriodSensitivityPoint[];
+}
 
 /**
  * Machine-readable reason code for metrics that return null because
@@ -165,6 +221,7 @@ export type MetricNullReason =
   | 'MARKET_DATA_DEFERRED'          // #27, #28, #29 — awaits RentCast / market feed
   // Standard null classes
   | 'INCOMPLETE'                    // Fields exist but not populated
+  | 'INSUFFICIENT_INPUTS'           // Required underwriting inputs missing
   | 'NOT_APPLICABLE';               // Metric doesn't apply (e.g. DSCR on all-cash)
 
 /**
@@ -229,9 +286,14 @@ export type MetricId =
   | 'RISK_SCORE'                // KPI 32
   | 'COMPLIANCE_RATE'           // KPI 33
 
-  // ── Legacy supplemental (computed, not in the 33) ───────────────────────
+  // ── 33 Underwriting KPI additions & Supplemental ────────────────────────
   | 'DEBT_YIELD'
   | 'BREAK_EVEN_OCCUPANCY'
+  | 'LTC'
+  | 'MAX_SUPPORTABLE_LOAN'
+  | 'UNLEVERED_IRR'
+  | 'LEVERED_IRR'
+  | 'BALLOON_BALANCE'
   | 'CAPITAL_RESERVES'
   | 'BUDGET_VARIANCE';
 
@@ -250,44 +312,6 @@ export const CANONICAL_EXPENSE_TAGS = [
   'HOA',
   'capex',
 ] as const;
-
-export interface ExitCapSensitivityPoint {
-  capRatePct: number;
-  deltaBps: number;
-  exitValuation: number;
-  unleveredIrr: number | null;
-  leveredIrr: number | null;
-}
-
-export interface RentGrowthSensitivityPoint {
-  rentShockPct: number;
-  annualGrossRent: number;
-  noi: number;
-  cashFlow: number;
-  dscr: number | null;
-}
-
-export interface VacancyStressPoint {
-  vacancyPct: number;
-  effectiveGrossIncome: number;
-  noi: number;
-  cashFlow: number;
-  dscr: number | null;
-}
-
-export interface HoldPeriodSensitivityPoint {
-  holdPeriodYears: number;
-  unleveredIrr: number | null;
-  leveredIrr: number | null;
-  equityMultiple: number | null;
-}
-
-export interface SensitivityResults {
-  exitCapSensitivity: ExitCapSensitivityPoint[];
-  rentGrowthSensitivity: RentGrowthSensitivityPoint[];
-  vacancyStressTest: VacancyStressPoint[];
-  holdPeriodSensitivity: HoldPeriodSensitivityPoint[];
-}
 
 export type CanonicalExpenseTag = typeof CANONICAL_EXPENSE_TAGS[number];
 export type ExpenseTag = CanonicalExpenseTag;

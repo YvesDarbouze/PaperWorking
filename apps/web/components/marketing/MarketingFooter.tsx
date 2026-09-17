@@ -57,7 +57,7 @@ export default function MarketingFooter() {
             className="text-[12.5px]"
             style={{ color: 'var(--color-on-surface-variant)', opacity: 0.8 }}
           >
-            © 2026 PaperWorking Corp. All rights reserved.
+            © 2026 PaperWorking. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
             {FOOTER_BOTTOM_LINKS.map((link) => (

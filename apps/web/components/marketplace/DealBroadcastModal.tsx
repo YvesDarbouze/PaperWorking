@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { broadcastDealFromBff } from '@/lib/deals/deal-api';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 export interface DealBroadcastModalProps {
   dealId: string;
@@ -52,16 +52,28 @@ export default function DealBroadcastModal({
     }
 
     try {
-      const body = await broadcastDealFromBff({
-        dealId,
-        recipientEmails,
-        subject,
-        message,
-        includeBusinessCard,
+      const response = await bffFetch('/api/deals/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId,
+          recipientEmails,
+          subject,
+          message,
+          includeBusinessCard,
+        }),
       });
 
-      if (!body.success) {
-        throw new Error('Failed to save broadcast');
+      const body = (await response.json()) as {
+        success?: boolean;
+        dispatchedCount?: number;
+        invitationCount?: number;
+        deliveryStatus?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !body.success) {
+        throw new Error(body.error ?? 'Failed to save broadcast');
       }
 
       setSuccessResult({
@@ -69,7 +81,7 @@ export default function DealBroadcastModal({
         deliveryStatus: body.deliveryStatus ?? 'not_configured',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save broadcast');
+      setError(err instanceof Error ? err.message : 'Failed to dispatch broadcast');
     } finally {
       setLoading(false);
     }
@@ -100,8 +112,8 @@ export default function DealBroadcastModal({
         </p>
 
         {successResult ? (
-          <div className="mt-6 space-y-4 rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/10 p-5 text-center">
-            <span className="material-symbols-outlined text-3xl text-[#00DD94]">check_circle</span>
+          <div className="mt-6 space-y-4 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent-subtle)] p-5 text-center">
+            <span className="material-symbols-outlined text-3xl text-[var(--accent)]">check_circle</span>
             <p className="text-sm font-semibold text-white">
               Broadcast saved — invitations created
             </p>
@@ -115,7 +127,7 @@ export default function DealBroadcastModal({
             <button
               type="button"
               onClick={onClose}
-              className="mt-2 inline-flex items-center justify-center rounded-lg bg-[#00DD94] px-4 py-2 text-xs font-semibold text-[#0a0a0f]"
+              className="mt-2 inline-flex items-center justify-center rounded-lg bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[#0a0a0f]"
             >
               Done
             </button>
@@ -139,7 +151,7 @@ export default function DealBroadcastModal({
                 placeholder="partner@investor.com, capital@fund.com"
                 rows={2}
                 required
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none"
               />
             </div>
 
@@ -153,7 +165,7 @@ export default function DealBroadcastModal({
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 required
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none"
               />
             </div>
 
@@ -166,7 +178,7 @@ export default function DealBroadcastModal({
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none"
               />
             </div>
 
@@ -175,7 +187,7 @@ export default function DealBroadcastModal({
                 type="checkbox"
                 checked={includeBusinessCard}
                 onChange={(e) => setIncludeBusinessCard(e.target.checked)}
-                className="rounded border-white/20 bg-white/10 text-[#00DD94] focus:ring-[#00DD94]"
+                className="rounded border-white/20 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)]"
               />
               Include digital business card &amp; contact info
             </label>
@@ -192,14 +204,14 @@ export default function DealBroadcastModal({
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#00DD94] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--accent)] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 disabled:opacity-50"
               >
                 {loading ? (
                   <>
                     <span className="material-symbols-outlined animate-spin text-[14px]">
                       progress_activity
                     </span>
-                    Saving…
+                    Sending…
                   </>
                 ) : (
                   <>

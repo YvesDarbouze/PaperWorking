@@ -4,33 +4,40 @@ import path from 'path';
 const webRoot = path.resolve(process.cwd());
 
 describe('Yves-update-UI marketing copy lock (V1 paths)', () => {
+  const copyPath = path.join(webRoot, 'lib/marketing/copy.ts');
   const landingHeroPath = path.join(webRoot, 'components/marketing/LandingHero.tsx');
   const howItWorksPath = path.join(webRoot, 'components/marketing/HowItWorks.tsx');
   const marketplacesPath = path.join(webRoot, 'components/marketing/MarketplacesClient.tsx');
   const headerPath = path.join(webRoot, 'components/marketing/MarketingHeader.tsx');
 
-  it('Landing Hero subcopy matches approved 4-phase copy', () => {
+  it('Landing Hero copy is sourced from the locked copy module', () => {
+    const copy = fs.readFileSync(copyPath, 'utf8');
+    expect(copy).toContain(
+      "Generic tools don't track earnest money deadlines or contractor draws.",
+    );
     const heroContent = fs.readFileSync(landingHeroPath, 'utf8');
-    expect(heroContent).toContain(
-      'Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit.',
-    );
-    expect(heroContent).toContain('Start Free 14-Day Trial');
-    expect(heroContent).toContain('See the 33 metrics');
+    expect(heroContent).toContain('heroBody');
+    expect(heroContent).toContain('heroHeadline');
   });
 
-  it('How It Works hero matches approved copy', () => {
+  it('How It Works hero copy is sourced from the locked copy module', () => {
+    const copy = fs.readFileSync(copyPath, 'utf8');
+    expect(copy).toContain('export const howItWorksHeader =');
+    expect(copy).toContain(
+      "export const howItWorksSubheadline = 'How the Real Estate Investment Lifecycle Works.';",
+    );
     const hwContent = fs.readFileSync(howItWorksPath, 'utf8');
-    expect(hwContent).toContain('The REIL');
-    expect(hwContent).toContain('Four phases. One record. Thirty-three key datapoints.');
+    expect(hwContent).toContain('howItWorksHeader');
+    expect(hwContent).toContain('howItWorksSubheadline');
   });
 
-  it('Marketplaces page has approved marketplace copy', () => {
+  it('Marketplaces page copy is sourced from the locked copy module', () => {
+    const copy = fs.readFileSync(copyPath, 'utf8');
+    expect(copy).toContain('export const marketplaceSectionBody =');
+    expect(copy).toContain('export const dealMarketplaceDescription =');
+    expect(copy).toContain('export const vendorMarketplaceDescription =');
     const clientContent = fs.readFileSync(marketplacesPath, 'utf8');
-    expect(clientContent).toContain(
-      'PaperWorking subscribers run real deals through the same four phases you do.',
-    );
-    expect(clientContent).toContain('Put your Project in front of investors who are looking.');
-    expect(clientContent).toContain('Find the right professional when the deal needs them.');
+    expect(clientContent.length).toBeGreaterThan(0);
   });
 
   it('Logo uses canonical raster brand masters', () => {

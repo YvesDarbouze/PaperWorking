@@ -51,3 +51,58 @@ export const HOW_IT_WORKS_HIGHLIGHTS = [
       'Investors, teams, vendors, and platform admins each get purpose-built portals on the same domain.',
   },
 ] as const;
+
+import {
+  reilNarrativeAcquisitionLabel,
+  reilNarrativeAcquisitionBody,
+  reilNarrativeAcquisitionFull,
+  reilNarrativeFundLabel,
+  reilNarrativeFundBody,
+  reilNarrativeFundFull,
+  reilNarrativeHoldLabel,
+  reilNarrativeHoldBody,
+  reilNarrativeHoldFull,
+  reilNarrativeExitLabel,
+  reilNarrativeExitBody,
+  reilNarrativeExitFull,
+} from './copy';
+
+export interface ReilNarrativeStep {
+  phaseNumber: string;
+  name: string;
+  label: string;
+  body: string;
+  full: string;
+}
+
+export const REIL_NARRATIVE_STEPS: readonly ReilNarrativeStep[] = [
+  {
+    phaseNumber: 'PHASE 01',
+    name: 'ACQUISITION',
+    label: reilNarrativeAcquisitionLabel,
+    body: reilNarrativeAcquisitionBody,
+    full: reilNarrativeAcquisitionFull,
+  },
+  {
+    phaseNumber: 'PHASE 02',
+    name: 'FUND',
+    label: reilNarrativeFundLabel,
+    body: reilNarrativeFundBody,
+    full: reilNarrativeFundFull,
+  },
+  {
+    phaseNumber: 'PHASE 03',
+    name: 'HOLD',
+    label: reilNarrativeHoldLabel,
+    body: reilNarrativeHoldBody,
+    full: reilNarrativeHoldFull,
+  },
+  {
+    phaseNumber: 'PHASE 04',
+    name: 'EXIT',
+    label: reilNarrativeExitLabel,
+    body: reilNarrativeExitBody,
+    full: reilNarrativeExitFull,
+  },
+] as const;
+

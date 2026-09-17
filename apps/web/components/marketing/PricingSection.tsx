@@ -8,6 +8,7 @@ import {
   PRICING_PLANS,
   type PricingPlan,
 } from '@/lib/marketing/pricing-data';
+import { pricingHeader } from '@/lib/marketing/copy';
 
 /** Ported from PaperWorking `components/landing/PricingSection.tsx`. */
 export default function PricingSection() {
@@ -41,8 +42,8 @@ export default function PricingSection() {
 
       <div className="relative z-10">
         <div className="mx-auto max-w-[1100px] px-6 pb-6 pt-8 text-center md:pb-8 md:pt-12 lg:px-8">
-          <h1 className="landing-display mx-auto mb-3 max-w-[1000px] font-semibold leading-[1.15] tracking-[-0.02em] text-white uppercase">
-            REAL ESTATE BLOOMBERG TERMINAL
+          <h1 className="landing-display mx-auto mb-3 max-w-[1000px] font-semibold leading-[1.15] tracking-[-0.02em] text-white uppercase break-words">
+            {pricingHeader}
           </h1>
 
           <p className="mx-auto max-w-3xl text-base leading-[1.6] text-white/65 sm:text-lg">
@@ -87,12 +88,28 @@ export default function PricingSection() {
           </div>
         </div>
 
+        {/* Mobile Plan Quick Navigation Tabs */}
+        <div className="mb-6 flex justify-center px-6 md:hidden">
+          <div className="flex w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.04] p-1">
+            {PRICING_PLANS.map((plan) => (
+              <a
+                key={plan.id}
+                href={`#plan-${plan.id}`}
+                className="flex-1 rounded-lg py-2 text-center text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 transition touch-press min-h-[40px] flex items-center justify-center no-underline"
+              >
+                {plan.name}
+              </a>
+            ))}
+          </div>
+        </div>
+
         <div className="mx-auto max-w-[1200px] px-6 pb-10 lg:px-8">
           <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
             {PRICING_PLANS.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative flex h-full flex-col rounded-2xl border bg-white/[0.03] backdrop-blur-[12px] p-7 transition-all duration-300 ${
+                id={`plan-${plan.id}`}
+                className={`relative flex h-full scroll-mt-24 flex-col rounded-2xl border bg-white/[0.03] backdrop-blur-[12px] p-7 transition-all duration-300 ${
                   plan.highlighted
                     ? 'border-[#00DD94]/40 shadow-[0_0_50px_-12px_rgba(0,221,148,0.25)]'
                     : 'border-white/10 shadow-md'
@@ -143,7 +160,7 @@ export default function PricingSection() {
                   <button
                     type="button"
                     onClick={() => handleSelect(plan)}
-                    className={`w-full cursor-pointer rounded-full py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94] ${
+                    className={`w-full cursor-pointer rounded-full py-3.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94] min-h-[48px] touch-press ${
                       plan.highlighted
                         ? 'bg-[#00DD94] text-[#0a0a0f] border-none shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)] hover:opacity-90'
                         : 'border border-white/20 text-white bg-transparent hover:bg-white/10 hover:border-white/30'

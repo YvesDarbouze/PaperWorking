@@ -24,6 +24,7 @@ export interface Portfolio33KPIs {
   saleToListRatioPct: number;
   avgNetProfitPerDeal: number;
   annualizedROIPct: number;
+  annualizationMethod?: string;
   totalCapitalGains: number;
   exchange1031RatePct: number;
   totalExitRevenue: number;

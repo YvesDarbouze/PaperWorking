@@ -35,7 +35,7 @@ describe('phase B17.1 — transport regression', () => {
     const insights = readFileSync(join(webRoot, 'components/insights/PortfolioInsightsPanel.tsx'), 'utf8');
     expect(profile).toContain('updateProfileFromBff');
     expect(profile).not.toContain('apiFetch(');
-    expect(insights).toContain('getPortfolioInsightsFromBff');
+    expect(insights).toMatch(/bffFetch\('\/api\/insights/);
     expect(insights).not.toContain('apiFetch(');
   });
 });

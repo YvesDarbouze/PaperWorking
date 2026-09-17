@@ -242,9 +242,9 @@ export default function CompareTray() {
                     ))}
                   </tr>
 
-                  {/* Cap Rate */}
+                  {/* Cap Rate on Cost */}
                   <tr>
-                    <td className="py-3 font-semibold text-[#9E9DA0]">Cap Rate</td>
+                    <td className="py-3 font-semibold text-[#9E9DA0]">Cap Rate on Cost</td>
                     {comparedDeals.map((d) => {
                       const cr = (d as any).capRate ?? 6.2;
                       const isBest = cr === bestCapRate && cr > 0;

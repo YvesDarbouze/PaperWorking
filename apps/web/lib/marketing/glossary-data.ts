@@ -42,10 +42,24 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     relatedTerms: ['70% Rule', 'CapEx', 'Scope of Work'],
   },
   {
-    term: 'Cap Rate (Capitalization Rate)',
-    definition: 'A percentage representing the expected annual return on a property based on its current market value, assuming an all-cash purchase. Formula: NOI ÷ Current Market Value. Used to compare the relative value and risk of different income-generating properties.',
+    term: 'Cap Rate on Cost (Yield on Cost)',
+    definition: 'Year-1 Net Operating Income (NOI) divided by Total Property Cost Basis (Purchase Price + Closing Costs + Rehab Budget). Measures the unlevered return on total capital deployed into the asset.',
     category: 'financial-metrics',
-    relatedTerms: ['NOI', 'Cash-on-Cash Return'],
+    relatedTerms: ['Market Cap Rate', 'NOI', 'Cost Basis', 'Cash-on-Cash Return'],
+    platformFeature: 'Deal Calculator',
+  },
+  {
+    term: 'Market Cap Rate',
+    definition: 'Net Operating Income (NOI) divided by Current Market Value or Purchase Price. Represents the prevailing market yield for stabilized assets in a specific submarket and asset class.',
+    category: 'financial-metrics',
+    relatedTerms: ['Cap Rate on Cost', 'NOI', 'Exit Cap Rate'],
+    platformFeature: 'Deal Calculator',
+  },
+  {
+    term: 'Cap Rate (Capitalization Rate)',
+    definition: 'A percentage representing the expected annual return on a property based on its current market value or cost basis, assuming an all-cash purchase. PaperWorking distinguishes Cap Rate on Cost (NOI ÷ Cost Basis) from Market Cap Rate (NOI ÷ Current Value).',
+    category: 'financial-metrics',
+    relatedTerms: ['Cap Rate on Cost', 'Market Cap Rate', 'NOI', 'Cash-on-Cash Return'],
   },
   {
     term: 'Cash-on-Cash Return',

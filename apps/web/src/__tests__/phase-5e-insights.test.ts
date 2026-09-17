@@ -31,15 +31,16 @@ describe('phase 5e — portfolio 33 KPI seed surface', () => {
 describe('phase 5e — insights adapters', () => {
   it('maps seed projects for handleInsightsGet', () => {
     const projects = seedProjectsForInsights();
-    expect(projects).toHaveLength(3);
+    expect(projects.length).toBeGreaterThanOrEqual(3);
     expect(projects[0]?.financials.purchasePrice).toBeGreaterThan(0);
   });
 
   it('calculates portfolio metrics from seed projects', async () => {
+    const seedProjects = seedProjectsForInsights();
     const result = await handlePortfolioMetricsGet(
       {},
       {
-        projects: seedProjectsForInsights().map((project) => ({
+        projects: seedProjects.map((project) => ({
           id: project.id,
           name: project.propertyName,
         })),
@@ -49,7 +50,7 @@ describe('phase 5e — insights adapters', () => {
     const body = result.body as {
       portfolio: { totalActiveProjects: number; portfolioCapRate: number };
     };
-    expect(body.portfolio.totalActiveProjects).toBe(3);
+    expect(body.portfolio.totalActiveProjects).toBe(seedProjects.length);
     expect(body.portfolio.portfolioCapRate).toBeGreaterThan(0);
   });
 

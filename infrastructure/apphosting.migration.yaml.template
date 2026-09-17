@@ -27,10 +27,6 @@ env:
     availability:
       - RUNTIME
 
-  - variable: ENABLE_MOCK_AUTH
-    value: "false"
-    availability:
-      - RUNTIME
 
   # ─── Firebase client SDK (public) ─────────────────────────────────────────
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
@@ -61,6 +57,18 @@ env:
     value: "https://migrate-preview.paperworking.co"
     availability:
       - BUILD
+      - RUNTIME
+
+  # ─── Google Maps Platform ────────────────────────────────────────────────
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    value: "CHANGE_ME"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: GOOGLE_MAPS_API_KEY
+    secret: GOOGLE_MAPS_API_KEY
+    availability:
       - RUNTIME
 
   # ─── Firebase Admin SDK ───────────────────────────────────────────────────

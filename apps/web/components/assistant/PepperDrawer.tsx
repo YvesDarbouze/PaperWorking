@@ -9,11 +9,24 @@ import { HIGH_INTENT_CHIPS, isScrolledToBottom, type PromptChip } from '@/lib/as
 import { determineEscalationOptions, type EscalationOption } from '@/lib/assistant/escalation';
 import { useOptionalAuth } from '@/context/AuthContext';
 
-export default function PepperDrawer() {
+export interface PepperDrawerProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  activeTab?: 'chat' | 'feedback' | 'escalation';
+  setActiveTab?: (tab: 'chat' | 'feedback' | 'escalation') => void;
+}
+
+export default function PepperDrawer({
+  isOpen: controlledIsOpen,
+  onClose: controlledOnClose,
+  activeTab: controlledActiveTab,
+  setActiveTab: controlledSetActiveTab,
+}: PepperDrawerProps = {}) {
   const pathname = usePathname() || '/';
+  const assistant = useAssistant();
+  const isDrawerOpen = controlledIsOpen !== undefined ? controlledIsOpen : assistant.isDrawerOpen;
+  const closeDrawer = controlledOnClose || assistant.closeDrawer;
   const {
-    isDrawerOpen,
-    closeDrawer,
     currentPhase,
     messages,
     isStreaming,
@@ -23,14 +36,16 @@ export default function PepperDrawer() {
     bailoutToManual,
     submitFeedback,
     requestCallback,
-  } = useAssistant();
+  } = assistant;
 
   const auth = useOptionalAuth();
   const accountType = auth?.profile?.accountType || 'investor';
   const isSubscriber = auth?.profile?.subscriptionStatus === 'active' || auth?.profile?.subscriptionStatus === 'trialing';
 
   const [inputVal, setInputVal] = useState('');
-  const [activeTab, setActiveTab] = useState<'chat' | 'feedback' | 'escalation'>('chat');
+  const [internalActiveTab, setInternalActiveTab] = useState<'chat' | 'feedback' | 'escalation'>('chat');
+  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalActiveTab;
+  const setActiveTab = controlledSetActiveTab !== undefined ? controlledSetActiveTab : setInternalActiveTab;
   const [userScrolledUp, setUserScrolledUp] = useState(false);
   const [unreadCountWhileScrolledUp, setUnreadCountWhileScrolledUp] = useState(0);
 
@@ -141,7 +156,7 @@ export default function PepperDrawer() {
       setFeedbackDesc('');
       setConsentDiagnostics(false);
     } catch {
-      setFeedbackStatus('Unable to submit feedback. Please try again or email hi@paperworking.co.');
+      setFeedbackStatus('Unable to submit feedback. Please try again or use the support form at /support.');
     }
   };
 
@@ -160,7 +175,7 @@ export default function PepperDrawer() {
       setCbName('');
       setCbPhone('');
     } catch {
-      setCbStatus('Failed to register callback. Please call 1-800-555-0199 or email hi@paperworking.co.');
+      setCbStatus('Failed to register callback. Please call 1-800-555-0199 or request support at /support.');
     }
   };
 
@@ -213,12 +228,21 @@ export default function PepperDrawer() {
             onClick={closeDrawer}
             aria-label="Close Assistant Panel"
             data-testid="close-drawer-button"
-            className="rounded-lg p-1.5 text-white/40 hover:bg-white/5 hover:text-white transition-colors"
+            className="rounded-lg p-2 text-white/60 hover:bg-white/5 hover:text-white transition-colors touch-press min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-lg">close</span>
+            <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
       </header>
+
+      {/* Statutory Assistant Notice Banner (Review C3.5 Pepper Cage) */}
+      <div
+        data-testid="assistant-cage-disclaimer-banner"
+        className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/[0.07] px-4 py-2 text-[11px] text-amber-200"
+      >
+        <span className="material-symbols-outlined text-[14px] text-amber-300 shrink-0">info</span>
+        <span>automated assistant — answers may be inaccurate — not advice</span>
+      </div>
 
       {/* Mode Navigation Tabs */}
       <nav className="flex border-b border-white/10 bg-white/[0.02] px-4">
@@ -294,7 +318,7 @@ export default function PepperDrawer() {
                     <div className="font-bold text-white">{splitViewProgress.project.name}</div>
                     <div className="text-white/60">{splitViewProgress.project.address}</div>
                     <div className="flex gap-3 pt-1 text-[11px] font-mono text-[color:var(--color-primary)]">
-                      <span>Cap Rate: {splitViewProgress.project.capRate}</span>
+                      <span>Cap Rate on Cost: {splitViewProgress.project.capRate}</span>
                       <span>IRR: {splitViewProgress.project.irr}</span>
                     </div>
                   </div>
@@ -404,7 +428,7 @@ export default function PepperDrawer() {
           )}
 
           {/* Chat Input Bar */}
-          <form onSubmit={handleSendText} className="border-t border-white/10 bg-[#121015] p-3">
+          <form onSubmit={handleSendText} className="border-t border-white/10 bg-[#121015] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -658,6 +682,16 @@ export default function PepperDrawer() {
                   {cbStatus}
                 </div>
               )}
+
+              {/* Transactional Telephone Response Disclosure (Review C3.5 - Strict Zero SMS Policy) */}
+              <div
+                data-testid="callback-transactional-disclosure"
+                className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5 text-[11px] leading-relaxed text-white/55"
+              >
+                By submitting your phone number, you consent to receive a one-time telephone call-back from
+                PaperWorking support regarding your specific inquiry. We will not use your phone number for
+                marketing, nor will we send SMS or automated text messages.
+              </div>
 
               <button
                 type="submit"

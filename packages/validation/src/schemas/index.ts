@@ -57,14 +57,6 @@ export {
   projectMemberSchema,
   costEntrySchema,
   projectFinancialsSchema,
-  projectSchema,
-  projectUpdateSchema,
-  type Project,
-  type ProjectUpdate,
-  type ProjectFinancials,
-} from './projectSchema.js';
-
-export {
   interestRateTypeEnum,
   floatingIndexEnum,
   underwritingAcquisitionSchema,
@@ -74,13 +66,18 @@ export {
   underwritingHurdlesSchema,
   underwritingInputsSchema,
   getDefaultUnderwritingInputs,
+  projectSchema,
+  projectUpdateSchema,
+  type Project,
+  type ProjectUpdate,
+  type ProjectFinancials,
   type UnderwritingAcquisition,
   type UnderwritingRentRoll,
   type UnderwritingDebt,
   type UnderwritingExit,
   type UnderwritingHurdles,
   type UnderwritingInputs,
-} from './underwritingSchema.js';
+} from './projectSchema.js';
 
 // ── Property Metric Snapshot ───────────────────────────────
 export {
@@ -140,54 +137,93 @@ export {
   type DataCompletionTask,
 } from './dataCompletionTaskSchema.js';
 
-// ── Organization Members (P0) ───────────────────────────────
+// ── REIL Phase 01: Acquisition ───────────────────────────────
 export {
-  organizationMemberRoleEnum,
-  organizationMemberStatusEnum,
-  organizationMemberSchema,
-  type OrganizationMember,
-} from './organizationMemberSchema.js';
+  acquisitionPipelineStatusEnum,
+  deadReasonCategoryEnum,
+  deadRecordSchema,
+  sourcingTypeSchema,
+  sourceContactSchema,
+  sourcingIntakeSchema,
+  propertyTypeSchema,
+  occupancyStatusSchema,
+  propertySnapshotSchema,
+  investmentStrategySchema,
+  rehabCategoryEnum,
+  rehabLineItemSchema,
+  itemizedRehabBudgetSchema,
+  holdingCostsSchema,
+  underwritingAssumptionsSchema,
+  annualProjectionItemSchema,
+  paymentShockSchema,
+  underwritingOutputsSchema,
+  underwritingSnapshotSchema,
+  offerTermsSchema,
+  counterofferRoundSchema,
+  offerLoiSchema,
+  emdStatusEnum,
+  earnestMoneyDepositSchema,
+  purchaseAndSaleAgreementSchema,
+  contingencyTypeEnum,
+  contingencyStatusEnum,
+  contingencyExtensionSchema,
+  contingencyItemSchema,
+  standardDueDiligenceTypeEnum,
+  dueDiligenceCategorySchema,
+  dueDiligenceItemSchema,
+  recordingInfoSchema,
+  closingDocumentSchema,
+  closingConveyanceSchema,
+  acquisitionRoleSchema,
+  projectTeamMemberSchema,
+  acquisitionTaskStatusSchema,
+  acquisitionTaskSchema,
+  getStrategyTemplateDefaults,
+  type AcquisitionPipelineStatus,
+  type DeadReasonCategory,
+  type DeadRecord,
+  type SourcingType,
+  type SourceContact,
+  type SourcingIntake,
+  type PropertyType,
+  type OccupancyStatus,
+  type PropertySnapshot,
+  type InvestmentStrategy,
+  type RehabCategory,
+  type RehabLineItem,
+  type ItemizedRehabBudget,
+  type HoldingCosts,
+  type UnderwritingAssumptions,
+  type AnnualProjectionItem,
+  type PaymentShock,
+  type UnderwritingOutputs,
+  type UnderwritingSnapshot,
+  sensitivityCellSchema,
+  sensitivityGridSchema,
+  type SensitivityCell,
+  type SensitivityGrid,
+  type SensitivityGridsResult,
+  type OfferTerms,
+  type CounterofferRound,
+  type OfferLoi,
+  type EmdStatus,
+  type EarnestMoneyDeposit,
+  type PurchaseAndSaleAgreement,
+  type ContingencyType,
+  type ContingencyStatus,
+  type ContingencyExtension,
+  type ContingencyItem,
+  type StandardDueDiligenceType,
+  type DueDiligenceCategory,
+  type DueDiligenceItem,
+  type RecordingInfo,
+  type ClosingDocument,
+  type ClosingConveyance,
+  type AcquisitionRole,
+  type ProjectTeamMember,
+  type AcquisitionTaskStatus,
+  type AcquisitionTask,
+  type StrategyTemplateDefaults,
+} from './acquisitionSchema.js';
 
-// ── Project Members / Memberships (P0 SoT) ──────────────────
-// Distinct from embedded projectMemberSchema on projects.members (deprecated).
-export {
-  projectMembershipRoleEnum,
-  projectMembershipStatusEnum,
-  projectMembershipSchema,
-  type ProjectMembership,
-} from './projectMembershipSchema.js';
 
-// ── Task Assignments (P0) ───────────────────────────────────
-export {
-  taskAssignmentStatusEnum,
-  taskAssignmentPriorityEnum,
-  taskAssignmentSchema,
-  type TaskAssignment,
-} from './taskAssignmentSchema.js';
-
-// ── Vendor Services (P1) ────────────────────────────────────
-export {
-  vendorServiceStatusEnum,
-  vendorServiceSchema,
-  type VendorService,
-} from './vendorServiceSchema.js';
-
-// ── Deal Invitations (P1) ───────────────────────────────────
-export {
-  dealInvitationStatusEnum,
-  dealInvitationSchema,
-  type DealInvitation,
-} from './dealInvitationSchema.js';
-
-// ── Investor Followers (P1) ─────────────────────────────────
-export {
-  investorFollowerSchema,
-  type InvestorFollower,
-} from './investorFollowerSchema.js';
-
-// ── Message Threads (P1) ────────────────────────────────────
-export {
-  messageThreadTypeEnum,
-  messageThreadSchema,
-  type MessageThread,
-} from './messageThreadSchema.js';

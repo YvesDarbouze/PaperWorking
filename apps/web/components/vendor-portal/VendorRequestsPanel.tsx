@@ -1,15 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { bffFetch } from '@/lib/api/bff-fetch';
 import {
   VENDOR_REQUEST_FILTERS,
   formatVendorFee,
   type VendorRequestFilter,
 } from '@/lib/vendor-portal/seed-data';
-import {
-  listVendorPortalRequestsFromBff,
-  updateVendorPortalRequestFromBff,
-} from '@/lib/vendor-portal/vendor-portal-api';
 
 interface VendorRequest {
   id: string;
@@ -39,8 +36,12 @@ export default function VendorRequestsPanel() {
     setLoading(true);
     setError(null);
     try {
-      const body = await listVendorPortalRequestsFromBff();
-      setRequests((body.requests ?? []) as unknown as VendorRequest[]);
+      const response = await bffFetch('/api/vendor-portal/requests', {
+        cache: 'no-store',
+      });
+      const body = (await response.json()) as { success?: boolean; requests?: VendorRequest[]; error?: string };
+      if (!response.ok) throw new Error(body.error ?? 'Failed to load requests');
+      setRequests(body.requests ?? []);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Failed to load requests');
     } finally {
@@ -84,13 +85,19 @@ export default function VendorRequestsPanel() {
     setSubmitting(true);
     setError(null);
     try {
-      await updateVendorPortalRequestFromBff({
-        requestId: quoteTarget.id,
-        projectId: quoteTarget.projectId,
-        quotedFee: fee,
-        message: quoteMessage,
-        status: 'QUOTED',
+      const response = await bffFetch('/api/vendor-portal/requests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestId: quoteTarget.id,
+          projectId: quoteTarget.projectId,
+          quotedFee: fee,
+          message: quoteMessage,
+          status: 'QUOTED',
+        }),
       });
+      const body = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok) throw new Error(body.error ?? 'Failed to submit quote');
       setQuoteTarget(null);
       setQuotedFee('');
       setQuoteMessage('');
@@ -106,11 +113,17 @@ export default function VendorRequestsPanel() {
     setSubmitting(true);
     setError(null);
     try {
-      await updateVendorPortalRequestFromBff({
-        requestId: request.id,
-        projectId: request.projectId,
-        status: 'DECLINED',
+      const response = await bffFetch('/api/vendor-portal/requests', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestId: request.id,
+          projectId: request.projectId,
+          status: 'DECLINED',
+        }),
       });
+      const body = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok) throw new Error(body.error ?? 'Failed to decline request');
       await loadRequests();
     } catch (declineError) {
       setError(declineError instanceof Error ? declineError.message : 'Failed to decline request');
@@ -120,7 +133,7 @@ export default function VendorRequestsPanel() {
   };
 
   return (
-    <div className="w-full min-w-0 space-y-8 px-4 py-5 sm:px-5 sm:py-6 lg:px-6 xl:px-8">
+    <div className="mx-auto max-w-[1280px] space-y-8 px-4 py-6 md:px-8 md:py-8">
       <section>
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/45">
           Vendor requests

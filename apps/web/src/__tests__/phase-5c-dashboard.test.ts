@@ -1,6 +1,6 @@
 import { WEB_APP_STATUS } from '../index.js';
 import { toNextResponse } from '../../lib/api/adapt-route-result.js';
-import { decodeSubCookie, DEV_MOCK_SESSION_TOKEN } from '../../lib/auth/session-cookies.js';
+import { decodeSubCookie, SESSION_COOKIE } from '../../lib/auth/session-cookies.js';
 import {
   DASHBOARD_PLACEHOLDER_ROUTES,
   PORTFOLIO_SUMMARY,
@@ -27,11 +27,14 @@ describe('phase 5c — navigation contract', () => {
     expect(nav.find((item) => item.id === 'marketplace')?.href).toBe('/dashboard/marketplace');
   });
 
-  it('returns five bottom-nav items for investors', () => {
-    expect(resolveBottomNav({ accountType: 'investor' })).toHaveLength(5);
-    expect(resolveBottomNav({ accountType: 'investor' }).find((item) => item.id === 'marketplace')?.href).toBe(
-      '/dashboard/marketplace',
-    );
+  it('returns five primary bottom-nav app destinations for investors', () => {
+    const bottomNav = resolveBottomNav({ accountType: 'investor' });
+    expect(bottomNav).toHaveLength(5);
+    expect(bottomNav.map((i) => i.id)).toEqual(['projects', 'calculator', 'portfolio', 'support', 'more']);
+    expect(bottomNav.find((item) => item.id === 'projects')?.href).toBe('/projects');
+    expect(bottomNav.find((item) => item.id === 'calculator')?.href).toBe('/deal-calculator');
+    expect(bottomNav.find((item) => item.id === 'portfolio')?.href).toBe('/dashboard');
+    expect(bottomNav.find((item) => item.id === 'support')?.href).toBe('/support');
   });
 
   it('labels portfolio and projects paths', () => {
@@ -50,8 +53,8 @@ describe('phase 5c — session cookies', () => {
     expect(decodeSubCookie(encoded)).toEqual({ plan: 'Team', status: 'trialing' });
   });
 
-  it('uses mock token constant compatible with source dashboard gate', () => {
-    expect(DEV_MOCK_SESSION_TOKEN).toBe('mock_session_token_123');
+  it('defines standard session cookie constant', () => {
+    expect(SESSION_COOKIE).toBe('__session');
   });
 });
 
@@ -71,7 +74,7 @@ describe('phase 5c — route result adapter', () => {
       cookies: [
         {
           name: '__session',
-          value: 'mock_session_token_123',
+          value: 'test_session_token_123',
           options: { path: '/', httpOnly: true, maxAge: 3600 },
         },
       ],

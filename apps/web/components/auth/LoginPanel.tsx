@@ -429,9 +429,12 @@ export default function LoginPanel() {
                   id="login-email"
                   name="email"
                   type="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   placeholder="name@example.com"
                   autoComplete="email"
-                  className="auth-input !py-2.5"
+                  className="auth-input min-h-[44px] !py-2.5"
                 />
                 <AuthFieldError message={fieldErrors.email} />
               </div>
@@ -447,7 +450,7 @@ export default function LoginPanel() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter password"
                     autoComplete="current-password"
-                    className="auth-input pr-12 !py-2.5"
+                    className="auth-input min-h-[44px] pr-12 !py-2.5"
                   />
                   <button
                     type="button"
@@ -466,7 +469,7 @@ export default function LoginPanel() {
               <button
                 type="submit"
                 disabled={isSubmitting || !!loadingProvider}
-                className="auth-button-luminous !py-3"
+                className="auth-button-luminous min-h-[48px] !py-3"
               >
                 {isSubmitting ? 'Signing in…' : 'Sign In'}
               </button>

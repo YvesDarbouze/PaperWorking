@@ -8,16 +8,17 @@ test.describe('Migration E2E — admin guard (Phase 5i)', () => {
     expect(page.url()).toContain('accountType=admin');
   });
 
-  test('investor session cannot access admin — redirected to dashboard', async ({ page, context }) => {
+  test('investor session cannot access admin — redirected to login with admin account hint', async ({ page, context }) => {
     await createDevSessionForContext(context, 'investor');
     await page.goto('/admin');
-    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page).toHaveURL(/\/login/);
+    expect(page.url()).toContain('accountType=admin');
   });
 
   test('admin session reaches admin overview', async ({ page, context }) => {
     await createDevSessionForContext(context, 'admin');
     await page.goto('/admin');
     await expect(page.getByRole('heading', { name: 'PaperWorking Admin' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Agent crew' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Agent crew' }).first()).toBeVisible();
   });
 });

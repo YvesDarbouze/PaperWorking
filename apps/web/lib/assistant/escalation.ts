@@ -2,7 +2,7 @@
  * Tier-aware escalation and human handoff engine for Ava.
  *
  * Implements business rules matching PaperWorking's public support promises:
- * - All plans: Email support (hi@paperworking.co) with pre-drafted transcript attached.
+ * - All plans: Email support with pre-drafted transcript attached.
  * - Investor & Investment Team: Live chat handoff (<30m during business hours 9am-6pm EST).
  *   Off-hours: set expectations, offer email or scheduled callback.
  * - Investment Team only: Priority line for mid-closing emergencies.
@@ -128,7 +128,7 @@ export function determineEscalationOptions(context: EscalationContext): Escalati
     type: 'email',
     title: 'Email Support (Direct Desk)',
     description:
-      'A real person answers every message at hi@paperworking.co. Ava can pre-fill your message with your current deal context and chat transcript.',
+      'A real specialist reviews every support message. Pepper can pre-fill your message with your current deal context and chat transcript.',
     actionLabel: 'Pre-draft Support Email',
     actionUrl: `mailto:${AVA_CONFIG.supportEmail}?subject=${encodeURIComponent(
       `PaperWorking Support Request [${context.accountType}]`,

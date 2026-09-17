@@ -1,12 +1,20 @@
 import type { Metadata } from 'next';
-import GeneralSettingsPanel from '@/components/settings/GeneralSettingsPanel';
+import { Suspense } from 'react';
+import SettingsSectionRouter from './SettingsSectionRouter';
 
 export const metadata: Metadata = {
   title: 'Settings',
-  description: 'General workspace preferences — timezone, language, and account overview.',
+  description: 'Private configuration — general preferences, security, billing, and data privacy.',
 };
 
-/** Route: `/dashboard/settings` — mirrors PaperWorking `/dashboard/settings/general`. */
+/**
+ * Route: `/dashboard/settings`
+ * Private configuration surface with internal sections (general, security, billing, data-privacy).
+ */
 export default function SettingsPage() {
-  return <GeneralSettingsPanel />;
+  return (
+    <Suspense fallback={<div className="p-8 text-sm text-[var(--text-muted)]">Loading settings section…</div>}>
+      <SettingsSectionRouter />
+    </Suspense>
+  );
 }

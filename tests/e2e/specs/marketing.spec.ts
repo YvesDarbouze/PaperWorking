@@ -8,14 +8,14 @@ test.describe('Migration E2E — marketing surface (Phase 5a)', () => {
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: 'Run every real estate deal from acquisition to exit',
+        name: 'REAL ESTATE INVESTMENT TERMINAL',
       }),
     ).toBeVisible();
     const nav = page.getByRole('navigation', { name: 'Main navigation' });
-    await expect(nav.getByRole('link', { name: 'Sign In' })).toBeVisible();
-    await expect(nav.getByRole('link', { name: 'Start 14-Day Free Trial' })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Log in' })).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Get started' })).toBeVisible();
 
-    for (const label of ['How It Works', 'Pricing', 'Support']) {
+    for (const label of ['How it works', 'Pricing', 'Marketplace']) {
       await expect(
         page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: label }),
       ).toBeVisible();

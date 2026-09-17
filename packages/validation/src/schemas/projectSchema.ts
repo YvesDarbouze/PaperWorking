@@ -22,6 +22,19 @@
  */
 
 import { z } from 'zod';
+import {
+  acquisitionPipelineStatusEnum,
+  contingencyItemSchema,
+  dueDiligenceItemSchema,
+  acquisitionTaskSchema,
+  underwritingSnapshotSchema,
+  sourcingIntakeSchema,
+  propertySnapshotSchema,
+  offerLoiSchema,
+  purchaseAndSaleAgreementSchema,
+  closingConveyanceSchema,
+  deadRecordSchema,
+} from './acquisitionSchema.js';
 
 // ── Reusable Primitives ────────────────────────────────────
 
@@ -332,6 +345,207 @@ export const screeningChecklistStateSchema = z.object({
   customItems: z.array(screeningChecklistItemSchema).optional(),
 });
 
+
+// ── 33 Underwriting KPIs Financial Inputs Schema ─────────────────────
+
+export const interestRateTypeEnum = z.enum(['fixed', 'floating']);
+export const floatingIndexEnum = z.enum(['SOFR', 'Prime']);
+
+export const underwritingAcquisitionSchema = z.object({
+  /** Gross purchase price in USD dollars (required, > 0) */
+  purchasePrice: z.number().positive(),
+  /** Buyer closing costs in USD dollars (default 2% of price, editable, >= 0) */
+  buyerClosingCosts: z.number().nonnegative(),
+  /** Rehab budget in USD dollars (0 allowed, >= 0) */
+  rehabBudget: z.number().nonnegative(),
+  /** Estimated After Repair Value (ARV) in USD dollars (optional / explicit only) */
+  estimatedARV: z.number().nonnegative().nullable().optional(),
+});
+
+export const underwritingRentRollSchema = z.object({
+  /** Gross scheduled rent in USD dollars/month (required, >= 0) */
+  grossScheduledRent: z.number().nonnegative(),
+  /** Other income in USD dollars/month (optional, default 0, >= 0) */
+  otherIncome: z.number().nonnegative().optional().default(0),
+  /** Vacancy rate percentage (0-100%, default 5%) */
+  vacancyRate: z.number().min(0).max(100),
+  /** Operating expense ratio percentage (0-100%, default 40%) */
+  operatingExpenseRatio: z.number().min(0).max(100),
+  /** W2-11: Lease-up and stabilization duration in months (0 = stabilized, default 0) */
+  stabilizationMonths: z.number().min(0).max(36).default(0).optional(),
+  /** W2-11: Initial months completely vacant immediately after closing (default 0) */
+  monthsVacantAtClose: z.number().min(0).max(24).default(0).optional(),
+  /** W2-11: Concessions in months of free rent granted during lease-up (default 0) */
+  concessionsMonths: z.number().min(0).max(12).default(0).optional(),
+  /** W2-11: Rent ramp % during active lease-up months (default 100) */
+  leaseUpRentRampPct: z.number().min(0).max(100).default(100.0).optional(),
+});
+
+export const underwritingDebtSchema = z.object({
+  /** Total loan amount in USD dollars (>= 0) */
+  loanAmount: z.number().nonnegative(),
+  /** Target Loan-to-Value percentage (0-100%) */
+  targetLTV: z.number().min(0).max(100),
+  /** Interest rate type: fixed or floating */
+  interestRateType: interestRateTypeEnum,
+  /** Annual interest rate percentage (e.g. 6.5 for 6.5%) */
+  interestRate: z.number().min(0).max(100),
+  /** Floating index benchmark: SOFR or Prime (if floating) */
+  floatingIndex: floatingIndexEnum.optional(),
+  /** Spread in basis points over floating index (e.g. 250 for 2.50%) */
+  floatingSpreadBps: z.number().nonnegative().optional(),
+  /** Amortization schedule in years (e.g. 30) */
+  amortizationYears: z.number().positive(),
+  /** Balloon term maturity in years (optional, e.g. 5, 7, 10; omit if fully amortizing) */
+  balloonTermYears: z.number().positive().optional(),
+  /** Interest-only period in months (optional, default 0) */
+  ioPeriodMonths: z.number().nonnegative().optional().default(0),
+  /** Loan structure type (amortizing, interest_only, arm) */
+  loanType: z.enum(['amortizing', 'interest_only', 'arm']).default('amortizing').optional(),
+  /** ARM fixed period in years (optional, e.g. 5 for 5/1 ARM) */
+  armFixedPeriodYears: z.number().positive().optional(),
+  /** ARM adjustment rate percentage (optional, e.g. 2.0 for +2%) */
+  armAdjustmentPct: z.number().optional(),
+});
+
+export const underwritingExitSchema = z.object({
+  /** Projected holding period in years (e.g. 5) */
+  holdPeriodYears: z.number().positive(),
+  /** Terminal valuation method: appreciation_pct, exit_cap, per_unit */
+  terminalValueMethod: z.enum(['appreciation_pct', 'exit_cap', 'per_unit']).optional(),
+  /** Base asset value for annual appreciation: purchase_price or arv (default purchase_price) */
+  appreciationBase: z.enum(['purchase_price', 'arv']).default('purchase_price').optional(),
+  /** Annual property appreciation percentage for appreciation_pct method */
+  annualAppreciationPct: z.number().min(0).max(100).optional(),
+  /** Exit cap rate percentage (e.g. 6.5 for 6.5%) */
+  exitCapRate: z.number().min(0.01).max(100),
+  /** Annual rent growth escalation percentage (default 3%) */
+  annualRentGrowth: z.number().min(0).max(100),
+  /** Annual expense growth escalation percentage (default 2%) */
+  annualExpenseGrowth: z.number().min(0).max(100),
+  /** Cost of sale / disposition percentage (default 5%) */
+  costOfSale: z.number().min(0).max(100),
+  /** Optional valuation per unit when per_unit method is chosen */
+  perUnitExitValue: z.number().nonnegative().optional(),
+  /** Optional unit count when per_unit method is chosen */
+  unitsCount: z.number().positive().optional(),
+});
+
+export const underwritingHurdlesSchema = z
+  .object({
+    /** Minimum Debt Service Coverage Ratio (default 1.25x) */
+    minDSCR: z.number().nonnegative(),
+    /** Preferred return hurdle percentage for LPs (optional, e.g. 8%) */
+    preferredReturn: z.number().min(0).max(100).optional(),
+    /** Exit cap rate sensitivity step in basis points (default 25 bps) */
+    exitCapSensitivityBps: z.number().positive().default(25),
+    /** Rent shock stress test percentage (default 5%) */
+    rentShockPct: z.number().min(0).max(100).default(5),
+    /** Vacancy stress test range [min%, max%] (default [5, 20]) */
+    vacancyStressRange: z.tuple([z.number().min(0).max(100), z.number().min(0).max(100)]).default([5, 20]),
+    /** Equity required split descriptor (General Partner vs Limited Partner) - preserved for display notes */
+    equityRequiredGpVsLp: z.string().optional(),
+    /** Limited Partner equity contribution percentage (default 90%) */
+    lpEquityPct: z.number().min(0).max(100).optional(),
+    /** General Partner equity contribution percentage (default 10%) */
+    gpEquityPct: z.number().min(0).max(100).optional(),
+    /** GP Promote percentage above preferred return (default 20%) */
+    gpPromotePct: z.number().min(0).max(100).optional(),
+    /** Optional Tier 2 Hurdle LP IRR percentage */
+    hurdle2Irr: z.number().min(0).max(100).optional(),
+    /** Optional Tier 2 GP Promote percentage */
+    gpPromote2Pct: z.number().min(0).max(100).optional(),
+  })
+  .refine(
+    (data) => {
+      const lp = data.lpEquityPct ?? 90;
+      const gp = data.gpEquityPct ?? 10;
+      return Math.abs(lp + gp - 100) < 0.01;
+    },
+    {
+      message: 'LP Equity % and GP Equity % must sum to 100%',
+      path: ['lpEquityPct'],
+    },
+  );
+
+export const underwritingInputsSchema = z.object({
+  acquisition: underwritingAcquisitionSchema,
+  rentRoll: underwritingRentRollSchema,
+  debt: underwritingDebtSchema,
+  exit: underwritingExitSchema,
+  hurdles: underwritingHurdlesSchema,
+});
+
+export type UnderwritingAcquisition = z.infer<typeof underwritingAcquisitionSchema>;
+export type UnderwritingRentRoll = z.infer<typeof underwritingRentRollSchema>;
+export type UnderwritingDebt = z.infer<typeof underwritingDebtSchema>;
+export type UnderwritingExit = z.infer<typeof underwritingExitSchema>;
+export type UnderwritingHurdles = z.infer<typeof underwritingHurdlesSchema>;
+export type UnderwritingInputs = z.infer<typeof underwritingInputsSchema>;
+
+export function getDefaultUnderwritingInputs(purchasePrice = 500000): UnderwritingInputs {
+  const price = Math.max(purchasePrice, 10000);
+  const closingCosts = Math.round(price * 0.02);
+  const ltv = 75;
+  const loanAmount = Math.round(price * (ltv / 100));
+  const grossRent = Math.round(price * 0.008);
+
+  return {
+    acquisition: {
+      purchasePrice: price,
+      buyerClosingCosts: closingCosts,
+      rehabBudget: 0,
+      estimatedARV: undefined,
+    },
+    rentRoll: {
+      grossScheduledRent: grossRent,
+      otherIncome: 0,
+      vacancyRate: 5,
+      operatingExpenseRatio: 40,
+      stabilizationMonths: 0,
+      monthsVacantAtClose: 0,
+      concessionsMonths: 0,
+      leaseUpRentRampPct: 100,
+    },
+    debt: {
+      loanAmount,
+      targetLTV: ltv,
+      interestRateType: 'fixed',
+      interestRate: 6.5,
+      floatingIndex: 'SOFR',
+      floatingSpreadBps: 250,
+      amortizationYears: 30,
+      balloonTermYears: undefined,
+      ioPeriodMonths: 0,
+      loanType: 'amortizing',
+      armFixedPeriodYears: 5,
+      armAdjustmentPct: 2.0,
+    },
+    exit: {
+      holdPeriodYears: 5,
+      terminalValueMethod: 'appreciation_pct',
+      annualAppreciationPct: 3,
+      exitCapRate: 6.5,
+      annualRentGrowth: 3,
+      annualExpenseGrowth: 2,
+      costOfSale: 5,
+    },
+    hurdles: {
+      minDSCR: 1.25,
+      preferredReturn: 8,
+      exitCapSensitivityBps: 25,
+      rentShockPct: 5,
+      vacancyStressRange: [5, 20],
+      equityRequiredGpVsLp: '10% GP / 90% LP',
+      lpEquityPct: 90,
+      gpEquityPct: 10,
+      gpPromotePct: 20,
+      hurdle2Irr: undefined,
+      gpPromote2Pct: undefined,
+    },
+  };
+}
+
 export const targetLeaseTermsSchema = z.object({
   rateCents: usdDollars,
   termMonths: z.number(),
@@ -417,7 +631,7 @@ export const projectFinancialsSchema = z.object({
   daysOccupied: z.number().int().nonnegative().optional(),
   totalHoldDays: z.number().int().nonnegative().optional(),
 
-  // ── Phase 1 Deal Analyzer — Sourcing ──
+  // ── Phase 1 Deal Calculator — Sourcing ──
 
   /** Explicit close/acquisition date for timeline tracking */
   acquisitionDate: z.any().optional(),
@@ -1143,14 +1357,41 @@ export const baseProjectSchema = z.object({
   /** Financing status tracker */
   loanStatus: loanStatusEnum.optional(),
 
+  /** Acquisition Phase: Pipeline status */
+  acquisitionStatus: acquisitionPipelineStatusEnum.optional(),
+
+  /** Acquisition Phase: Sourcing & intake record */
+  sourcing: sourcingIntakeSchema.optional(),
+
+  /** Acquisition Phase: Verified property snapshot */
+  propertySnapshot: propertySnapshotSchema.optional(),
+
+  /** Acquisition Phase: Immutable Underwriting Snapshot with lineage */
+  underwritingSnapshot: underwritingSnapshotSchema.optional(),
+
+  /** Acquisition Phase: Versioned historical underwriting snapshots */
+  underwritingHistory: z.array(underwritingSnapshotSchema).optional(),
+
+  /** Acquisition Phase: Active offer / LOI */
+  activeOffer: offerLoiSchema.optional(),
+
+  /** Acquisition Phase: Purchase & Sale Agreement (PSA) */
+  psa: purchaseAndSaleAgreementSchema.optional(),
+
   /** Phase 2: Negotiation history */
   negotiations: z.array(z.any()).optional(),
 
-  /** Phase 2: Due Diligence contingencies */
-  contingencies: z.array(z.any()).optional(),
+  /** Phase 2: Due Diligence contingencies (typed items with backwards compatibility) */
+  contingencies: z.array(z.union([contingencyItemSchema, z.record(z.string(), z.any())])).optional(),
 
-  /** Phase 2: Due Diligence Checklist */
-  dueDiligenceChecklist: z.array(z.any()).optional(),
+  /** Phase 2: Due Diligence Checklist (typed items with backwards compatibility) */
+  dueDiligenceChecklist: z.array(z.union([dueDiligenceItemSchema, z.record(z.string(), z.any())])).optional(),
+
+  /** Acquisition Phase: Closing Settlement & Conveyance */
+  closingConveyance: closingConveyanceSchema.optional(),
+
+  /** Acquisition Phase: Dead / Archived record with mandatory reason */
+  deadRecord: deadRecordSchema.optional(),
 
   /** Phase 2: Closing Checklist */
   closingChecklist: z.array(z.any()).optional(),
@@ -1194,8 +1435,8 @@ export const baseProjectSchema = z.object({
   units: z.number().optional(),
   condition: z.string().optional(),
 
-  /** Persistent storage for ProjectTodoList tasks */
-  actionItems: z.array(z.any()).optional(),
+  /** Persistent storage for ProjectTodoList tasks (supports typed AcquisitionTask) */
+  actionItems: z.array(z.union([acquisitionTaskSchema, z.record(z.string(), z.any())])).optional(),
 
   /** HUD-1, Closing Disclosures */
   settlementDocuments: z.array(z.any()).optional(),
@@ -1311,6 +1552,8 @@ export const baseProjectSchema = z.object({
   exit_holding_cost_total: usdDollars.optional(),
   exit_marketing_outcome: z.string().optional(),
   sale_under_contract: z.boolean().optional(),
+  /** Institutional financial underwriting inputs driving the 33 KPIs */
+  underwriting: underwritingInputsSchema.optional(),
 });
 
 export const projectSchema = baseProjectSchema.superRefine((data, ctx) => {

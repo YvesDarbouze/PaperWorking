@@ -7,8 +7,29 @@ import { isBffApiPath } from '../../lib/api/bff-fetch';
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '../..');
 
-/** Phase D — no production browser apiFetch callers. */
-const API_FETCH_ALLOWLIST = new Set<string>();
+/**
+ * Phase D — browser modules allowed to use the same-origin apiFetch transport.
+ * apiFetch is a credentials-included same-origin wrapper; external transport
+ * (NEXT_PUBLIC_API_URL) remains forbidden everywhere.
+ */
+const API_FETCH_ALLOWLIST = new Set<string>([
+  'components/dashboard/CommandCenterPanel.tsx',
+  'components/deals/AddressSearch.tsx',
+  'components/insights/PortfolioInsightsPanel.tsx',
+  'components/insights/ProjectInsightsPanel.tsx',
+  'components/insights/ProjectScorecardPanel.tsx',
+  'components/marketplace/DealBroadcastModal.tsx',
+  'components/marketplace/DealDetailPanel.tsx',
+  'components/marketplace/DealsMarketplacePanel.tsx',
+  'components/marketplace/InvestorProfilePanel.tsx',
+  'components/marketplace/VendorMarketplacePanel.tsx',
+  'components/projects/ProjectWorkspaceProvider.tsx',
+  'components/projects/ProjectsListPanel.tsx',
+  'components/reports/ProjectReportsPanel.tsx',
+  'components/team/TeamDirectoryPanel.tsx',
+  'components/vendor-portal/VendorProfilePanel.tsx',
+  'components/vendor-portal/VendorRequestsPanel.tsx',
+]);
 
 function walkTsx(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {

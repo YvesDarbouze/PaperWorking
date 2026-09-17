@@ -100,14 +100,14 @@ describe('phase B11 — Next route wiring', () => {
       'utf8',
     );
 
-    expect(marketplace).toContain('listMarketplaceInvestorsFromBff');
-    expect(marketplace).toContain('listVendorsFromBff');
-    expect(investorProfile).toContain('getMarketplaceInvestorFromBff');
-    expect(vendorProfile).toContain('getVendorPortalProfileFromBff');
-    expect(vendorRequests).toContain('listVendorPortalRequestsFromBff');
+    expect(marketplace).toMatch(/bffFetch\('\/api\/marketplace\/investors'/);
+    expect(marketplace).toMatch(/bffFetch\(`\/api\/vendors\?/);
+    expect(investorProfile).toMatch(/bffFetch\(`\/api\/marketplace\/investors\/\$\{investorId\}`/);
+    expect(vendorProfile).toMatch(/bffFetch\('\/api\/vendor-portal\/profile'/);
+    expect(vendorRequests).toMatch(/bffFetch\('\/api\/vendor-portal\/requests'/);
 
-    expect(marketplace).not.toMatch(/apiFetch\([^)]*\/api\/marketplace\/investors['"]\s*,\s*\{/);
-    expect(vendorProfile).not.toMatch(/apiFetch\([^)]*GET.*vendor-portal\/profile/);
+    expect(marketplace).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(vendorProfile).not.toContain('NEXT_PUBLIC_API_URL');
   });
 
   it('mutations use same-origin BFF helpers', () => {
@@ -124,9 +124,9 @@ describe('phase B11 — Next route wiring', () => {
       'utf8',
     );
 
-    expect(investorProfile).toContain('setMarketplaceInvestorFollowFromBff');
-    expect(vendorProfile).toContain('updateVendorPortalProfileFromBff');
-    expect(vendorRequests).toContain('updateVendorPortalRequestFromBff');
+    expect(investorProfile).toMatch(/bffFetch\('\/api\/marketplace\/investors\/follow'/);
+    expect(vendorProfile).toMatch(/bffFetch\('\/api\/vendor-portal\/profile'/);
+    expect(vendorRequests).toMatch(/bffFetch\('\/api\/vendor-portal\/requests'/);
   });
 });
 

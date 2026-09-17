@@ -66,7 +66,7 @@ Live when running `npm run dev` (Next.js serves UI + these adapters).
 | `cron` | 17 |
 | `dashboard` | 1 |
 | `data` | 2 |
-| `deal-analyzer` | 1 |
+| `deal-calculator` | 1 |
 | `deals` | 3 |
 | `drive` | 1 |
 | `e2e` | 2 |
@@ -260,11 +260,11 @@ Live when running `npm run dev` (Next.js serves UI + these adapters).
 | GET | `/api/data/*` | `handleDataGet` |
 | POST | `/api/data/*` | `handleDataPost` |
 
-### `deal-analyzer` (1)
+### `deal-calculator` (1)
 
 | Method | Route | Handler |
 |---|---|---|
-| POST | `/api/deal-analyzer/property-lookup` | `handleDealAnalyzerPropertyLookupPost` |
+| POST | `/api/deal-calculator/property-lookup` | `handleDealCalculatorPropertyLookupPost` (historical alias: `/api/deal-analyzer/property-lookup`) |
 
 ### `deals` (3)
 
@@ -866,7 +866,7 @@ Live when running `npm run dev` (Next.js serves UI + these adapters).
 | `handleDashboardGet` | GET | `/api/dashboard` |
 | `handleDataGet` | GET | `/api/data/*` |
 | `handleDataPost` | POST | `/api/data/*` |
-| `handleDealAnalyzerPropertyLookupPost` | POST | `/api/deal-analyzer/property-lookup` |
+| `handleDealCalculatorPropertyLookupPost` | POST | `/api/deal-calculator/property-lookup` (historical alias: `/api/deal-analyzer/property-lookup`) |
 | `handleDealsBroadcastPost` | POST | `/api/deals/broadcast` |
 | `handleDealsExistsGet` | GET | `/api/deals/exists` |
 | `handleDealsGet` | GET | `/api/deals` |
@@ -1111,7 +1111,7 @@ Live when running `npm run dev` (Next.js serves UI + these adapters).
 
 | Persona | Login URL | Cookie |
 |---|---|---|
-| Investor | `/login` | `__session=mock_session_token_123` |
+| Investor | `/login` | `__session=<signed_session_token>` |
 | Admin | `/login?accountType=admin&redirectTo=/admin` | `__acct=admin` |
 | Vendor | `/login?accountType=vendor` | `__acct=vendor` |
 

@@ -15,3 +15,6 @@ test-results/
 tests/e2e/playwright-report/
 tests/e2e/test-results/
 mock-data/
+
+# runtime calculator snapshot disk fallback
+apps/web/.data/

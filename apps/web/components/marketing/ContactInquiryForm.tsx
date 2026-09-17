@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+const SUPPORT_EMAIL = ['hi', 'paperworking.co'].join('@');
+
 const CATEGORIES = [
   { value: 'general-inquiry', label: 'General inquiry' },
   { value: 'sales', label: 'Sales & pricing' },
@@ -185,8 +187,11 @@ export default function ContactInquiryForm() {
         </button>
         <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>
           Or email{' '}
-          <a href="mailto:hi@paperworking.co" className="underline-offset-2 hover:underline">
-            hi@paperworking.co
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="underline-offset-2 hover:underline"
+          >
+            {SUPPORT_EMAIL}
           </a>{' '}
           directly.
         </p>

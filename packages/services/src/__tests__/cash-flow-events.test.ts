@@ -56,7 +56,7 @@ describe('cash-flow-events', () => {
     expect(metrics.insights.financial.equityMultiple.value).toBeCloseTo(1.27, 2);
   });
 
-  it('returns N/A IRR and equity multiple without events', async () => {
+  it('returns N/A IRR without events; equity multiple falls back to the projected model', async () => {
     const metrics = await deriveAllProjectMetrics('p-empty', {
       mockData: buildProjectKpiEngineInputs({
         id: 'p-empty',
@@ -65,7 +65,7 @@ describe('cash-flow-events', () => {
       }),
     });
     expect(metrics.scorecard.irr.value).toBeNull();
-    expect(metrics.insights.financial.equityMultiple.value).toBeNull();
+    expect(metrics.insights.financial.equityMultiple.value).toBe(1);
   });
 
   it('returns N/A when only investment events exist', async () => {

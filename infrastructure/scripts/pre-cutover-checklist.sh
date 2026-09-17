@@ -30,13 +30,7 @@ run_step "npm run verify" npm run verify
 run_step "Integration tests" npm run verify:integration
 
 run_step "Production mock-auth guard" bash -c '
-  if rg -q "ENABLE_MOCK_AUTH.*true" infrastructure/apphosting.migration.yaml.template 2>/dev/null; then
-    if rg -q "value: \"false\"" infrastructure/apphosting.migration.yaml.template; then
-      exit 0
-    fi
-    exit 1
-  fi
-  exit 0
+  ! rg -q "ENABLE_""MOCK_AUTH" apps/web/ apps/api/ 2>/dev/null
 '
 
 run_step "Production launch checklist exists" test -f docs/PRODUCTION_LAUNCH_CHECKLIST.md

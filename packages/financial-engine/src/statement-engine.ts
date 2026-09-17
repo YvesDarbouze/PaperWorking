@@ -184,12 +184,11 @@ export function deriveProjectStatementMatrix(
 
   const amortSchedule =
     loanAmount > 0 && annualRate > 0 && termYears > 0
-      ? computeAmortizationSchedule(
-          loanAmount,
-          annualRate,
-          termYears,
-          new Date(`${fiscalYear}-01-01`),
-        )
+      ? computeAmortizationSchedule(loanAmount, annualRate, termYears, {
+          startDate: new Date(`${fiscalYear}-01-01`),
+          ioPeriodMonths: inputs.debt?.ioPeriodMonths ?? 0,
+          balloonTermYears: inputs.debt?.balloonTermYears ?? null,
+        })
       : null;
 
   // 2. Resolve Base Operational Line Items (Monthly Base)

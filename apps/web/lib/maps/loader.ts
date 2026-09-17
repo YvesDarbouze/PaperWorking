@@ -1,4 +1,4 @@
-import { Loader } from '@googlemaps/js-api-loader';
+import { Loader, importLibrary, setOptions } from '@googlemaps/js-api-loader';
 
 let loaderInstance: Loader | null = null;
 let loadPromise: Promise<typeof google.maps | null> | null = null;
@@ -72,7 +72,15 @@ export async function loadGoogleMaps(): Promise<typeof google.maps | null> {
 
   loadPromise = (async () => {
     try {
-      await getGoogleMapsLoader().load();
+      setOptions({
+        key,
+        v: 'weekly',
+      });
+      await Promise.all([
+        importLibrary('places'),
+        importLibrary('maps'),
+        importLibrary('marker'),
+      ]);
       return window.google?.maps || null;
     } catch (err: unknown) {
       if (!hasWarnedLoadError) {

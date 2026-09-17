@@ -102,7 +102,7 @@ export default function PhaseWalkthrough() {
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-[10px] text-white/50">Projected Cap Rate</p>
+                          <p className="text-[10px] text-white/50" title="Cap Rate on Cost: Year-1 NOI divided by Total Cost Basis">Cap Rate on Cost</p>
                           <p className="text-lg font-bold text-[#00DD94]">7.2%</p>
                         </div>
                         <div>

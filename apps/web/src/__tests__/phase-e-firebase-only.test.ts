@@ -29,14 +29,10 @@ describe('phase E — Supabase runtime removed', () => {
     expect(source).toContain('shouldUseFirebaseAuthClient');
   });
 
-  it('legacy api client module removed', () => {
-    let threw = false;
-    try {
-      readFileSync(join(webRoot, 'lib/api/client.ts'), 'utf8');
-    } catch {
-      threw = true;
-    }
-    expect(threw).toBe(true);
+  it('api client module is same-origin (no NEXT_PUBLIC_API_URL / supabase)', () => {
+    const source = readFileSync(join(webRoot, 'lib/api/client.ts'), 'utf8');
+    expect(source).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(source).not.toContain('supabase');
   });
 
   it('OAuth callback redirects away from Supabase flow', () => {

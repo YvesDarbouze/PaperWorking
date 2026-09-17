@@ -20,7 +20,7 @@ export default function PepperLauncher() {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto"
+      className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 sm:right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-2.5 pointer-events-auto"
       data-testid="ava-launcher-container"
     >
       {/* Phase 1: Proactive Pulse Callout Bubble */}
@@ -29,7 +29,7 @@ export default function PepperLauncher() {
           role="dialog"
           aria-label={`${AVA_CONFIG.agentName} suggestion`}
           data-testid="ava-pulse-bubble"
-          className="relative max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-300 rounded-2xl border border-[color:var(--color-primary)]/30 bg-[#121014]/95 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-md"
+          className="relative w-[calc(100vw-2rem)] sm:max-w-xs animate-in fade-in slide-in-from-bottom-2 duration-300 rounded-2xl border border-[color:var(--color-primary)]/30 bg-[#121014]/95 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-md"
         >
           {/* Subtle pulse ring around bubble respecting prefers-reduced-motion */}
           <div

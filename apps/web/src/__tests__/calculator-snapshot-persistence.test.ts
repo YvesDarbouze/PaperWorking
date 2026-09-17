@@ -27,7 +27,9 @@ describe('Calculator Snapshot Persistence, Immutability & Integrity', () => {
   const baseDir = process.cwd().endsWith('apps/web')
     ? process.cwd()
     : path.resolve(process.cwd(), 'apps/web');
-  const diskFilePath = path.join(baseDir, '.data', 'calculator-snapshots.json');
+  const diskFilePath =
+    process.env.CALCULATOR_SNAPSHOTS_FILE ??
+    path.join(baseDir, '.data', 'calculator-snapshots.json');
 
   beforeEach(() => {
     process.env.TEST_AUTH_UID = testUserId;

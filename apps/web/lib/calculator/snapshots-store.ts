@@ -60,6 +60,16 @@ export interface StoredCalculatorSnapshot {
 }
 
 function getSnapshotsFilePath(): string {
+  const override = process.env.CALCULATOR_SNAPSHOTS_FILE;
+  if (override && override.trim()) {
+    const overridePath = path.resolve(override.trim());
+    const overrideDir = path.dirname(overridePath);
+    if (!fs.existsSync(overrideDir)) {
+      fs.mkdirSync(overrideDir, { recursive: true });
+    }
+    return overridePath;
+  }
+
   const baseDir = process.cwd().endsWith('apps/web')
     ? process.cwd()
     : path.resolve(process.cwd(), 'apps/web');

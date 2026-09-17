@@ -24,7 +24,9 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
   const webRoot = process.cwd().endsWith('apps/web')
     ? process.cwd()
     : path.resolve(process.cwd(), 'apps/web');
-  const diskFilePath = path.join(webRoot, '.data', 'calculator-snapshots.json');
+  const diskFilePath =
+    process.env.CALCULATOR_SNAPSHOTS_FILE ??
+    path.join(webRoot, '.data', 'calculator-snapshots.json');
 
   beforeEach(() => {
     process.env.TEST_AUTH_UID = testUserId;

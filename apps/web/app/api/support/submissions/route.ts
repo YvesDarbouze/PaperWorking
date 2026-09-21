@@ -5,6 +5,7 @@ import { isValidSessionToken, verifySessionToken } from '@paperworking/api';
 import { decodeSubCookie, SESSION_COOKIE, SUB_COOKIE } from '@/lib/auth/session-cookies';
 import { SendGridService } from '@/lib/email/sendgrid-service';
 import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
+import { ticketStore } from '@/lib/tickets/ticket-store';
 import { checkDurableRateLimit, extractClientIp } from '@/lib/security/durable-rate-limiter';
 import { verifyTurnstileToken } from '@/lib/security/turnstile-validator';
 import {
@@ -172,15 +173,18 @@ export async function POST(request: NextRequest) {
     await checkSupportSendVolumeAnomaly();
 
     const userEmail = verified?.email || 'subscriber@paperworking.co';
-    const feedbackId = `fb_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    const isFeatureReq = category === 'Feature Request';
+    const ticketId = ticketStore.generateTicketId(isFeatureReq ? 'feature_request' : 'support');
+    const feedbackId = ticketId;
     const timestamp = new Date().toISOString();
 
     // 7. Persist to Database (Firestore 'feedback' collection)
     if (shouldAttemptFirestore()) {
       try {
         const db = getAdminFirestore();
-        await db.collection('feedback').doc(feedbackId).set({
-          id: feedbackId,
+        await db.collection('feedback').doc(ticketId).set({
+          id: ticketId,
+          ticketId,
           userId,
           userEmail,
           userName: name || null,
@@ -195,6 +199,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 7b. Persist to Unified Ticket Store & Admin Engagement Ledger
+    try {
+      await ticketStore.createTicket({
+        id: ticketId,
+        kind: isFeatureReq ? 'feature_request' : 'support',
+        subject: subject || `${category} from ${name || userEmail}`,
+        description: message,
+        requesterName: name || userEmail.split('@')[0],
+        requesterEmail: userEmail,
+        requesterTier: 'investor',
+        priority: isFeatureReq ? 'medium' : 'low',
+        dinnerPledge: isFeatureReq,
+        tags: [category.toLowerCase().replace(/\s+/g, '-'), 'support-form'],
+        initialMessage: message,
+      });
+    } catch (storeErr) {
+      console.error('Failed to create ticket in ticketStore:', storeErr);
+    }
+
     // 8. Server-Side Email Delivery (never exposed to client)
     let emailSent = false;
     let requiresCredentials = false;
@@ -203,8 +226,8 @@ export async function POST(request: NextRequest) {
       const mailer = new SendGridService();
       await mailer.send({
         to: { email: INTERNAL_SUPPORT_DESTINATION_EMAIL, name: 'PaperWorking Support' },
-        subject: `[${category}] ${subject ? `${subject} ` : ''}from ${name || userEmail}`,
-        text: `Submission Category: ${category}\nSubject: ${subject || 'N/A'}\nUser: ${name} (${userEmail})\nUser ID: ${userId}\nTimestamp: ${timestamp}\n\nMessage:\n${message}`,
+        subject: `[${ticketId}] [${category}] ${subject ? `${subject} ` : ''}from ${name || userEmail}`,
+        text: `Submission Ticket: ${ticketId}\nCategory: ${category}\nSubject: ${subject || 'N/A'}\nUser: ${name} (${userEmail})\nUser ID: ${userId}\nTimestamp: ${timestamp}\n\nMessage:\n${message}`,
       });
       emailSent = true;
     } catch (mailErr) {
@@ -213,6 +236,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      ticketId,
       feedbackId,
       emailSent,
       requiresCredentials,

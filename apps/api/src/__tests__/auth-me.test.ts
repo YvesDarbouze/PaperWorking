@@ -73,6 +73,25 @@ describe('GET /api/auth/me handler', () => {
     expect(body.isAdmin).toBe(false);
   });
 
+  it('grants Team tier for allowlisted operator emails', async () => {
+    const body = await buildAuthMeResponse(
+      {
+        uid: 'yves-1',
+        email: 'yvesdarbouze@gmail.com',
+        accountType: 'investor',
+        isAdmin: false,
+      },
+      {
+        findUser: async (uid) => ({ id: uid, email: 'yvesdarbouze@gmail.com' }),
+        findSubscription: async () => ({ plan: 'Individual', status: 'active' }),
+      },
+    );
+
+    expect(body.subscriptionPlan).toBe('Team');
+    expect(body.subscriptionStatus).toBe('active');
+    expect(body.hasActiveSubscription).toBe(true);
+  });
+
   it('uses Postgres isAdmin for platform admin', async () => {
     const adminUser = {
       uid: 'admin-1',

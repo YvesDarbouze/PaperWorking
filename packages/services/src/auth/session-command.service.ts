@@ -4,6 +4,7 @@ import {
   type IdentityVerificationDeps,
 } from '@paperworking/identity';
 import { normalizeClientAccountType } from '../session/account-type.js';
+import { applyTeamTierOverride } from '../billing/tier-override.js';
 import {
   buildClearSessionCookieDescriptors,
   buildSessionCookieDescriptors,
@@ -74,7 +75,10 @@ export class SessionCommandService {
         }
       }
 
-      const subscription = await input.subscriptionLookup.findForUserId(authUser.uid);
+      const subscription = applyTeamTierOverride(
+        verified.email ?? authUser.email,
+        await input.subscriptionLookup.findForUserId(authUser.uid),
+      );
       const cookies = buildSessionCookieDescriptors({
         policy: input.policy,
         sessionValue,

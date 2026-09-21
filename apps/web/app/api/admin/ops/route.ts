@@ -14,6 +14,13 @@ export async function GET(request: Request) {
   }
 
   const section = new URL(request.url).searchParams.get('section') ?? undefined;
+
+  if (section === 'tickets') {
+    const { ticketStore } = await import('@/lib/tickets/ticket-store');
+    const tickets = await ticketStore.listTickets();
+    return NextResponse.json({ success: true, section, data: { tickets } });
+  }
+
   try {
     const result = await buildAdminOpsReadService().getOpsSection(user, section);
     return NextResponse.json(result);

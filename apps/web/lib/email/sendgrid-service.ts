@@ -52,6 +52,8 @@ export interface SendGridMailRecipient {
   name?: string;
 }
 
+export type RecipientInput = string | SendGridMailRecipient;
+
 export interface SendGridMailPayload {
   to: SendGridMailRecipient | SendGridMailRecipient[];
   from?: SendGridMailRecipient;
@@ -86,7 +88,7 @@ export class SendGridService {
   constructor(apiKey?: string) {
     this.apiKey = apiKey ?? process.env.SENDGRID_API_KEY ?? null;
     this.defaultFrom = {
-      email: process.env.SENDGRID_FROM_EMAIL || 'support@paperworking.co',
+      email: process.env.SENDGRID_FROM_EMAIL || 'no_reply@paperworking.co',
       name: `${AVA_CONFIG.agentName} from PaperWorking`,
     };
   }
@@ -94,7 +96,14 @@ export class SendGridService {
   /**
    * Dispatches email with exponential backoff for transient failures (429, 5xx).
    */
-  async send(payload: SendGridMailPayload, maxRetries = 3): Promise<SendGridDispatchResult> {
+  async send(
+    payload: Omit<SendGridMailPayload, 'to' | 'from' | 'replyTo'> & {
+      to: RecipientInput | RecipientInput[];
+      from?: RecipientInput;
+      replyTo?: RecipientInput;
+    },
+    maxRetries = 3,
+  ): Promise<SendGridDispatchResult> {
     if (!payload.to || (Array.isArray(payload.to) && payload.to.length === 0)) {
       throw new SendGridPayloadError('Email must specify at least one "to" recipient.');
     }
@@ -115,10 +124,21 @@ export class SendGridService {
     const isTestEnv = process.env.NODE_ENV === 'test' || isMockKey;
 
     // In mock/test/CI mode: record in inspection buffer and return success
+    const normalizeRecipient = (r: RecipientInput): SendGridMailRecipient => {
+      if (typeof r === 'string') return { email: r };
+      return { email: r.email, ...(r.name ? { name: r.name } : {}) };
+    };
+
+    const toRecipients = (Array.isArray(payload.to) ? payload.to : [payload.to]).map(normalizeRecipient);
+    const fromRecipient = payload.from ? normalizeRecipient(payload.from) : this.defaultFrom;
+    const replyToRecipient = payload.replyTo ? normalizeRecipient(payload.replyTo) : undefined;
+
     if (isTestEnv) {
       sentEmailsForTesting.push({
         ...payload,
-        from: payload.from ?? this.defaultFrom,
+        to: toRecipients,
+        from: fromRecipient,
+        replyTo: replyToRecipient,
       });
       return {
         success: true,
@@ -143,11 +163,11 @@ export class SendGridService {
           body: JSON.stringify({
             personalizations: [
               {
-                to: Array.isArray(payload.to) ? payload.to : [payload.to],
+                to: toRecipients,
               },
             ],
-            from: payload.from ?? this.defaultFrom,
-            reply_to: payload.replyTo,
+            from: fromRecipient,
+            ...(replyToRecipient ? { reply_to: replyToRecipient } : {}),
             subject: payload.subject,
             content: [
               {
@@ -230,8 +250,8 @@ export class SendGridService {
   }
 
   /**
-   * Dispatches Community Feedback submission:
-   * 1. Internal alert to PaperWorking team with full user context, route, and error details.
+   * Dispatches Community Feedback / Bug Report / Feature Request:
+   * 1. Internal alert to PaperWorking team (hi@paperworking.co) with full user context, route, diagnostics, and ticket ID.
    * 2. User receipt confirming their idea/bug/feature request.
    */
   async sendFeedbackNotification(options: {
@@ -243,6 +263,13 @@ export class SendGridService {
     userTier?: string;
     route?: string;
     errorContext?: string;
+    ticketId?: string;
+    severity?: string;
+    module?: string;
+    reilPhase?: string;
+    diagnosticsSummary?: string;
+    hasAttachment?: boolean;
+    attachmentName?: string;
   }): Promise<{ userReceipt: SendGridDispatchResult; teamAlert: SendGridDispatchResult }> {
     const kindLabels = {
       idea: 'Product Idea / Improvement',
@@ -250,37 +277,44 @@ export class SendGridService {
       feature_request: 'Feature Request',
     };
     const readableKind = kindLabels[options.kind] || 'Feedback';
+    const ticketTag = options.ticketId ? `[${options.ticketId}] ` : '';
+    const severityTag = options.severity ? `[${options.severity.toUpperCase()}] ` : '';
 
-    // 1. Team Notification
+    // 1. Team Notification to hi@paperworking.co
+    const internalAlertEmail = process.env.SUPPORT_INTERNAL_EMAIL || 'hi@paperworking.co';
     const teamAlert = await this.send({
-      to: { email: AVA_CONFIG.supportEmail, name: 'PaperWorking Product Team' },
-      subject: `[Community ${readableKind}] ${options.title} (${options.userTier || 'User'})`,
+      to: { email: internalAlertEmail, name: 'PaperWorking Product Team' },
+      subject: `${ticketTag}${severityTag}[Community ${readableKind}] ${options.title} (${options.userTier || 'User'})`,
       text: `New ${readableKind} submitted via ${AVA_CONFIG.agentName} Copilot:
 
+Ticket ID: ${options.ticketId || 'N/A'}
 From: ${options.userName || 'Anonymous'} <${options.userEmail}>
-Tier: ${options.userTier || 'Investor'}
+Account Tier: ${options.userTier || 'Investor'}
 Route: ${options.route || '/'}
-
+${options.module ? `Affected Workspace/Module: ${options.module}\n` : ''}${options.reilPhase ? `REIL Phase: ${options.reilPhase}\n` : ''}${options.severity ? `Severity: ${options.severity.toUpperCase()}\n` : ''}${options.hasAttachment ? `Media Attachment Attached: Yes (${options.attachmentName || 'screenshot/video'})\n` : ''}
 Summary:
 ${options.title}
 
 Details:
 ${options.description}
 
-${options.errorContext ? `Technical / Error Context:\n${options.errorContext}` : ''}
-`,
+${options.diagnosticsSummary ? `--- Automated System Diagnostics ---\n${options.diagnosticsSummary}\n` : ''}${options.errorContext ? `--- Error / Technical Logs ---\n${options.errorContext}\n` : ''}`,
     });
 
     // 2. User Receipt
+    const dinnerPledge = options.kind === 'feature_request'
+      ? '\n🍽️ Dinner Guarantee: PaperWorking was designed to reduce risk for investors. If we develop your feature request, we will buy you dinner!\n'
+      : '';
+
     const userReceipt = await this.send({
       to: { email: options.userEmail, name: options.userName },
-      subject: `We received your ${readableKind.toLowerCase()}: "${options.title}"`,
+      subject: `${ticketTag}We received your ${readableKind.toLowerCase()}: "${options.title}"`,
       text: `Hi ${options.userName || 'there'},
 
 Thank you for contributing to the PaperWorking community. Your ${readableKind.toLowerCase()} has been logged and shared directly with our product team.
-
+${options.ticketId ? `Your Tracking Ticket ID: ${options.ticketId}\n` : ''}
 Summary: ${options.title}
-
+${options.module ? `Workspace/Module: ${options.module}\n` : ''}${options.severity ? `Severity: ${options.severity}\n` : ''}${dinnerPledge}
 We review community feedback weekly and use it directly to prioritize our product roadmap.
 
 Warm regards,
@@ -350,6 +384,61 @@ ${AVA_CONFIG.agentName} & the PaperWorking Team
     });
 
     return { userReceipt, teamAlert };
+  }
+
+  /**
+   * Dispatches an official staff reply email to a user from no_reply@paperworking.co
+   * quoting their ticket ID and subject.
+   */
+  async sendTicketStaffReply(params: {
+    ticketId: string;
+    ticketSubject: string;
+    userEmail: string;
+    userName?: string;
+    adminName: string;
+    replyContent: string;
+  }): Promise<SendGridDispatchResult> {
+    const greeting = params.userName ? `Hello ${params.userName},` : 'Hello,';
+    const text = `${greeting}
+
+Our operations team has updated your ticket [${params.ticketId}]:
+
+"${params.replyContent}"
+
+— ${params.adminName}
+PaperWorking Customer Operations
+https://paperworking.co
+`;
+
+    const html = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #111; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px;">
+        <div style="border-bottom: 2px solid #00DD94; padding-bottom: 12px; margin-bottom: 20px;">
+          <span style="font-size: 20px; font-weight: 700; color: #111; letter-spacing: -0.02em;">PaperWorking</span>
+          <span style="font-size: 12px; font-weight: 600; color: #666; margin-left: 8px; text-transform: uppercase;">Ticket Update</span>
+        </div>
+        <p style="font-size: 15px; line-height: 1.5; margin-bottom: 12px;">${greeting}</p>
+        <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 16px;">
+          Our team has updated your ticket <strong>[${params.ticketId}] ${params.ticketSubject}</strong>:
+        </p>
+        <div style="background-color: #f7f7f8; border-left: 4px solid #00DD94; padding: 16px; margin: 20px 0; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #111; white-space: pre-wrap;">${params.replyContent}</div>
+        <p style="font-size: 13px; color: #555; margin-top: 24px;">
+          — <strong>${params.adminName}</strong><br/>
+          PaperWorking Customer Operations
+        </p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+        <p style="font-size: 11px; color: #888; margin: 0;">
+          This email was sent from no_reply@paperworking.co regarding PaperWorking Ticket ${params.ticketId}.
+        </p>
+      </div>
+    `;
+
+    return this.send({
+      to: { email: params.userEmail, name: params.userName },
+      from: { email: process.env.SENDGRID_FROM_EMAIL || 'no_reply@paperworking.co', name: 'PaperWorking Support' },
+      subject: `Update on Ticket [${params.ticketId}]: ${params.ticketSubject}`,
+      text,
+      html,
+    });
   }
 }
 

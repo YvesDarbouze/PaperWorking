@@ -17,6 +17,7 @@ import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
 import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
 import { verifyAppCheckHeader } from '@/lib/firebase/app-check-server';
 import { sendGridService } from '@/lib/email/sendgrid-service';
+import { ticketStore } from '@/lib/tickets/ticket-store';
 
 export interface CallbackRequestBody {
   name: string;
@@ -76,13 +77,15 @@ export async function POST(request: NextRequest) {
   }
 
   const isPriorityTier = verifiedAccountType === 'investment_team' || verifiedAccountType === 'admin';
+  const ticketId = ticketStore.generateTicketId('callback');
 
   // 4. Persist to Firestore /callbacks collection via Admin SDK
-  let callbackId = `cb-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  let callbackId = ticketId;
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const addPromise = db.collection('callbacks').add({
+      const addPromise = db.collection('callbacks').doc(ticketId).set({
+        ticketId,
         name: name.trim(),
         phone: phone.trim(),
         email: email.trim(),
@@ -98,11 +101,30 @@ export async function POST(request: NextRequest) {
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Firestore timeout')), 2000),
       );
-      const docRef = await Promise.race([addPromise, timeoutPromise]);
-      callbackId = docRef.id;
+      await Promise.race([addPromise, timeoutPromise]);
     } catch (dbErr) {
       console.error('Failed to write callback to Firestore:', dbErr);
     }
+  }
+
+  // 4b. Persist to Unified Ticket Store & Admin Engagement Ledger
+  try {
+    await ticketStore.createTicket({
+      id: ticketId,
+      kind: 'callback',
+      subject: `Callback Request: ${topic?.trim() || 'Product Support'} (${preferredWindow.trim()})`,
+      description: `Telephone callback requested by ${name.trim()} (${phone.trim()}) during window: ${preferredWindow.trim()}.\nTopic: ${topic?.trim() || 'General Product Question'}`,
+      requesterName: name.trim(),
+      requesterEmail: email.trim(),
+      requesterTier: verifiedAccountType,
+      priority: isPriorityTier ? 'critical' : 'high',
+      phone: phone.trim(),
+      preferredWindow: preferredWindow.trim(),
+      initialMessage: transcript ? `Chat Transcript:\n${transcript}` : `Callback requested for window: ${preferredWindow.trim()}`,
+      tags: ['callback', isPriorityTier ? 'priority-sla' : 'standard-sla'],
+    });
+  } catch (storeErr) {
+    console.error('Failed to create callback ticket in ticketStore:', storeErr);
   }
 
   // 5. Send dual SendGrid emails
@@ -126,6 +148,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
+    ticketId,
     callbackId,
     isPriority: isPriorityTier,
     emailsDispatched,

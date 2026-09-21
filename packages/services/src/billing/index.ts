@@ -18,6 +18,13 @@ export {
   isFreePlan,
   type SubscriptionSnapshot,
 } from './entitlement.js';
+export {
+  DEFAULT_TEAM_TIER_EMAILS,
+  TEAM_TIER_EMAIL_ALLOWLIST_ENV,
+  applyTeamTierOverride,
+  isTeamTierOverrideEmail,
+  teamTierEmailAllowlist,
+} from './tier-override.js';
 export type {
   BillingProviderPort,
   CheckoutSessionInput,

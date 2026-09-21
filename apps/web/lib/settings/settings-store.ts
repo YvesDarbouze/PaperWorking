@@ -4,6 +4,7 @@
  * Adheres to PaperWorking Firebase conventions (per-user /users/{uid} documents).
  */
 
+import { isTeamTierOverrideEmail } from '@paperworking/services';
 import { PROFILE_PREVIEW, BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
 
 export interface UserProfileData {
@@ -292,6 +293,12 @@ export async function getUserBilling(uid: string): Promise<UserBillingData> {
             status: data.subscriptionStatus || billingInfo.status || 'Active',
             ...billingInfo,
           };
+          const email = typeof data.email === 'string' ? data.email : userProfileCache.get(uid)?.email;
+          if (isTeamTierOverrideEmail(email)) {
+            merged.plan = 'Team';
+            merged.status = 'Active';
+            merged.subscriptionStatus = 'active';
+          }
           userBillingCache.set(uid, merged);
           return merged;
         }

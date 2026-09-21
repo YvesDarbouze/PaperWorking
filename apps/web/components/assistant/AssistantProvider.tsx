@@ -10,6 +10,7 @@ import {
 } from '@/lib/assistant/lifecycle-state-machine';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 import { fetchAppCheckToken } from '@/lib/firebase/app-check';
+import { initClientDiagnosticBuffer } from '@/lib/telemetry/client-diagnostic-buffer';
 
 export interface AssistantMessage {
   id: string;
@@ -63,7 +64,14 @@ interface AssistantContextType {
     description: string;
     route?: string;
     errorContext?: string;
-  }) => Promise<{ success: boolean; message?: string; upsell?: boolean }>;
+    ticketId?: string;
+    severity?: 'low' | 'medium' | 'high' | 'critical';
+    module?: string;
+    reilPhase?: string;
+    diagnostics?: Record<string, unknown>;
+    hasAttachment?: boolean;
+    attachmentName?: string;
+  }) => Promise<{ success: boolean; message?: string; upsell?: boolean; ticketId?: string; feedbackId?: string }>;
   requestCallback: (payload: {
     name: string;
     phone: string;
@@ -85,6 +93,11 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
   const [splitViewProgress, setSplitViewProgress] = useState<SplitViewProgress | null>(null);
   const [ghostSuggestion, setGhostSuggestion] = useState<GhostSuggestion | null>(null);
   const sessionIdRef = useRef<string>(`session-${Date.now()}`);
+
+  // Initialize client error buffer for zero-friction telemetry
+  useEffect(() => {
+    initClientDiagnosticBuffer();
+  }, []);
 
   // Phase 1: Proactive Pulse after inactivity (fires at most once per session per surface)
   useEffect(() => {
@@ -339,7 +352,7 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
     [ghostSuggestion],
   );
 
-  // Community feedback submission
+  // Community feedback & bug reporting submission
   const submitFeedback = useCallback(
     async (payload: {
       kind: 'idea' | 'bug' | 'feature_request';
@@ -347,6 +360,13 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
       description: string;
       route?: string;
       errorContext?: string;
+      ticketId?: string;
+      severity?: 'low' | 'medium' | 'high' | 'critical';
+      module?: string;
+      reilPhase?: string;
+      diagnostics?: Record<string, unknown>;
+      hasAttachment?: boolean;
+      attachmentName?: string;
     }) => {
       const appCheckToken = await fetchAppCheckToken();
       const res = await fetch('/api/assistant/feedback', {
@@ -357,7 +377,7 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({
           ...payload,
-          route: payload.route,
+          route: payload.route || pathname,
           errorContext: payload.errorContext,
         }),
       });
@@ -432,3 +452,8 @@ export function useAssistant() {
   }
   return context;
 }
+
+export function useOptionalAssistant() {
+  return useContext(AssistantContext);
+}
+

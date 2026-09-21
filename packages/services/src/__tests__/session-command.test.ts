@@ -90,6 +90,53 @@ describe('SessionCommandService', () => {
     }
   });
 
+  it('grants Team tier in __sub for allowlisted operator emails', async () => {
+    process.env.USE_FIREBASE_AUTH = 'true';
+    const accessToken = fakeJwt({ iss: 'https://securetoken.google.com/paperworking-97055' });
+    const service = new SessionCommandService();
+    const result = await service.establishSession({
+      accessToken,
+      identity: {
+        firebase: {
+          hasCredentials: () => true,
+          verifyIdToken: jest.fn(async () => ({
+            uid: 'user-yves',
+            email: 'yvesdarbouze@gmail.com',
+            provider: 'firebase' as const,
+          })),
+          verifySessionCookie: jest.fn(async () => ({
+            uid: 'user-yves',
+            provider: 'firebase' as const,
+          })),
+          createSessionCookie: jest.fn(async () => 'session-cookie'),
+        },
+      },
+      identityProvisioning: {
+        provisionFromVerifiedIdentity: jest.fn(async () => ({
+          uid: 'user-yves',
+          email: 'yvesdarbouze@gmail.com',
+          accountType: 'investor',
+          isAdmin: false,
+        })),
+      },
+      subscriptionLookup: {
+        findForUserId: jest.fn(async () => ({ plan: 'Individual', status: 'active' })),
+      },
+      policy: 'nest',
+    });
+    delete process.env.USE_FIREBASE_AUTH;
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      const subCookie = result.cookies.find((c) => c.name === '__sub');
+      expect(subCookie).toBeDefined();
+      const decoded = JSON.parse(
+        Buffer.from(subCookie!.value, 'base64url').toString('utf8'),
+      ) as { plan: string; status: string };
+      expect(decoded).toEqual({ plan: 'Team', status: 'active' });
+    }
+  });
+
   it('builds next clear-session cookies including __session_id', () => {
     const service = new SessionCommandService();
     const cookies = service.buildClearSessionCookies({ policy: 'next', nodeEnv: 'test' });

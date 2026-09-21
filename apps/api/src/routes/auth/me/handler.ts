@@ -1,4 +1,5 @@
 import type { AuthUser } from '@paperworking/authz';
+import { applyTeamTierOverride } from '@paperworking/services';
 import { hasActiveEntitlement } from '../../../payments/entitlement.js';
 import { jsonResponse, type RouteResult } from '../../../http/response.js';
 
@@ -44,17 +45,22 @@ export async function buildAuthMeResponse(
     ? await deps.findSubscription(row?.id || user.uid)
     : null;
   const checkEntitlement = deps.hasActiveEntitlement ?? hasActiveEntitlement;
+  const email = row?.email || user.email;
+  const effectiveSub = applyTeamTierOverride(
+    email,
+    sub ? { plan: sub.plan || 'Individual', status: sub.status || 'active' } : null,
+  );
 
   return {
     authenticated: true,
     uid: user.uid,
-    email: row?.email || user.email,
+    email,
     displayName: row?.displayName || row?.name,
     accountType: user.accountType,
     isAdmin: user.isAdmin,
-    subscriptionPlan: sub?.plan || 'Individual',
-    subscriptionStatus: sub?.status || 'active',
-    hasActiveSubscription: checkEntitlement(sub),
+    subscriptionPlan: effectiveSub?.plan || 'Individual',
+    subscriptionStatus: effectiveSub?.status || 'active',
+    hasActiveSubscription: checkEntitlement(effectiveSub),
   };
 }
 

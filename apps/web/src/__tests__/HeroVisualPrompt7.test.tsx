@@ -114,7 +114,7 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
         'Finally, Project Management software made for serious real estate investors and Investments teams.'
       );
       expect(heroHtml).toContain(
-        'The Bloomberg terminal for real estate investors. Track every contingency deadline, underwrite every deal, and manage your projects across Acquisition, Fund, Hold, and Exit.'
+        "Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit."
       );
       expect(heroHtml).toContain(
         'PaperWorking acts as operational deal insurance for your portfolio.'
@@ -123,9 +123,9 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
 
     it('renders primary and secondary CTAs above the fold', () => {
       expect(heroHtml).toContain('href="/pricing"');
-      expect(heroHtml).toContain('href="#deal-calculator"');
-      expect(heroHtml).toContain('Get started');
-      expect(heroHtml).toContain('See how it works');
+      expect(heroHtml).toContain('href="/support/metrics"');
+      expect(heroHtml).toContain('Start Free 14-Day Trial');
+      expect(heroHtml).toContain('See the 33 metrics');
     });
   });
 });

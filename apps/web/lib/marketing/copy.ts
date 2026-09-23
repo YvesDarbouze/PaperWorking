@@ -10,7 +10,11 @@ export const heroHeadline =
   'Finally, Project Management software made for serious real estate investors and Investments teams.';
 
 export const heroSubheadline =
-  'The Bloomberg terminal for real estate investors. Track every contingency deadline, underwrite every deal, and manage your projects across Acquisition, Fund, Hold, and Exit.';
+  "Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you're already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.";
+
+export const heroPrimaryCta = 'Start Free 14-Day Trial';
+export const heroSecondaryCta = 'See the 33 metrics';
+export const heroCtaMicrocopy = 'Free 14-day trial.';
 
 export const heroBody =
   "Generic tools don't track earnest money deadlines or contractor draws. Real estate investments follow a high-stakes operational lifecycle across four distinct phases: Acquisition, Fund, Hold, Exit.";

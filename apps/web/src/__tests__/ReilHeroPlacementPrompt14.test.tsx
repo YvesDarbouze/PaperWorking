@@ -81,8 +81,8 @@ describe('PROMPT 14 — Move the REIL Phase Block Above the Fold', () => {
     it('preserves hero CTAs and primary visual without duplication or collision', () => {
       const carouselMatches = heroHtml.match(/aria-roledescription="carousel"/g);
       expect(carouselMatches?.length).toBe(1);
-      expect(heroHtml).toContain('Get started');
-      expect(heroHtml).toContain('See how it works');
+      expect(heroHtml).toContain('Start Free 14-Day Trial');
+      expect(heroHtml).toContain('See the 33 metrics');
     });
   });
 });

@@ -7,6 +7,9 @@ import {
   heroBody,
   heroInsurance,
   heroKicker,
+  heroPrimaryCta,
+  heroSecondaryCta,
+  heroCtaMicrocopy,
 } from '@/lib/marketing/copy';
 import HeroProductShowcase from './HeroProductShowcase';
 
@@ -73,19 +76,22 @@ export default function LandingHero() {
             </div>
 
             {/* CTA row */}
-            <div className="flex w-full flex-col gap-3.5 sm:flex-row sm:w-auto">
-              <Link
-                href="/pricing"
-                className="inline-flex min-h-[44px] items-center justify-center bg-[color:var(--color-primary)] text-[#0a0a0f] px-6 py-3 text-[14px] font-semibold rounded-[10px] hover:brightness-110 transition shadow-[0_0_24px_-4px_rgba(0,221,148,0.35)]"
-              >
-                Get started
-              </Link>
-              <Link
-                href="#deal-calculator"
-                className="inline-flex min-h-[44px] items-center justify-center border border-white/15 hover:border-white/30 text-white px-6 py-3 text-[14px] font-semibold rounded-[10px] transition"
-              >
-                See how it works
-              </Link>
+            <div className="flex w-full flex-col gap-2.5">
+              <div className="flex w-full flex-col gap-3.5 sm:flex-row sm:w-auto">
+                <Link
+                  href="/pricing"
+                  className="inline-flex min-h-[44px] items-center justify-center bg-[color:var(--color-primary)] text-[#0a0a0f] px-6 py-3 text-[14px] font-semibold rounded-[10px] hover:brightness-110 transition shadow-[0_0_24px_-4px_rgba(0,221,148,0.35)]"
+                >
+                  {heroPrimaryCta}
+                </Link>
+                <Link
+                  href="/support/metrics"
+                  className="inline-flex min-h-[44px] items-center justify-center border border-white/15 hover:border-white/30 text-white px-6 py-3 text-[14px] font-semibold rounded-[10px] transition"
+                >
+                  {heroSecondaryCta}
+                </Link>
+              </div>
+              <p className="text-[12px] text-white/40">{heroCtaMicrocopy}</p>
             </div>
           </div>
 

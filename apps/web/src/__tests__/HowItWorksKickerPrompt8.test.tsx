@@ -18,28 +18,21 @@ describe('PROMPT 8 — Replace the How-It-Works Kicker Copy', () => {
     });
   });
 
-  describe('2. Exact Client Copy as Specified', () => {
+  describe('2. Exact Client Copy Locked in the Copy Module', () => {
     it('matches exact string "Project Management software made specifically for real estate investor."', () => {
       expect(howItWorksHeader).toBe(expectedCopy);
-      expect(html).toContain(expectedCopy);
+    });
+
+    it('does not render the kicker on the How-It-Works section (client removed it)', () => {
+      expect(html).not.toContain(expectedCopy);
     });
   });
 
-  describe('3. Structural Position & Styling', () => {
-    it('places the kicker immediately above the section headline in reading order', () => {
-      const kickerIndex = html.indexOf(expectedCopy);
-      const headlineIndex = html.indexOf(
-        'How the Real Estate Investment Lifecycle Works.'
-      );
-
-      expect(kickerIndex).toBeGreaterThan(-1);
-      expect(headlineIndex).toBeGreaterThan(kickerIndex);
-    });
-
-    it('applies standard section eyebrow styling (uppercase, jetbrains mono, emerald accent)', () => {
-      expect(html).toContain('font-[family-name:var(--font-jetbrains-mono)]');
-      expect(html).toContain('uppercase');
-      expect(html).toContain('text-[#00DD94]');
+  describe('3. New Direction — Modules Only', () => {
+    it('renders the REIL phase modules with no kicker or headline in HowItWorksHeader', () => {
+      expect(html).toContain('data-testid="reil-phase-modules"');
+      expect(html).not.toContain(expectedCopy);
+      expect(html).not.toContain('How the Real Estate Investment Lifecycle Works.');
     });
   });
 });

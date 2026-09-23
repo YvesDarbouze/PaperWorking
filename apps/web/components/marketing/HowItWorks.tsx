@@ -2,16 +2,11 @@
 
 import Link from 'next/link';
 import {
-  howItWorksHeader,
-  howItWorksSubheadline,
-  reilNarrativeLead,
   dealCalculatorSectionTitle,
   dealCalculatorSectionBody,
   dealCalculatorSectionSub,
 } from '@/lib/marketing/copy';
-import { REIL_NARRATIVE_STEPS } from '@/lib/marketing/how-it-works-data';
 import ReilPhaseModules from '@/components/marketing/ReilPhaseModules';
-import ReilLifecycleCards from '@/components/marketing/ReilLifecycleCards';
 
 /** Ported from PaperWorking `components/landing/HowItWorks.tsx`. */
 export default function HowItWorks() {
@@ -21,34 +16,7 @@ export default function HowItWorks() {
         <div className="pointer-events-none absolute left-1/2 top-1/4 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--color-primary)]/5 blur-[160px]" />
 
         <div className="relative z-10 mx-auto max-w-[1280px] px-6 text-center">
-          <span className="mb-3 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[12px] font-semibold uppercase tracking-[0.1em] text-[#00DD94]">
-            {howItWorksHeader}
-          </span>
-
-          <h1 className="landing-display mx-auto mb-6 max-w-4xl font-semibold leading-[1.1] tracking-[-0.025em] text-white">
-            {howItWorksSubheadline}
-          </h1>
-
-          {/* Moved REIL 4-Phase Block directly under header above the fold */}
-          <ReilLifecycleCards />
-
-          {/* REIL System Defining Content Block */}
-          <div className="mx-auto mt-14 mb-14 max-w-3xl text-left">
-            <p className="mb-5 text-sm leading-[1.7] text-white/80 sm:text-base">
-              {reilNarrativeLead}
-            </p>
-            <ul className="space-y-3.5 list-none pl-0">
-              {REIL_NARRATIVE_STEPS.map((step) => (
-                <li key={step.phaseNumber} className="text-sm leading-[1.65] text-white/75 sm:text-base">
-                  <strong className="font-semibold text-[#00DD94]">
-                    {step.label}
-                  </strong>{' '}
-                  <span>{step.body}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
+          {/* Client direction: the 4 phase cards only — no headline/narrative. */}
           <ReilPhaseModules />
         </div>
       </section>

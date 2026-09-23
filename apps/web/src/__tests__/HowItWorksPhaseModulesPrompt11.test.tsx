@@ -37,32 +37,24 @@ describe('PROMPT 11 — Four REIL Phase Modules with Bulleted Activities', () =>
     });
 
     it('renders the modules in correct reading order in HowItWorksHeader', () => {
-      const narrativeIndex = decodedHeader.indexOf(
-        'how the investor exited: a complete sale'
-      );
-      const acqIndex = decodedHeader.indexOf('Acquisition</h3>');
-      const fundIndex = decodedHeader.indexOf('Fund</h3>');
-      const holdIndex = decodedHeader.indexOf('Hold</h3>');
-      const exitIndex = decodedHeader.indexOf('Exit</h3>');
+      const acqIndex = decodedHeader.indexOf('>Acquisition</h3>');
+      const fundIndex = decodedHeader.indexOf('>Fund</h3>');
+      const holdIndex = decodedHeader.indexOf('>Hold</h3>');
+      const exitIndex = decodedHeader.indexOf('>Exit</h3>');
 
-      expect(narrativeIndex).toBeGreaterThan(-1);
-      expect(acqIndex).toBeGreaterThan(narrativeIndex);
+      expect(acqIndex).toBeGreaterThan(-1);
       expect(fundIndex).toBeGreaterThan(acqIndex);
       expect(holdIndex).toBeGreaterThan(fundIndex);
       expect(exitIndex).toBeGreaterThan(holdIndex);
     });
 
     it('renders the modules in correct reading order in HowItWorks page component', () => {
-      const narrativeIndex = decodedHowItWorks.indexOf(
-        'how the investor exited: a complete sale'
-      );
-      const acqIndex = decodedHowItWorks.indexOf('Acquisition</h3>');
-      const fundIndex = decodedHowItWorks.indexOf('Fund</h3>');
-      const holdIndex = decodedHowItWorks.indexOf('Hold</h3>');
-      const exitIndex = decodedHowItWorks.indexOf('Exit</h3>');
+      const acqIndex = decodedHowItWorks.indexOf('>Acquisition</h3>');
+      const fundIndex = decodedHowItWorks.indexOf('>Fund</h3>');
+      const holdIndex = decodedHowItWorks.indexOf('>Hold</h3>');
+      const exitIndex = decodedHowItWorks.indexOf('>Exit</h3>');
 
-      expect(narrativeIndex).toBeGreaterThan(-1);
-      expect(acqIndex).toBeGreaterThan(narrativeIndex);
+      expect(acqIndex).toBeGreaterThan(-1);
       expect(fundIndex).toBeGreaterThan(acqIndex);
       expect(holdIndex).toBeGreaterThan(fundIndex);
       expect(exitIndex).toBeGreaterThan(holdIndex);

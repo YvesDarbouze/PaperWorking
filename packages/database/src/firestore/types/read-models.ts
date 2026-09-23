@@ -58,6 +58,10 @@ export type ProjectReadModel = {
   dealId: string | null;
   dealSlug: string | null;
   reilProjectId: string | null;
+  tasks?: unknown[] | null;
+  contingencies?: unknown[] | null;
+  earnestMoney?: Record<string, unknown> | null;
+  funding?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
 };

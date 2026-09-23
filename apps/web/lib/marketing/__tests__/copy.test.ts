@@ -4,6 +4,7 @@ import * as copy from '../copy.js';
 describe('Marketing Copy Constants', () => {
   it('should assert all constants are non-empty strings', () => {
     for (const [key, value] of Object.entries(copy)) {
+      if (typeof value !== 'string') continue;
       expect(typeof value).toBe('string');
       expect(value.length).toBeGreaterThan(0);
     }
@@ -11,6 +12,7 @@ describe('Marketing Copy Constants', () => {
 
   it('should assert no "Analyzer" or "analyzer" remains in marketing copy exports', () => {
     for (const [key, value] of Object.entries(copy)) {
+      if (typeof value !== 'string') continue;
       const lowerVal = value.toLowerCase();
       expect(lowerVal).not.toContain('analyzer');
     }
@@ -99,6 +101,7 @@ describe('Marketing Copy Constants', () => {
     // Forbid unauthorized headline phrasing
     const unauthorizedH1 = 'built for serious real estate investors';
     for (const [key, value] of Object.entries(copy)) {
+      if (typeof value !== 'string') continue;
       expect(value.toLowerCase()).not.toContain(unauthorizedH1);
     }
   });

@@ -12,233 +12,29 @@
  */
 
 import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
+import { SEED_REAL_TICKETS } from './ticket-seed';
+import { generateTicketId as buildTicketId } from './ticket-id';
+import type {
+  AdminTicketRecord,
+  CreateTicketInput,
+  TicketEngagementMessage,
+  TicketFilterOptions,
+  TicketKind,
+  TicketPriority,
+  TicketQueue,
+  TicketStatus,
+} from './ticket-types';
 
-export type TicketKind = 'bug' | 'feature_request' | 'idea' | 'callback' | 'support' | 'question';
-export type TicketStatus = 'open' | 'in_progress' | 'waiting_on_user' | 'resolved' | 'closed';
-export type TicketPriority = 'low' | 'medium' | 'high' | 'critical';
-export type TicketQueue = 'unassigned' | 'mine' | 'all';
-
-export interface TicketEngagementMessage {
-  id: string;
-  author: 'user' | 'assistant' | 'admin' | 'system';
-  authorName: string;
-  authorEmail?: string;
-  content: string;
-  timestamp: string;
-  isInternalNote?: boolean;
-  attachments?: Array<{
-    name: string;
-    url?: string;
-    type?: string;
-    size?: number;
-  }>;
-}
-
-export interface AdminTicketRecord {
-  id: string;
-  kind: TicketKind;
-  subject: string;
-  description: string;
-  requesterName: string;
-  requesterEmail: string;
-  requesterTier: string;
-  status: TicketStatus;
-  priority: TicketPriority;
-  queue: TicketQueue;
-  assignedTo?: string;
-  module?: string;
-  reilPhase?: string;
-  dinnerPledge?: boolean;
-  phone?: string;
-  preferredWindow?: string;
-  diagnostics?: Record<string, unknown>;
-  hasAttachment?: boolean;
-  attachmentName?: string;
-  tags: string[];
-  engagementHistory: TicketEngagementMessage[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateTicketInput {
-  id?: string;
-  kind: TicketKind;
-  subject: string;
-  description: string;
-  requesterName: string;
-  requesterEmail: string;
-  requesterTier?: string;
-  priority?: TicketPriority;
-  queue?: TicketQueue;
-  assignedTo?: string;
-  module?: string;
-  reilPhase?: string;
-  dinnerPledge?: boolean;
-  phone?: string;
-  preferredWindow?: string;
-  diagnostics?: Record<string, unknown>;
-  hasAttachment?: boolean;
-  attachmentName?: string;
-  tags?: string[];
-  initialMessage?: string;
-}
-
-export interface TicketFilterOptions {
-  queue?: TicketQueue | 'all';
-  status?: TicketStatus | 'all';
-  kind?: TicketKind | 'all';
-  priority?: TicketPriority | 'all';
-  search?: string;
-  limit?: number;
-}
-
-// Realistic baseline dataset seeded once when repository is initialized
-const SEED_REAL_TICKETS: AdminTicketRecord[] = [
-  {
-    id: 'PW-BUG-18420',
-    kind: 'bug',
-    subject: 'Cannot upload LOI package in Document Vault',
-    description: 'When uploading signed multi-page LOI PDF on Safari macOS, document hangs on 99% progress.',
-    requesterName: 'Bob Martinez',
-    requesterEmail: 'bob@capital.test',
-    requesterTier: 'investor',
-    status: 'open',
-    priority: 'high',
-    queue: 'unassigned',
-    module: 'Document Vault',
-    reilPhase: 'Fund',
-    dinnerPledge: false,
-    tags: ['vault', 'pdf-upload', 'safari'],
-    diagnostics: {
-      appVersion: '0.1.0-dev',
-      platform: 'macOS',
-      route: '/projects/proj-8492/vault',
-      viewport: { width: 1440, height: 900 },
-      recentErrors: [{ message: 'NetworkTimeoutException during chunk upload', timestamp: '2026-08-21T15:00:00.000Z' }],
-    },
-    hasAttachment: true,
-    attachmentName: 'loi-upload-freeze.png',
-    engagementHistory: [
-      {
-        id: 'msg-seed-1',
-        author: 'user',
-        authorName: 'Bob Martinez',
-        authorEmail: 'bob@capital.test',
-        content: 'When uploading signed multi-page LOI PDF on Safari macOS, document hangs on 99% progress.',
-        timestamp: '2026-08-21T15:00:00.000Z',
-      },
-    ],
-    createdAt: '2026-08-21T15:00:00.000Z',
-    updatedAt: '2026-08-21T15:00:00.000Z',
-  },
-  {
-    id: 'PW-FEAT-39102',
-    kind: 'feature_request',
-    subject: 'Automated Cap Rate sensitivity heatmaps on Deal Calculator',
-    description: 'Would love a 2D sensitivity matrix comparing Exit Cap Rate vs. Interest Rate to show LPs return swings at a glance.',
-    requesterName: 'Elena Rostova',
-    requesterEmail: 'elena@syndicate.test',
-    requesterTier: 'investment_team',
-    status: 'in_progress',
-    priority: 'high',
-    queue: 'mine',
-    assignedTo: 'admin@paperworking.co',
-    module: 'Deal Calculator',
-    reilPhase: 'Acquisition',
-    dinnerPledge: true,
-    tags: ['calculator', 'sensitivity', 'dinner-pledge'],
-    diagnostics: {
-      appVersion: '0.1.0-dev',
-      route: '/calculator',
-      platform: 'macOS',
-    },
-    engagementHistory: [
-      {
-        id: 'msg-seed-2',
-        author: 'user',
-        authorName: 'Elena Rostova',
-        authorEmail: 'elena@syndicate.test',
-        content: 'Would love a 2D sensitivity matrix comparing Exit Cap Rate vs. Interest Rate to show LPs return swings at a glance.',
-        timestamp: '2026-08-21T12:20:00.000Z',
-      },
-      {
-        id: 'msg-seed-3',
-        author: 'admin',
-        authorName: 'Yves (Lead Admin)',
-        authorEmail: 'yves@paperworking.co',
-        content: 'Elena, great suggestion. This is planned for the Acquisition v2 milestone. Dinner is on us when this ships!',
-        timestamp: '2026-08-21T13:00:00.000Z',
-        isInternalNote: false,
-      },
-    ],
-    createdAt: '2026-08-21T12:20:00.000Z',
-    updatedAt: '2026-08-21T13:00:00.000Z',
-  },
-  {
-    id: 'PW-CALL-28491',
-    kind: 'callback',
-    subject: 'Priority Callback: Title contingency deadline expiring in 48 hours',
-    description: 'Need assistance verifying escrow earnest money release conditions before Friday 5:00 PM EST.',
-    requesterName: 'Marcus Vance',
-    requesterEmail: 'marcus@vanceholdings.test',
-    requesterTier: 'investment_team',
-    status: 'open',
-    priority: 'critical',
-    queue: 'unassigned',
-    phone: '+1-415-555-0199',
-    preferredWindow: 'Within 15 minutes (Priority SLA)',
-    tags: ['contingency', 'urgent-closing', 'callback'],
-    engagementHistory: [
-      {
-        id: 'msg-seed-4',
-        author: 'user',
-        authorName: 'Marcus Vance',
-        authorEmail: 'marcus@vanceholdings.test',
-        content: 'Title contingency deadline expiring in 48 hours. Please call +1-415-555-0199.',
-        timestamp: '2026-08-21T16:15:00.000Z',
-      },
-    ],
-    createdAt: '2026-08-21T16:15:00.000Z',
-    updatedAt: '2026-08-21T16:15:00.000Z',
-  },
-  {
-    id: 'PW-SUP-18204',
-    kind: 'support',
-    subject: 'Sub-contractor invoice breakdown export for CPA Schedule E',
-    description: 'How do I generate an itemized PDF report of capital expenditures vs operating repairs for my tax preparer?',
-    requesterName: 'Sarah Jenkins',
-    requesterEmail: 'sarah@jenkinsgroup.test',
-    requesterTier: 'investor',
-    status: 'resolved',
-    priority: 'medium',
-    queue: 'all',
-    assignedTo: 'admin@paperworking.co',
-    module: 'Holding Ledger',
-    reilPhase: 'Hold',
-    tags: ['tax', 'schedule-e', 'export'],
-    engagementHistory: [
-      {
-        id: 'msg-seed-5',
-        author: 'user',
-        authorName: 'Sarah Jenkins',
-        authorEmail: 'sarah@jenkinsgroup.test',
-        content: 'How do I generate an itemized PDF report of capital expenditures vs operating repairs for my tax preparer?',
-        timestamp: '2026-08-20T09:00:00.000Z',
-      },
-      {
-        id: 'msg-seed-6',
-        author: 'admin',
-        authorName: 'Operations Staff',
-        authorEmail: 'no_reply@paperworking.co',
-        content: 'Hi Sarah, navigate to Project > Holding > Ledger, click "Export", and select "CPA Tax Package (Schedule E / Form 4797)".',
-        timestamp: '2026-08-20T10:15:00.000Z',
-        isInternalNote: false,
-      },
-    ],
-    createdAt: '2026-08-20T09:00:00.000Z',
-    updatedAt: '2026-08-20T10:15:00.000Z',
-  },
-];
+export type {
+  AdminTicketRecord,
+  CreateTicketInput,
+  TicketEngagementMessage,
+  TicketFilterOptions,
+  TicketKind,
+  TicketPriority,
+  TicketQueue,
+  TicketStatus,
+} from './ticket-types';
 
 class TicketStore {
   private tickets: Map<string, AdminTicketRecord> = new Map();
@@ -260,20 +56,7 @@ class TicketStore {
    * Generates a standardized Ticket ID according to kind.
    */
   public generateTicketId(kind: TicketKind): string {
-    const prefix =
-      kind === 'bug'
-        ? 'PW-BUG'
-        : kind === 'feature_request'
-        ? 'PW-FEAT'
-        : kind === 'callback'
-        ? 'PW-CALL'
-        : kind === 'question'
-        ? 'PW-ASK'
-        : kind === 'idea'
-        ? 'PW-IDEA'
-        : 'PW-SUP';
-    const rand = Math.floor(10000 + Math.random() * 90000);
-    return `${prefix}-${rand}`;
+    return buildTicketId(kind);
   }
 
   /**

@@ -24,6 +24,12 @@ export function lifecyclePhaseToNumber(value: unknown): number | null {
   return LIFECYCLE_PHASE_ALIASES[s] ?? null;
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 export function projectFromFirestore(
   documentId: string,
   data: Record<string, unknown>,
@@ -50,6 +56,10 @@ export function projectFromFirestore(
       dealId: optionalString(data.dealId) ?? null,
       dealSlug: optionalString(data.dealSlug) ?? optionalString(data.slug) ?? null,
       reilProjectId: optionalString(data.reilProjectId),
+      tasks: Array.isArray(data.tasks) ? data.tasks : null,
+      contingencies: Array.isArray(data.contingencies) ? data.contingencies : null,
+      earnestMoney: asRecord(data.earnestMoney),
+      funding: asRecord(data.funding),
       createdAt: toDate(data.createdAt, 'createdAt'),
       updatedAt: toDate(data.updatedAt, 'updatedAt'),
     };

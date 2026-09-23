@@ -53,6 +53,10 @@ const PATCH_ALLOWED_FIELDS = [
   'dealId',
   'dealSlug',
   'financials',
+  'tasks',
+  'contingencies',
+  'earnestMoney',
+  'funding',
 ] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {

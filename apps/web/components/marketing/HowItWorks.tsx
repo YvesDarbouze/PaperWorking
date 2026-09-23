@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import HowItWorksLifecycleGraphic from '@/components/marketing/HowItWorksLifecycleGraphic';
 import {
   howItWorksHeader,
   howItWorksSubheadline,
@@ -261,8 +260,6 @@ export default function HowItWorks() {
           </div>
         </div>
       </section>
-
-      <HowItWorksLifecycleGraphic />
     </div>
   );
 }

@@ -21,5 +21,9 @@ export function projectReadModelToStored(project: ProjectReadModel): StoredProje
     visibility: project.visibility,
     dealId: project.dealId ?? null,
     dealSlug: project.dealSlug ?? null,
+    tasks: project.tasks ?? null,
+    contingencies: project.contingencies ?? null,
+    earnestMoney: project.earnestMoney ?? null,
+    funding: project.funding ?? null,
   };
 }

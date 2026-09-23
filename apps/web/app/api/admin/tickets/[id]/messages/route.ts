@@ -10,6 +10,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { isDevAdminAuthFailure, requireDevAdminAuth } from '@/lib/admin/dev-admin-auth';
 import { ticketStore, type TicketStatus } from '@/lib/tickets/ticket-store';
 import { sendGridService } from '@/lib/email/sendgrid-service';
+import { SUPPORT_REPLY_FROM_EMAIL } from '@/lib/support/support-addresses';
 
 export async function POST(
   request: NextRequest,
@@ -51,7 +52,7 @@ export async function POST(
   const updatedTicket = await ticketStore.addTicketMessage(id, {
     author: 'admin',
     authorName: adminName,
-    authorEmail: 'no_reply@paperworking.co',
+    authorEmail: SUPPORT_REPLY_FROM_EMAIL,
     content,
     isInternalNote: isInternal,
     newStatus: body.newStatus,

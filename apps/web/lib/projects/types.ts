@@ -64,6 +64,16 @@ export interface ProjectSummary {
   funding?: ProjectFundingTerms | null;
 }
 
+export interface EarnestMoneyRecord {
+  amount?: number;
+  holderEntity?: string;
+  contactName?: string;
+  dueDate?: string;
+  status?: string;
+  receiptConfirmed?: boolean;
+  [key: string]: unknown;
+}
+
 export interface ProjectFundingTerms {
   loanAmount?: number;
   interestRatePct?: number;
@@ -94,7 +104,7 @@ export interface ProjectWorkspace extends ProjectSummary {
   statusHistory?: any[];
   organizationId?: string;
   offers?: any[];
-  earnestMoney?: any;
+  earnestMoney?: EarnestMoneyRecord | null;
   checklistItems?: any[];
   teamMembers?: any[];
   underwritingRecord?: Record<string, unknown> | null;

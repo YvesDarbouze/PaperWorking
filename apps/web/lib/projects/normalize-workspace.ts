@@ -64,6 +64,18 @@ export function normalizeProjectWorkspace(raw: Record<string, unknown>): Project
     storageQuotaBytes: Number(raw.storageQuotaBytes ?? 1024 * 1024 * 1024),
     todos: Array.isArray(raw.todos) ? (raw.todos as ProjectWorkspace['todos']) : [],
     documents: Array.isArray(raw.documents) ? (raw.documents as ProjectWorkspace['documents']) : [],
+    tasks: Array.isArray(raw.tasks) ? (raw.tasks as ProjectWorkspace['tasks']) : undefined,
+    contingencies: Array.isArray(raw.contingencies)
+      ? (raw.contingencies as ProjectWorkspace['contingencies'])
+      : undefined,
+    earnestMoney:
+      raw.earnestMoney && typeof raw.earnestMoney === 'object' && !Array.isArray(raw.earnestMoney)
+        ? (raw.earnestMoney as ProjectWorkspace['earnestMoney'])
+        : undefined,
+    funding:
+      raw.funding && typeof raw.funding === 'object' && !Array.isArray(raw.funding)
+        ? (raw.funding as ProjectWorkspace['funding'])
+        : undefined,
     financials:
       raw.financials && typeof raw.financials === 'object' && !Array.isArray(raw.financials)
         ? (raw.financials as Record<string, unknown>)

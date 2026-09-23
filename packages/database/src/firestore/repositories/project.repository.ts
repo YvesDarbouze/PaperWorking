@@ -256,6 +256,23 @@ export class FirestoreProjectRepository {
       firestorePatch.addressLine = patch.address;
     }
 
+    if (Array.isArray(patch.tasks)) {
+      firestorePatch.tasks = patch.tasks;
+    }
+    if (Array.isArray(patch.contingencies)) {
+      firestorePatch.contingencies = patch.contingencies;
+    }
+    if (
+      patch.earnestMoney &&
+      typeof patch.earnestMoney === 'object' &&
+      !Array.isArray(patch.earnestMoney)
+    ) {
+      firestorePatch.earnestMoney = patch.earnestMoney;
+    }
+    if (patch.funding && typeof patch.funding === 'object' && !Array.isArray(patch.funding)) {
+      firestorePatch.funding = patch.funding;
+    }
+
     if (patch.financialsMerge && patch.financials && typeof patch.financials === 'object') {
       const prev =
         existingData.financials && typeof existingData.financials === 'object'

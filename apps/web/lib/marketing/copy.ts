@@ -85,3 +85,37 @@ export const vendorMarketplaceBlurb =
 
 export const legalDisclaimer =
   'PaperWorking is a project management software platform, not an investment advisor or registered broker-dealer. Marketplace listings are for operational deal organization and tracking soft interest only; they do not constitute offers to sell securities.';
+
+// Vendor marketplace panel — approved copy (task 3).
+export const vendorPanelTitle = 'Find the right professional when the deal needs them.';
+export const vendorPanelIntro =
+  'A deal needs different professionals at different phases. The Vendor Marketplace lists professionals by trade and service area, so when your project reaches the phase that needs an appraiser, attorney, or general contractor as examples, you find one right when the Project needs one.';
+export const vendorPanelScope =
+  "Vendors work inside PaperWorking with access limited to assigned work: they see the scope they're hired for, not your portfolio.";
+export const vendorCategoryLabel = 'Vendor categories:';
+export const vendorCategories = [
+  {
+    title: 'Transactional & Financial',
+    detail:
+      'mortgage lenders and brokers, title and escrow companies, appraisers, insurance providers.',
+  },
+  {
+    title: 'Legal & Advisory',
+    detail: 'real estate attorneys, 1031 exchange accommodators, CPAs and accountants.',
+  },
+  {
+    title: 'Construction, Trades & Maintenance',
+    detail:
+      'general contractors, specialty trades, inspectors and assessors, exterior and grounds crews.',
+  },
+  {
+    title: 'Marketing, Staging & Media',
+    detail: 'photographers and videographers, home stagers, signage and print.',
+  },
+  {
+    title: 'Property Operations',
+    detail: 'cleaning, handyman services, security, waste management.',
+  },
+] as const;
+export const vendorPanelClosing =
+  'Are you one of these professionals? A Vendor account puts your services in front of active investor projects in your area.';

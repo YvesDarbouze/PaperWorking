@@ -8,6 +8,12 @@ import {
   dealMarketplaceBlurb,
   vendorMarketplaceBlurb,
   legalDisclaimer,
+  vendorPanelTitle,
+  vendorPanelIntro,
+  vendorPanelScope,
+  vendorCategoryLabel,
+  vendorCategories,
+  vendorPanelClosing,
 } from '@/lib/marketing/copy';
 
 /** Ported from PaperWorking `components/landing/MarketplacesClient.tsx`. */
@@ -53,6 +59,32 @@ export default function MarketplacesClient() {
             {activeTab === 'deals' ? dealMarketplaceBlurb : vendorMarketplaceBlurb}
           </p>
         </div>
+
+        {activeTab === 'vendors' && (
+          <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left backdrop-blur-sm sm:p-8">
+            <h2 className="mb-4 text-xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-2xl">
+              {vendorPanelTitle}
+            </h2>
+            <div className="space-y-3 text-sm leading-[1.65] text-white/65 sm:text-base">
+              <p>{vendorPanelIntro}</p>
+              <p>{vendorPanelScope}</p>
+              <p className="font-medium text-white">{vendorCategoryLabel}</p>
+            </div>
+
+            <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-white/65 sm:text-base">
+              {vendorCategories.map((category) => (
+                <li key={category.title}>
+                  <strong className="font-semibold text-white">{category.title}:</strong>{' '}
+                  {category.detail}
+                </li>
+              ))}
+            </ol>
+
+            <p className="mt-5 text-sm leading-[1.65] text-white/65 sm:text-base">
+              {vendorPanelClosing}
+            </p>
+          </div>
+        )}
 
         <div className="flex justify-center pt-2 max-w-full overflow-hidden">
           <div

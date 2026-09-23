@@ -97,7 +97,11 @@ export default function FundWorkspaceView({
       }
     }
 
-    if (project.earnestMoney && project.earnestMoney.status !== 'held' && project.earnestMoney.status !== 'released') {
+    if (
+      project.earnestMoney?.dueDate &&
+      project.earnestMoney.status !== 'held' &&
+      project.earnestMoney.status !== 'released'
+    ) {
       const emdDueMs = new Date(project.earnestMoney.dueDate).getTime();
       const hoursLeft = Math.round((emdDueMs - now) / 3600000);
       if (hoursLeft <= 72 && hoursLeft > 0) {

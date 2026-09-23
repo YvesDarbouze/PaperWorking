@@ -7,40 +7,36 @@ import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 import { HIGH_INTENT_CHIPS, isScrolledToBottom, type PromptChip } from '@/lib/assistant/lifecycle-state-machine';
 import { determineEscalationOptions, type EscalationOption } from '@/lib/assistant/escalation';
+import {
+  buildDeflectionTip,
+  inferModuleFromText,
+  inferReilPhaseFromText,
+  inferSeverityFromText,
+  summarizeTitle,
+  type DeflectionTip,
+} from '@/lib/assistant/pepper-triage';
+import type {
+  ConversationalFlow,
+  MediaAttachment,
+  StructuredBugDraft,
+  StructuredFeatureDraft,
+} from '@/lib/assistant/pepper-types';
+import { generateTicketId } from '@/lib/tickets/ticket-id';
 import { useOptionalAuth } from '@/context/AuthContext';
-import { getClientDiagnostics, type ClientDiagnostics } from '@/lib/telemetry/client-diagnostic-buffer';
+import { getClientDiagnostics } from '@/lib/telemetry/client-diagnostic-buffer';
+
+export type {
+  ConversationalFlow,
+  MediaAttachment,
+  StructuredBugDraft,
+  StructuredFeatureDraft,
+} from '@/lib/assistant/pepper-types';
 
 export interface PepperDrawerProps {
   isOpen?: boolean;
   onClose?: () => void;
   activeTab?: 'chat' | 'feedback' | 'escalation';
   setActiveTab?: (tab: 'chat' | 'feedback' | 'escalation') => void;
-}
-
-export type ConversationalFlow = 'idle' | 'bug_report' | 'feature_request' | 'chat' | 'escalation';
-
-export interface MediaAttachment {
-  type: 'image' | 'video';
-  name: string;
-  dataUrl: string;
-}
-
-export interface StructuredBugDraft {
-  title: string;
-  description: string;
-  module: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  ticketId: string;
-  diagnostics: ClientDiagnostics;
-  attachment?: MediaAttachment;
-}
-
-export interface StructuredFeatureDraft {
-  title: string;
-  description: string;
-  reilPhase: 'Acquisition' | 'Fund' | 'Hold' | 'Exit' | 'Portfolio';
-  ticketId: string;
-  attachment?: MediaAttachment;
 }
 
 export default function PepperDrawer({
@@ -91,7 +87,7 @@ export default function PepperDrawer({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Deflection suggestion
-  const [deflectionTip, setDeflectionTip] = useState<{ title: string; body: string; link?: string } | null>(null);
+  const [deflectionTip, setDeflectionTip] = useState<DeflectionTip | null>(null);
 
   // Legacy feedback form state (kept for exact test compatibility)
   const [feedbackKind, setFeedbackKind] = useState<'idea' | 'bug' | 'feature_request'>('idea');
@@ -168,80 +164,25 @@ export default function PepperDrawer({
 
   // Automated Triage: detects module & severity from description
   const triageBugInput = (text: string, currentModule: string) => {
-    const lower = text.toLowerCase();
-    let mod = currentModule;
-    if (lower.includes('calc') || lower.includes('cap rate') || lower.includes('arv') || lower.includes('underwrit')) {
-      mod = 'Deal Calculator';
-    } else if (lower.includes('vault') || lower.includes('pdf') || lower.includes('doc') || lower.includes('contract')) {
-      mod = 'Document Vault';
-    } else if (lower.includes('ledger') || lower.includes('expense') || lower.includes('draw') || lower.includes('clock')) {
-      mod = 'Holding Ledger';
-    } else if (lower.includes('marketplace') || lower.includes('deal') || lower.includes('partner')) {
-      mod = 'Marketplace';
-    } else if (lower.includes('login') || lower.includes('billing') || lower.includes('account') || lower.includes('card')) {
-      mod = 'Billing / Account';
-    }
-
-    let sev: 'low' | 'medium' | 'high' | 'critical' = 'medium';
-    if (lower.includes('wire') || lower.includes('closing today') || lower.includes('critical') || lower.includes('blocked')) {
-      sev = 'critical';
-    } else if (lower.includes('crash') || lower.includes('wrong number') || lower.includes('error') || lower.includes('fail')) {
-      sev = 'high';
-    } else if (lower.includes('typo') || lower.includes('label') || lower.includes('color') || lower.includes('align')) {
-      sev = 'low';
-    }
-
-    // Incident / KB Deflection check
-    if (lower.includes('cap rate')) {
-      setDeflectionTip({
-        title: 'How PaperWorking Computes Cap Rate',
-        body: 'Cap Rate on Cost is Net Operating Income (NOI) divided by Total Project Cost (Purchase + Rehab). Check your income & expense ledger to ensure all line items are categorized.',
-        link: '/support#cap-rate-faq',
-      });
-    } else if (lower.includes('dashboard') || lower.includes('slow')) {
-      setDeflectionTip({
-        title: 'System Status: All Systems Operational',
-        body: 'PaperWorking core services are running normally. We captured your browser & network logs automatically to inspect any local latency.',
-        link: '/support#status',
-      });
-    } else {
-      setDeflectionTip(null);
-    }
-
-    const diag = getClientDiagnostics();
-    const ticketId = `PW-BUG-${Math.floor(10000 + Math.random() * 90000)}`;
-
+    setDeflectionTip(buildDeflectionTip(text));
     setBugDraft({
-      title: text.length > 60 ? `${text.slice(0, 57)}...` : text,
+      title: summarizeTitle(text),
       description: text,
-      module: mod,
-      severity: sev,
-      ticketId,
-      diagnostics: diag,
+      module: inferModuleFromText(text, currentModule),
+      severity: inferSeverityFromText(text),
+      ticketId: generateTicketId('bug'),
+      diagnostics: getClientDiagnostics(),
       attachment: attachedMedia || undefined,
     });
   };
 
   // Automated Triage for Feature Request
   const triageFeatureInput = (text: string) => {
-    const lower = text.toLowerCase();
-    let phase: StructuredFeatureDraft['reilPhase'] = 'Acquisition';
-    if (lower.includes('fund') || lower.includes('closing') || lower.includes('escrow') || lower.includes('vault')) {
-      phase = 'Fund';
-    } else if (lower.includes('rehab') || lower.includes('hold') || lower.includes('contractor') || lower.includes('draw')) {
-      phase = 'Hold';
-    } else if (lower.includes('exit') || lower.includes('sale') || lower.includes('tax') || lower.includes('1031')) {
-      phase = 'Exit';
-    } else if (lower.includes('portfolio') || lower.includes('kpi') || lower.includes('insight')) {
-      phase = 'Portfolio';
-    }
-
-    const ticketId = `PW-FEAT-${Math.floor(10000 + Math.random() * 90000)}`;
     setFeatureDraft({
-      title: text.length > 60 ? `${text.slice(0, 57)}...` : text,
+      title: summarizeTitle(text),
       description: text,
-      reilPhase: phase,
-      ticketId,
+      reilPhase: inferReilPhaseFromText(text),
+      ticketId: generateTicketId('feature_request'),
       attachment: attachedMedia || undefined,
     });
   };

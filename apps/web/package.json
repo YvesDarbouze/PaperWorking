@@ -47,5 +47,9 @@
     "tsx": "^4.23.13",
     "typescript": "^5.8.3",
     "@jest/globals": "^29.7.0"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "@tailwindcss/oxide-linux-x64-gnu": "4.3.3"
   }
 }

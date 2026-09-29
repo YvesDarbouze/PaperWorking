@@ -8,18 +8,29 @@ import {
   AdminStateBlock,
   useAdminOpsSection,
 } from '@/components/admin/admin-ui';
+import {
+  getAdminAgentCrewFromBff,
+  getAdminLenderChecklistsFromBff,
+  getAdminLenderRatesFromBff,
+  getAdminRentcastUsageFromBff,
+} from '@/lib/admin/admin-api';
+import type { AdminActivityItem } from '@/components/admin/ActivityFeed';
+import ActivityFeed from '@/components/admin/ActivityFeed';
+import KPICard from '@/components/admin/KPICard';
 
 interface OverviewData {
   mrr: number;
   revenueThisMonth: number;
   revenueLastMonth: number;
-  activeUsers: number;
-  churnRate: number;
-  trialUsers: number;
-  totalUsers: number;
-  totalProjects: number;
+  kpis: Array<{
+    label: string;
+    value: string;
+    change: number;
+    changeLabel: string;
+    sparkline?: number[];
+  }>;
   plans: Array<{ name: string; count: number; color: string }>;
-  activity: Array<{ id: string; title: string; detail: string; at: string }>;
+  activity: AdminActivityItem[];
 }
 
 interface InfraState {
@@ -48,10 +59,12 @@ export default function AdminOverviewPanel() {
           bffFetch('/api/admin/lender-rates', { cache: 'no-store' }),
           bffFetch('/api/admin/lender-checklists', { cache: 'no-store' }),
         ]);
-        const rentcast = (await rentcastRes.json()) as { count?: number; limit?: number };
-        const agents = (await agentsRes.json()) as { count?: number };
-        const rates = (await ratesRes.json()) as { rates?: unknown[] };
-        const checklists = (await checklistsRes.json()) as { checklists?: Record<string, unknown> };
+        const [rentcast, agents, rates, checklists] = await Promise.all([
+          rentcastRes.ok ? rentcastRes.json().catch(() => ({})) : Promise.resolve({}),
+          agentsRes.ok ? agentsRes.json().catch(() => ({})) : Promise.resolve({}),
+          ratesRes.ok ? ratesRes.json().catch(() => ({})) : Promise.resolve({}),
+          checklistsRes.ok ? checklistsRes.json().catch(() => ({})) : Promise.resolve({}),
+        ]);
         if (cancelled) return;
         setInfra({
           rentcast: rentcastRes.ok ? `${rentcast.count ?? 0}/${rentcast.limit ?? 0}` : 'N/A',
@@ -62,7 +75,7 @@ export default function AdminOverviewPanel() {
             : 'N/A',
         });
       } catch {
-        // keep empty infra cards
+        // keep empty
       }
     }
     loadInfra();
@@ -73,7 +86,7 @@ export default function AdminOverviewPanel() {
 
   if (loading || error || !data) {
     return (
-      <AdminPageShell title="Command center" subtitle="Platform admin overview from v0 ops seed.">
+      <AdminPageShell title="Admin Overview" subtitle="Platform command center (main-parity shell + seed).">
         <AdminStateBlock loading={loading} error={error} onRetry={reload} />
       </AdminPageShell>
     );
@@ -95,118 +108,158 @@ export default function AdminOverviewPanel() {
         <button
           type="button"
           onClick={reload}
-          className="rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold"
+          className="inline-flex items-center gap-1.5 border border-black/10 bg-white px-3 py-2 text-xs font-semibold"
         >
+          <span className="material-symbols-outlined text-[16px]">refresh</span>
           Refresh
         </button>
       }
     >
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {[
-          { label: 'MRR', value: money(data.mrr) },
-          { label: 'Active users', value: String(data.activeUsers) },
-          { label: 'Churn', value: `${data.churnRate}%` },
-          { label: 'Trials', value: String(data.trialUsers) },
-          { label: 'Total users', value: String(data.totalUsers) },
-          { label: 'Total projects', value: String(data.totalProjects) },
-        ].map((kpi) => (
-          <article key={kpi.label} className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-black/45">{kpi.label}</p>
-            <p className="mt-2 text-2xl font-semibold">{kpi.value}</p>
-          </article>
+      <section className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        {data.kpis.map((kpi) => (
+          <KPICard
+            key={kpi.label}
+            label={kpi.label}
+            value={kpi.value}
+            change={kpi.change}
+            changeLabel={kpi.changeLabel}
+            sparkline={kpi.sparkline}
+          />
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-black/45">Revenue overview</p>
-          <div className="mt-4 flex h-44 items-end gap-3">
-            {bars.map((bar) => (
-              <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
-                <span className="text-xs font-semibold">{money(bar.value)}</span>
-                <div
-                  className="w-full rounded-t bg-black"
-                  style={{ height: `${Math.max(8, (bar.value / maxBar) * 100)}%` }}
-                />
-                <span className="text-xs text-black/50">{bar.label}</span>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-black/45">Plan distribution</p>
-          <div className="mt-4 flex h-3 overflow-hidden rounded">
-            {data.plans.map((plan) => (
-              <div
-                key={plan.name}
-                style={{ width: `${(plan.count / planTotal) * 100}%`, background: plan.color }}
-              />
-            ))}
-          </div>
-          <ul className="mt-4 space-y-2">
-            {data.plans.map((plan) => (
-              <li key={plan.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-sm" style={{ background: plan.color }} />
-                  {plan.name}
-                </span>
-                <span className="font-semibold">{plan.count}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-2">
-        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-black/45">
-            Recent activity
-          </p>
-          <ul className="space-y-3">
-            {data.activity.map((item) => (
-              <li key={item.id} className="border-b border-black/5 pb-3 last:border-0">
-                <p className="text-sm font-semibold">{item.title}</p>
-                <p className="text-xs text-black/55">{item.detail}</p>
-              </li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-black/45">
-            Infra adapters
-          </p>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p className="text-black/45">RentCast</p>
-              <p className="font-semibold">{infra.rentcast ?? '…'}</p>
-            </div>
-            <div>
-              <p className="text-black/45">Agents</p>
-              <p className="font-semibold">{infra.agents ?? '…'}</p>
-            </div>
-            <div>
-              <p className="text-black/45">Lender rates</p>
-              <p className="font-semibold">{infra.rates ?? '…'}</p>
-            </div>
-            <div>
-              <p className="text-black/45">Checklists</p>
-              <p className="font-semibold">{infra.checklists ?? '…'}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/admin/users" className="rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white">
-              Manage users
-            </Link>
-            <Link
-              href="/admin/agent-crew"
-              className="rounded-lg border border-black/10 px-3 py-2 text-xs font-semibold"
+      <section className="grid gap-4 lg:grid-cols-3">
+        <div className="min-w-0 space-y-4 lg:col-span-2">
+          <article
+            className="p-5"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
+          >
+            <p
+              className="mb-4 text-xs font-bold uppercase tracking-widest"
+              style={{ color: 'var(--text-secondary)' }}
             >
-              Agent crew
+              Revenue Overview
+            </p>
+            <div className="flex h-44 items-end gap-3">
+              {bars.map((bar) => (
+                <div key={bar.label} className="flex flex-1 flex-col items-center gap-2">
+                  <span className="text-xs font-semibold">{money(bar.value)}</span>
+                  <div
+                    className="w-full rounded-t"
+                    style={{
+                      height: `${Math.max(8, (bar.value / maxBar) * 100)}%`,
+                      background: 'var(--text-primary)',
+                    }}
+                  />
+                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    {bar.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article
+            className="p-5"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
+          >
+            <p
+              className="mb-4 text-xs font-bold uppercase tracking-widest"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Plan Distribution
+            </p>
+            <div className="mb-5 flex h-3 overflow-hidden rounded">
+              {data.plans.map((plan) => (
+                <div
+                  key={plan.name}
+                  style={{ width: `${(plan.count / planTotal) * 100}%`, background: plan.color }}
+                />
+              ))}
+            </div>
+            <ul className="space-y-3">
+              {data.plans.map((plan) => (
+                <li key={plan.name} className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2">
+                    <span className="h-3 w-3 shrink-0 rounded-sm" style={{ background: plan.color }} />
+                    {plan.name}
+                  </span>
+                  <span className="font-semibold">{plan.count}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
+
+        <div className="space-y-4">
+          <article
+            className="p-5"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
+          >
+            <p
+              className="mb-3 text-xs font-bold uppercase tracking-widest"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Quick Actions
+            </p>
+            <div className="flex flex-col gap-2">
+              {[
+                { href: '/admin/users', label: 'Manage users', icon: 'group' },
+                { href: '/admin/projects', label: 'Browse projects', icon: 'folder_open' },
+                { href: '/admin/organizations', label: 'Organizations', icon: 'corporate_fare' },
+                { href: '/admin/subscriptions', label: 'Billing queue', icon: 'credit_card' },
+                { href: '/admin/integrations', label: 'Integrations', icon: 'hub' },
+              ].map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="flex items-center gap-2 border border-black/10 px-3 py-2.5 text-xs font-bold uppercase tracking-wider transition hover:bg-black/[0.03]"
+                >
+                  <span className="material-symbols-outlined text-[16px]">{action.icon}</span>
+                  {action.label}
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <ActivityFeed items={data.activity} />
+
+          <article
+            className="p-5"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
+          >
+            <p
+              className="mb-3 text-xs font-bold uppercase tracking-widest"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Integrations
+            </p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p style={{ color: 'var(--text-secondary)' }}>RentCast</p>
+                <p className="font-semibold">{infra.rentcast ?? '…'}</p>
+              </div>
+              <div>
+                <p style={{ color: 'var(--text-secondary)' }}>Agents</p>
+                <p className="font-semibold">{infra.agents ?? '…'}</p>
+              </div>
+              <div>
+                <p style={{ color: 'var(--text-secondary)' }}>Lender rates</p>
+                <p className="font-semibold">{infra.rates ?? '…'}</p>
+              </div>
+              <div>
+                <p style={{ color: 'var(--text-secondary)' }}>Checklists</p>
+                <p className="font-semibold">{infra.checklists ?? '…'}</p>
+              </div>
+            </div>
+            <Link
+              href="/admin/integrations"
+              className="mt-4 inline-block text-xs font-semibold underline"
+            >
+              View all integrations
             </Link>
-          </div>
-        </article>
+          </article>
+        </div>
       </section>
     </AdminPageShell>
   );

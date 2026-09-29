@@ -8,7 +8,10 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(appUrl),
   title: {
     default: 'PaperWorking · Real Estate Investment Operating System',
     template: '%s · PaperWorking',

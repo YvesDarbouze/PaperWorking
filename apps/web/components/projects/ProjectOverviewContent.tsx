@@ -47,8 +47,6 @@ export default function ProjectOverviewContent() {
 
   if (!project) return null;
 
-  const isAcqActive = activeTab === 'acquisition';
-  const isFundActive = activeTab === 'purchase' || activeTab === 'fund';
   const isHoldActive = activeTab === 'hold';
   const isExitActive = activeTab === 'exit';
 
@@ -97,6 +95,13 @@ export default function ProjectOverviewContent() {
 
     return list;
   }, [project]);
+
+  const isFundActive =
+    activeTab === 'purchase' ||
+    activeTab === 'fund' ||
+    ((project.currentPhase === 'purchase' || (project.currentPhase as string) === 'fund' || (project.currentPhase as any) === 2) && activeTab !== 'acquisition');
+
+  const isAcqActive = !isFundActive;
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden">

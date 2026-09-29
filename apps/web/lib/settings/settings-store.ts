@@ -14,8 +14,10 @@ export interface UserProfileData {
   phone?: string;
   avatarUrl?: string;
   avatar?: string;
+  teamLogoUrl?: string;
   businessName?: string;
   companyName?: string;
+  onboardingCompleted?: boolean;
   headline?: string;
   publicBio?: string;
   location?: string;

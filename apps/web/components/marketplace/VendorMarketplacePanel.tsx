@@ -226,7 +226,7 @@ function MarketplaceContent() {
   const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
   useEffect(() => {
-    document.title = 'PaperWorking — Vendor Marketplace';
+    document.title = 'PaperWorking · Vendor Marketplace';
   }, []);
 
   useEffect(() => {

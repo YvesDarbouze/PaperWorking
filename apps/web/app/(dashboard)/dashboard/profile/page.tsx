@@ -3,7 +3,7 @@ import PublicProfileEditor from '@/components/profile/PublicProfileEditor';
 
 export const metadata: Metadata = {
   title: 'Public Profile',
-  description: 'Public identity editor — operator persona, bio, track record, and counterparty provenance.',
+  description: 'Public identity editor: operator persona, bio, track record, and counterparty provenance.',
 };
 
 /**

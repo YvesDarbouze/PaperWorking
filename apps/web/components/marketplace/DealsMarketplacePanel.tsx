@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/Button';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { useOptionalAuth } from '@/context/AuthContext';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
+import DealCalculatorResultModal from '@/components/marketplace/DealCalculatorResultModal';
+import ExpressInterestModal from '@/components/marketplace/ExpressInterestModal';
 import CompareTray from '@/components/marketplace/CompareTray';
 import { useRovingTabindex } from '@/lib/a11y/useRovingTabindex';
 
@@ -63,18 +65,26 @@ export function calculateRecommendedScore(deal: DealCardData): number {
   return fundingScore + irrScore + recencyScore;
 }
 
-export default function DealsMarketplacePanel() {
+export interface DealsMarketplacePanelProps {
+  initialDeals?: DealCardData[];
+}
+
+export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplacePanelProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
   // Local & remote state
-  const [allDeals, setAllDeals] = useState<DealCardData[]>([]);
+  const [allDeals, setAllDeals] = useState<DealCardData[]>(initialDeals ?? []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
+  const [selectedDealForModal, setSelectedDealForModal] = useState<DealCardData | null>(null);
+  const [selectedDealForInterest, setSelectedDealForInterest] = useState<DealCardData | null>(null);
+  const [interestedDealIds, setInterestedDealIds] = useState<string[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [dealAlertSaved, setDealAlertSaved] = useState(false);
 
   // Initialize filters from URL parameters
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '');
@@ -251,7 +261,7 @@ export default function DealsMarketplacePanel() {
 
       // 7. Hold Period
       if (filters.holdPeriods.length > 0) {
-        const hp = deal.holdPeriod || '3–5 Years';
+        const hp = deal.holdPeriod || '3-5 Years';
         const matchesHp = filters.holdPeriods.some((period) => {
           if (period === '<3') return hp.includes('<') || hp.includes('1') || hp.includes('2');
           if (period === '3–5') return hp.includes('3') || hp.includes('4') || hp.includes('5');
@@ -320,6 +330,24 @@ export default function DealsMarketplacePanel() {
     columns: 3,
   });
 
+  const handleExpressInterest = (deal: DealCardData) => {
+    setSelectedDealForInterest(deal);
+  };
+
+  const handleInterestSuccess = (dealId: string) => {
+    setInterestedDealIds((prev) => (prev.includes(dealId) ? prev : [...prev, dealId]));
+    setAllDeals((prev) =>
+      prev.map((d) =>
+        d.id === dealId
+          ? {
+              ...d,
+              investorCount: (d.investorCount ?? 4) + 1,
+            }
+          : d
+      )
+    );
+  };
+
   // Unique markets count for live header
   const marketsCount = useMemo(() => {
     const set = new Set<string>();
@@ -362,7 +390,7 @@ export default function DealsMarketplacePanel() {
         {loading
           ? 'Scanning live market inventory'
           : error
-            ? "We couldn't load deals for this filter — try removing one, or retry."
+            ? "We couldn't load deals for this filter: try removing one, or retry."
             : `Showing ${sortedDeals.length} deals matching your filters`}
       </div>
 
@@ -394,7 +422,7 @@ export default function DealsMarketplacePanel() {
           </p>
         </div>
 
-        {/* Secondary Header CTA: Broadcast / List Deal */}
+        {/* Secondary Header CTA: Broadcast / Post Deal */}
         <div className="flex items-center gap-3">
           <Button
             variant="secondary"
@@ -403,6 +431,15 @@ export default function DealsMarketplacePanel() {
             icon={<span className="material-symbols-outlined text-[16px]">campaign</span>}
           >
             Broadcast Deal
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            href="/deal-calculator?post=true"
+            data-testid="marketplace-post-deal-btn"
+            icon={<span className="material-symbols-outlined text-[16px]">add_circle</span>}
+          >
+            + Post Deal to Marketplace
           </Button>
         </div>
       </header>
@@ -608,7 +645,7 @@ export default function DealsMarketplacePanel() {
             </div>
           )}
 
-          {/* Error State — Human, Specific, Actionable Copy */}
+          {/* Error State: Human, Specific, Actionable Copy */}
           {!loading && error && (
             <div
               data-testid="marketplace-error-state"
@@ -654,12 +691,30 @@ export default function DealsMarketplacePanel() {
                 <Button
                   variant="secondary"
                   size="md"
-                  onClick={() => alert('Deal alert saved for this criteria.')}
+                  onClick={() => setDealAlertSaved(true)}
                   icon={<span className="material-symbols-outlined text-[16px]">notifications</span>}
                 >
                   Create Deal Alert
                 </Button>
               </div>
+              {dealAlertSaved && (
+                <div
+                  role="status"
+                  className="mt-5 max-w-md mx-auto flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/10 p-3.5 text-xs text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-emerald-400">check_circle</span>
+                    <span>Deal alert created. You will receive notifications when matching opportunities are listed.</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDealAlertSaved(false)}
+                    className="text-white/60 hover:text-white underline text-xs shrink-0"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -678,11 +733,19 @@ export default function DealsMarketplacePanel() {
                       deal={deal}
                       tabIndex={getGridTabIndex(idx)}
                       onKeyDown={(e) => handleGridKeyDown(e, idx)}
+                      onViewCalculatorModal={(d) => setSelectedDealForModal(d)}
+                      onExpressInterest={handleExpressInterest}
+                      isInterested={interestedDealIds.includes(deal.id)}
                     />
                   ))}
                 </div>
               ) : (
-                <DealsDenseTable deals={visibleDeals} />
+                <DealsDenseTable
+                  deals={visibleDeals}
+                  onViewCalculatorModal={(d) => setSelectedDealForModal(d)}
+                  onExpressInterest={handleExpressInterest}
+                  interestedDealIds={interestedDealIds}
+                />
               )}
 
               {/* Infinite Scroll Anchor & Fallback Button */}
@@ -716,6 +779,47 @@ export default function DealsMarketplacePanel() {
           dealRoi={allDeals[0]?.targetIrr ?? allDeals[0]?.projectedRoi ?? 18.4}
           isOpen={isBroadcastOpen}
           onClose={() => setIsBroadcastOpen(false)}
+        />
+      )}
+
+      {/* Deal Calculator & Crowdfund Results Modal */}
+      {selectedDealForModal && (
+        <DealCalculatorResultModal
+          deal={selectedDealForModal}
+          isOpen={Boolean(selectedDealForModal)}
+          onClose={() => setSelectedDealForModal(null)}
+          onExpressInterest={handleExpressInterest}
+          isInterested={interestedDealIds.includes(selectedDealForModal.id)}
+          onCommitSuccess={(amount) => {
+            setInterestedDealIds((prev) =>
+              prev.includes(selectedDealForModal.id) ? prev : [...prev, selectedDealForModal.id]
+            );
+            setAllDeals((prev) =>
+              prev.map((d) =>
+                d.id === selectedDealForModal.id
+                  ? {
+                      ...d,
+                      committedAmount: (d.committedAmount ?? d.committed ?? 0) + amount,
+                      committed: (d.committed ?? 0) + amount,
+                      investorCount: (d.investorCount ?? 4) + 1,
+                    }
+                  : d
+              )
+            );
+          }}
+        />
+      )}
+
+      {/* Express Interest in Project Modal */}
+      {selectedDealForInterest && (
+        <ExpressInterestModal
+          deal={selectedDealForInterest}
+          isOpen={Boolean(selectedDealForInterest)}
+          onClose={() => setSelectedDealForInterest(null)}
+          onSuccessToast={() => {
+            handleInterestSuccess(selectedDealForInterest.id);
+            setSelectedDealForInterest(null);
+          }}
         />
       )}
 

@@ -66,11 +66,11 @@ function phaseVisual(phase: ProjectSummary['currentPhase']) {
   if (phase === 'exit') {
     return {
       icon: 'folder_shared',
-      stripe: '#00dd94',
-      iconColor: '#00dd94',
-      iconBg: 'rgba(0,221,148,0.10)',
-      iconBorder: 'rgba(0,221,148,0.20)',
-      progressBg: '#00dd94',
+      stripe: '#34d399',
+      iconColor: '#34d399',
+      iconBg: 'rgba(52,211,153,0.10)',
+      iconBorder: 'rgba(52,211,153,0.20)',
+      progressBg: '#34d399',
       progress: 100,
       label: 'Phase 4: Exit',
     };
@@ -172,23 +172,31 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
         </h3>
         <div className="flex items-center justify-between gap-1 text-sm text-white/55">
           {project.dealId || project.dealSlug ? (
-            <Link
-              href={`/deals/${project.dealSlug || project.propertyName.toLowerCase().replace(/[^a-z0-9]+/g, '')}/detail`}
-              onClick={(event) => event.stopPropagation()}
-              className="flex items-center gap-1 truncate text-[#00DD94] no-underline hover:underline"
-            >
-              <span className="material-symbols-outlined text-[14px]">location_on</span>
-              <span className="truncate">{project.dealAddress || project.address}</span>
-            </Link>
+            <div className="flex items-center justify-between w-full gap-2">
+              <Link
+                href={`/marketplace/${project.dealSlug || project.dealId}`}
+                onClick={(event) => event.stopPropagation()}
+                data-testid="project-deal-badge"
+                className="inline-flex items-center gap-1 truncate text-neutral-200 no-underline hover:text-white group/deal"
+                title={project.dealAddress || project.address}
+              >
+                <span className="material-symbols-outlined text-[14px] text-neutral-400 group-hover/deal:text-[var(--accent)]">payments</span>
+                <span className="truncate text-xs font-medium">Deal: {(project.dealAddress || project.address || '').split(',')[0]}</span>
+                <span className="text-[10px] rounded px-1.5 py-0.2 bg-white/10 text-white/80 border border-white/10">
+                  Offering →
+                </span>
+              </Link>
+            </div>
           ) : (
             <div className="flex items-center justify-between w-full">
               <span className="truncate text-xs text-white/45">{project.address || project.city}</span>
               <Link
-                href={`/projects/new?step=2&projectId=${project.id}`}
+                href={`/deal-calculator?projectId=${project.id}`}
                 onClick={(event) => event.stopPropagation()}
-                className="inline-flex items-center gap-1 rounded-md border border-[#00DD94]/30 bg-[#00DD94]/10 px-2 py-0.5 text-[11px] font-semibold text-[#00DD94] hover:bg-[#00DD94]/20 transition"
+                data-testid="project-deal-badge"
+                className="inline-flex items-center gap-1 rounded-md border border-neutral-700 bg-neutral-900 px-2 py-0.5 text-[11px] font-semibold text-neutral-200 hover:text-white transition"
               >
-                Link a deal
+                + Underwrite Deal
               </Link>
             </div>
           )}
@@ -244,6 +252,18 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
             </div>
             <p className="text-xs font-semibold text-[#7dd3c0]">{headline.value}</p>
           </div>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-white/5 pt-2 text-[11px]">
+          <Link
+            href={`/dashboard/insights?project=${project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 font-mono text-neutral-400 hover:text-white transition"
+          >
+            <span className="material-symbols-outlined text-[13px]">analytics</span>
+            <span>33 Datapoints</span>
+          </Link>
+          <span className="text-white/40">Workspace →</span>
         </div>
       </div>
     </div>

@@ -5,15 +5,16 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
+import { List, X, SignOut, SquaresFour } from '@/components/icons/PhosphorIcons';
 import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
 import { PROFILE_CARD } from '@/lib/dashboard/content';
 
 const NAV_LINKS = [
-  { label: 'Deal Calculator', href: '/deal-calculator' },
-  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'How It Works', href: '/how-it-works' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Marketplace', href: '/#marketplace' },
+  { label: 'Marketplace', href: '/marketplaces' },
   { label: 'Support', href: '/support' },
+  { label: 'Deal Calculator', href: '/deal-calculator' },
 ];
 
 export default function MarketingHeader() {
@@ -52,12 +53,12 @@ export default function MarketingHeader() {
   return (
     <>
       <header
-        className={`sticky left-0 right-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-[16px] transition-all duration-300 ${
-          scrolled ? 'shadow-[0_1px_12px_0_rgba(0,0,0,0.4)]' : ''
+        className={`sticky left-0 right-0 top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm transition-all duration-300 ${
+          scrolled ? 'shadow-sm' : ''
         }`}
       >
         <nav
-          className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-5 md:h-[72px] md:px-10"
+          className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6 md:h-[72px] md:px-8"
           aria-label="Main navigation"
         >
           {/* Left: Logo */}
@@ -71,8 +72,8 @@ export default function MarketingHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-[13.5px] font-medium no-underline transition-colors hover:text-white ${
-                  pathname === link.href ? 'text-white font-semibold' : 'text-white/70'
+                className={`text-[13.5px] font-medium no-underline transition-colors hover:text-foreground ${
+                  pathname === link.href ? 'text-white font-semibold' : 'text-muted-foreground'
                 }`}
                 aria-current={pathname === link.href ? 'page' : undefined}
               >
@@ -94,9 +95,9 @@ export default function MarketingHeader() {
                 />
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-white md:hidden touch-press min-h-[36px]"
+                  className="flex items-center gap-1.5 rounded-none border border-border bg-card px-3 py-2 text-xs font-medium text-foreground md:hidden touch-press min-h-[44px]"
                 >
-                  <span className="material-symbols-outlined text-[15px]">dashboard</span>
+                  <SquaresFour size={16} />
                   <span>App</span>
                 </Link>
               </>
@@ -104,20 +105,20 @@ export default function MarketingHeader() {
               <>
                 <Link
                   href="/login"
-                  className="hidden text-[13.5px] font-medium text-white/70 no-underline hover:text-white transition-colors md:inline-flex"
+                  className="hidden text-xs font-medium text-muted-foreground no-underline hover:text-foreground transition-colors md:inline-flex"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/signup"
-                  className="hidden items-center gap-1.5 rounded-[10px] bg-[color:var(--color-primary)] px-5 py-2.5 text-[13px] font-semibold tracking-[-0.01em] text-[#0a0a0f] no-underline hover:brightness-110 transition md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-none bg-primary bg-[color:var(--color-primary)] px-4 py-2 text-xs font-medium tracking-tight text-primary-foreground no-underline hover:bg-primary/90 transition md:inline-flex min-h-[44px]"
                 >
                   Get started
                 </Link>
                 <Link
                   href="/login"
                   data-testid="mobile-quick-login"
-                  className="flex items-center justify-center rounded-lg border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-white no-underline transition hover:bg-white/10 md:hidden touch-press min-h-[36px]"
+                  className="flex items-center justify-center rounded-none border border-input bg-transparent px-3 py-2 text-xs font-medium text-foreground no-underline transition hover:bg-muted md:hidden touch-press min-h-[44px]"
                 >
                   Log in
                 </Link>
@@ -127,20 +128,18 @@ export default function MarketingHeader() {
             {/* Mobile hamburger menu */}
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-white md:hidden touch-press"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none text-foreground md:hidden touch-press hover:bg-muted"
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMobileOpen((open) => !open)}
             >
-              <span className="material-symbols-outlined text-[24px]">
-                {mobileOpen ? 'close' : 'menu'}
-              </span>
+              {mobileOpen ? <X size={20} /> : <List size={20} />}
             </button>
           </div>
         </nav>
       </header>
 
-      {/* Mobile Drawer (glass slide-out drawer from right) */}
+      {/* Mobile Drawer (slide-out drawer from right) */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
@@ -152,17 +151,17 @@ export default function MarketingHeader() {
           />
 
           {/* Drawer container */}
-          <nav className="absolute bottom-0 right-0 top-0 flex w-4/5 max-w-[320px] flex-col border-l border-white/10 bg-[#0a0a0f]/80 backdrop-blur-[20px] shadow-2xl transition-transform duration-300">
+          <nav className="absolute bottom-0 right-0 top-0 flex w-4/5 max-w-[320px] flex-col border-l border-border bg-background shadow-2xl transition-transform duration-300">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <Logo href="/" tone="auth" size="h-8" theme="dark" />
               <button
                 type="button"
-                className="text-white"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none text-foreground hover:bg-muted"
                 aria-label="Close menu"
                 onClick={() => setMobileOpen(false)}
               >
-                <span className="material-symbols-outlined text-[20px]">close</span>
+                <X size={20} />
               </button>
             </div>
 
@@ -172,10 +171,10 @@ export default function MarketingHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`block rounded-xl px-4 py-2.5 text-[14px] font-semibold no-underline transition-colors ${
+                  className={`flex items-center min-h-[44px] rounded-none px-4 py-2.5 text-[14px] font-semibold no-underline transition-colors ${
                     pathname === link.href
-                      ? 'bg-white/10 text-white font-semibold'
-                      : 'text-white/80 hover:bg-white/5 hover:text-white'
+                      ? 'bg-muted text-foreground font-semibold'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   }`}
                   aria-current={pathname === link.href ? 'page' : undefined}
                   onClick={() => setMobileOpen(false)}
@@ -186,40 +185,40 @@ export default function MarketingHeader() {
             </div>
 
             {/* Bottom Actions */}
-            <div className="space-y-3 border-t border-white/10 px-4 pb-6 pt-4">
+            <div className="space-y-3 border-t border-border px-4 pb-6 pt-4">
               {authenticated ? (
                 <>
-                  <div className="rounded-2xl border border-[color:var(--color-primary)]/40 bg-white/[0.03] px-4 py-3">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                  <div className="rounded-none border border-border bg-card px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-foreground">
                       {PROFILE_CARD.displayName}
                     </p>
-                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
+                    <p className="mt-0.5 text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
                       {PROFILE_CARD.role}
                     </p>
                   </div>
                   <Link
                     href="/dashboard"
-                    className="flex items-center justify-center rounded-full bg-white px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline"
+                    className="flex min-h-[44px] items-center justify-center rounded-none bg-primary px-4 py-2.5 text-xs font-medium text-primary-foreground no-underline hover:bg-primary/80 transition"
                     onClick={() => setMobileOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link
                     href="/dashboard/settings/profile"
-                    className="flex w-full items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[14px] font-medium text-white no-underline"
+                    className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border px-4 py-2.5 text-xs font-medium text-foreground no-underline hover:bg-muted transition"
                     onClick={() => setMobileOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
                     type="button"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-white"
+                    className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-none bg-destructive/15 text-destructive px-4 py-2.5 text-xs font-semibold hover:bg-destructive/20 transition"
                     onClick={() => {
                       setMobileOpen(false);
                       void handleSignOut();
                     }}
                   >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                    <SignOut size={16} />
                     Sign out
                   </button>
                 </>
@@ -227,14 +226,14 @@ export default function MarketingHeader() {
                 <>
                   <Link
                     href="/login"
-                    className="flex w-full items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-[14px] font-medium text-white no-underline hover:bg-white/5"
+                    className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-input px-4 py-2.5 text-xs font-medium text-foreground no-underline hover:bg-muted transition"
                     onClick={() => setMobileOpen(false)}
                   >
                     Log in
                   </Link>
                   <Link
                     href="/signup"
-                    className="flex items-center justify-center rounded-[10px] bg-[color:var(--color-primary)] px-4 py-3 text-[14px] font-semibold text-[#0a0a0f] no-underline hover:brightness-110 transition"
+                    className="flex min-h-[44px] items-center justify-center rounded-none bg-primary bg-[color:var(--color-primary)] px-4 py-2.5 text-xs font-medium text-primary-foreground no-underline hover:bg-primary/80 transition"
                     onClick={() => setMobileOpen(false)}
                   >
                     Get started

@@ -70,17 +70,23 @@ describe('PROMPT 13 — Remove the Mocked Browser Graphic from How It Works', ()
   });
 
   describe('3. Clean Reflow & Content Presence', () => {
-    it('does not render the removed section kicker, headline, or REIL narrative in either surface', () => {
-      const removedBlocks = [
-        'Project Management software made specifically for real estate investor.',
-        'How the Real Estate Investment Lifecycle Works.',
-        'The Real Estate Investment Lifecycle (REIL) is a system',
-      ];
+    it('preserves the section kicker and headline in both surfaces, and preserves REIL narrative on dedicated page', () => {
+      expect(headerHtml).toContain(
+        'Project Management software made specifically for real estate investor.'
+      );
+      expect(headerHtml).toContain('How the Real Estate Investment Lifecycle Works.');
+      // Landing page deduplicated the narrative per user request
+      expect(headerHtml).not.toContain(
+        'The Real Estate Investment Lifecycle (REIL) is a system'
+      );
 
-      for (const block of removedBlocks) {
-        expect(headerHtml).not.toContain(block);
-        expect(pageHtml).not.toContain(block);
-      }
+      expect(pageHtml).toContain(
+        'Project Management software made specifically for real estate investor.'
+      );
+      expect(pageHtml).toContain('How the Real Estate Investment Lifecycle Works.');
+      expect(pageHtml).toContain(
+        'The Real Estate Investment Lifecycle (REIL) is a system'
+      );
     });
 
     it('renders the REIL phase modules directly without orphaned containers in both surfaces', () => {

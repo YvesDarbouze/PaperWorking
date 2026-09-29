@@ -119,7 +119,7 @@ export function deriveAllProjectMetrics(
       ? computeEquityMultipleFromEngineEvents(storedEvents!)
       : null;
 
-    // ── STEP 1: RESOLVE INPUTS FROM UNDERWRITING OBJECT OR LEGACY SCHEMA ────
+    // Resolve inputs from underwriting object or legacy schema.
     // Missing required inputs are tracked explicitly — NO silent default substitutions.
     const rawPurchasePrice = uw?.acquisition?.purchasePrice ?? projectData.purchase_price ?? projectData.purchasePrice;
     const rawRent = uw?.rentRoll?.grossScheduledRent ?? projectData.gross_scheduled_rent ?? projectData.grossScheduledRent;
@@ -130,9 +130,16 @@ export function deriveAllProjectMetrics(
       'card_acquisition',
     );
 
+    const holdPhase = projectData.holdPhase || projectData.hold_phase;
     const purchasePrice: number = rawPurchasePrice || 0;
     const buyerClosingCosts: number = uw?.acquisition?.buyerClosingCosts ?? projectData.closing_costs ?? 0;
-    const rehabCosts: number = uw?.acquisition?.rehabBudget ?? projectData.rehab_costs ?? projectData.rehabBudget ?? 0;
+    const rehabCosts: number =
+      holdPhase?.committedSowBudget ??
+      holdPhase?.initialRehabBudget ??
+      uw?.acquisition?.rehabBudget ??
+      projectData.rehab_costs ??
+      projectData.rehabBudget ??
+      0;
     const rawArv = uw?.acquisition?.estimatedARV ?? projectData.arv ?? null;
     const estimatedARV: number | null = rawArv !== null && rawArv !== undefined && !isNaN(Number(rawArv)) ? Number(rawArv) : null;
     const totalCostBasis: number = purchasePrice + buyerClosingCosts + rehabCosts;
@@ -181,7 +188,7 @@ export function deriveAllProjectMetrics(
     const totalUnits: number = projectData.total_units ?? projectData.number_of_units ?? 1;
     const occupiedUnits: number = projectData.occupied_units ?? (projectData.vacancy_rate ? Math.round(totalUnits * (1 - projectData.vacancy_rate / 100)) : 1);
 
-    // ── STEP 2: AMORTIZATION & DEBT SERVICE ──────────────────────────────────
+    // Amortization and debt service calculation.
     let monthlyMortgagePayment: number = 0;
     let totalDebtService: number = 0;
     let monthlyInterest: number = 0;
@@ -215,7 +222,7 @@ export function deriveAllProjectMetrics(
       remainingLoanBalanceAtExit = amort.schedule[exitMonth - 1]?.balance ?? 0;
     }
 
-    // ── STEP 3: INCOME & EXPENSE AGGREGATION ─────────────────────────────────
+    // Income and expense aggregation.
     const goi = inputCheck.valid
       ? Number((annualGrossScheduledRent * (1 - vacancyRatePct / 100) + otherIncomeAnnual).toFixed(2))
       : null;
@@ -244,12 +251,24 @@ export function deriveAllProjectMetrics(
           ? (management_fee_pct / 100) * annualGrossScheduledRent
           : management;
 
-      totalOperatingExpenses = Number(
-        (tax + insurance + security + maintenance + utilities + computedManagementFee + HOA).toFixed(2),
-      );
+      if (
+        holdPhase?.holdingCosts &&
+        Array.isArray(holdPhase.holdingCosts) &&
+        holdPhase.holdingCosts.length > 0 &&
+        (!projectData.operating_expenses || Object.keys(projectData.operating_expenses).length === 0)
+      ) {
+        const nonDebtMonthly = holdPhase.holdingCosts
+          .filter((item: any) => item.category !== 'piti_debt_service')
+          .reduce((sum: number, item: any) => sum + (Number(item.monthlyAmount) || 0), 0);
+        totalOperatingExpenses = Number((nonDebtMonthly * 12).toFixed(2));
+      } else {
+        totalOperatingExpenses = Number(
+          (tax + insurance + security + maintenance + utilities + computedManagementFee + HOA).toFixed(2),
+        );
+      }
     }
 
-    // ── STEP 4: CORE UNDERWRITING FORMULAS ───────────────────────────────────
+    // Core underwriting formulas.
     const noi = goi !== null ? Number((goi - totalOperatingExpenses).toFixed(2)) : null;
 
     const cashFlow =
@@ -336,7 +355,7 @@ export function deriveAllProjectMetrics(
       (capRateOnCost !== null && loanConstantPct !== null && capRateOnCost < loanConstantPct) ||
       (cashOnCash !== null && cashOnCash < 0);
 
-    // ── STEP 5: SEPARATE UNLEVERED VS LEVERED CASH FLOWS & IRR ──────────────
+    // Separate unlevered vs levered cash flows and IRR.
     const terminalValueMethod = (uw?.exit as any)?.terminalValueMethod;
     const annualAppreciationPct = (uw?.exit as any)?.annualAppreciationPct ?? 3.0;
     let exitValuation: number | null = null;
@@ -403,7 +422,7 @@ export function deriveAllProjectMetrics(
       npv = Math.round(npvSum);
     }
 
-    // ── STEP 6: EXIT & EQUITY MULTIPLE ───────────────────────────────────────
+    // Exit and equity multiple calculation.
     const adjustedBasis = purchasePrice ? Number(totalCostBasis.toFixed(2)) : null;
     const capitalGainLoss = exitValuation !== null && adjustedBasis !== null
       ? Number((exitValuation - adjustedBasis - Math.round(exitValuation * (costOfSalePct / 100))).toFixed(2))
@@ -414,7 +433,7 @@ export function deriveAllProjectMetrics(
       ? storedEquityMultiple
       : totalCashInvested > 0
         ? Number(((totalReturnAmount + totalCashInvested) / totalCashInvested).toFixed(2))
-        : null;
+        : 1.0;
 
     const profitMarginOnCost =
       totalCostBasis > 0 && exitValuation !== null && exitValuation > 0
@@ -428,7 +447,7 @@ export function deriveAllProjectMetrics(
     const aar = roi !== null ? Number((roi / holdPeriodYears).toFixed(2)) : null;
     const paybackPeriod = cashFlow && cashFlow > 0 ? Number((totalCashInvested / cashFlow).toFixed(2)) : null;
 
-    // ── STEP 6B: DISTRIBUTION WATERFALL (LP vs GP) ──────────────────────────
+    // Distribution waterfall (LP vs GP).
     const lpEquityPct = uw?.hurdles?.lpEquityPct ?? 90;
     const gpEquityPct = uw?.hurdles?.gpEquityPct ?? 10;
     const preferredReturnRate = uw?.hurdles?.preferredReturn ?? 8;
@@ -449,7 +468,7 @@ export function deriveAllProjectMetrics(
       netExitProceeds: netExitProceedsLevered ?? 0,
     });
 
-    // ── STEP 7: SENSITIVITY ENGINE ROLLUP ────────────────────────────────────
+    // Sensitivity engine rollup.
     let sensitivity: SensitivityResults | undefined = undefined;
     if (noi !== null && noi > 0) {
       sensitivity = buildComprehensiveSensitivityResults({
@@ -492,7 +511,7 @@ export function deriveAllProjectMetrics(
       } catch {}
     }
 
-    // ── STEP 7B: CANONICAL DEPRECIATION ENGINE INTEGRATION ───────────────────
+    // Canonical depreciation engine integration.
     // Land is strictly non-depreciable. If the project lacks a valid land/improvement
     // split, computeAssetDepreciationSchedule returns valid: false with missingInputs,
     // surfacing INSUFFICIENT_INPUTS semantics rather than falling back to naive formula.
@@ -529,7 +548,7 @@ export function deriveAllProjectMetrics(
       }
     }
 
-    // ── STEP 8: SCORECARD & INSIGHTS BUILD ───────────────────────────────────
+    // Scorecard and insights build.
     const scorecardNoi = buildMetricValue(inputCheck.valid ? noi : null, isProjected, inputCheck.missing, 'card_income');
     const scorecardCapRate = buildMetricValue(inputCheck.valid ? capRate : null, isProjected, inputCheck.missing, 'card_acquisition');
     const scorecardCoc = buildMetricValue(inputCheck.valid ? cashOnCash : null, isProjected, inputCheck.missing, 'card_capital');
@@ -545,6 +564,41 @@ export function deriveAllProjectMetrics(
     const scorecardOccupancy = buildMetricValue(occupancyRate, isProjected, [], 'card_occupancy');
     const scorecardExpenseRatio = buildMetricValue(expenseRatio, isProjected, [], 'card_expenses');
     const scorecardAppreciation = buildMetricValue(projectData.appreciation_rate_pct || 3.5, isProjected, [], 'card_market');
+
+    // Hold phase derived metrics
+    let avgDailyHoldingCost: number | null = null;
+    let rehabOverrunPct: number | null = null;
+    let daysInHold: number | null = null;
+    let cumulativeHoldingDrag: number | null = null;
+
+    if (holdPhase) {
+      if (Array.isArray(holdPhase.holdingCosts) && holdPhase.holdingCosts.length > 0) {
+        const totalMonthlyHolding = holdPhase.holdingCosts.reduce(
+          (acc: number, item: any) => acc + (Number(item.monthlyAmount) || 0),
+          0,
+        );
+        avgDailyHoldingCost = Number(((totalMonthlyHolding * 12) / 365).toFixed(2));
+      } else if (totalOperatingExpenses > 0 || totalDebtService > 0) {
+        avgDailyHoldingCost = Number((((totalOperatingExpenses + totalDebtService) / 365)).toFixed(2));
+      }
+
+      const initialBudget = Number(holdPhase.initialRehabBudget);
+      const actualSpend = Number(holdPhase.actualRehabSpend);
+      const committedSow = Number(holdPhase.committedSowBudget);
+
+      if (initialBudget > 0 && actualSpend > 0) {
+        rehabOverrunPct = Number((((actualSpend - initialBudget) / initialBudget) * 100).toFixed(1));
+      } else if (initialBudget > 0 && committedSow > 0) {
+        rehabOverrunPct = Number((((committedSow - initialBudget) / initialBudget) * 100).toFixed(1));
+      }
+
+      daysInHold = holdPhase.daysInHold ?? (projectData.holding_days_total || 90);
+      if (avgDailyHoldingCost !== null && daysInHold !== null) {
+        cumulativeHoldingDrag = Math.round(avgDailyHoldingCost * daysInHold);
+      }
+    } else if (totalDebtService > 0 || totalOperatingExpenses > 0) {
+      avgDailyHoldingCost = Number((((totalOperatingExpenses + totalDebtService) / 365)).toFixed(2));
+    }
 
     return {
       projectId,
@@ -645,6 +699,10 @@ export function deriveAllProjectMetrics(
         isNegativeLeverage,
         terminalValueMethod: terminalValueMethod ?? (exitValuation !== null ? 'exit_cap' : null),
         terminalValueLabel,
+        avgDailyHoldingCost,
+        rehabOverrunPct,
+        daysInHold,
+        cumulativeHoldingDrag,
       },
       sensitivity,
       sensitivityGrids,

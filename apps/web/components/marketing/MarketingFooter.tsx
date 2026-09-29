@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import Logo from '@/components/marketing/Logo';
+import { ArrowRight } from '@/components/icons/PhosphorIcons';
 import { FOOTER_BOTTOM_LINKS, FOOTER_COLUMNS } from '@/lib/marketing/content';
 
 export default function MarketingFooter() {
   return (
     <footer className="w-full" style={{ borderTop: '1px solid var(--nav-border)' }}>
-      <div className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 md:px-10">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 pb-12 pt-14 md:px-8 md:pt-16">
         <div className="mb-16 grid grid-cols-2 gap-10 md:grid-cols-5 md:gap-8">
           <div className="col-span-2 md:col-span-1">
             <Logo href="/" className="mb-5 block" tone="auth" theme="dark" size="h-10" />
@@ -17,10 +18,10 @@ export default function MarketingFooter() {
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[12.5px] font-semibold text-[#0d0a0b] no-underline transition-opacity hover:opacity-85"
+              className="inline-flex items-center gap-1.5 rounded-none bg-white px-4 py-2 min-h-[44px] sm:min-h-0 text-[12.5px] font-semibold text-[#0d0a0b] no-underline transition-opacity hover:opacity-85"
             >
               Start Free 14-Day Trial
-              <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 

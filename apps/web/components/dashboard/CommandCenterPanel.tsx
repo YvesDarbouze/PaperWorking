@@ -19,12 +19,96 @@ import {
   TOP_PERFORMERS,
 } from '@/lib/dashboard/content';
 import { listSeedProjectSummaries } from '@/lib/projects/seed-data';
+import DashboardTrendDetailModal from './DashboardTrendDetailModal';
+import FollowersModal from './FollowersModal';
+import {
+  Calculator,
+  ChartLineUp,
+  Plus,
+  MagnifyingGlass,
+  ArrowRight,
+  Folder,
+  ArrowSquareOut,
+  ListChecks,
+  CheckCircle,
+  EnvelopeSimple,
+  ArrowsClockwise,
+  MapPin,
+  WarningCircle,
+  Bell,
+  Clock,
+  Sparkle,
+  Buildings,
+  House,
+  Storefront,
+} from '@/components/icons/PhosphorIcons';
+
+function renderCommandCenterIcon(iconName: string, className = 'h-4 w-4') {
+  switch (iconName) {
+    case 'analytics':
+    case 'calculate':
+      return <Calculator className={className} />;
+    case 'query_stats':
+    case 'show_chart':
+    case 'insights':
+    case 'trending_up':
+    case 'waterfall_chart':
+      return <ChartLineUp className={className} />;
+    case 'add':
+      return <Plus className={className} />;
+    case 'search':
+      return <MagnifyingGlass className={className} />;
+    case 'arrow_forward':
+      return <ArrowRight className={className} />;
+    case 'create_new_folder':
+    case 'folder_open':
+    case 'folder':
+    case 'layers':
+      return <Folder className={className} />;
+    case 'open_in_new':
+    case 'fullscreen':
+      return <ArrowSquareOut className={className} />;
+    case 'checklist':
+      return <ListChecks className={className} />;
+    case 'check_circle':
+    case 'task_alt':
+      return <CheckCircle className={className} />;
+    case 'mail':
+    case 'email':
+      return <EnvelopeSimple className={className} />;
+    case 'sync':
+    case 'refresh':
+      return <ArrowsClockwise className={className} />;
+    case 'map':
+    case 'location_on':
+      return <MapPin className={className} />;
+    case 'home_work':
+    case 'apartment':
+    case 'domain':
+      return <Buildings className={className} />;
+    case 'house':
+      return <House className={className} />;
+    case 'storefront':
+      return <Storefront className={className} />;
+    case 'schedule':
+      return <Clock className={className} />;
+    case 'warning':
+    case 'error':
+      return <WarningCircle className={className} />;
+    case 'notifications':
+    case 'notifications_none':
+    case 'bell':
+      return <Bell className={className} />;
+    default:
+      return <ChartLineUp className={className} />;
+  }
+}
 
 const panel =
-  'rounded-2xl border border-white/10 bg-[#121014]/90 shadow-[0_8px_32px_rgba(0,0,0,0.12)]';
+  'rounded-none border border-border bg-card text-card-foreground shadow-sm ring-1 ring-foreground/10';
 
 function formatUsd(value: number): string {
-  if (!Number.isFinite(value)) return '—';
+  if (!Number.isFinite(value)) return 'N/A';
   if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
   if (Math.abs(value) >= 1_000) return `$${Math.round(value / 1000)}K`;
   return new Intl.NumberFormat('en-US', {
@@ -45,9 +129,9 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-3 flex items-center justify-between">
-      <h3 className="text-[13px] font-bold uppercase tracking-[0.08em] text-white/55">{title}</h3>
+      <h3 className="text-[13px] font-bold uppercase tracking-[0.08em] text-muted-foreground">{title}</h3>
       {href && linkLabel ? (
-        <Link href={href} className="text-[11px] font-semibold text-[#7A9EAA] no-underline hover:underline">
+        <Link href={href} className="text-[11px] font-semibold text-muted-foreground hover:text-foreground transition no-underline">
           {linkLabel}
         </Link>
       ) : null}
@@ -109,6 +193,8 @@ export default function CommandCenterPanel({
   const { profile, authenticated, loading } = useAuth();
   const [metrics, setMetrics] = useState<PortfolioMetricsPayload['portfolio'] | null>(null);
   const [mpProfile, setMpProfile] = useState<MarketplaceProfilePayload['profile'] | null>(null);
+  const [showTrendModal, setShowTrendModal] = useState(false);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
 
   useEffect(() => {
     if (loading || !authenticated) return;
@@ -185,7 +271,7 @@ export default function CommandCenterPanel({
   const hasPortfolioIrr = Boolean(
     summary.portfolioIrr &&
       /\d/.test(summary.portfolioIrr) &&
-      !/^[\s\u2014\u2013\-—–]+$/.test(summary.portfolioIrr) &&
+      !/^[\s\u2014\u2013\u002d]+$/.test(summary.portfolioIrr) &&
       summary.portfolioIrr !== 'N/A' &&
       summary.portfolioIrr.trim() !== ''
   );
@@ -221,52 +307,58 @@ export default function CommandCenterPanel({
   return (
     <div className="w-full min-h-full">
       <div className="mx-auto max-w-[1400px] space-y-7 px-5 py-6 lg:px-8 lg:py-7">
-        {/* Zone 1 — Page header */}
+        {/* Zone 1: Page header */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-1 flex items-center gap-2.5">
-              <h1 className="text-[28px] font-bold leading-none tracking-[-0.03em] text-[#fdfffc]">
-                Portfolio
+              <h1 className="text-[28px] font-bold leading-none tracking-[-0.03em] text-foreground">
+                Portfolio Control Panel
               </h1>
               <span className="mt-0.5 flex items-center gap-1">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--status-live)] opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--status-live)]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-[var(--status-live)] opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-none bg-[var(--status-live)]" />
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-white/45">
+                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
                   Live
                 </span>
               </span>
               <Link
                 href="/dashboard/insights"
-                className="ml-2 flex items-center gap-1.5 rounded-full border border-[#F06543]/30 bg-[#F06543]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#F06543] no-underline"
+                className="ml-2 flex items-center gap-1.5 rounded-none border border-border bg-card px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground no-underline hover:text-foreground transition"
+                title="View 33 Underwriting Datapoints"
               >
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F06543] opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#F06543]" />
-                </span>
-                {summary.needsAttention} Caution
+                <Calculator className="h-3.5 w-3.5 text-muted-foreground" />
+                33 Datapoints
               </Link>
             </div>
-            <p className="text-[13px] text-white/55">
-              {summary.activeDeals} active deals across your portfolio
+            <p className="text-[13px] text-muted-foreground">
+              Projects are the central operating mechanism of your portfolio: tracking {projects.length} Active Projects &amp; Deals across 33 Underwriting Datapoints
             </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
             <Button
+              href="/dashboard/insights"
+              variant="secondary"
+              size="sm"
+              icon={<Calculator className="h-4 w-4" />}
+            >
+              33 Datapoints
+            </Button>
+            <Button
               href="/dashboard/deals"
               variant="secondary"
               size="sm"
-              icon={<span className="material-symbols-outlined text-[15px]">query_stats</span>}
+              icon={<ChartLineUp className="h-4 w-4" />}
             >
               Deal Calculator
             </Button>
             <Button
-              href="/projects"
+              href="/projects/new?source=dashboard"
               variant="secondary"
               size="sm"
-              icon={<span className="material-symbols-outlined text-[15px]">add</span>}
+              icon={<Plus className="h-4 w-4" />}
             >
               New Project
             </Button>
@@ -277,25 +369,20 @@ export default function CommandCenterPanel({
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {/* Deals Marketplace card */}
           <div
-            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(69,73,85,0.25) 0%, rgba(18,16,20,0.85) 100%)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-            }}
+            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-none border border-border bg-card p-5 text-card-foreground shadow-sm ring-1 ring-foreground/10"
           >
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#454955]/30 text-[#fdfffc]">
-                <span className="material-symbols-outlined text-[24px]">search</span>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+                <MagnifyingGlass className="h-6 w-6 text-foreground" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-[#fdfffc]">Deals Marketplace</h3>
-                  <span className="rounded border border-[var(--accent)]/40 bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-extrabold uppercase text-[var(--accent)]">
-                    Exclusive
+                  <h3 className="text-base font-bold text-foreground">Deals Marketplace</h3>
+                  <span className="rounded-none border border-border bg-muted/60 px-2 py-0.5 text-[10px] font-extrabold uppercase text-foreground">
+                    Discovery
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-[#9E9DA0]">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Search any street address to discover crowdfunding investments, list new syndication opportunities, or connect with investors.
                 </p>
               </div>
@@ -306,7 +393,7 @@ export default function CommandCenterPanel({
                 variant={exploreDealsVariant}
                 size="md"
                 data-testid="quick-launch-explore-deals"
-                icon={<span className="material-symbols-outlined text-[16px]">arrow_forward</span>}
+                icon={<ArrowRight className="h-4 w-4" />}
                 iconPosition="right"
               >
                 Explore Deals
@@ -316,26 +403,21 @@ export default function CommandCenterPanel({
 
           {/* Create new Project CTA card */}
           <div
-            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-[14px] border border-white/12 p-5 backdrop-blur-xl"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(0,221,148,0.10) 0%, rgba(18,16,20,0.85) 100%)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-            }}
+            className="relative flex flex-col justify-between gap-4 overflow-hidden rounded-none border border-border bg-card p-5 text-card-foreground shadow-sm ring-1 ring-foreground/10"
           >
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--accent)]/30 bg-[var(--accent-subtle)] text-[var(--accent)]">
-                <span className="material-symbols-outlined text-[24px]">create_new_folder</span>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+                <Folder className="h-6 w-6 text-foreground" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-[#fdfffc]">Create new Project</h3>
-                  <span className="rounded border border-[var(--accent)]/40 bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-extrabold uppercase text-[var(--accent)]">
-                    3-Step Flow
+                  <h3 className="text-base font-bold text-foreground">Create new Project</h3>
+                  <span className="rounded-none border border-border bg-muted/60 px-2 py-0.5 text-[10px] font-mono uppercase text-foreground">
+                    Address-First
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-[#9E9DA0]">
-                  Launch a new project workspace, assign team members, and link property acquisition deals with automated collision check.
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Launch a new project workspace. The first step is the property address, followed immediately by deal calculation, creating the Deal inside the Project and powering all 33 Underwriting Datapoints.
                 </p>
               </div>
             </div>
@@ -345,7 +427,7 @@ export default function CommandCenterPanel({
                 variant={createProjectVariant}
                 size="md"
                 data-testid="quick-launch-create-project"
-                icon={<span className="material-symbols-outlined text-[16px]">add</span>}
+                icon={<Plus className="h-4 w-4" />}
                 iconPosition="left"
               >
                 Create new Project
@@ -360,19 +442,19 @@ export default function CommandCenterPanel({
           <article className={`${panel} flex flex-col justify-between p-6 lg:col-span-3 lg:row-span-2 lg:min-h-[420px]`}>
             <div>
               <div className="mb-5 flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Profile
                 </span>
                 <Link
                   href="/dashboard/settings/profile"
-                  className="text-[11px] font-semibold text-[#7A9EAA] no-underline hover:opacity-80"
+                  className="text-[11px] font-semibold text-muted-foreground no-underline hover:text-foreground hover:underline"
                 >
                   edit
                 </Link>
               </div>
               <div className="flex items-start gap-3">
                 <div className="relative shrink-0">
-                  <div className="flex h-[54px] w-[54px] items-center justify-center rounded-full bg-[#454955] text-sm font-bold text-white">
+                  <div className="flex h-[54px] w-[54px] items-center justify-center rounded-none border border-border bg-muted text-sm font-bold text-foreground">
                     {displayName
                       .split(/\s+/)
                       .slice(0, 2)
@@ -380,33 +462,59 @@ export default function CommandCenterPanel({
                       .join('')
                       .toUpperCase()}
                   </div>
-                  <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-[var(--status-live)] ring-2 ring-[#121014]" />
+                  <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-none bg-[var(--status-live)] ring-2 ring-card" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="truncate text-[15px] font-bold leading-snug text-[#fdfffc]">
+                  <h2 className="truncate text-[15px] font-bold leading-snug text-foreground">
                     {displayName}
                   </h2>
-                  <p className="mt-0.5 truncate text-[11px] text-white/45">{PROFILE_CARD.company}</p>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#627C85]">
+                  <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{PROFILE_CARD.company}</p>
+                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/80">
                     {roleLabel}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-white/45">
-                    {followerCount} Followers · {PROFILE_CARD.teamCount} Team
-                  </p>
+                  <button
+                    type="button"
+                    data-testid="followers-count-trigger"
+                    onClick={() => setShowFollowersModal(true)}
+                    className="mt-0.5 text-left text-[10px] text-muted-foreground hover:text-foreground transition cursor-pointer"
+                  >
+                    <span className="underline decoration-border underline-offset-2 hover:decoration-foreground">
+                      {followerCount} Followers
+                    </span>{' '}
+                    · {PROFILE_CARD.teamCount} Team
+                  </button>
                 </div>
               </div>
-              <div className="my-4 h-px bg-white/8" />
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/55">
-                Followers
-              </h3>
+              <div className="my-4 h-px bg-border" />
+              <div className="mb-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  data-testid="followers-heading-trigger"
+                  onClick={() => setShowFollowersModal(true)}
+                  className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition cursor-pointer"
+                >
+                  <span>Followers</span>
+                  <ArrowSquareOut className="h-3 w-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowFollowersModal(true)}
+                  className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition cursor-pointer"
+                >
+                  View all
+                </button>
+              </div>
               {followers.length > 0 ? (
                 <div className="space-y-1">
                   {followers.map((follower) => (
                     <div
                       key={follower.id}
-                      className="flex items-center gap-3 border-b border-white/6 py-2 last:border-0"
+                      data-testid={`follower-row-${follower.id}`}
+                      onClick={() => setShowFollowersModal(true)}
+                      className="flex items-center gap-3 border-b border-border/50 py-2 last:border-0 cursor-pointer hover:bg-muted/20 rounded-none px-1 transition"
+                      title="Click to view follower details"
                     >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#627C85]/15 text-[10px] font-bold text-[#627C85]">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-none border border-border bg-muted/40 text-[10px] font-bold text-muted-foreground">
                         {follower.name
                           .split(/\s+/)
                           .map((p) => p[0])
@@ -414,40 +522,41 @@ export default function CommandCenterPanel({
                           .slice(0, 2)}
                       </span>
                       <div className="min-w-0">
-                        <p className="truncate text-[12px] font-medium text-white/85">{follower.name}</p>
-                        <p className="truncate text-[10px] text-white/40">{follower.dealName}</p>
+                        <p className="truncate text-[12px] font-medium text-foreground">{follower.name}</p>
+                        <p className="truncate text-[10px] text-muted-foreground">{follower.dealName}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="py-3 text-xs text-white/40">No followers yet.</p>
+                <p className="py-3 text-xs text-muted-foreground">No followers yet.</p>
               )}
             </div>
           </article>
 
           {/* Assigned tasks */}
           <article className={`${panel} p-5 lg:col-span-3`}>
-            <div className="mb-3 flex items-center justify-between border-b border-white/8 pb-3">
+            <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">checklist</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+                <ListChecks className="h-4.5 w-4.5 text-muted-foreground" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Assigned Tasks
                 </span>
               </div>
-              <span className="rounded-full bg-white/8 px-2 py-0.5 font-mono text-[10px] font-bold text-white/70">
+              <span className="rounded-none border border-border bg-muted/30 px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
                 {pendingTasks} PENDING
               </span>
             </div>
             {pendingTasks === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--accent-subtle)] text-[var(--accent)]">
-                  <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+                  <CheckCircle className="h-4.5 w-4.5" />
+                  <span className="sr-only">check_circle</span>
                 </div>
-                <p className="mt-2 text-xs font-medium text-white/70">
+                <p className="mt-2 text-xs font-medium text-muted-foreground">
                   You&apos;re all caught up!
                 </p>
-                <p className="mt-0.5 text-[11px] text-white/40">
+                <p className="mt-0.5 text-[11px] text-muted-foreground/60">
                   No pending tasks assigned to you.
                 </p>
               </div>
@@ -455,18 +564,16 @@ export default function CommandCenterPanel({
               <ul className="space-y-2.5">
                 {tasks.map((task) => (
                   <li key={task.id} className="flex items-start gap-2.5 text-xs">
-                    <span
-                      className={`mt-0.5 material-symbols-outlined text-[16px] ${
-                        task.done ? 'text-[var(--accent)]' : 'text-white/35'
-                      }`}
-                    >
-                      {task.done ? 'check_circle' : 'radio_button_unchecked'}
-                    </span>
+                    {task.done ? (
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    ) : (
+                      <span className="mt-0.5 inline-block h-3.5 w-3.5 shrink-0 rounded-none border border-border" />
+                    )}
                     <div>
-                      <p className={task.done ? 'text-white/40 line-through' : 'text-white/85'}>
+                      <p className={task.done ? 'text-muted-foreground line-through' : 'text-foreground'}>
                         {task.title}
                       </p>
-                      <p className="text-[10px] text-white/40">{task.project}</p>
+                      <p className="text-[10px] text-muted-foreground">{task.project}</p>
                     </div>
                   </li>
                 ))}
@@ -476,35 +583,35 @@ export default function CommandCenterPanel({
 
           {/* Recent messages */}
           <article className={`${panel} p-5 lg:col-span-3`}>
-            <div className="mb-3 flex items-center justify-between border-b border-white/8 pb-3">
+            <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">mail</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+                <EnvelopeSimple className="h-4.5 w-4.5 text-muted-foreground" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Recent Messages
                 </span>
               </div>
-              <Link href="/dashboard/inbox" className="text-[11px] font-semibold text-[#7A9EAA] no-underline hover:text-white">
+              <Link href="/dashboard/inbox" className="text-[11px] font-semibold text-muted-foreground no-underline hover:text-foreground">
                 Inbox
               </Link>
             </div>
             {messages.length > 0 ? (
               <ul className="space-y-3">
                 {messages.map((message) => (
-                  <li key={message.id} className="border-b border-white/6 pb-2.5 last:border-0">
+                  <li key={message.id} className="border-b border-border/50 pb-2.5 last:border-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-[12px] font-semibold text-white/85">{message.from}</p>
-                      <span className="shrink-0 text-[10px] text-white/40">{message.time}</span>
+                      <p className="truncate text-[12px] font-semibold text-foreground">{message.from}</p>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">{message.time}</span>
                     </div>
-                    <p className="mt-0.5 truncate text-[11px] text-white/50">{message.preview}</p>
+                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{message.preview}</p>
                   </li>
                 ))}
               </ul>
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
-                  <span className="material-symbols-outlined text-[18px]">mail</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-none border border-border bg-muted text-muted-foreground">
+                  <EnvelopeSimple className="h-4.5 w-4.5" />
                 </div>
-                <p className="mt-2 text-xs text-white/50 max-w-[220px]">
+                <p className="mt-2 text-xs text-muted-foreground max-w-[220px]">
                   Messages from your deals and team will appear here.
                 </p>
                 <div className="mt-3">
@@ -518,32 +625,32 @@ export default function CommandCenterPanel({
 
           {/* Featured metric */}
           <article className={`${panel} flex flex-col justify-between p-5 lg:col-span-3`}>
-            <div className="mb-3 flex items-center gap-2 border-b border-white/8 pb-3">
-              <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">insights</span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+            <div className="mb-3 flex items-center gap-2 border-b border-border pb-3">
+              <ChartLineUp className="h-4.5 w-4.5 text-muted-foreground" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Featured Metric
               </span>
             </div>
             {hasPortfolioIrr || summary.portfolioCapRate ? (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   {summary.portfolioCapRate ? 'Market Cap Rate (Weighted)' : 'Portfolio IRR'}
                 </p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-[#fdfffc]">
+                <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
                   {summary.portfolioCapRate || summary.portfolioIrr}
                 </p>
-                <p className="mt-2 text-[11px] text-white/45">
+                <p className="mt-2 text-[11px] text-muted-foreground">
                   {summary.portfolioCapRate
                     ? 'Weighted average across active portfolio asset values.'
-                    : 'Seed highlight — live KPI engine wires in a later wave.'}
+                    : 'Seed highlight: live KPI engine wires in a later wave.'}
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-4 text-center">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
-                  <span className="material-symbols-outlined text-[18px]">insights</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-none border border-border bg-muted text-muted-foreground">
+                  <ChartLineUp className="h-4.5 w-4.5" />
                 </div>
-                <p className="mt-2 text-xs text-white/50 max-w-[200px]">
+                <p className="mt-2 text-xs text-muted-foreground max-w-[200px]">
                   Your portfolio metrics appear here once you add your first deal.
                 </p>
               </div>
@@ -553,7 +660,7 @@ export default function CommandCenterPanel({
                 href="/dashboard/insights"
                 variant="tertiary"
                 size="sm"
-                className="px-0 text-[11px] font-semibold text-[#7A9EAA] hover:text-white"
+                className="px-0 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
               >
                 Open insights →
               </Button>
@@ -562,15 +669,19 @@ export default function CommandCenterPanel({
 
           {/* Operational alerts */}
           <article className={`${panel} p-5 lg:col-span-6`}>
-            <div className="mb-3 flex items-center gap-2 border-b border-white/8 pb-3">
+            <div className="mb-3 flex items-center gap-2 border-b border-border pb-3">
               <span
-                className={`material-symbols-outlined text-[18px] ${
-                  alerts.length > 0 ? 'text-rose-400' : 'text-white/40'
+                className={`flex items-center justify-center ${
+                  alerts.length > 0 ? 'text-rose-500' : 'text-muted-foreground'
                 }`}
               >
-                {alerts.length > 0 ? 'warning' : 'notifications_none'}
+                {alerts.length > 0 ? (
+                  <WarningCircle className="h-4.5 w-4.5" />
+                ) : (
+                  <Bell className="h-4.5 w-4.5" />
+                )}
               </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Operational Alerts
               </span>
             </div>
@@ -579,15 +690,15 @@ export default function CommandCenterPanel({
                 {alerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className="space-y-2 rounded-lg border border-white/5 bg-white/[0.02] p-2.5"
+                    className="space-y-2 rounded-none border border-border bg-muted/20 p-2.5"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-slate-300">{alert.label}</span>
+                      <span className="text-xs text-foreground">{alert.label}</span>
                       <span
-                        className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
+                        className={`rounded-none px-2 py-0.5 font-mono text-[10px] font-bold ${
                           alert.tone === 'amber'
-                            ? 'bg-amber-500/20 text-amber-400'
-                            : 'bg-rose-500/20 text-rose-400'
+                            ? 'border border-amber-500/30 bg-amber-500/10 text-amber-500'
+                            : 'border border-rose-500/30 bg-rose-500/10 text-rose-500'
                         }`}
                       >
                         {alert.count}
@@ -596,14 +707,14 @@ export default function CommandCenterPanel({
                     <div className="flex flex-wrap gap-2 pt-1">
                       <Link
                         href={alert.actionHref}
-                        className="inline-flex min-h-[36px] items-center rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white no-underline transition hover:bg-white/15 touch-press"
+                        className="inline-flex min-h-[44px] items-center rounded-none bg-primary px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground no-underline transition hover:bg-primary/90 touch-press"
                       >
                         {alert.actionLabel}
                       </Link>
                       {'secondaryLabel' in alert && alert.secondaryLabel && 'secondaryHref' in alert && alert.secondaryHref ? (
                         <Link
                           href={alert.secondaryHref}
-                          className="inline-flex min-h-[36px] items-center rounded-lg border border-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white/70 no-underline transition hover:border-white/30 hover:text-white touch-press"
+                          className="inline-flex min-h-[44px] items-center rounded-none border border-border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground no-underline transition hover:border-foreground/30 hover:text-foreground touch-press"
                         >
                           {alert.secondaryLabel}
                         </Link>
@@ -613,88 +724,129 @@ export default function CommandCenterPanel({
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 py-4 text-xs text-white/40">
-                <span className="material-symbols-outlined text-[18px] text-white/30">task_alt</span>
+              <div className="flex items-center gap-2.5 py-4 text-xs text-muted-foreground">
+                <Bell className="h-4.5 w-4.5 text-muted-foreground/60" />
+                <span className="sr-only">notifications_none</span>
                 <span>No operational alerts. Systems running normally.</span>
               </div>
             )}
           </article>
 
           {/* Active projects progress */}
-          <article className={`${panel} p-5 lg:col-span-6`}>
-            <div className="mb-3 flex items-center justify-between border-b border-white/8 pb-3">
+          <article className={`${panel} p-5 lg:col-span-6`} data-testid="portfolio-active-projects-panel">
+            <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">folder_open</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
-                  Active Projects
-                </span>
+                <Folder className="h-4.5 w-4.5 text-foreground" />
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Active Projects ({projects.length})
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/80">
+                    Central mechanism for Deals &amp; 33 Datapoints
+                  </span>
+                </div>
               </div>
               <Link
                 href="/projects/new?source=dashboard"
-                className="text-[11px] font-semibold text-[var(--accent)] no-underline hover:underline"
+                className="inline-flex min-h-[44px] items-center text-[11px] font-semibold text-muted-foreground hover:text-foreground no-underline transition"
               >
                 + New Project
               </Link>
             </div>
             {projects.length > 0 ? (
               <div className="space-y-3">
-                {projects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="rounded-xl border border-white/5 bg-white/[0.02] p-3 transition hover:border-white/10"
-                  >
-                    <div className="mb-1.5 flex items-center justify-between text-xs">
-                      <Link
-                        href={`/project/${project.id}`}
-                        className="font-medium text-white/90 hover:text-white transition"
-                      >
-                        {project.propertyName}
-                      </Link>
-                      <span className="text-white/45 capitalize">{project.currentPhase}</span>
-                    </div>
+                {projects.map((project) => {
+                  const fullAddress = project.dealAddress || project.address || 'Address on file';
+                  const streetAddress = fullAddress.split(',')[0]?.trim() || project.propertyName;
+                  const estIrrPct = project.estimatedIrr
+                    ? Number(project.estimatedIrr > 1 ? project.estimatedIrr : project.estimatedIrr * 100).toFixed(1)
+                    : null;
+                  const price = project.purchasePrice || (project as any).purchase_price || 0;
 
-                    <div className="mb-2.5 h-1.5 overflow-hidden rounded-full bg-white/8">
-                      <div
-                        className="h-full rounded-full bg-[var(--accent)]"
-                        style={{ width: `${project.phaseCompletionPct ?? 45}%` }}
-                      />
-                    </div>
+                  return (
+                    <div
+                      key={project.id}
+                      className="rounded-none border border-border bg-card/40 p-3.5 transition hover:border-foreground/30 space-y-2.5"
+                      data-testid={`active-project-card-${project.id}`}
+                    >
+                      <div className="flex items-center justify-between text-xs">
+                        <Link
+                          href={`/project/${project.id}`}
+                          className="font-medium text-foreground hover:text-primary transition truncate max-w-[200px]"
+                        >
+                          {project.propertyName}
+                        </Link>
+                        <span className="text-muted-foreground text-[10px] uppercase font-mono px-2 py-0.5 rounded-none border border-border bg-muted/40">
+                          REIL Phase: {project.currentPhase}
+                        </span>
+                      </div>
 
-                    {/* Backlink or Link a deal CTA */}
-                    <div className="flex items-center justify-between text-[11px]">
-                      {project.dealId || project.dealSlug ? (
+                      {/* Phase completion progress bar */}
+                      <div className="h-1.5 overflow-hidden rounded-none border border-border/40 bg-muted/40">
+                        <div
+                          className="h-full rounded-none bg-primary"
+                          style={{ width: `${project.phaseCompletionPct ?? 45}%` }}
+                        />
+                      </div>
+
+                      {/* Deal inside Project with hover serial address */}
+                      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-muted-foreground/60 text-[10px] uppercase font-mono">Deal:</span>
+                          <span
+                            title={fullAddress}
+                            className="truncate text-foreground font-medium hover:text-muted-foreground cursor-help"
+                          >
+                            {streetAddress}
+                          </span>
+                        </div>
+                        {price > 0 && (
+                          <span className="text-foreground font-mono text-[11px] shrink-0">
+                            {formatUsd(price)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 33 Datapoints link and navigation */}
+                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-border">
                         <Link
-                          href={`/deals/${project.dealSlug || '1247elmst'}/detail`}
-                          className="flex items-center gap-1 text-[var(--accent)] hover:underline"
+                          href={`/dashboard/insights?project=${project.id}`}
+                          data-testid={`project-33-datapoints-link-${project.id}`}
+                          className="inline-flex min-h-[44px] items-center gap-1.5 text-[11px] font-mono text-muted-foreground hover:text-foreground transition"
                         >
-                          <span className="material-symbols-outlined text-[14px]">location_on</span>
-                          <span className="truncate max-w-[200px]">{project.dealAddress || project.address}</span>
+                          <Calculator className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span>33 Datapoints</span>
+                          {estIrrPct && <span className="text-emerald-500 font-semibold">({estIrrPct}% IRR)</span>}
                         </Link>
-                      ) : (
-                        <Link
-                          href={`/projects/new?step=2&projectId=${project.id}`}
-                          className="inline-flex items-center gap-1 rounded-md border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2 py-0.5 font-semibold text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition"
-                        >
-                          <span className="material-symbols-outlined text-[12px]">add_link</span>
-                          Link a deal
-                        </Link>
-                      )}
-                      <Link
-                        href={`/project/${project.id}`}
-                        className="text-white/40 hover:text-white/70 transition"
-                      >
-                        Workspace →
-                      </Link>
+
+                        <div className="flex items-center gap-3">
+                          {project.dealSlug && (
+                            <Link
+                              href={`/deals/${project.dealSlug}/detail`}
+                              className="inline-flex min-h-[44px] items-center text-muted-foreground hover:text-foreground transition"
+                              title="View Deal details"
+                            >
+                              Deal Details →
+                            </Link>
+                          )}
+                          <Link
+                            href={`/project/${project.id}`}
+                            className="inline-flex min-h-[44px] items-center text-foreground hover:text-primary transition font-medium"
+                          >
+                            Workspace →
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.04] text-white/35">
-                  <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                <div className="flex h-10 w-10 items-center justify-center rounded-none border border-border bg-muted/40 text-muted-foreground">
+                  <Folder className="h-5 w-5" />
                 </div>
-                <p className="mt-2.5 text-xs text-white/55 max-w-[260px]">
+                <p className="mt-2.5 text-xs text-muted-foreground max-w-[260px]">
                   Launch your first project workspace to start tracking a deal.
                 </p>
                 <div className="mt-3.5">
@@ -702,7 +854,7 @@ export default function CommandCenterPanel({
                     href="/projects/new?source=dashboard"
                     variant="secondary"
                     size="sm"
-                    icon={<span className="material-symbols-outlined text-[14px]">add</span>}
+                    icon={<Plus className="h-3.5 w-3.5" />}
                     iconPosition="left"
                   >
                     + New Project
@@ -714,25 +866,46 @@ export default function CommandCenterPanel({
 
           {/* Sparkline */}
           <article className={`${panel} p-5 lg:col-span-12`}>
-            <div className="mb-3 flex items-center justify-between border-b border-white/8 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">show_chart</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+            <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
+              <button
+                type="button"
+                data-testid="trend-card-heading-trigger"
+                onClick={() => setShowTrendModal(true)}
+                className="flex items-center gap-2 text-left cursor-pointer hover:text-foreground transition min-h-[44px]"
+              >
+                <ChartLineUp className="h-4.5 w-4.5 text-foreground" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   90-Day Portfolio Value Trend
                 </span>
+              </button>
+              <div className="flex items-center gap-2">
+                <span className="rounded-none border border-border bg-muted/50 px-2.5 py-1 font-mono text-xs font-semibold text-foreground">
+                  {summary.sparklineGrowth} Growth
+                </span>
+                <button
+                  type="button"
+                  data-testid="expand-trend-modal-trigger"
+                  onClick={() => setShowTrendModal(true)}
+                  className="flex h-11 w-11 items-center justify-center rounded-none border border-border bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground transition cursor-pointer"
+                  title="Expand trend details & controls"
+                >
+                  <ArrowSquareOut className="h-4 w-4" />
+                </button>
               </div>
-              <span className="rounded-full bg-slate-800/40 px-2.5 py-0.5 font-mono text-xs font-bold text-slate-300">
-                {summary.sparklineGrowth} Growth
-              </span>
             </div>
-            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div
+              data-testid="trend-card-content-trigger"
+              onClick={() => setShowTrendModal(true)}
+              className="flex flex-col items-center justify-between gap-4 sm:flex-row cursor-pointer group"
+              title="Click to expand detailed trend ledger"
+            >
               <div>
-                <p className="text-[10px] font-bold uppercase text-slate-500">
+                <p className="text-[10px] font-bold uppercase text-muted-foreground">
                   Total Portfolio Assets Value
                 </p>
-                <p className="font-mono text-2xl font-bold text-white">
+                <p className="font-mono text-2xl font-bold text-foreground">
                   {summary.portfolioValue}{' '}
-                  <span className="text-xs font-medium text-slate-400">USD</span>
+                  <span className="text-xs font-medium text-muted-foreground">USD</span>
                 </p>
               </div>
               <div className="relative h-[50px] w-full sm:w-[350px]">
@@ -740,19 +913,20 @@ export default function CommandCenterPanel({
                   <path
                     d="M0,45 Q50,40 100,35 T200,20 T300,10 L350,5"
                     fill="none"
-                    stroke="#7A9EAA"
+                    stroke="currentColor"
                     strokeWidth="2.5"
                     strokeLinecap="round"
+                    className="text-foreground"
                   />
                   <path
                     d="M0,45 Q50,40 100,35 T200,20 T300,10 L350,5 L350,50 L0,50 Z"
                     fill="url(#pw-sparkline)"
-                    className="opacity-20"
+                    className="text-foreground/20"
                   />
                   <defs>
                     <linearGradient id="pw-sparkline" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#7A9EAA" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="#7A9EAA" stopOpacity="0" />
+                      <stop offset="0%" stopColor="currentColor" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -779,16 +953,16 @@ export default function CommandCenterPanel({
               <Link
                 key={kpi.label}
                 href="/dashboard/insights"
-                className={`${panel} block p-5 no-underline transition-colors hover:border-white/20`}
+                className={`${panel} block p-5 no-underline transition-colors hover:border-foreground/30`}
               >
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">{kpi.icon}</span>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">
+                  {renderCommandCenterIcon(kpi.icon, 'h-4.5 w-4.5 text-foreground')}
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     {kpi.label}
                   </span>
                 </div>
-                <p className="text-3xl font-bold tracking-tight text-[#fdfffc]">{kpi.value}</p>
-                <p className="mt-2 text-[11px] text-white/45">{kpi.meta}</p>
+                <p className="text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                <p className="mt-2 text-[11px] text-muted-foreground">{kpi.meta}</p>
               </Link>
             ))}
           </div>
@@ -800,10 +974,10 @@ export default function CommandCenterPanel({
               {ATTENTION_ITEMS.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-amber-400/20 bg-amber-400/5 px-4 py-3"
+                  className="rounded-none border border-amber-500/30 bg-amber-500/5 px-4 py-3"
                 >
-                  <p className="text-sm font-medium text-[#fdfffc]">{item.title}</p>
-                  <p className="text-xs text-white/55">{item.project}</p>
+                  <p className="text-sm font-medium text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.project}</p>
                 </div>
               ))}
             </div>
@@ -814,9 +988,9 @@ export default function CommandCenterPanel({
             <SectionHeading title="Active Pipeline" href="/projects" linkLabel="Manage" />
             <div className="mb-3 flex flex-wrap items-center gap-4">
               {PHASE_LEGEND.map((phase) => (
-                <span key={phase.label} className="flex items-center gap-1.5 text-[11px] text-white/45">
+                <span key={phase.label} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                   <span
-                    className="h-1.5 w-1.5 shrink-0 rounded-full"
+                    className="h-1.5 w-1.5 shrink-0 rounded-none"
                     style={{ backgroundColor: phase.color }}
                   />
                   {phase.label}
@@ -828,21 +1002,21 @@ export default function CommandCenterPanel({
                 <Link
                   key={deal.id}
                   href={`/project/${deal.id}`}
-                  className="flex items-center justify-between rounded-xl border border-white/6 px-4 py-3 no-underline transition-colors hover:border-white/14"
+                  className="flex items-center justify-between rounded-none border border-border bg-card/40 px-4 py-3 min-h-[44px] no-underline transition-colors hover:border-foreground/30"
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="h-2 w-2 rounded-full"
+                      className="h-2 w-2 rounded-none shrink-0"
                       style={{ backgroundColor: deal.phaseColor }}
                     />
                     <div>
-                      <p className="font-medium text-[#fdfffc]">{deal.name}</p>
-                      <p className="text-sm text-white/55">{deal.city}</p>
+                      <p className="font-medium text-foreground">{deal.name}</p>
+                      <p className="text-sm text-muted-foreground">{deal.city}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-[#fdfffc]">{deal.phase}</p>
-                    <p className="text-xs text-white/45">{deal.status}</p>
+                    <p className="text-sm font-medium text-foreground">{deal.phase}</p>
+                    <p className="text-xs text-muted-foreground">{deal.status}</p>
                   </div>
                 </Link>
               ))}
@@ -856,11 +1030,11 @@ export default function CommandCenterPanel({
                 <Link
                   key={row.id}
                   href={`/project/${row.id}`}
-                  className="block rounded-xl border border-white/6 px-3 py-3 no-underline hover:border-white/14"
+                  className="block rounded-none border border-border bg-card/40 px-3.5 py-3 min-h-[44px] no-underline hover:border-foreground/30 transition-colors"
                 >
-                  <p className="text-sm font-semibold text-[#fdfffc]">{row.name}</p>
-                  <p className="mt-1 text-xs font-medium text-[var(--accent)]">{row.metric}</p>
-                  <p className="text-[11px] text-white/45">{row.note}</p>
+                  <p className="text-sm font-semibold text-foreground">{row.name}</p>
+                  <p className="mt-1 text-xs font-semibold text-primary">{row.metric}</p>
+                  <p className="text-[11px] text-muted-foreground">{row.note}</p>
                 </Link>
               ))}
             </div>
@@ -876,15 +1050,15 @@ export default function CommandCenterPanel({
             <div
               className={`${panel} flex min-h-[180px] flex-col items-center justify-center gap-2 p-8 text-center`}
             >
-              <span className="material-symbols-outlined text-4xl text-white/25">map</span>
-              <p className="text-sm font-medium text-white/70">Deal map preview</p>
-              <p className="max-w-md text-xs text-white/45">
+              <MapPin className="h-8 w-8 text-muted-foreground/60" />
+              <p className="text-sm font-medium text-foreground">Deal map preview</p>
+              <p className="max-w-md text-xs text-muted-foreground">
                 Live map tiles connect when Bridge/MLS adapters are wired. Explore vendor marketplace
                 for the current seed surface.
               </p>
               <Link
                 href="/dashboard/marketplace"
-                className="mt-2 text-xs font-semibold text-[var(--accent)] no-underline hover:underline"
+                className="mt-2 inline-flex min-h-[44px] items-center text-xs font-semibold text-primary no-underline hover:underline"
               >
                 Open marketplace →
               </Link>
@@ -894,14 +1068,14 @@ export default function CommandCenterPanel({
           {/* Recent activity */}
           <div className="lg:col-span-12">
             <SectionHeading title="Recent Activity" href="/dashboard/inbox" linkLabel="Inbox" />
-            <div className={`${panel} divide-y divide-white/6`}>
+            <div className={`${panel} divide-y divide-border`}>
               {RECENT_ACTIVITY.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
                   <div>
-                    <p className="text-sm font-medium text-white/85">{item.title}</p>
-                    <p className="text-xs text-white/45">{item.detail}</p>
+                    <p className="text-sm font-medium text-foreground">{item.title}</p>
+                    <p className="text-xs text-muted-foreground">{item.detail}</p>
                   </div>
-                  <span className="shrink-0 text-[11px] text-white/40">{item.time}</span>
+                  <span className="shrink-0 text-[11px] text-muted-foreground">{item.time}</span>
                 </div>
               ))}
             </div>
@@ -909,8 +1083,8 @@ export default function CommandCenterPanel({
         </div>
 
         {/* Bottom performance strip */}
-        <div className="mt-2 border-t border-white/8 pt-6">
-          <span className="mb-4 block text-[11px] font-bold uppercase tracking-wider text-white/55">
+        <div className="mt-2 border-t border-border pt-6">
+          <span className="mb-4 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Portfolio Performance Summary
           </span>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -947,22 +1121,39 @@ export default function CommandCenterPanel({
               <Link
                 key={card.label}
                 href="/dashboard/insights"
-                className={`${panel} block p-5 no-underline hover:border-white/20`}
+                className={`${panel} block p-5 no-underline hover:border-foreground/30 transition-colors`}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="material-symbols-outlined text-[18px] text-[#7A9EAA]">{card.icon}</span>
-                  <span className="rounded-full bg-[var(--accent-subtle)] px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--accent)]">
+                  {renderCommandCenterIcon(card.icon, 'h-4.5 w-4.5 text-foreground')}
+                  <span className="rounded-none border border-border bg-muted px-2 py-0.5 font-mono text-[9px] font-bold uppercase text-foreground">
                     {card.chip}
                   </span>
                 </div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-white/45">{card.label}</p>
-                <p className="mt-1 text-2xl font-bold text-[#fdfffc]">{card.value}</p>
-                <p className="mt-1 text-[11px] text-white/40">{card.meta}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{card.label}</p>
+                <p className="mt-1 text-2xl font-bold text-foreground">{card.value}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{card.meta}</p>
               </Link>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Interactive Trend Detail & Accounting Ledger Modal */}
+      <DashboardTrendDetailModal
+        isOpen={showTrendModal}
+        onClose={() => setShowTrendModal(false)}
+        portfolioValue={summary.portfolioValue}
+        growthPct={summary.sparklineGrowth}
+        totalNoi={summary.totalNoi}
+      />
+
+      {/* Interactive Followers & Network Modal */}
+      <FollowersModal
+        isOpen={showFollowersModal}
+        onClose={() => setShowFollowersModal(false)}
+        followers={followers as any}
+        totalCount={followerCount}
+      />
     </div>
   );
 }

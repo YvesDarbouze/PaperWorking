@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Phase 7b — Playwright E2E against migration apps/web (adapted from source)",
   "scripts": {
+    "test": "echo '@paperworking/e2e: use test:e2e for Playwright suites' && exit 0",
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report"

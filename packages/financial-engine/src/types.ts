@@ -153,6 +153,14 @@ export type ProjectMetricsResult = {
     yieldOnCostPct?: number | null;
     /** W2-08: True when yield on cost < loan constant OR cash-on-cash < 0 */
     isNegativeLeverage?: boolean;
+    /** Hold Phase: Daily Carrying Run Rate (Monthly Burn * 12 / 365) */
+    avgDailyHoldingCost?: number | null;
+    /** Hold Phase: Rehab budget overrun percentage */
+    rehabOverrunPct?: number | null;
+    /** Hold Phase: Total days in hold */
+    daysInHold?: number | null;
+    /** Hold Phase: Cumulative holding drag across hold period */
+    cumulativeHoldingDrag?: number | null;
   };
   sensitivity?: SensitivityResults;
   /** W2-12: Server-computed 2D sensitivity grids (Rent vs Exit Valuation & Rent vs Rate) */

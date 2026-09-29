@@ -9,7 +9,7 @@ export type FetchMapTileFn = (url: string) => Promise<{ buffer: ArrayBuffer; con
  * GET /api/map-tile
  */
 export async function handleMapTileGet(
-  query: { lat?: string | null; lng?: string | null; zoom?: string | null; w?: string | null; h?: string | null },
+  query: { lat?: string | null; lng?: string | null; zoom?: string | null; w?: string | null; h?: string | null; maptype?: string | null },
   deps: { requireAuth?: RequireAuthFn; placesApiKey?: string; fetchTile?: FetchMapTileFn } = {},
 ): Promise<RouteResult> {
   if (!deps.requireAuth) return jsonResponse(500, { error: 'Auth not configured' });

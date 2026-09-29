@@ -22,75 +22,125 @@ function decodeHtml(html: string) {
 }
 
 describe('Real Estate Investment Lifecycle (REIL) Core Concept Narrative', () => {
-  const headerText = decodeHtml(renderToString(<HowItWorksHeader />));
-  const howItWorksText = decodeHtml(renderToString(<HowItWorks />));
+  const rawHeaderHtml = renderToString(<HowItWorksHeader />);
+  const rawHowItWorksHtml = renderToString(<HowItWorks />);
+  const headerText = decodeHtml(rawHeaderHtml);
+  const howItWorksText = decodeHtml(rawHowItWorksHtml);
 
-  const narrativeStrings = [
-    reilNarrativeLead,
-    reilNarrativeAcquisitionFull,
-    reilNarrativeFundFull,
-    reilNarrativeHoldFull,
-    reilNarrativeExitFull,
-  ];
-
-  describe('1. Verbatim Copy Locked in the Copy Module', () => {
-    it('locks the lead-in sentence with exact punctuation and clean acronym', () => {
+  describe('1. Verbatim Copy & Acceptance Phrases', () => {
+    it('renders the lead-in sentence with exact punctuation and clean acronym on /how-it-works, and deduplicates from landing page header', () => {
       const expectedLead =
         'The Real Estate Investment Lifecycle (REIL) is a system created to properly manage your real estate investments in 4 compartmentalized steps.';
       expect(reilNarrativeLead).toBe(expectedLead);
+      expect(howItWorksText).toContain(expectedLead);
+      // Deduplicated from landing page header per user request
+      expect(headerText).not.toContain(expectedLead);
+
+      // Verify specific required phrases
+      expect(howItWorksText).toContain('The Real Estate Investment Lifecycle (REIL)');
+      expect(howItWorksText).toContain('4 compartmentalized steps');
     });
 
-    it('locks Phase 1 (Acquisition) with exact phrasing and capitalized Deals', () => {
+    it('renders Phase 1 (Acquisition) with exact phrasing and capitalized Deals', () => {
+      expect(howItWorksText).toContain(
+        'hunting for investment opportunities, the option to crowdfund a deal working with serious investors, and tracking outcomes of individual Deals when you exit.'
+      );
+      expect(howItWorksText).toContain('individual Deals when you exit');
       expect(reilNarrativeAcquisitionFull).toBe(
         'PHASE 01 · ACQUISITION — hunting for investment opportunities, the option to crowdfund a deal working with serious investors, and tracking outcomes of individual Deals when you exit.'
       );
     });
 
-    it('locks Phase 2 (Fund) with exact phrasing and documentation and paperwork', () => {
+    it('renders Phase 2 (Fund) with exact phrasing and documentation and paperwork', () => {
+      expect(howItWorksText).toContain(
+        'where you fund the project and compile the necessary documentation and paperwork to make a real-estate transaction.'
+      );
       expect(reilNarrativeFundFull).toBe(
         'PHASE 02 · FUND — where you fund the project and compile the necessary documentation and paperwork to make a real-estate transaction.'
       );
     });
 
-    it('locks Phase 3 (Hold) with exact phrasing, capitalized Projects, and costs? question mark', () => {
+    it('renders Phase 3 (Hold) with exact phrasing, capitalized Projects, and costs? question mark', () => {
+      expect(howItWorksText).toContain(
+        'before you start collecting a return on your Projects: what are your costs?'
+      );
+      expect(howItWorksText).toContain('return on your Projects: what are your costs?');
       expect(reilNarrativeHoldFull).toBe(
         'PHASE 03 · HOLD — before you start collecting a return on your Projects: what are your costs?'
       );
     });
 
-    it('locks Phase 4 (Exit) with exact phrasing, Airbnb, pop-ups, commercial, etc.', () => {
+    it('renders Phase 4 (Exit) with exact phrasing, Airbnb, pop-ups, commercial, etc.', () => {
+      expect(howItWorksText).toContain(
+        'how the investor exited: a complete sale, or renting, leasing, Airbnb, pop-ups, commercial, etc.'
+      );
+      expect(howItWorksText).toContain('Airbnb, pop-ups, commercial, etc.');
       expect(reilNarrativeExitFull).toBe(
         'PHASE 04 · EXIT — how the investor exited: a complete sale, or renting, leasing, Airbnb, pop-ups, commercial, etc.'
       );
     });
   });
 
-  describe('2. Narrative Not Rendered on Either How-It-Works Surface', () => {
-    it('does not render the REIL narrative lead on either surface', () => {
-      expect(headerText).not.toContain(reilNarrativeLead);
-      expect(howItWorksText).not.toContain(reilNarrativeLead);
+  describe('2. Structural Sequence & Reading Order', () => {
+    it('verifies HowItWorksHeader orders kicker and headline directly, deduplicating repetitive narrative', () => {
+      const kickerIndex = headerText.indexOf(
+        'Project Management software made specifically for real estate investor.'
+      );
+      const headlineIndex = headerText.indexOf(
+        'How the Real Estate Investment Lifecycle Works.'
+      );
+
+      expect(kickerIndex).toBeGreaterThan(-1);
+      expect(headlineIndex).toBeGreaterThan(kickerIndex);
+      expect(headerText).not.toContain('The Real Estate Investment Lifecycle (REIL)');
     });
 
-    it('does not render any REIL phase narrative block on either surface', () => {
-      for (const narrative of narrativeStrings) {
-        expect(headerText).not.toContain(narrative);
-        expect(howItWorksText).not.toContain(narrative);
-      }
+    it('orders the narrative sequence correctly in HowItWorks component', () => {
+      const headlineIndex = howItWorksText.indexOf(
+        'How the Real Estate Investment Lifecycle Works.'
+      );
+      const leadIndex = howItWorksText.indexOf(
+        'The Real Estate Investment Lifecycle (REIL)'
+      );
+      const acqIndex = howItWorksText.indexOf('hunting for investment opportunities');
+      const fundIndex = howItWorksText.indexOf('where you fund the project');
+      const holdIndex = howItWorksText.indexOf('before you start collecting a return');
+      const exitIndex = howItWorksText.indexOf('how the investor exited');
+
+      expect(headlineIndex).toBeGreaterThan(-1);
+      expect(leadIndex).toBeGreaterThan(headlineIndex);
+      expect(acqIndex).toBeGreaterThan(leadIndex);
+      expect(fundIndex).toBeGreaterThan(acqIndex);
+      expect(holdIndex).toBeGreaterThan(fundIndex);
+      expect(exitIndex).toBeGreaterThan(holdIndex);
+    });
+  });
+
+  describe('3. Emphasis & Typography', () => {
+    it('applies semantic <strong> tags and accent to consistent phase labels (phase number + name + description)', () => {
+      expect(rawHowItWorksHtml).toMatch(
+        /<strong class="font-semibold (text-\[#00DD94\]|text-foreground)">PHASE 01 · ACQUISITION —<\/strong>/
+      );
+      expect(rawHowItWorksHtml).toMatch(
+        /<strong class="font-semibold (text-\[#00DD94\]|text-foreground)">PHASE 02 · FUND —<\/strong>/
+      );
+      expect(rawHowItWorksHtml).toMatch(
+        /<strong class="font-semibold (text-\[#00DD94\]|text-foreground)">PHASE 03 · HOLD —<\/strong>/
+      );
+      expect(rawHowItWorksHtml).toMatch(
+        /<strong class="font-semibold (text-\[#00DD94\]|text-foreground)">PHASE 04 · EXIT —<\/strong>/
+      );
     });
 
-    it('does not render narrative prose fragments on either surface', () => {
-      const removedFragments = [
-        '4 compartmentalized steps',
-        'hunting for investment opportunities',
-        'where you fund the project',
-        'before you start collecting a return',
-        'how the investor exited',
-      ];
+    it('is static text with no interactive buttons or links in the narrative list', () => {
+      // Find the UL containing the phases
+      const ulStart = rawHowItWorksHtml.indexOf('<ul class="space-y-3.5 list-none pl-0">');
+      const ulEnd = rawHowItWorksHtml.indexOf('</ul>', ulStart);
+      const listSubstr = rawHowItWorksHtml.substring(ulStart, ulEnd);
 
-      for (const fragment of removedFragments) {
-        expect(headerText).not.toContain(fragment);
-        expect(howItWorksText).not.toContain(fragment);
-      }
+      expect(listSubstr).not.toContain('<a');
+      expect(listSubstr).not.toContain('<button');
+      expect(listSubstr).not.toContain('<input');
     });
   });
 });

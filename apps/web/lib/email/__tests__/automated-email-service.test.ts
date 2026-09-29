@@ -32,6 +32,7 @@ beforeEach(() => {
     messageId: 'mock-msg-1',
     mode: 'mock',
     attempts: 1,
+    simulated: true,
   });
 });
 

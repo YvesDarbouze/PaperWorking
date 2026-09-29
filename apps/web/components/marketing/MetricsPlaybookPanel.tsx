@@ -8,7 +8,7 @@ import {
   type MetricCategory,
 } from '@/lib/marketing/playbook-metrics-data';
 
-/** Ported from PaperWorking `/support/metrics` — The Playbook (33 metrics). */
+/** Ported from PaperWorking `/support/metrics`: The Playbook (33 metrics). */
 export default function MetricsPlaybookPanel() {
   const [activeCategory, setActiveCategory] = useState<MetricCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +32,7 @@ export default function MetricsPlaybookPanel() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <div className="mx-auto max-w-[1000px] px-5 pb-16 pt-8 md:px-8">
+    <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-8 pb-16 md:pt-12">
       <div className="mb-8">
         <Link
           href="/support"

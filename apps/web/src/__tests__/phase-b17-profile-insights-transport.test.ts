@@ -109,7 +109,7 @@ describe('phase B17 — admin endpoint inventory (B18 prep)', () => {
     const crew = readFileSync(join(webRoot, 'components/admin/AdminAgentCrewPanel.tsx'), 'utf8');
 
     expect(adminUi).toContain('getAdminOpsFromBff');
-    expect(overview).toContain('getAdminRentcastUsageFromBff');
+    expect(overview).toMatch(/bffFetch\('\/api\/admin\/rentcast-usage'/);
     expect(lender).toContain('getAdminLenderRatesFromBff');
     expect(crew).toContain('impersonateAdminAgentFromBff');
     expect(crew).toContain('deleteAdminAgentFromBff');

@@ -70,7 +70,7 @@ function fmtRatio(v: number | null | undefined): string {
  * Zero occurrence of legacy terminology throughout.
  */
 export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
-  // ── PHASE 1: DEAL INTAKE & QUICK SCREEN (8 KPIs) ──────────────────────────
+  // Phase 1: Deal intake and quick screen (8 KPIs).
   {
     number: 1,
     id: 'gross_purchase_price',
@@ -393,7 +393,7 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
     },
   },
 
-  // ── PHASE 2: FULL UNDERWRITING & RETURN MODELING (10 KPIs) ────────────────
+  // Phase 2: Full underwriting and return modeling (10 KPIs).
   {
     number: 9,
     id: 'unlevered_irr',
@@ -808,7 +808,7 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
     getValue: (m) => m?.derived.profitMarginOnCost ?? null,
   },
 
-  // ── PHASE 3: DEBT SIZING & CAPITAL STACK (8 KPIs) ─────────────────────────
+  // Phase 3: Debt sizing and capital stack (8 KPIs).
   {
     number: 19,
     id: 'ltv',
@@ -1150,7 +1150,7 @@ export const AUTHORITATIVE_33_KPIS: KpiDefinition[] = [
     getValue: (m) => m?.derived.preferredReturn ?? 8.0,
   },
 
-  // ── PHASE 4: SENSITIVITY & EXIT ANALYSIS (7 KPIs) ─────────────────────────
+  // Phase 4: Sensitivity and exit analysis (7 KPIs).
   {
     number: 27,
     id: 'exit_sale_price',

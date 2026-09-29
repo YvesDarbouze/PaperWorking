@@ -23,11 +23,11 @@ describe('phase B15 — browser billing transport', () => {
       join(here, '../../components/dashboard/BillingPreviewPanel.tsx'),
       'utf8',
     );
-    expect(panel).toContain('getBillingSummaryFromBff');
-    expect(panel).toContain('createStripeCheckoutFromBff');
-    expect(panel).toContain('createStripePortalFromBff');
-    expect(panel).toContain('cancelBillingSubscriptionFromBff');
+    expect(panel).toMatch(/fetch\('\/api\/billing'\)?/);
+    expect(panel).toMatch(/\/api\/billing\/cancel/);
+    expect(panel).toMatch(/\/api\/billing\/(change-plan|payment-methods)/);
     expect(panel).not.toContain('apiFetch(');
+    expect(panel).not.toContain('NEXT_PUBLIC_API_URL');
   });
 
   it('Next billing routes delegate to shared billing services', () => {

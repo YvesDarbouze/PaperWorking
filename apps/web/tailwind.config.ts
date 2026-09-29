@@ -1,80 +1,129 @@
 import type { Config } from 'tailwindcss';
 
 /**
- * PaperWorking Design Tokens — "Bloomberg Terminal for Real Estate Investment"
- * Dark, dense, professional.
- * All palette and dimensional tokens are bound to CSS variables for seamless theme toggling.
+ * PaperWorking Design Tokens — shadcn preset buFzlTs (radix-lyra / neutral)
+ * Clean, architectural, data-dense.
  */
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './sections/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        app: 'var(--bg-app)',
-        surface: 'var(--bg-surface)',
-        elevated: 'var(--bg-elevated)',
-        'border-subtle': 'var(--border-subtle)',
-        'text-primary': 'var(--text-primary)',
-        'text-secondary': 'var(--text-secondary)',
-        'text-muted': 'var(--text-muted)',
+        // shadcn radix-lyra neutral tokens
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
         accent: {
           DEFAULT: 'var(--accent)',
-          hover: 'var(--accent-hover)',
-          active: 'var(--accent-active)',
-          subtle: 'var(--accent-subtle)',
+          foreground: 'var(--accent-foreground)',
+          hover: 'var(--accent)',
+          active: 'var(--primary)',
+          subtle: 'var(--muted)',
         },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        border: 'var(--border)',
+        input: 'var(--input)',
+        ring: 'var(--ring)',
+
+        // Sidebar tokens
+        sidebar: {
+          DEFAULT: 'var(--sidebar)',
+          foreground: 'var(--sidebar-foreground)',
+          primary: 'var(--sidebar-primary)',
+          'primary-foreground': 'var(--sidebar-primary-foreground)',
+          accent: 'var(--sidebar-accent)',
+          'accent-foreground': 'var(--sidebar-accent-foreground)',
+          border: 'var(--sidebar-border)',
+          ring: 'var(--sidebar-ring)',
+        },
+
+        // Legacy semantic mappings to neutral tokens
+        app: 'var(--background)',
+        surface: 'var(--card)',
+        elevated: 'var(--muted)',
+        'border-subtle': 'var(--border)',
+        'text-primary': 'var(--foreground)',
+        'text-secondary': 'var(--muted-foreground)',
+        'text-muted': 'var(--muted-foreground)',
         'status-live': 'var(--status-live)',
         'status-caution': 'var(--status-caution)',
         danger: {
-          DEFAULT: 'var(--danger)',
+          DEFAULT: 'var(--destructive)',
           subtle: 'var(--danger-subtle)',
         },
       },
       borderRadius: {
-        card: 'var(--radius-card)',
-        control: 'var(--radius-control)',
-        pill: 'var(--radius-pill)',
+        card: 'var(--radius)',
+        control: '0px',
+        pill: '0px',
+        sm: 'calc(var(--radius) - 4px)',
+        md: 'calc(var(--radius) - 2px)',
+        lg: 'var(--radius)',
+        xl: 'calc(var(--radius) + 4px)',
       },
       boxShadow: {
-        'elevation-subtle': 'var(--shadow-elevation-subtle)',
-        'elevation-card': 'var(--shadow-elevation-card)',
-        'elevation-modal': 'var(--shadow-elevation-modal)',
-        'accent-glow': 'var(--shadow-accent-glow)',
+        'elevation-subtle': '0 1px 2px rgba(0, 0, 0, 0.08)',
+        'elevation-card': '0 1px 3px rgba(0, 0, 0, 0.12)',
+        'elevation-modal': '0 12px 32px rgba(0, 0, 0, 0.25)',
+        'accent-glow': 'none',
       },
       fontSize: {
         display: [
-          'var(--font-display-size)',
+          '1.5rem',
           {
-            lineHeight: 'var(--font-display-leading)',
-            letterSpacing: 'var(--font-display-tracking)',
-            fontWeight: 'var(--font-display-weight)',
+            lineHeight: '1.2',
+            letterSpacing: '-0.02em',
+            fontWeight: '600',
           },
         ],
         title: [
-          'var(--font-title-size)',
+          '0.875rem',
           {
-            lineHeight: 'var(--font-title-leading)',
-            fontWeight: 'var(--font-title-weight)',
+            lineHeight: '1.25',
+            fontWeight: '600',
           },
         ],
         body: [
-          'var(--font-body-size)',
+          '0.8125rem',
           {
-            lineHeight: 'var(--font-body-leading)',
-            fontWeight: 'var(--font-body-weight)',
+            lineHeight: '1.5',
+            fontWeight: '400',
           },
         ],
         caption: [
-          'var(--font-caption-size)',
+          '0.6875rem',
           {
-            lineHeight: 'var(--font-caption-leading)',
-            letterSpacing: 'var(--font-caption-tracking)',
-            fontWeight: 'var(--font-caption-weight)',
+            lineHeight: '1',
+            letterSpacing: '0.06em',
+            fontWeight: '600',
           },
         ],
       },

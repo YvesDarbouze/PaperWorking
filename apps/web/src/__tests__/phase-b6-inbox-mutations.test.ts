@@ -91,15 +91,16 @@ describe('phase B6 — bffFetch transport for inbox mutations', () => {
 });
 
 describe('phase B6 — InboxNotificationCenter transport', () => {
-  it('uses bffFetch not apiFetch for PATCH/DELETE /api/inbox/:id', () => {
+  it('notification center is local-first and never uses external transport', () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const source = readFileSync(
       join(here, '../../components/inbox/InboxNotificationCenter.tsx'),
       'utf8',
     );
-    expect(source).toContain("bffFetch(`/api/inbox/${id}`");
-    expect(source).toContain("bffFetch(`/api/inbox/${item.id}`");
+    expect(source).toContain('getInboxThreads');
     expect(source).not.toContain('apiFetch');
+    expect(source).not.toContain('NEXT_PUBLIC_API_URL');
+    expect(source).not.toContain('run.app');
   });
 });
 
@@ -163,8 +164,8 @@ describe('phase B6 — inbox browser transport status', () => {
       'utf8',
     );
     expect(provider).toContain("bffFetch('/api/inbox'");
-    expect(center).toContain('bffFetch');
     expect(provider).not.toMatch(/apiFetch\('\/api\/inbox/);
     expect(center).not.toContain('apiFetch');
+    expect(center).not.toContain('NEXT_PUBLIC_API_URL');
   });
 });

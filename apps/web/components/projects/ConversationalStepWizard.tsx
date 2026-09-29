@@ -1,0 +1,678 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import type { ProjectWorkspace, LegacyProjectPhase, AssigneeOption } from '@/lib/projects/types';
+import type { AcquisitionTask } from '@paperworking/validation';
+import {
+  getConversationalStepsForPhase,
+  type ConversationalStep,
+  type StepInputField,
+} from '@/lib/projects/reil-conversational-steps';
+import AssignOrInviteModal from './AssignOrInviteModal';
+
+export interface ConversationalStepWizardProps {
+  project: ProjectWorkspace;
+  phaseKey: LegacyProjectPhase;
+  phaseTitle: string;
+  onUpdateProject: (updated: ProjectWorkspace) => void;
+  onSwitchToExecutiveView: () => void;
+  activeRoster?: AssigneeOption[];
+}
+
+export default function ConversationalStepWizard({
+  project,
+  phaseKey,
+  phaseTitle,
+  onUpdateProject,
+  onSwitchToExecutiveView,
+  activeRoster = [],
+}: ConversationalStepWizardProps) {
+  const steps = useMemo(() => getConversationalStepsForPhase(phaseKey), [phaseKey]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  // Active step definition
+  const currentStep: ConversationalStep = steps[currentStepIndex] || steps[0];
+
+  // Roster resolution
+  const existingMembers = useMemo(() => {
+    if (activeRoster && activeRoster.length > 0) return activeRoster;
+    return (project.teamMembers || []) as AssigneeOption[];
+  }, [activeRoster, project.teamMembers]);
+
+  // Phase Lead resolution
+  const phaseLead = project.phaseAssignees?.[phaseKey];
+  const phaseLeadName = phaseLead?.name || 'Unassigned';
+
+  // Step Assignee resolution
+  const currentTask = (project.tasks || []).find((t) => t.id === currentStep.id);
+  const isStepCompleted = currentTask?.status === 'complete' || (currentTask?.status as string) === 'completed';
+  const stepAssigneeName = currentTask?.assignedTo || currentTask?.assigneeName || null;
+  const assignedMember = stepAssigneeName
+    ? existingMembers.find((m) => m.name.toLowerCase() === stepAssigneeName.toLowerCase())
+    : null;
+
+  // Local state for step input responses
+  const [formValues, setFormValues] = useState<Record<string, Record<string, string | number>>>({});
+  const [saveToast, setSaveToast] = useState<string | null>(null);
+
+  // Modal configuration for step or phase assignments
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    assignType: 'step' | 'phase';
+    task?: {
+      id: string;
+      title: string;
+      assignedTo?: string;
+      phase?: string;
+    };
+  } | null>(null);
+
+  // Get value for current step inputs
+  const currentStepValues = formValues[currentStep.id] || {};
+
+  const handleInputChange = (fieldKey: string, value: string | number) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [currentStep.id]: {
+        ...(prev[currentStep.id] || {}),
+        [fieldKey]: value,
+      },
+    }));
+  };
+
+  // Completion calculation
+  const completedCount = useMemo(() => {
+    const taskIds = new Set(
+      (project.tasks || [])
+        .filter((t) => t.status === 'complete' || (t.status as string) === 'completed')
+        .map((t) => t.id)
+    );
+    return steps.filter((s) => taskIds.has(s.id)).length;
+  }, [steps, project.tasks]);
+
+  const completionPct = Math.round((completedCount / steps.length) * 100);
+
+  // Assignment Modal Handlers
+  const handleAssignExisting = async (taskIdOrPhaseKey: string, assigneeName: string, assigneeUid?: string) => {
+    if (modalConfig?.assignType === 'phase') {
+      const selectedMember = existingMembers.find((m) => m.name === assigneeName) || {
+        id: assigneeUid || `team-${Date.now()}`,
+        name: assigneeName,
+        role: `${phaseTitle} Lead`,
+      };
+      const updatedPhaseAssignees = {
+        ...(project.phaseAssignees || {}),
+        [phaseKey]: selectedMember,
+      };
+      onUpdateProject({
+        ...project,
+        phaseAssignees: updatedPhaseAssignees,
+      });
+    } else {
+      const currentTasks = (project.tasks || []) as AcquisitionTask[];
+      const hasTask = currentTasks.some((t) => t.id === taskIdOrPhaseKey);
+      const updatedTasks: AcquisitionTask[] = hasTask
+        ? currentTasks.map((t) =>
+            t.id === taskIdOrPhaseKey
+              ? {
+                  ...t,
+                  assignedTo: assigneeName,
+                  assigneeName: assigneeName,
+                  assignedToUid: assigneeUid,
+                  assigneeUid: assigneeUid,
+                }
+              : t
+          )
+        : [
+            ...currentTasks,
+            {
+              id: taskIdOrPhaseKey,
+              title: currentStep.title,
+              status: 'pending' as const,
+              assignedTo: assigneeName,
+              assigneeName: assigneeName,
+              assignedToUid: assigneeUid,
+              assigneeUid: assigneeUid,
+              dueDate: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
+              isAutoGenerated: true,
+            },
+          ];
+      onUpdateProject({
+        ...project,
+        tasks: updatedTasks,
+      });
+
+      try {
+        await fetch(`/api/projects/${project.id || project.project_id}/tasks/${taskIdOrPhaseKey}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assignedTo: assigneeName }),
+        });
+      } catch {
+        // non-fatal
+      }
+    }
+    setModalConfig(null);
+  };
+
+  const handleAssignPhase = async (pKey: LegacyProjectPhase, member: AssigneeOption) => {
+    const updatedPhaseAssignees = {
+      ...(project.phaseAssignees || {}),
+      [pKey]: member,
+    };
+    onUpdateProject({
+      ...project,
+      phaseAssignees: updatedPhaseAssignees,
+    });
+  };
+
+  const handleMemberInvitedAndAssigned = async (newMember: AssigneeOption, taskIdOrPhaseKey: string) => {
+    const currentMembers = (project.teamMembers || []) as AssigneeOption[];
+    const updatedMembers = [...currentMembers, newMember];
+
+    if (modalConfig?.assignType === 'phase') {
+      const updatedPhaseAssignees = {
+        ...(project.phaseAssignees || {}),
+        [phaseKey]: newMember,
+      };
+      onUpdateProject({
+        ...project,
+        teamMembers: updatedMembers,
+        phaseAssignees: updatedPhaseAssignees,
+      });
+    } else {
+      const currentTasks = (project.tasks || []) as AcquisitionTask[];
+      const hasTask = currentTasks.some((t) => t.id === taskIdOrPhaseKey);
+      const updatedTasks: AcquisitionTask[] = hasTask
+        ? currentTasks.map((t) =>
+            t.id === taskIdOrPhaseKey
+              ? {
+                  ...t,
+                  assignedTo: newMember.name,
+                  assigneeName: newMember.name,
+                  assignedToUid: newMember.id,
+                  assigneeUid: newMember.id,
+                }
+              : t
+          )
+        : [
+            ...currentTasks,
+            {
+              id: taskIdOrPhaseKey,
+              title: currentStep.title,
+              status: 'pending' as const,
+              assignedTo: newMember.name,
+              assigneeName: newMember.name,
+              assignedToUid: newMember.id,
+              assigneeUid: newMember.id,
+              dueDate: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
+              isAutoGenerated: true,
+            },
+          ];
+      onUpdateProject({
+        ...project,
+        teamMembers: updatedMembers,
+        tasks: updatedTasks,
+      });
+    }
+    setModalConfig(null);
+  };
+
+  // Step completion toggle / advance
+  const handleSaveStepDetails = () => {
+    setSaveToast(`Saved details for ${currentStep.title}`);
+    setTimeout(() => setSaveToast(null), 3000);
+  };
+
+  const handleMarkCompleteAndContinue = () => {
+    const currentTasks = (project.tasks || []) as AcquisitionTask[];
+    const hasTask = currentTasks.some((t) => t.id === currentStep.id);
+    const updatedTasks: AcquisitionTask[] = hasTask
+      ? currentTasks.map((t) =>
+          t.id === currentStep.id
+            ? { ...t, status: 'complete' as const, completedAt: new Date().toISOString() }
+            : t
+        )
+      : [
+          ...currentTasks,
+          {
+            id: currentStep.id,
+            title: currentStep.title,
+            status: 'complete' as const,
+            assignedTo: stepAssigneeName || currentStep.defaultRole,
+            assigneeName: stepAssigneeName || currentStep.defaultRole,
+            dueDate: new Date().toISOString().slice(0, 10),
+            isAutoGenerated: true,
+            completedAt: new Date().toISOString(),
+          },
+        ];
+
+    const newCompletedCount = steps.filter((s) => {
+      if (s.id === currentStep.id) return true;
+      return updatedTasks.some((t) => t.id === s.id && (t.status === 'complete' || (t.status as string) === 'completed'));
+    }).length;
+    const newCompletionPct = Math.round((newCompletedCount / steps.length) * 100);
+
+    onUpdateProject({
+      ...project,
+      tasks: updatedTasks,
+      phase_completion_pct: newCompletionPct,
+    });
+
+    setSaveToast(`Completed ${currentStep.title}`);
+    setTimeout(() => setSaveToast(null), 3000);
+
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1);
+    }
+  };
+
+  const renderInputField = (input: StepInputField) => {
+    const val = currentStepValues[input.key] ?? input.defaultValue ?? '';
+
+    return (
+      <div key={input.key} className="space-y-1.5">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300">
+          {input.label} {input.required && <span className="text-rose-400">*</span>}
+        </label>
+        {input.type === 'select' ? (
+          <select
+            value={val}
+            onChange={(e) => handleInputChange(input.key, e.target.value)}
+            className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-950 px-3.5 py-2 text-base sm:text-xs text-white focus:border-white focus:outline-none"
+          >
+            <option value="">Select option...</option>
+            {input.options?.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        ) : input.type === 'textarea' ? (
+          <textarea
+            rows={3}
+            value={val}
+            placeholder={input.placeholder}
+            onChange={(e) => handleInputChange(input.key, e.target.value)}
+            className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-950 px-3.5 py-2.5 text-base sm:text-xs text-white placeholder-neutral-500 focus:border-white focus:outline-none"
+          />
+        ) : (
+          <input
+            type={input.type === 'currency' ? 'text' : input.type}
+            value={val}
+            placeholder={input.placeholder}
+            onChange={(e) => handleInputChange(input.key, e.target.value)}
+            className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-950 px-3.5 py-2 text-base sm:text-xs text-white placeholder-neutral-500 focus:border-white focus:outline-none font-mono"
+          />
+        )}
+        {input.helperText && <p className="text-[11px] text-neutral-400">{input.helperText}</p>}
+      </div>
+    );
+  };
+
+  const projectId = project.id || project.project_id || 'deal-lifecycle';
+
+  return (
+    <div
+      data-testid="conversational-step-wizard"
+      className="space-y-6 text-neutral-100 font-sans"
+    >
+      {/* Top Phase Leadership Banner */}
+      <div
+        data-testid="phase-leadership-banner"
+        className="flex flex-col gap-4 border border-neutral-800 bg-neutral-950 p-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center border border-neutral-800 bg-neutral-900 text-white font-bold text-xs uppercase">
+            {phaseTitle.slice(0, 2)}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                Phase Leadership
+              </span>
+              <span className="text-neutral-600">·</span>
+              <span className="text-xs text-neutral-400">{phaseTitle} Phase</span>
+            </div>
+            <p className="mt-0.5 text-sm font-semibold text-white">
+              Phase Lead:{' '}
+              <strong className="text-white font-bold">{phaseLeadName}</strong>
+              {phaseLead?.role && (
+                <span className="ml-2 text-xs font-normal text-neutral-400">({phaseLead.role})</span>
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="rounded-none min-h-[44px] border-neutral-800 text-xs px-3.5"
+            data-testid="change-phase-lead-button"
+            onClick={() =>
+              setModalConfig({
+                isOpen: true,
+                assignType: 'phase',
+              })
+            }
+          >
+            {phaseLeadName === 'Unassigned' ? '+ Assign / Invite Lead' : 'Change Phase Lead'}
+          </Button>
+
+          {/* Dual-Mode Toggle */}
+          <div className="flex items-center border border-neutral-800 bg-neutral-900/80 p-0.5">
+            <button
+              type="button"
+              data-testid="active-conversational-mode-button"
+              className="min-h-[44px] px-3.5 py-2 text-xs font-bold text-white bg-neutral-800 border border-neutral-700 rounded-none shadow-sm"
+            >
+              Conversational Walkthrough
+            </button>
+            <button
+              type="button"
+              data-testid="switch-executive-view-button"
+              onClick={onSwitchToExecutiveView}
+              className="min-h-[44px] px-3.5 py-2 text-xs font-medium text-neutral-400 hover:text-white transition rounded-none"
+            >
+              Executive Workspace →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Bar & Step Navigation Strip */}
+      <div className="border border-neutral-800 bg-neutral-950 p-4 space-y-3">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-semibold text-neutral-300">
+            {`${phaseTitle} Lifecycle Milestones: Step ${currentStep.stepNumber} of ${steps.length}`}
+          </span>
+          <span className="font-mono text-emerald-400">
+            {`${completedCount} of ${steps.length} Completed (${completionPct}%)`}
+          </span>
+        </div>
+
+        {/* Progress indicator line */}
+        <div className="h-1.5 w-full bg-neutral-900 overflow-hidden border border-neutral-800">
+          <div
+            className="h-full bg-emerald-500 transition-all duration-300"
+            style={{ width: `${completionPct}%` }}
+          />
+        </div>
+
+        {/* Step Numbers Navigation Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 no-scrollbar">
+          {steps.map((s, idx) => {
+            const isCurrent = idx === currentStepIndex;
+            const task = (project.tasks || []).find((t) => t.id === s.id);
+            const isCompleted = task?.status === 'complete' || (task?.status as string) === 'completed';
+
+            return (
+              <button
+                key={s.id}
+                type="button"
+                data-testid={`step-pill-${s.stepNumber}`}
+                onClick={() => setCurrentStepIndex(idx)}
+                className={`min-h-[44px] px-3 py-2 text-xs font-medium whitespace-nowrap transition rounded-none border flex items-center gap-2 ${
+                  isCurrent
+                    ? 'border-white bg-white text-black font-bold'
+                    : isCompleted
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:border-emerald-400'
+                    : 'border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:border-neutral-700 hover:text-white'
+                }`}
+              >
+                <span
+                  className={`flex h-5 w-5 items-center justify-center text-[10px] font-mono ${
+                    isCurrent
+                      ? 'bg-black text-white font-bold'
+                      : isCompleted
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : 'bg-neutral-800 text-neutral-300'
+                  }`}
+                >
+                  {isCompleted ? '✓' : s.stepNumber}
+                </span>
+                <span className="truncate max-w-[140px] sm:max-w-[200px]">{s.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main Conversational Card */}
+      <div className="border border-neutral-800 bg-neutral-950 p-6 sm:p-8 space-y-6">
+        {saveToast && (
+          <div className="border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-xs text-emerald-300 flex items-center justify-between">
+            <span>{saveToast}</span>
+            <span className="text-[10px] uppercase font-mono">Synced</span>
+          </div>
+        )}
+
+        {/* Step Badge */}
+        <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
+          <div className="flex items-center gap-2">
+            <span
+              data-testid="conversational-step-badge"
+              className="border border-neutral-800 bg-neutral-900 px-3 py-1 text-[11px] font-mono uppercase tracking-wider text-neutral-300"
+            >
+              {`Step ${currentStep.stepNumber} of ${steps.length} · ${currentStep.title}`}
+            </span>
+            {isStepCompleted && (
+              <span className="border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                Verified Complete
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-neutral-500 hidden sm:inline-block">
+            Target Role: {currentStep.defaultRole}
+          </span>
+        </div>
+
+        {/* Conversational Question */}
+        <div className="space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+            Conversational Guided Inquiry
+          </p>
+          <h2
+            data-testid="conversational-step-question"
+            className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug"
+          >
+            {currentStep.conversationalQuestion}
+          </h2>
+        </div>
+
+        {/* Why this matters (Legal & Financial Rationale) */}
+        <div className="border border-neutral-800 bg-neutral-900/60 p-4 sm:p-5 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[16px] text-neutral-400">balance</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+              Why this matters (Legal &amp; Financial Rationale)
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-sans">
+            {currentStep.whyThisMatters}
+          </p>
+        </div>
+
+        {/* Embedded Step Assignee Card */}
+        <div
+          data-testid="step-assignee-card"
+          className="border border-neutral-800 bg-neutral-900/40 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 min-h-[40px] min-w-[40px] items-center justify-center border border-neutral-700 bg-neutral-800 text-xs font-bold text-white uppercase">
+              {stepAssigneeName ? stepAssigneeName.slice(0, 2) : '??'}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-neutral-400">Step Assigned Lead</p>
+              <p className="text-sm font-bold text-white">
+                {stepAssigneeName || 'Unassigned'}
+              </p>
+              <p className="text-[11px] text-neutral-400">
+                {assignedMember?.email
+                  ? `${assignedMember.email} · `
+                  : ''}
+                Recommended role: {currentStep.defaultRole}
+              </p>
+            </div>
+          </div>
+
+          <Button
+            size="sm"
+            variant="secondary"
+            className="rounded-none min-h-[44px] px-4 text-xs shrink-0"
+            data-testid="assign-step-member-button"
+            onClick={() =>
+              setModalConfig({
+                isOpen: true,
+                assignType: 'step',
+                task: {
+                  id: currentStep.id,
+                  title: currentStep.title,
+                  assignedTo: stepAssigneeName || undefined,
+                  phase: phaseKey,
+                },
+              })
+            }
+          >
+            {stepAssigneeName ? 'Reassign / Invite Member' : 'Assign or Invite Member'}
+          </Button>
+        </div>
+
+        {/* Required Documents Slot */}
+        <div
+          data-testid="step-document-slot"
+          className="border border-neutral-800 bg-neutral-900/40 p-4 sm:p-5 space-y-3"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px] text-neutral-400">folder_open</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                Required Phase Documentation ({currentStep.requiredDocuments.length})
+              </span>
+            </div>
+            <Link
+              href={`/project/${projectId}/documents`}
+              className="text-xs font-semibold text-emerald-400 hover:underline min-h-[44px] inline-flex items-center"
+            >
+              Open in Document Vault →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 pt-1">
+            {currentStep.requiredDocuments.map((docName) => (
+              <div
+                key={docName}
+                className="flex items-center justify-between border border-neutral-800 bg-neutral-950 p-2.5 text-xs"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="material-symbols-outlined text-[14px] text-neutral-400 shrink-0">
+                    description
+                  </span>
+                  <span className="truncate text-neutral-200" title={docName}>
+                    {docName}
+                  </span>
+                </div>
+                <span className="shrink-0 text-[10px] uppercase font-mono text-neutral-400 bg-neutral-900 px-1.5 py-0.5 border border-neutral-800">
+                  Vault Slot
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Interactive Step Action / Response Form */}
+        <div
+          data-testid="step-response-form"
+          className="border border-neutral-800 bg-neutral-950 p-4 sm:p-6 space-y-4"
+        >
+          <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                Step Input &amp; Execution Form
+              </h3>
+              <p className="text-[11px] text-neutral-400">
+                Enter factual transaction inputs or milestones to lock this step.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="tertiary"
+              className="rounded-none min-h-[44px] px-3.5 text-xs"
+              onClick={handleSaveStepDetails}
+            >
+              Save Progress
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {currentStep.inputs.map(renderInputField)}
+          </div>
+        </div>
+
+        {/* Navigation Bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-neutral-800 pt-6">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button
+              variant="secondary"
+              size="md"
+              className="rounded-none min-h-[44px] px-4 text-xs w-1/2 sm:w-auto"
+              disabled={currentStepIndex === 0}
+              onClick={() => setCurrentStepIndex(Math.max(0, currentStepIndex - 1))}
+            >
+              ← Previous Step
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              className="rounded-none min-h-[44px] px-4 text-xs w-1/2 sm:w-auto"
+              disabled={currentStepIndex === steps.length - 1}
+              onClick={() => setCurrentStepIndex(Math.min(steps.length - 1, currentStepIndex + 1))}
+            >
+              Next Step →
+            </Button>
+          </div>
+
+          <Button
+            variant="primary"
+            size="md"
+            className="rounded-none min-h-[44px] px-6 text-xs w-full sm:w-auto"
+            data-testid="mark-step-complete-button"
+            onClick={handleMarkCompleteAndContinue}
+          >
+            {currentStepIndex === steps.length - 1
+              ? 'Mark Step Complete & Review'
+              : 'Mark Step Complete & Continue →'}
+          </Button>
+        </div>
+      </div>
+
+      {/* Assignment / Invite Modal */}
+      {modalConfig?.isOpen && (
+        <AssignOrInviteModal
+          isOpen={modalConfig.isOpen}
+          onClose={() => setModalConfig(null)}
+          projectId={projectId}
+          projectName={project.propertyName || 'Project Workspace'}
+          assignType={modalConfig.assignType}
+          phaseKey={phaseKey}
+          phaseTitle={phaseTitle}
+          currentAssignee={
+            modalConfig.assignType === 'phase'
+              ? phaseLeadName !== 'Unassigned'
+                ? phaseLeadName
+                : undefined
+              : stepAssigneeName || undefined
+          }
+          task={modalConfig.task}
+          existingMembers={existingMembers}
+          onAssignExisting={handleAssignExisting}
+          onAssignPhase={handleAssignPhase}
+          onMemberInvitedAndAssigned={handleMemberInvitedAndAssigned}
+        />
+      )}
+    </div>
+  );
+}

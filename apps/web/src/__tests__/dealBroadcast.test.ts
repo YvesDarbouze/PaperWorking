@@ -40,7 +40,7 @@ describe('Deal Broadcast Email Template (dealBroadcast.tsx)', () => {
 
     // Assert branding and header
     expect(html).toContain('PaperWorking');
-    expect(html).toContain('#00DD94');
+    expect(html).toContain('Investment Opportunity');
   });
 
   it('2: Render template without business card -> asserts no card section', () => {

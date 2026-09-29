@@ -56,6 +56,13 @@ export async function resolveAuthUserFromRequest(
   request: Request,
   deps: HandlerDeps = buildHandlerDeps(),
 ): Promise<AuthUser | null> {
+  // Test/dev override used by server-route tests (never active in production).
+  if (process.env.NODE_ENV !== 'production' && process.env.TEST_AUTH_UID) {
+    const uid = process.env.TEST_AUTH_UID;
+    if (uid === 'unauthenticated') return null;
+    return buildAuthUserForUid(uid, deps.sessionResolver.store);
+  }
+
   const credentials = sessionCredentialsFromRequest(request);
   const token = credentials.bearerToken ?? credentials.sessionCookie;
   if (token && isMockSessionValue(token) && process.env.NODE_ENV !== 'production') {

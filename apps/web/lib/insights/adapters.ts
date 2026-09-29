@@ -45,6 +45,7 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
 
   const uw = project.underwriting;
   const snap = project.underwritingSnapshot;
+  const holdPhase = (project as any).holdPhase;
   const purchasePrice =
     uw?.acquisition?.purchasePrice ?? snap?.inputs?.purchasePrice ?? project.purchase_price;
   const loanAmount =
@@ -54,7 +55,11 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
   const cashInvested =
     snap?.outputs?.cashRequired ?? Math.max(0, purchasePrice - loanAmount);
   const rehabBudget =
-    uw?.acquisition?.rehabBudget ?? snap?.inputs?.rehabBudget ?? project.rehab_costs;
+    holdPhase?.committedSowBudget ??
+    holdPhase?.initialRehabBudget ??
+    uw?.acquisition?.rehabBudget ??
+    snap?.inputs?.rehabBudget ??
+    project.rehab_costs;
   const grossRent =
     uw?.rentRoll?.grossScheduledRent !== undefined
       ? uw.rentRoll.grossScheduledRent * 12
@@ -77,6 +82,7 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
     gross_scheduled_rent: grossRent,
     underwriting: uw || undefined,
     underwritingSnapshot: snap || undefined,
+    holdPhase: holdPhase || undefined,
   };
 }
 

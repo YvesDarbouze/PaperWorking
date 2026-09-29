@@ -49,6 +49,10 @@ service cloud.firestore {
       allow read, write: if false; // Server-only via Firebase Admin SDK
     }
 
+    match /tickets/{ticketId} {
+      allow read, write: if false; // Server-only via Firebase Admin SDK
+    }
+
     // =========================================================================
     // PATTERN D: PUBLIC READ / SERVER-WRITE SUPPORT KNOWLEDGE BASE
     // Support FAQ entries and Glossary definitions are readable publicly.

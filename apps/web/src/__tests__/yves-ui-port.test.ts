@@ -17,8 +17,9 @@ describe('Yves-update-UI marketing copy lock (V1 paths)', () => {
       "Generic tools don't track earnest money deadlines or contractor draws.",
     );
     const heroContent = fs.readFileSync(landingHeroPath, 'utf8');
-    expect(heroContent).toContain('heroBody');
     expect(heroContent).toContain('heroHeadline');
+    expect(heroContent).toContain('heroSubheadline');
+    expect(heroContent).toContain('heroKicker');
   });
 
   it('How It Works surface renders the REIL phase modules per client direction', () => {
@@ -43,11 +44,11 @@ describe('Yves-update-UI marketing copy lock (V1 paths)', () => {
     expect(clientContent.length).toBeGreaterThan(0);
   });
 
-  it('Logo uses canonical raster brand masters', () => {
+  it('Logo uses the canonical SVG brand components', () => {
     const logoPath = path.join(webRoot, 'components/marketing/Logo.tsx');
     const logoContent = fs.readFileSync(logoPath, 'utf8');
-    expect(logoContent).toContain('/brand/paperworking-logotype-white-transparent.png');
-    expect(logoContent).toContain('/brand/paperworking-icon-black-transparent.png');
+    expect(logoContent).toContain('PaperWorkingLogotype');
+    expect(logoContent).toContain('PaperWorkingIcon');
   });
 
   it('Marketing header does not expose Playbook nav', () => {

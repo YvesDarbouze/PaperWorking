@@ -9,36 +9,36 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 md:px-10">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 pt-8 pb-14 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20">
       <div
         data-testid="legal-draft-notice"
-        className="mb-8 flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-200"
+        className="mb-8 flex items-center gap-3 rounded-none border border-border bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground"
       >
-        <span className="material-symbols-outlined text-amber-400 text-sm">gavel</span>
+        <span className="material-symbols-outlined text-foreground text-sm">gavel</span>
         <span>
-          <strong>{LEGAL_DRAFT_NOTICE}:</strong> This document describes verified, active platform data
+          <strong className="text-foreground">{LEGAL_DRAFT_NOTICE}:</strong> This document describes verified, active platform data
           flows and subprocessors, subject to final legal counsel certification.
         </span>
       </div>
 
-      <p className="pw-section-eyebrow mb-3">Legal</p>
-      <h1 className="mb-2 text-4xl font-semibold tracking-[-0.02em]">Privacy Policy</h1>
-      <p className="mb-10 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
+      <p className="mb-2.5 font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Legal</p>
+      <h1 className="landing-display mb-2 text-3xl font-semibold tracking-[-0.02em] text-foreground sm:text-4xl">Privacy Policy</h1>
+      <p className="mb-10 text-sm text-muted-foreground">
         Last updated {LEGAL_LAST_UPDATED}
       </p>
       <div className="space-y-8">
         {PRIVACY_SECTIONS.map((section) => (
-          <section key={section.heading} className="pw-card p-6">
-            <h2 className="mb-3 text-lg font-semibold">{section.heading}</h2>
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--color-on-surface-variant)' }}>
+          <section key={section.heading} className="rounded-none border border-border bg-card p-6 text-card-foreground shadow-sm ring-1 ring-foreground/10">
+            <h2 className="mb-3 text-lg font-semibold text-foreground">{section.heading}</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {section.body}
             </p>
             {section.subsections && section.subsections.length > 0 && (
-              <div className="mt-4 space-y-3 border-t border-white/10 pt-3">
+              <div className="mt-4 space-y-3 border-t border-border pt-3">
                 {section.subsections.map((sub) => (
-                  <div key={sub.title} className="rounded-lg bg-white/[0.02] p-3 text-xs">
-                    <h3 className="font-semibold text-white/90">{sub.title}</h3>
-                    <p className="mt-1 text-white/70 leading-relaxed">{sub.content}</p>
+                  <div key={sub.title} className="rounded-none border border-border/50 bg-muted/20 p-3 text-xs">
+                    <h3 className="font-semibold text-foreground">{sub.title}</h3>
+                    <p className="mt-1 text-muted-foreground leading-relaxed">{sub.content}</p>
                   </div>
                 ))}
               </div>
@@ -46,8 +46,8 @@ export default function PrivacyPage() {
           </section>
         ))}
       </div>
-      <p className="mt-10 text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
-        Questions? <Link href="/contact" className="underline-offset-2 hover:underline">Contact us</Link>
+      <p className="mt-10 text-sm text-muted-foreground">
+        Questions? <Link href="/contact" className="underline underline-offset-4 text-foreground hover:text-muted-foreground">Contact us</Link>
       </p>
     </div>
   );

@@ -2,7 +2,7 @@
  * Server-authoritative endpoint for Assistant Actions (Phase 3 Split-View Execution).
  *
  * Invariant:
- * All writes must travel the same validation paths as manual user input —
+ * All writes must travel the same validation paths as manual user input:
  * Ava is a fast user, not a privileged one (§7 Phase 3, §3.3).
  */
 
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     slug,
     address,
     status: 'ACTIVE',
-    visibility: 'PUBLIC',
+    visibility: 'marketplace',
     purchasePrice,
     rehabCost: rehabBudget,
     arv: explicitArv ?? undefined,

@@ -238,6 +238,32 @@ export const holdingCostsSchema = z.object({
 
 export type HoldingCosts = z.infer<typeof holdingCostsSchema>;
 
+export const financingModalityEnum = z.enum([
+  'cash',
+  'conventional',
+  'hard_money',
+  'owner_financing',
+  'balloon',
+]);
+export type FinancingModality = z.infer<typeof financingModalityEnum>;
+
+export const capitalSeekingIntentEnum = z.enum([
+  'solo',
+  'partner_down_payment',
+  'partner_whole_deal',
+  'crowdfund',
+]);
+export type CapitalSeekingIntent = z.infer<typeof capitalSeekingIntentEnum>;
+
+export const purchaseCriteriaSchema = z.object({
+  minCashOnCashPct: z.number().optional(),
+  minDscr: z.number().optional(),
+  minCapRatePct: z.number().optional(),
+  minFlipProfit: z.number().optional(),
+  maxLtvPct: z.number().optional(),
+});
+export type PurchaseCriteria = z.infer<typeof purchaseCriteriaSchema>;
+
 export const underwritingAssumptionsSchema = z.object({
   strategy: investmentStrategySchema,
   purchasePrice: z.number().positive('Purchase price must be positive'),
@@ -283,7 +309,68 @@ export const underwritingAssumptionsSchema = z.object({
   concessionsMonths: z.number().min(0).max(12).default(0).optional(),
   /** W2-11: Rent ramp % of stabilized rent collected during active lease-up months (default 100) */
   leaseUpRentRampPct: z.number().min(0).max(100).default(100.0).optional(),
+
+  // Short-Term Rental (Airbnb)
+  averageDailyRate: z.number().nonnegative().optional(),
+  occupancyRatePct: z.number().min(0).max(100).optional(),
+  cleaningFeePerStay: z.number().nonnegative().optional(),
+  averageStayNights: z.number().positive().optional(),
+  cleaningCostPerStay: z.number().nonnegative().optional(),
+  platformFeePct: z.number().min(0).max(25).optional(),
+  strFurnishingCapex: z.number().nonnegative().optional(),
+
+  // BRRRR
+  refinanceMonthsAfterClose: z.number().int().positive().optional(),
+  refinanceLtvPct: z.number().min(0).max(100).optional(),
+  refinanceInterestRatePct: z.number().min(0).max(30).optional(),
+  refinanceAmortizationYears: z.number().int().positive().optional(),
+  refinanceClosingCostsPct: z.number().min(0).max(15).optional(),
+  postRefiGrossMonthlyRent: z.number().nonnegative().optional(),
+  postRefiMonthlyOperatingExpenses: z.number().nonnegative().optional(),
+
+  // Commercial & Multi-Family
+  commercialSqft: z.number().nonnegative().optional(),
+  averageRentPerUnitMonthly: z.number().nonnegative().optional(),
+  marketCapRatePct: z.number().min(0).max(25).optional(),
+
+  // Wholesaling
+  contractPurchasePrice: z.number().nonnegative().optional(),
+  targetAssignmentFee: z.number().nonnegative().optional(),
+  isDoubleClosing: z.boolean().optional(),
+  doubleClosingEscrowFees: z.number().nonnegative().optional(),
+
+  // Deal Structuring & Financing Modality
+  financingModality: financingModalityEnum.default('conventional').optional(),
+  hardMoneyPoints: z.number().min(0).max(10).optional(),
+  hardMoneyInterestRatePct: z.number().min(0).max(30).optional(),
+  hardMoneyTermMonths: z.number().int().positive().optional(),
+  balloonTermMonths: z.number().int().positive().optional(),
+  capitalSeekingIntent: capitalSeekingIntentEnum.default('solo').optional(),
+  partnerEquitySplitPct: z.number().min(0).max(100).optional(),
+  targetCapitalRaise: z.number().nonnegative().optional(),
+  minimumInvestmentTicket: z.number().nonnegative().optional(),
+  preferredReturnPct: z.number().min(0).max(30).optional(),
+
+  // Purchase Criteria Screening
+  purchaseCriteria: purchaseCriteriaSchema.optional(),
+
+  // Schedule E Canonical Operating Expenses
+  canonicalPropertyTax: z.number().nonnegative().optional(),
+  canonicalInsurance: z.number().nonnegative().optional(),
+  canonicalUtilities: z.number().nonnegative().optional(),
+  canonicalMaintenance: z.number().nonnegative().optional(),
+  canonicalManagementFee: z.number().nonnegative().optional(),
+  canonicalHOA: z.number().nonnegative().optional(),
+  canonicalCapexReserve: z.number().nonnegative().optional(),
+
+  // Itemized Closing Costs
+  titleAndEscrowFees: z.number().nonnegative().optional(),
+  transferTax: z.number().nonnegative().optional(),
+  recordingFees: z.number().nonnegative().optional(),
+  originationPointsAmount: z.number().nonnegative().optional(),
+  prepaidEscrowItems: z.number().nonnegative().optional(),
 });
+
 
 export type UnderwritingAssumptions = z.infer<typeof underwritingAssumptionsSchema>;
 
@@ -420,6 +507,124 @@ export const underwritingOutputsSchema = z.object({
           ),
         ),
       }),
+    })
+    .optional(),
+  shortTermRental: z
+    .object({
+      bookedNightsYear: z.number(),
+      estimatedStaysCount: z.number(),
+      grossNightlyRevenue: z.number(),
+      cleaningFeeRevenue: z.number(),
+      grossAnnualRevenue: z.number(),
+      monthlyAverageGrossRevenue: z.number(),
+      platformFeesAnnual: z.number(),
+      cleaningCostsAnnual: z.number(),
+      totalOperatingExpenses: z.number(),
+      netOperatingIncome: z.number(),
+      totalCashInvested: z.number(),
+      annualNetCashFlow: z.number(),
+      monthlyNetCashFlow: z.number(),
+      cashOnCashReturnPct: z.number(),
+      capRateOnCost: z.number(),
+      expenseRatioPct: z.number(),
+    })
+    .optional(),
+  fixAndFlip: z
+    .object({
+      totalRehabBudget: z.number(),
+      holdingCostDebtTotal: z.number(),
+      holdingCostOperationsTotal: z.number(),
+      totalHoldingCosts: z.number(),
+      loanOriginationPointsAmount: z.number(),
+      totalCostBasis: z.number(),
+      estimatedSellingCosts: z.number(),
+      netSalesProceeds: z.number(),
+      netFlipProfit: z.number(),
+      profitMarginOnArvPct: z.number(),
+      roiOnTotalCostPct: z.number(),
+      annualizedRoiPct: z.number(),
+      totalCashInvested: z.number(),
+      isProfitable: z.boolean(),
+    })
+    .optional(),
+  brrrr: z
+    .object({
+      initialTotalCostBasis: z.number(),
+      initialCashRequired: z.number(),
+      newRefinanceLoanAmount: z.number(),
+      refinanceClosingCostsAmount: z.number(),
+      cashOutGrossProceeds: z.number(),
+      netCashLeftInDeal: z.number(),
+      capitalRecoveredPct: z.number(),
+      isPerfectBrrrr: z.boolean(),
+      postRefiMonthlyDebtService: z.number(),
+      postRefiMonthlyNetCashFlow: z.number(),
+      postRefiAnnualCashFlow: z.number(),
+      postRefiCashOnCashReturnPct: z.number().nullable(),
+      postRefiDebtServiceCoverageRatio: z.number().nullable(),
+    })
+    .optional(),
+  commercial: z
+    .object({
+      potentialGrossIncomeAnnual: z.number(),
+      effectiveGrossIncomeAnnual: z.number(),
+      totalOperatingExpensesAnnual: z.number(),
+      netOperatingIncome: z.number(),
+      debtCoverageRatio: z.number().nullable(),
+      debtYieldPct: z.number().nullable(),
+      capRateOnCostPct: z.number(),
+      impliedMarketValuation: z.number(),
+      grossRentMultiplier: z.number().nullable(),
+      breakEvenOccupancyPct: z.number().nullable(),
+      annualNetCashFlow: z.number(),
+      monthlyNetCashFlow: z.number(),
+      cashOnCashReturnPct: z.number(),
+      annualDebtService: z.number(),
+    })
+    .optional(),
+  wholesaling: z
+    .object({
+      buyerMaximumAllowableOffer: z.number(),
+      recommendedMaxContractOffer: z.number(),
+      endBuyerPurchasePrice: z.number(),
+      grossAssignmentFee: z.number(),
+      netWholesaleProfit: z.number(),
+      spreadPctOfContract: z.number(),
+      isDealViable: z.boolean(),
+    })
+    .optional(),
+  dealStructuring: z
+    .object({
+      financingModality: z.string(),
+      capitalSeekingIntent: z.string(),
+      partnerEquitySplitPct: z.number(),
+      partnerCashInvested: z.number(),
+      operatorCashInvested: z.number(),
+      partnerAnnualCashFlow: z.number(),
+      operatorAnnualCashFlow: z.number(),
+      partnerCoCReturnPct: z.number(),
+      operatorCoCReturnPct: z.number().nullable(),
+      targetCapitalRaise: z.number(),
+      minimumInvestmentTicket: z.number(),
+    })
+    .optional(),
+  purchaseCriteriaResult: z
+    .object({
+      overallStatus: z.enum(['GREEN_LIGHT', 'YELLOW_WARNING', 'RED_LIGHT']),
+      passedCount: z.number(),
+      warningCount: z.number(),
+      failedCount: z.number(),
+      totalEvaluated: z.number(),
+      evaluations: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          target: z.string(),
+          actual: z.string(),
+          status: z.enum(['pass', 'warn', 'fail']),
+          detail: z.string(),
+        })
+      ),
     })
     .optional(),
 });

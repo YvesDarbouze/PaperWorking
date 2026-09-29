@@ -18,9 +18,7 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// -----------------------------------------------------------------------------
-// SETUP: Seed the pre-fix snapshot snap-mtw1xydy-xlq1 (engineVersion 1)
-// -----------------------------------------------------------------------------
+// Seed pre-fix snapshot snap-mtw1xydy-xlq1 (engineVersion 1).
 const preFixSnapshot = {
   id: 'snap-mtw1xydy-xlq1',
   version: 1,
@@ -74,9 +72,7 @@ console.log('  Seeded ID:           ', preFixSnapshot.id);
 console.log('  Seeded Engine Version:', preFixSnapshot.engineVersion, '(legacy heuristic era)');
 console.log('  Seeded SHA-256 Hash: ', preFixSnapshot.integrityHash);
 
-// -----------------------------------------------------------------------------
-// STEP 1: Process 1 saves a new snapshot sealed under engineVersion 2
-// -----------------------------------------------------------------------------
+// Step 1: Process 1 saves a new snapshot sealed under engineVersion 2.
 console.log('\n--- STEP 1: Booting Process 1 (POST Snapshot & Persist to Disk under engineVersion 2) ---');
 const step1Code = `
 import { saveCalculatorSnapshot, verifySnapshotIntegrity } from './lib/calculator/snapshots-store.ts';
@@ -184,9 +180,7 @@ const fileSize = fs.statSync(diskFilePath).size;
 console.log('✓ Persisted storage verified on disk at:', diskFilePath);
 console.log(`  File size on disk: ${fileSize} bytes`);
 
-// -----------------------------------------------------------------------------
-// STEP 2: Boot fresh Process 2, prove immutability rejection
-// -----------------------------------------------------------------------------
+// Step 2: Boot fresh Process 2 to prove immutability rejection.
 console.log('\n--- STEP 2: Booting Fresh Process 2 (Attempt Mutation -> Proving Immutability) ---');
 const step2Code = `
 import { updateCalculatorSnapshot, ImmutableSnapshotError } from './lib/calculator/snapshots-store.ts';
@@ -239,9 +233,7 @@ console.log('  Status Code:  ', immutabilityRecord.statusCode, '(Method Not Allo
 console.log('  Error Message:', immutabilityRecord.message);
 console.log('\n[Process 2 Terminated]');
 
-// -----------------------------------------------------------------------------
-// STEP 3: Boot fresh Process 3 (Cold Recovery After Restart)
-// -----------------------------------------------------------------------------
+// Step 3: Boot fresh Process 3 for cold recovery verification.
 console.log('\n--- STEP 3: Booting Fresh Process 3 (Cold Recovery After Restart) ---');
 const step3Code = `
 import { getCalculatorSnapshots, verifySnapshotIntegrity } from './lib/calculator/snapshots-store.ts';
@@ -321,9 +313,7 @@ if (v1Recovered) {
 }
 console.log('\n[Process 3 Terminated]');
 
-// -----------------------------------------------------------------------------
-// STEP 4: Tamper with disk file and prove detection in fresh Process 4
-// -----------------------------------------------------------------------------
+// Step 4: Tamper with disk file and verify cryptographic detection.
 console.log('\n--- STEP 4: Booting Fresh Process 4 (Tamper Detection with Invalid Hash) ---');
 const diskContent = JSON.parse(fs.readFileSync(diskFilePath, 'utf-8'));
 diskContent[0].inputs.purchasePrice = 888888;

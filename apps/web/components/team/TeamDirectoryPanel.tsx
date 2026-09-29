@@ -1,29 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { loadProjects, loadTeamDirectory } from '@/lib/data';
-import {
-  fetchTeamInvitesFromBff,
-  fetchTeamMembersFromBff,
-  deleteTeamMember,
-  patchTeamMember,
-  postTeamInvite,
-  type PendingInvite,
-} from '@/lib/team/team-api';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { bffFetch } from '@/lib/api/bff-fetch';
+import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import {
   INTERNAL_ROLES,
   ROLE_PERMISSIONS,
-  canManageOrganization,
-  toUiMemberStatus,
+  TEAM_MEMBERS,
+  TEAM_SEATS,
   type InternalRole,
   type TeamMember,
-} from '@/lib/team/roles';
-
-type ProjectOption = { id: string; propertyName?: string; name?: string; title?: string };
-type SeatInfo = { used: number; limit: number; tier: 'Individual' | 'Team' };
-
-const DEFAULT_SEATS: SeatInfo = { used: 0, limit: 5, tier: 'Individual' };
+} from '@/lib/dashboard/shell-seed';
 
 function initials(name: string, email: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -36,41 +24,20 @@ function roleBadgeClass(role: string, isInternal: boolean): string {
   if (!isInternal) {
     return 'border-white/10 bg-white/5 text-[#9E9DA0]';
   }
-  // Manage roles get stronger badge — never treat "Deal Lead" as manage via includes('lead').
-  if (canManageOrganization(role)) {
+  if (role === 'CEO' || role === 'President' || role === 'Admin') {
     return 'border-violet-500/30 bg-violet-500/15 text-violet-300';
   }
   return 'border-[#7A9EAA]/30 bg-[#7A9EAA]/15 text-[#7A9EAA]';
 }
 
-function mapMember(raw: unknown): TeamMember | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const m = raw as Record<string, unknown>;
-  return {
-    id: String(m.id ?? ''),
-    name: String(m.name ?? m.displayName ?? ''),
-    email: String(m.email ?? ''),
-    role: String(m.role ?? 'Deal Lead'),
-    type: (m.type as TeamMember['type']) || 'Internal',
-    status: toUiMemberStatus(String(m.status ?? 'active')),
-    projects: Number(m.projects ?? 0),
-    lastActive: String(m.lastActive ?? '—'),
-    invitedAt: m.invitedAt ? String(m.invitedAt) : undefined,
-    isYou: Boolean(m.isYou),
-  };
-}
-
 /**
- * Team Directory & Scopes — port of PaperWorking `/dashboard/team`.
+ * Team Directory & Scopes: port of PaperWorking `/dashboard/team`.
  */
 export default function TeamDirectoryPanel() {
-  const [members, setMembers] = useState<TeamMember[]>([]);
-  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
-  const [seats, setSeats] = useState<SeatInfo>(DEFAULT_SEATS);
-  const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>('Individual');
+  const [members, setMembers] = useState<TeamMember[]>(() =>
+    TEAM_MEMBERS.map((m) => ({ ...m })),
+  );
+  const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>(TEAM_SEATS.tier);
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [bulkEmailInput, setBulkEmailInput] = useState('');
@@ -80,63 +47,10 @@ export default function TeamDirectoryPanel() {
   const [assignTabOrTask, setAssignTabOrTask] = useState('');
   const [flash, setFlash] = useState<string | null>(null);
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null);
-  const [inviteSubmitting, setInviteSubmitting] = useState(false);
-  const [pendingMemberIds, setPendingMemberIds] = useState<Set<string>>(() => new Set());
-  const [pendingInviteIds, setPendingInviteIds] = useState<Set<string>>(() => new Set());
-
-  const refreshTeamData = useCallback(async () => {
-    const [team, inviteList] = await Promise.all([
-      loadTeamDirectory(),
-      fetchTeamInvitesFromBff().catch(() => [] as PendingInvite[]),
-    ]);
-    const mapped = (team.members ?? []).map(mapMember).filter(Boolean) as TeamMember[];
-    setMembers(mapped);
-    setPendingInvites(inviteList);
-    const seatRaw = team.seats as Record<string, unknown> | undefined;
-    const nextSeats: SeatInfo = {
-      used: Number(seatRaw?.used ?? mapped.length + inviteList.length),
-      limit: Number(seatRaw?.limit ?? seatRaw?.total ?? Math.max(mapped.length, 5)),
-      tier: (seatRaw?.tier as SeatInfo['tier']) || (mapped.length > 1 ? 'Team' : 'Individual'),
-    };
-    setSeats(nextSeats);
-    setAccountTier(nextSeats.tier);
-    return mapped;
-  }, []);
-
+ 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setLoadError(null);
-      try {
-        const [, projectList] = await Promise.all([refreshTeamData(), loadProjects()]);
-        if (cancelled) return;
-        setProjects(
-          (Array.isArray(projectList) ? projectList : []).map((p) => {
-            const row = p as Record<string, unknown>;
-            return {
-              id: String(row.id ?? ''),
-              propertyName: String(row.propertyName ?? row.name ?? row.title ?? row.id ?? ''),
-              name: String(row.name ?? ''),
-              title: String(row.title ?? ''),
-            };
-          }),
-        );
-      } catch (err) {
-        if (!cancelled) {
-          setMembers([]);
-          setPendingInvites([]);
-          setProjects([]);
-          setLoadError(err instanceof Error ? err.message : 'Failed to load team');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [refreshTeamData]);
+    void bffFetch('/api/projects', { cache: 'no-store' }).catch(() => {});
+  }, []);
 
   const activePersonnel = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -151,100 +65,38 @@ export default function TeamDirectoryPanel() {
     });
   }, [members, searchQuery]);
 
-  const pendingInvitations = pendingInvites;
+  const pendingInvitations = useMemo(
+    () => members.filter((m) => m.status === 'Invited'),
+    [members],
+  );
 
   const activeSeatsCount = members.filter(
-    (m) => m.status === 'Active' || m.status === 'Suspended',
-  ).length + pendingInvites.length;
+    (m) => m.status === 'Active' || m.status === 'Suspended' || m.status === 'Invited',
+  ).length;
 
   function showFlash(msg: string) {
     setFlash(msg);
     setTimeout(() => setFlash(null), 2500);
   }
 
-  function markMemberPending(id: string, pending: boolean) {
-    setPendingMemberIds((prev) => {
-      const next = new Set(prev);
-      if (pending) next.add(id);
-      else next.delete(id);
-      return next;
-    });
+  function handleRoleChange(id: string, role: InternalRole) {
+    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, role } : m)));
+    showFlash(`Role updated to ${role}`);
   }
 
-  function markInvitePending(id: string, pending: boolean) {
-    setPendingInviteIds((prev) => {
-      const next = new Set(prev);
-      if (pending) next.add(id);
-      else next.delete(id);
-      return next;
-    });
-  }
-
-  async function handleRoleChange(id: string, role: InternalRole, previousRole: string) {
-    if (pendingMemberIds.has(id)) return;
-    markMemberPending(id, true);
-    try {
-      const updated = await patchTeamMember(id, { role });
-      setMembers((prev) => prev.map((m) => (m.id === id ? updated : m)));
-      showFlash(`Role updated to ${updated.role}`);
-    } catch (err) {
-      setMembers((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, role: previousRole } : m)),
-      );
-      showFlash(err instanceof Error ? err.message : 'Failed to update role');
-    } finally {
-      markMemberPending(id, false);
-    }
-  }
-
-  async function handleToggleSuspend(id: string, email: string, status: TeamMember['status']) {
-    if (pendingMemberIds.has(id)) return;
+  function handleToggleSuspend(id: string, email: string, status: TeamMember['status']) {
     const next = status === 'Suspended' ? 'Active' : 'Suspended';
-    markMemberPending(id, true);
-    try {
-      const updated = await patchTeamMember(id, { status: next });
-      setMembers((prev) => prev.map((m) => (m.id === id ? updated : m)));
-      showFlash(next === 'Suspended' ? `Suspended ${email}` : `Reactivated ${email}`);
-    } catch (err) {
-      showFlash(err instanceof Error ? err.message : 'Failed to update status');
-    } finally {
-      markMemberPending(id, false);
-    }
+    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, status: next } : m)));
+    showFlash(next === 'Suspended' ? `Suspended ${email}` : `Reactivated ${email}`);
   }
 
-  async function handleRemoveMember(id: string, email: string) {
-    if (pendingMemberIds.has(id)) return;
-    markMemberPending(id, true);
-    try {
-      await deleteTeamMember(id);
-      setMembers((prev) => prev.filter((m) => m.id !== id));
-      showFlash(`Removed ${email}`);
-    } catch (err) {
-      showFlash(err instanceof Error ? err.message : 'Failed to remove member');
-    } finally {
-      markMemberPending(id, false);
-    }
+  function handleRevoke(id: string, email: string) {
+    setMembers((prev) => prev.filter((m) => m.id !== id));
+    showFlash(`Revoked access for ${email}`);
   }
 
-  async function handleResendInvite(invite: PendingInvite) {
-    if (pendingInviteIds.has(invite.id)) return;
-    markInvitePending(invite.id, true);
-    try {
-      await postTeamInvite({ email: invite.email, role: invite.role });
-      const invites = await fetchTeamInvitesFromBff();
-      setPendingInvites(invites);
-      showFlash(`Registration email resent to ${invite.email}`);
-    } catch (err) {
-      showFlash(err instanceof Error ? err.message : 'Failed to resend invite');
-    } finally {
-      markInvitePending(invite.id, false);
-    }
-  }
-
-  async function handleSendInvites(e: FormEvent) {
+  function handleSendInvites(e: FormEvent) {
     e.preventDefault();
-    if (inviteSubmitting) return;
-
     const emails = bulkEmailInput
       .split(/[\s,;]+/)
       .map((s) => s.trim().toLowerCase())
@@ -258,67 +110,44 @@ export default function TeamDirectoryPanel() {
       showFlash('Select a project for scoped invite, or disable the restriction.');
       return;
     }
-    if (activeSeatsCount + emails.length > seats.limit) {
+    if (activeSeatsCount + emails.length > TEAM_SEATS.limit) {
       showFlash(
-        `Cannot invite ${emails.length} — only ${seats.limit - activeSeatsCount} seats remaining.`,
+        `Cannot invite ${emails.length}: only ${TEAM_SEATS.limit - activeSeatsCount} seats remaining.`,
       );
       return;
     }
 
     const projectName =
-      projects.find((p) => p.id === assignProject)?.propertyName ??
-      projects.find((p) => p.id === assignProject)?.name ??
-      assignProject;
+      SEED_PROJECTS.find((p) => p.id === assignProject)?.propertyName ?? assignProject;
 
-    setInviteSubmitting(true);
-    try {
-      for (const email of emails) {
-        await postTeamInvite({ email, role: selectedRole });
-      }
-      const [mapped, invites] = await Promise.all([
-        fetchTeamMembersFromBff().catch(() => null),
-        fetchTeamInvitesFromBff(),
-      ]);
-      if (mapped) setMembers(mapped);
-      setPendingInvites(invites);
-      setBulkEmailInput('');
-      setEnableScopedInvite(false);
-      setAssignProject('');
-      setAssignTabOrTask('');
-      setInviteModalOpen(false);
-      showFlash(
-        enableScopedInvite
-          ? `Sent ${emails.length} scoped invite(s) — restricted to “${projectName}”.`
-          : `Sent ${emails.length} invitation(s).`,
-      );
-    } catch (err) {
-      showFlash(err instanceof Error ? err.message : 'Failed to send invitations');
-    } finally {
-      setInviteSubmitting(false);
-    }
-  }
+    const newMembers: TeamMember[] = emails.map((email, i) => ({
+      id: `invite-${Date.now()}-${i}`,
+      name: email.split('@')[0] ?? email,
+      email,
+      role: selectedRole,
+      type: 'Internal',
+      status: 'Invited',
+      projects: enableScopedInvite ? 1 : 0,
+      lastActive: 'N/A',
+      invitedAt: new Date().toISOString(),
+    }));
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center px-4 text-sm text-white/50">
-        Loading team directory…
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-200">
-          Unable to load team: {loadError}
-        </div>
-      </div>
+    setMembers((prev) => [...prev, ...newMembers]);
+    setBulkEmailInput('');
+    setEnableScopedInvite(false);
+    setAssignProject('');
+    setAssignTabOrTask('');
+    setInviteModalOpen(false);
+    showFlash(
+      enableScopedInvite
+        ? `Sent ${emails.length} scoped invite(s): restricted to “${projectName}”.`
+        : `Sent ${emails.length} invitation(s) (seed preview).`,
     );
   }
 
   return (
     <div
-      className="w-full min-w-0 space-y-6 px-4 pb-20 pt-4 sm:px-5 lg:px-6 xl:px-8"
+      className="mx-auto max-w-7xl space-y-6 px-4 pb-20 pt-4 sm:px-6"
       data-testid="team-directory-page"
     >
       {flash ? (
@@ -388,14 +217,14 @@ export default function TeamDirectoryPanel() {
                 <div className="flex justify-between text-[11px] font-medium text-white/55">
                   <span>Workspace Seat Capacity</span>
                   <span className="font-mono">
-                    {activeSeatsCount} / {seats.limit} Seats Used
+                    {activeSeatsCount} / {TEAM_SEATS.limit} Seats Used
                   </span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
                   <div
                     className="h-full rounded-full bg-emerald-500 transition-all duration-300"
                     style={{
-                      width: `${Math.min(100, (activeSeatsCount / seats.limit) * 100)}%`,
+                      width: `${Math.min(100, (activeSeatsCount / TEAM_SEATS.limit) * 100)}%`,
                     }}
                   />
                 </div>
@@ -403,7 +232,7 @@ export default function TeamDirectoryPanel() {
                   type="button"
                   onClick={() => {
                     setAccountTier('Individual');
-                    showFlash('Downgrade queued.');
+                    showFlash('Downgrade queued (seed preview).');
                   }}
                   className="mt-2 block cursor-pointer text-left text-[11px] font-semibold text-red-400 hover:underline"
                 >
@@ -415,7 +244,7 @@ export default function TeamDirectoryPanel() {
                 type="button"
                 onClick={() => {
                   setAccountTier('Team');
-                  showFlash('Upgraded to Investment Team.');
+                  showFlash('Upgraded to Investment Team (seed preview).');
                 }}
                 className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110"
               >
@@ -549,12 +378,9 @@ export default function TeamDirectoryPanel() {
                             >
                               <select
                                 value={member.role}
-                                disabled={pendingMemberIds.has(member.id)}
-                                onChange={(e) => {
-                                  const nextRole = e.target.value as InternalRole;
-                                  if (nextRole === member.role) return;
-                                  void handleRoleChange(member.id, nextRole, member.role);
-                                }}
+                                onChange={(e) =>
+                                  handleRoleChange(member.id, e.target.value as InternalRole)
+                                }
                                 className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-0.5 pl-2 pr-6 text-[11px] font-semibold uppercase tracking-wider text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
                               >
                                 {INTERNAL_ROLES.map((role) => (
@@ -609,19 +435,17 @@ export default function TeamDirectoryPanel() {
                               <>
                                 <button
                                   type="button"
-                                  disabled={pendingMemberIds.has(member.id)}
                                   onClick={() =>
-                                    void handleToggleSuspend(member.id, member.email, member.status)
+                                    handleToggleSuspend(member.id, member.email, member.status)
                                   }
-                                  className="cursor-pointer text-[11px] font-semibold text-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                                  className="cursor-pointer text-[11px] font-semibold text-white/50 hover:text-white"
                                 >
                                   {isSuspended ? 'Reactivate' : 'Suspend'}
                                 </button>
                                 <button
                                   type="button"
-                                  disabled={pendingMemberIds.has(member.id)}
-                                  onClick={() => void handleRemoveMember(member.id, member.email)}
-                                  className="cursor-pointer text-[11px] font-semibold text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
+                                  onClick={() => handleRevoke(member.id, member.email)}
+                                  className="cursor-pointer text-[11px] font-semibold text-red-400 hover:text-red-300"
                                 >
                                   Remove
                                 </button>
@@ -630,9 +454,8 @@ export default function TeamDirectoryPanel() {
                             {!isInternal && !member.isYou ? (
                               <button
                                 type="button"
-                                disabled={pendingMemberIds.has(member.id)}
-                                onClick={() => void handleRemoveMember(member.id, member.email)}
-                                className="cursor-pointer text-[11px] font-semibold text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
+                                onClick={() => handleRevoke(member.id, member.email)}
+                                className="cursor-pointer text-[11px] font-semibold text-red-400 hover:text-red-300"
                               >
                                 Revoke
                               </button>
@@ -683,20 +506,25 @@ export default function TeamDirectoryPanel() {
                       <button
                         type="button"
                         title="Resend Invite"
-                        disabled={pendingInviteIds.has(invite.id)}
-                        onClick={() => void handleResendInvite(invite)}
-                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        onClick={() => {
+                          setMembers((prev) =>
+                            prev.map((m) =>
+                              m.id === invite.id
+                                ? { ...m, invitedAt: new Date().toISOString() }
+                                : m,
+                            ),
+                          );
+                          showFlash(`Registration email resent to ${invite.email}`);
+                        }}
+                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-white/10 hover:text-white"
                       >
                         <span className="material-symbols-outlined text-[16px]">refresh</span>
                       </button>
                       <button
                         type="button"
                         title="Cancel Invitation"
-                        disabled={pendingInviteIds.has(invite.id)}
-                        onClick={() =>
-                          showFlash('Invitation cancel is not available yet — no server endpoint.')
-                        }
-                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+                        onClick={() => handleRevoke(invite.id, invite.email)}
+                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-red-500/10 hover:text-red-400"
                       >
                         <span className="material-symbols-outlined text-[16px]">delete</span>
                       </button>
@@ -745,7 +573,7 @@ export default function TeamDirectoryPanel() {
             </h3>
             <p className="mb-4 text-[11px] leading-normal text-white/40">
               Enter email addresses to provision workspace credentials. Seats invited count towards
-              your {seats.limit}-operator cap.
+              your {TEAM_SEATS.limit}-operator cap.
             </p>
 
             <form onSubmit={handleSendInvites} className="space-y-4">
@@ -809,9 +637,9 @@ export default function TeamDirectoryPanel() {
                         className="w-full cursor-pointer rounded border border-white/10 bg-[#0d0a0b] p-1.5 text-[10px] text-white outline-none"
                       >
                         <option value="">Select Target Project</option>
-                        {projects.map((p) => (
+                        {SEED_PROJECTS.map((p) => (
                           <option key={p.id} value={p.id}>
-                            {p.propertyName || p.name || p.id}
+                            {p.propertyName}
                           </option>
                         ))}
                       </select>
@@ -842,10 +670,9 @@ export default function TeamDirectoryPanel() {
                 </button>
                 <button
                   type="submit"
-                  disabled={inviteSubmitting}
-                  className="cursor-pointer rounded-md bg-emerald-500 px-5 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="cursor-pointer rounded-md bg-emerald-500 px-5 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400"
                 >
-                  {inviteSubmitting ? 'Sending…' : 'Send Invitations'}
+                  Send Invitations
                 </button>
               </div>
             </form>

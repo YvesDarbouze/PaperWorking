@@ -63,7 +63,7 @@ describe('phase B18 — admin BFF transport', () => {
 
   it('admin overview infra reads use BFF helpers', () => {
     const source = readFileSync(join(webRoot, 'components/admin/AdminOverviewPanel.tsx'), 'utf8');
-    expect(source).toContain('getAdminRentcastUsageFromBff');
+    expect(source).toMatch(/bffFetch\('\/api\/admin\/rentcast-usage'/);
     expect(source).not.toContain('apiFetch(');
   });
 

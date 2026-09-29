@@ -5,6 +5,7 @@ import {
 
 export interface GeneratedReport {
   reportId: string;
+  isDemo?: boolean;
   type: 'monthly' | 'quarterly' | 'yearly' | 'overall';
   format: 'pdf' | 'csv';
   generatedAt: string;
@@ -35,6 +36,7 @@ export async function buildPortfolioReport(
       generatedAt: new Date().toISOString(),
       executiveSummary,
       metrics: sampleMetrics,
+      isDemo: true,
       csvContent,
     };
   }
@@ -46,5 +48,6 @@ export async function buildPortfolioReport(
     generatedAt: new Date().toISOString(),
     executiveSummary,
     metrics: sampleMetrics,
+    isDemo: true,
   };
 }

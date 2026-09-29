@@ -109,7 +109,7 @@ describe('UI ARV Honesty Component Tests (W2-02 / CATCH-13)', () => {
       );
 
       expect(html).toContain('Estimated After Repair Value (ARV)');
-      expect(html).toContain('ARV not provided — enter ARV to compute equity/MAO.');
+      expect(html).toContain('ARV not provided: enter ARV to compute equity/MAO.');
     });
 
     it('omits empty state warning when explicit ARV is provided', () => {

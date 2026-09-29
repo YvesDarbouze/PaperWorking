@@ -463,7 +463,7 @@ export default function PortfolioReportsPanel({
       <div className="space-y-4" data-testid="statement-display-area">
         {selectedReportId === 'PL' && statementMatrix && (
           <FinancialStatementGrid
-            title={`Profit & Loss Statement (P&L) — ${scopeLabel}`}
+            title={`Profit & Loss Statement (P&L) · ${scopeLabel}`}
             subtitle="Gross scheduled rent, itemized operating expenses, net operating income, debt service, and cash flow"
             fiscalYear={fiscalYear}
             columns={statementMatrix.columns}
@@ -474,7 +474,7 @@ export default function PortfolioReportsPanel({
 
         {selectedReportId === 'BALANCE_SHEET' && statementMatrix && (
           <FinancialStatementGrid
-            title={`Balance Sheet — ${scopeLabel}`}
+            title={`Balance Sheet · ${scopeLabel}`}
             subtitle="Asset book values, mortgage liabilities, tenant security deposits held, and net owner equity"
             fiscalYear={fiscalYear}
             columns={statementMatrix.columns}
@@ -485,7 +485,7 @@ export default function PortfolioReportsPanel({
 
         {selectedReportId === 'CASH_FLOW' && statementMatrix && (
           <FinancialStatementGrid
-            title={`Cash Flow Statement — ${scopeLabel}`}
+            title={`Cash Flow Statement · ${scopeLabel}`}
             subtitle="Operating, financing, and investing cash flows detailing distributable cash after debt service and CapEx"
             fiscalYear={fiscalYear}
             columns={statementMatrix.columns}

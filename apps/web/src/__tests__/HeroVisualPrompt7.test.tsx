@@ -65,7 +65,7 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
     it('renders the on-brand real hero visual asset with explicit dimensions and alt text', () => {
       expect(carouselHtml).toContain('/images/hero-investor-terminal.png');
       expect(carouselHtml).toContain('loading="lazy"');
-      expect(carouselHtml).toContain('Finally, Project Management software made for serious real estate investors and Investments teams. — PaperWorking investment terminal');
+      expect(carouselHtml).toContain('Finally, project management software made for serious real estate investors. — PaperWorking investment terminal');
       expect(carouselHtml).not.toContain('unsplash.com');
       expect(carouselHtml).not.toContain('placeholder');
     });
@@ -109,23 +109,26 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
   });
 
   describe('6. Preserved Hero Copy & Actionable CTAs', () => {
-    it('preserves existing hero copy verbatim without alterations', () => {
+    it('preserves authorized hero copy, keeping hero concise and above the fold', () => {
       expect(heroHtml).toContain(
-        'Finally, Project Management software made for serious real estate investors and Investments teams.'
+        'Finally, project management software made for serious real estate investors.'
       );
       expect(heroHtml).toContain(
         "Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit."
       );
-      expect(heroHtml).toContain(
+      expect(heroHtml).not.toContain(
+        'Generic tools don\'t track earnest money deadlines'
+      );
+      expect(heroHtml).not.toContain(
         'PaperWorking acts as operational deal insurance for your portfolio.'
       );
     });
 
     it('renders primary and secondary CTAs above the fold', () => {
       expect(heroHtml).toContain('href="/pricing"');
-      expect(heroHtml).toContain('href="/support/metrics"');
-      expect(heroHtml).toContain('Start Free 14-Day Trial');
-      expect(heroHtml).toContain('See the 33 metrics');
+      expect(heroHtml).toContain('href="#deal-calculator"');
+      expect(heroHtml).toContain('Get started');
+      expect(heroHtml).toContain('See how it works');
     });
   });
 });

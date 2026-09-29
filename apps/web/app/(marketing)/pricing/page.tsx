@@ -3,18 +3,23 @@ import ChatbotWidget from '@/components/marketing/ChatbotWidget';
 import PricingSection from '@/components/marketing/PricingSection';
 import PermissionsSection from '@/sections/PermissionsSection';
 import NetworkSection from '@/sections/NetworkSection';
-import { pricingHeader } from '@/lib/marketing/copy';
+import {
+  pricingHeader,
+  pricingPositioningHeadline,
+  pricingSubheadline,
+  pricingBody,
+} from '@/lib/marketing/copy';
 
 export const metadata: Metadata = {
-  title: `Pricing — ${pricingHeader}`,
-  description: `${pricingHeader}. PaperWorking plans for solo real estate investors, teams, and vendors. Priced against the mistakes it is built to catch. All plans include a 14-day trial.`,
+  title: `${pricingPositioningHeadline} | Pricing | PaperWorking`,
+  description: `${pricingPositioningHeadline}. ${pricingSubheadline} ${pricingBody}`,
   openGraph: {
-    title: `Pricing — ${pricingHeader} | PaperWorking`,
-    description: `${pricingHeader}. PaperWorking gives serious real estate investors and teams one workspace for underwriting, funding, hold management, and exit planning.`,
+    title: `${pricingPositioningHeadline} | Pricing | PaperWorking`,
+    description: `${pricingPositioningHeadline}. ${pricingSubheadline} ${pricingBody}`,
   },
   twitter: {
-    title: `Pricing — ${pricingHeader} | PaperWorking`,
-    description: `${pricingHeader}. PaperWorking plans for solo real estate investors, teams, and vendors.`,
+    title: `${pricingPositioningHeadline} | Pricing | PaperWorking`,
+    description: `${pricingPositioningHeadline}. ${pricingSubheadline}`,
   },
 };
 

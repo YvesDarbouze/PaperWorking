@@ -36,8 +36,39 @@ export default function ProjectWorkspaceShell({
               ← Projects
             </button>
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl font-semibold truncate">{project.propertyName}</h1>
-              <p className="text-xs sm:text-sm text-white/65 truncate">{project.address}</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-semibold truncate">{project.propertyName}</h1>
+                <span className="hidden sm:inline-block rounded px-2 py-0.5 text-[10px] font-mono uppercase bg-white/10 text-neutral-300 border border-white/10">
+                  Overarching Project
+                </span>
+                <span className="hidden sm:inline-block rounded px-2 py-0.5 text-[10px] font-mono uppercase bg-white/5 text-neutral-400 border border-white/5">
+                  Deal Inside Project
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2 text-xs sm:text-sm text-white/70 mt-0.5 flex-wrap cursor-help"
+                title={`Canonical Deal Serial: ${project.dealAddress || project.address}`}
+              >
+                <span className="text-neutral-400 font-medium text-[11px]">Deal Component:</span>
+                {project.dealSlug || project.dealId ? (
+                  <Link
+                    href={`/marketplace/${project.dealSlug || project.dealId}`}
+                    data-testid="workspace-deal-component-link"
+                    className="inline-flex items-center gap-1 font-medium text-white hover:text-[var(--accent)] hover:underline transition truncate max-w-[320px]"
+                    title={`View Deal Component: ${project.dealAddress || project.address || 'Underwriting Deal'}`}
+                  >
+                    <span className="material-symbols-outlined text-[13px] text-neutral-400">payments</span>
+                    <span className="truncate">{(project.dealAddress || project.address || 'View Deal').split(',')[0]}</span>
+                    <span className="text-[10px] rounded px-1.5 py-0.2 bg-white/10 text-white/80 border border-white/10">
+                      Marketplace Offering →
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="truncate text-white/60">
+                    {(project.dealAddress || project.address || 'No deal attached').split(',')[0]}
+                  </span>
+                )}
+              </div>
             </div>
             <span
               className="shrink-0 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.06em]"

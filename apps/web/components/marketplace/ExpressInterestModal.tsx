@@ -22,6 +22,7 @@ export interface ExpressInterestModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccessToast?: (msg: string) => void;
+  initialMode?: 'commitment' | 'schedule';
 }
 
 export default function ExpressInterestModal({
@@ -29,8 +30,14 @@ export default function ExpressInterestModal({
   isOpen,
   onClose,
   onSuccessToast,
+  initialMode = 'commitment',
 }: ExpressInterestModalProps) {
-  const router = useRouter();
+  let router: any = null;
+  try {
+    router = useRouter();
+  } catch {
+    // SSR / test environments without AppRouterContext
+  }
   const auth = useOptionalAuth();
   const isAuthenticated = auth ? auth.authenticated && !auth.loading : true;
 
@@ -39,12 +46,31 @@ export default function ExpressInterestModal({
   const committed = deal.committedAmount ?? deal.committed ?? 0;
   const remaining = Math.max(0, target - committed);
 
+  // Tab mode
+  const [activeTab, setActiveTab] = useState<'commitment' | 'schedule'>(initialMode);
+
+  // Commitment fields
   const [amount, setAmount] = useState<string>(String(minInvestment));
   const [attested, setAttested] = useState(false);
   const [notes, setNotes] = useState('');
+  const [alsoScheduleCall, setAlsoScheduleCall] = useState(false);
+
+  // Meeting scheduler fields
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const defaultDateStr = tomorrow.toISOString().split('T')[0];
+
+  const [preferredDate, setPreferredDate] = useState(defaultDateStr);
+  const [timeSlot, setTimeSlot] = useState<'morning' | 'afternoon' | 'evening'>('morning');
+  const [meetingFormat, setMeetingFormat] = useState<'google_meet' | 'phone' | 'in_person'>('google_meet');
+  const [investorEmail, setInvestorEmail] = useState('investor@example.com');
+  const [investorPhone, setInvestorPhone] = useState('');
+  const [agenda, setAgenda] = useState('Underwriting assumptions and waterfall structure review');
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedType, setSubmittedType] = useState<'commitment' | 'meeting' | 'both'>('commitment');
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -62,11 +88,88 @@ export default function ExpressInterestModal({
 
   const dealTitle = deal.propertyName || deal.name || 'Commercial Opportunity';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const timeSlotLabels: Record<string, string> = {
+    morning: 'Morning (9:00 AM - 12:00 PM EST)',
+    afternoon: 'Afternoon (1:00 PM - 5:00 PM EST)',
+    evening: 'Evening (5:00 PM - 7:00 PM EST)',
+  };
+
+  const formatLabels: Record<string, string> = {
+    google_meet: 'Google Meet Video Call',
+    phone: 'Direct Phone Call',
+    in_person: 'In-Person Briefing',
+  };
+
+  const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // If not authenticated, redirect to login with deep link return URL
+    if (!isAuthenticated) {
+      router.push(`/login?next=/marketplace/${deal.slug || deal.id}`);
+      return;
+    }
+
+    if (!preferredDate) {
+      setError('Please select a preferred date for the meeting.');
+      return;
+    }
+
+    if (!investorEmail || !investorEmail.includes('@')) {
+      setError('Please provide a valid email address so the operator can send the invitation.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const content = `Meeting Request: Proposed for ${preferredDate} during ${timeSlotLabels[timeSlot]} via ${formatLabels[meetingFormat]}. Contact: ${investorEmail}${investorPhone ? ` (${investorPhone})` : ''}. Agenda: ${agenda || 'General deal discussion'}`;
+
+      await fetch('/api/deals/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          senderEmail: investorEmail,
+          content,
+          source: 'platform',
+          meetingDetails: {
+            preferredDate,
+            timeSlot,
+            format: meetingFormat,
+            phone: investorPhone || undefined,
+            agenda: agenda || undefined,
+          },
+        }),
+      });
+
+      // Save meeting notification to local Inbox
+      const inboxKey = 'paperworking_inbox_items';
+      const existingItems = JSON.parse(localStorage.getItem(inboxKey) || '[]');
+      const newItem = {
+        id: `meeting-${Date.now()}`,
+        type: 'meeting_request',
+        title: `Meeting Requested: ${dealTitle}`,
+        body: `Meeting proposed for ${preferredDate} (${timeSlotLabels[timeSlot]}). Operator will confirm the calendar slot.`,
+        dealId: deal.id,
+        createdAt: new Date().toISOString(),
+        unread: true,
+      };
+      localStorage.setItem(inboxKey, JSON.stringify([newItem, ...existingItems]));
+
+      setSubmittedType('meeting');
+      setSubmitted(true);
+      onSuccessToast?.(`Meeting request sent to the operator of ${dealTitle}.`);
+    } catch {
+      setError('Unable to dispatch meeting request. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCommitmentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
     if (!isAuthenticated) {
       router.push(`/login?next=/marketplace/${deal.slug || deal.id}`);
       return;
@@ -97,14 +200,42 @@ export default function ExpressInterestModal({
     setLoading(true);
 
     try {
-      // Simulate/perform dispatch to user's Inbox and notification stream
+      let content = `Soft Commitment of ${formatCurrency(numAmount)} submitted.`;
+      if (alsoScheduleCall) {
+        content += ` Investor also requested an introductory call on ${preferredDate} (${timeSlotLabels[timeSlot]} via ${formatLabels[meetingFormat]}).`;
+      }
+      if (notes) {
+        content += ` Entity/Notes: ${notes}`;
+      }
+
+      await fetch('/api/deals/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          senderEmail: investorEmail,
+          content,
+          source: 'platform',
+          meetingDetails: alsoScheduleCall
+            ? {
+                preferredDate,
+                timeSlot,
+                format: meetingFormat,
+                phone: investorPhone || undefined,
+                agenda: notes || undefined,
+              }
+            : undefined,
+        }),
+      });
+
+      // Dispatch to user's Inbox
       const inboxKey = 'paperworking_inbox_items';
       const existingItems = JSON.parse(localStorage.getItem(inboxKey) || '[]');
       const newItem = {
         id: `interest-${Date.now()}`,
         type: 'deal_interest',
         title: `Expressed Interest: ${dealTitle}`,
-        body: `Soft commitment of ${formatCurrency(numAmount)} submitted. The operator will contact you with offering documents.`,
+        body: `Soft commitment of ${formatCurrency(numAmount)} submitted.${alsoScheduleCall ? ` Meeting requested for ${preferredDate}.` : ''} The operator will contact you with offering documents.`,
         dealId: deal.id,
         amount: numAmount,
         createdAt: new Date().toISOString(),
@@ -112,8 +243,7 @@ export default function ExpressInterestModal({
       };
       localStorage.setItem(inboxKey, JSON.stringify([newItem, ...existingItems]));
 
-      // Artificial small delay for polished institutional feel
-      await new Promise((resolve) => setTimeout(resolve, 350));
+      setSubmittedType(alsoScheduleCall ? 'both' : 'commitment');
       setSubmitted(true);
       onSuccessToast?.(`Interest of ${formatCurrency(numAmount)} registered for ${dealTitle}.`);
     } catch {
@@ -133,16 +263,16 @@ export default function ExpressInterestModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="interest-modal-title"
-        className="relative w-full max-w-lg rounded-2xl border border-white/15 bg-[#121014] p-6 shadow-2xl dropdown-entrance"
+        className="relative w-full max-w-lg rounded-2xl border border-white/15 bg-[#121014] p-6 shadow-2xl dropdown-entrance max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
             <h2 id="interest-modal-title" className="text-lg font-bold text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[20px] text-[var(--accent)]">
-                verified_user
+                {activeTab === 'commitment' ? 'verified_user' : 'calendar_clock'}
               </span>
-              Express Soft Commitment
+              {activeTab === 'commitment' ? 'Express Soft Commitment' : 'Set up a time to talk'}
             </h2>
             <p className="text-xs text-[#9E9DA0] mt-0.5 truncate max-w-sm">
               {dealTitle}
@@ -158,6 +288,38 @@ export default function ExpressInterestModal({
           </button>
         </div>
 
+        {/* Tab Switcher */}
+        {!submitted && (
+          <div className="flex rounded-xl bg-white/5 p-1 mt-4 border border-white/10">
+            <button
+              type="button"
+              data-testid="tab-commitment"
+              onClick={() => setActiveTab('commitment')}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition min-h-[40px] flex items-center justify-center gap-1.5 ${
+                activeTab === 'commitment'
+                  ? 'bg-[var(--accent)] text-black font-bold shadow'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">payments</span>
+              <span>Express Commitment</span>
+            </button>
+            <button
+              type="button"
+              data-testid="tab-schedule"
+              onClick={() => setActiveTab('schedule')}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition min-h-[40px] flex items-center justify-center gap-1.5 ${
+                activeTab === 'schedule'
+                  ? 'bg-[var(--accent)] text-black font-bold shadow'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">schedule</span>
+              <span>Set up a time to talk</span>
+            </button>
+          </div>
+        )}
+
         {submitted ? (
           /* Success State */
           <div className="py-8 text-center space-y-4" data-testid="interest-success-state">
@@ -165,10 +327,17 @@ export default function ExpressInterestModal({
               <span className="material-symbols-outlined text-3xl">check_circle</span>
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Interest Successfully Registered</h3>
-              <p className="mt-1 text-xs text-[#9E9DA0] max-w-sm mx-auto">
-                A confirmation has been sent to your Inbox. The operator has been notified and
-                will transmit subscription documents directly.
+              <h3 className="text-base font-bold text-white">
+                {submittedType === 'meeting'
+                  ? 'Meeting Invitation Dispatched'
+                  : submittedType === 'both'
+                    ? 'Commitment & Meeting Proposal Dispatched'
+                    : 'Interest Successfully Registered'}
+              </h3>
+              <p className="mt-1.5 text-xs text-[#9E9DA0] max-w-sm mx-auto leading-relaxed">
+                {submittedType === 'meeting'
+                  ? `Your request to meet on ${preferredDate} during ${timeSlotLabels[timeSlot]} has been transmitted to the operating partner.`
+                  : 'A confirmation has been sent to your Inbox. The operator has been notified and will transmit subscription documents directly.'}
               </p>
             </div>
             <div className="pt-2">
@@ -176,16 +345,15 @@ export default function ExpressInterestModal({
                 variant="secondary"
                 size="md"
                 onClick={onClose}
-                className="w-full justify-center"
+                className="w-full justify-center min-h-[44px]"
               >
                 Close &amp; Return to Deal
               </Button>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'commitment' ? (
           /* Commitment Form */
-          <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-4">
-            {/* Inline Error */}
+          <form onSubmit={handleCommitmentSubmit} noValidate className="mt-4 space-y-4">
             {error && (
               <div
                 data-testid="interest-form-error"
@@ -196,7 +364,6 @@ export default function ExpressInterestModal({
               </div>
             )}
 
-            {/* Target & Min Context */}
             <div className="grid grid-cols-2 gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs">
               <div>
                 <span className="text-[#9E9DA0] block text-[10px] uppercase font-bold">Min Investment</span>
@@ -212,10 +379,9 @@ export default function ExpressInterestModal({
               </div>
             </div>
 
-            {/* Amount Input */}
             <div className="space-y-1.5">
               <label htmlFor="commitment-amount" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
-                Indicated Investment Amount ($)
+                Indicated Investment Amount ($) *
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-[#9E9DA0]">
@@ -231,12 +397,11 @@ export default function ExpressInterestModal({
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   placeholder="e.g. 50000"
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
+                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)] min-h-[44px]"
                 />
               </div>
             </div>
 
-            {/* Accreditation Attestation (Strict SEC Rule 506(c)) */}
             <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-2">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
@@ -253,7 +418,6 @@ export default function ExpressInterestModal({
               </label>
             </div>
 
-            {/* Notes */}
             <div className="space-y-1.5">
               <label htmlFor="commitment-notes" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
                 Notes or Entity Name (Optional)
@@ -263,12 +427,58 @@ export default function ExpressInterestModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                placeholder="e.g., Investing via Family Trust or LLC"
+                placeholder="e.g. Investing via Family Trust or LLC"
                 className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
               />
             </div>
 
-            {/* Action Cluster: Tertiary Cancel + Primary Submit */}
+            {/* Optional inline meeting request toggle */}
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 space-y-2">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  data-testid="schedule-call-toggle"
+                  checked={alsoScheduleCall}
+                  onChange={(e) => setAlsoScheduleCall(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)] accent-[var(--accent)]"
+                />
+                <span className="text-xs font-semibold text-white">
+                  Also set up a time to talk with the operator
+                </span>
+              </label>
+
+              {alsoScheduleCall && (
+                <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">
+                      Target Date
+                    </label>
+                    <input
+                      type="date"
+                      min={defaultDateStr}
+                      value={preferredDate}
+                      onChange={(e) => setPreferredDate(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-white/5 p-2 text-xs text-white focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">
+                      Time Slot
+                    </label>
+                    <select
+                      value={timeSlot}
+                      onChange={(e) => setTimeSlot(e.target.value as any)}
+                      className="w-full rounded-lg border border-white/10 bg-[#16141a] p-2 text-xs text-white focus:outline-none"
+                    >
+                      <option value="morning">Morning (9am - 12pm)</option>
+                      <option value="afternoon">Afternoon (1pm - 5pm)</option>
+                      <option value="evening">Evening (5pm - 7pm)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
               <Button
                 type="button"
@@ -276,6 +486,7 @@ export default function ExpressInterestModal({
                 size="md"
                 onClick={onClose}
                 disabled={loading}
+                className="min-h-[44px]"
               >
                 Cancel
               </Button>
@@ -285,9 +496,177 @@ export default function ExpressInterestModal({
                 size="md"
                 disabled={loading}
                 data-testid="submit-interest-btn"
-                className="min-w-[150px] justify-center"
+                className="min-w-[150px] justify-center min-h-[44px]"
               >
                 {loading ? 'Submitting…' : 'Submit Interest'}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          /* Meeting Scheduler Form: "Set up a time to talk" */
+          <form onSubmit={handleScheduleSubmit} noValidate className="mt-4 space-y-4">
+            {error && (
+              <div
+                data-testid="scheduler-form-error"
+                className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[16px] text-red-400">error</span>
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-[var(--accent)]/20 bg-[var(--accent)]/[0.04] p-3 text-xs text-white/80 flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] text-[var(--accent)] shrink-0">
+                event_available
+              </span>
+              <p>
+                Propose a time to speak directly with the operating partner regarding deal strategy, waterfall hurdle terms, and subscription steps.
+              </p>
+            </div>
+
+            {/* Date Selection */}
+            <div className="space-y-1.5">
+              <label htmlFor="pref-date" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                Preferred Date *
+              </label>
+              <input
+                id="pref-date"
+                data-testid="preferred-date-input"
+                type="date"
+                min={defaultDateStr}
+                value={preferredDate}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                required
+                className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+              />
+            </div>
+
+            {/* Time Slot Selector */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                Proposed Time Slot *
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {(['morning', 'afternoon', 'evening'] as const).map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    data-testid={`time-slot-${slot}`}
+                    onClick={() => setTimeSlot(slot)}
+                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] flex flex-col justify-center items-center ${
+                      timeSlot === slot
+                        ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-white'
+                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                    }`}
+                  >
+                    <span className="capitalize">{slot}</span>
+                    <span className="text-[10px] opacity-70">
+                      {slot === 'morning' ? '9am-12pm' : slot === 'afternoon' ? '1pm-5pm' : '5pm-7pm'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Meeting Format */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                Meeting Format *
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'google_meet', label: 'Google Meet', icon: 'videocam' },
+                  { id: 'phone', label: 'Phone Call', icon: 'call' },
+                  { id: 'in_person', label: 'In-Person', icon: 'groups' },
+                ].map((fmt) => (
+                  <button
+                    key={fmt.id}
+                    type="button"
+                    data-testid={`meeting-format-${fmt.id}`}
+                    onClick={() => setMeetingFormat(fmt.id as any)}
+                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] flex items-center justify-center gap-1.5 ${
+                      meetingFormat === fmt.id
+                        ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-white'
+                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">{fmt.icon}</span>
+                    <span>{fmt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="inv-email" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                  Your Email *
+                </label>
+                <input
+                  id="inv-email"
+                  data-testid="investor-email-input"
+                  type="email"
+                  value={investorEmail}
+                  onChange={(e) => setInvestorEmail(e.target.value)}
+                  required
+                  placeholder="name@fund.com"
+                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="inv-phone" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                  Phone (Optional)
+                </label>
+                <input
+                  id="inv-phone"
+                  data-testid="investor-phone-input"
+                  type="tel"
+                  value={investorPhone}
+                  onChange={(e) => setInvestorPhone(e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+                />
+              </div>
+            </div>
+
+            {/* Agenda / Questions */}
+            <div className="space-y-1.5">
+              <label htmlFor="meeting-agenda" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                Discussion Agenda / Questions
+              </label>
+              <textarea
+                id="meeting-agenda"
+                data-testid="meeting-agenda-input"
+                value={agenda}
+                onChange={(e) => setAgenda(e.target.value)}
+                rows={2}
+                placeholder="Topics you'd like to cover..."
+                className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+              <Button
+                type="button"
+                variant="tertiary"
+                size="md"
+                onClick={onClose}
+                disabled={loading}
+                className="min-h-[44px]"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={loading}
+                data-testid="submit-meeting-btn"
+                className="min-w-[170px] justify-center min-h-[44px]"
+              >
+                {loading ? 'Transmitting…' : 'Request Meeting'}
               </Button>
             </div>
           </form>

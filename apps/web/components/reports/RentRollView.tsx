@@ -79,9 +79,9 @@ export function RentRollView({
             {units.map((u) => (
               <tr key={u.id} className="hover:bg-elevated/40">
                 <td className="px-6 py-3 font-mono font-bold text-text-primary">{u.unitNumber}</td>
-                <td className="px-4 py-3 text-text-primary">{u.tenantName || '— Vacant —'}</td>
+                <td className="px-4 py-3 text-text-primary">{u.tenantName || 'Vacant'}</td>
                 <td className="px-4 py-3 font-mono text-[11px] text-text-muted">
-                  {u.leaseStart && u.leaseEnd ? `${u.leaseStart} to ${u.leaseEnd}` : '—'}
+                  {u.leaseStart && u.leaseEnd ? `${u.leaseStart} to ${u.leaseEnd}` : 'N/A'}
                 </td>
                 <td className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">
                   {formatCurrency(u.monthlyMarketRent, { decimals: 0 })}

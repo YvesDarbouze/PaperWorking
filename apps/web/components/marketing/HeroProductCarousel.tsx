@@ -15,7 +15,7 @@ const SLIDES: Slide[] = [
     title: 'Investment Terminal',
     url: 'paperworking.co/terminal',
     altText:
-      'Finally, Project Management software made for serious real estate investors and Investments teams. — PaperWorking investment terminal with live property underwriting, cash flow projections, and portfolio KPIs',
+      'Finally, project management software made for serious real estate investors. — PaperWorking investment terminal with live property underwriting, cash flow projections, and portfolio KPIs',
   },
   {
     id: 'insights',
@@ -124,7 +124,7 @@ export default function HeroProductCarousel() {
 
       {/* Screen Reader Live Status */}
       <div className="sr-only" aria-live="polite">
-        Showing slide {currentSlide + 1} of {SLIDES.length}: {SLIDES[currentSlide].title} — {SLIDES[currentSlide].altText}
+        Showing slide {currentSlide + 1} of {SLIDES.length}: {SLIDES[currentSlide].title}: {SLIDES[currentSlide].altText}
       </div>
 
       {/* Browser Chrome Frame */}
@@ -176,7 +176,7 @@ export default function HeroProductCarousel() {
             <div className="relative w-full overflow-hidden rounded-xl bg-[#08090d] border border-white/10 shadow-2xl">
               <img
                 src="/images/hero-investor-terminal.png"
-                alt="Finally, Project Management software made for serious real estate investors and Investments teams. — PaperWorking investment terminal with live property underwriting, cash flow projections, and portfolio KPIs"
+                alt="Finally, Project Management software made for serious real estate investors and Investments teams: PaperWorking investment terminal with live property underwriting, cash flow projections, and portfolio KPIs"
                 width={620}
                 height={440}
                 loading="lazy"
@@ -281,7 +281,7 @@ export default function HeroProductCarousel() {
                 </span>
               </div>
 
-              {/* Metric 5: Levered IRR — 18.4% is verified by projected-irr.test.ts as the True DCF IRR for Apex Equity Fund I capital stack ($1.05M equity, $84k cash flow, $3.5M purchase, 5.4% appreciation) */}
+              {/* Metric 5: Levered IRR: 18.4% is verified by projected-irr.test.ts as the True DCF IRR for Apex Equity Fund I capital stack ($1.05M equity, $84k cash flow, $3.5M purchase, 5.4% appreciation) */}
               <div className="col-span-2 sm:col-span-1 rounded-xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.04] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-[color:var(--color-primary)]/80 mb-0.5">
                   Projected IRR
@@ -337,14 +337,14 @@ export default function HeroProductCarousel() {
                   />
                   <path
                     d="M 0 18 Q 15 17 30 14 T 60 11 T 85 8 T 100 5"
-                    stroke="#00DD94"
+                    stroke="var(--color-primary)"
                     strokeWidth="1.75"
                     strokeLinecap="round"
                   />
                   <defs>
                     <linearGradient id="emerald-gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#00DD94" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#00DD94" stopOpacity="0.0" />
+                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0.0" />
                     </linearGradient>
                   </defs>
                 </svg>

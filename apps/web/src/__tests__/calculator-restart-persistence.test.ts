@@ -77,9 +77,7 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
   };
 
   it('1. proves restart-persistence: Process 1 saves a snapshot and exits; Process 2 recovers it from disk after cold boot', () => {
-    // -------------------------------------------------------------------------
-    // PROCESS 1: Save snapshot and terminate
-    // -------------------------------------------------------------------------
+    // Process 1: Save snapshot and terminate.
     const process1Script = `
       import { saveCalculatorSnapshot } from './lib/calculator/snapshots-store.ts';
       async function main() {
@@ -104,9 +102,7 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
     expect(fs.existsSync(diskFilePath)).toBe(true);
     expect(fs.statSync(diskFilePath).size).toBeGreaterThan(0);
 
-    // -------------------------------------------------------------------------
-    // PROCESS 2: Boot fresh process (cold restart) and query back from disk
-    // -------------------------------------------------------------------------
+    // Process 2: Boot fresh process (cold restart) and query back from disk.
     const process2Script = `
       import { getCalculatorSnapshots, verifySnapshotIntegrity } from './lib/calculator/snapshots-store.ts';
       async function main() {
@@ -191,9 +187,7 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
   });
 
   it('4. proves API route layer restart-persistence and immutability across separate child processes', () => {
-    // -------------------------------------------------------------------------
-    // SUBPROCESS A: Invoke POST route handler in isolated process
-    // -------------------------------------------------------------------------
+    // Subprocess A: Invoke POST route handler in isolated process.
     const scriptA = `
       import { POST } from './app/api/calculator/snapshots/route.ts';
       async function main() {
@@ -219,9 +213,7 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
     expect(resultA.status).toBe(201);
     expect(resultA.snapshotId).toBeDefined();
 
-    // -------------------------------------------------------------------------
-    // SUBPROCESS B: Cold process attempts PUT mutation via API route handler
-    // -------------------------------------------------------------------------
+    // Subprocess B: Cold process attempts PUT mutation via API route handler.
     const scriptB = `
       import { PUT } from './app/api/calculator/snapshots/route.ts';
       async function main() {
@@ -247,9 +239,7 @@ describe('Calculator Snapshot Multi-Process Restart Persistence & Immutability I
     expect(resultB.status).toBe(405);
     expect(resultB.code).toBe('IMMUTABLE_SNAPSHOT_ERROR');
 
-    // -------------------------------------------------------------------------
-    // SUBPROCESS C: Fresh cold process queries GET route handler after reboot
-    // -------------------------------------------------------------------------
+    // Subprocess C: Fresh cold process queries GET route handler after reboot.
     const scriptC = `
       import { GET } from './app/api/calculator/snapshots/route.ts';
       async function main() {

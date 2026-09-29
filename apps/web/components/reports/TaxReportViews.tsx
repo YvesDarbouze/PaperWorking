@@ -12,7 +12,7 @@ export function ScheduleETable({ report }: { report: ScheduleEReport }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
         <div>
           <h2 className="text-sm font-bold tracking-tight text-text-primary">
-            IRS Form 1040 Schedule E Summary (Part I — Rental Real Estate)
+            IRS Form 1040 Schedule E Summary (Part I: Rental Real Estate)
           </h2>
           <p className="mt-0.5 text-xs text-text-muted">
             Authoritative 14-line tax classification for individual and entity tax preparation

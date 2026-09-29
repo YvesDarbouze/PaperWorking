@@ -18,7 +18,7 @@ export const PLAYBOOK_CATEGORIES: { id: MetricCategory; label: string; icon: str
 ];
 
 export const PLAYBOOK_METRICS: MetricDefinition[] = [
-  // ── Financial Performance Metrics ──
+  // Financial performance metrics.
   {
     id: 'noi',
     name: 'Net Operating Income (NOI)',
@@ -157,7 +157,7 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
     category: 'financial',
   },
 
-  // ── Operational Efficiency Metrics ──
+  // Operational efficiency metrics.
   {
     id: 'occupancy',
     name: 'Occupancy Rate',
@@ -215,7 +215,7 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
     category: 'operational',
   },
 
-  // ── Asset & Portfolio Management Metrics ──
+  // Asset and portfolio management metrics.
   {
     id: 'portfolio-growth',
     name: 'Real Estate Portfolio Value Growth',
@@ -257,7 +257,7 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
     category: 'portfolio',
   },
 
-  // ── Marketing & Sales Metrics ──
+  // Marketing and sales metrics.
   {
     id: 'listing-to-meeting',
     name: 'Listing-to-Meeting Ratio',
@@ -275,7 +275,7 @@ export const PLAYBOOK_METRICS: MetricDefinition[] = [
     category: 'marketing',
   },
 
-  // ── Risk & Compliance Metrics ──
+  // Risk and compliance metrics.
   {
     id: 'risk-score',
     name: 'Risk Assessment Score',

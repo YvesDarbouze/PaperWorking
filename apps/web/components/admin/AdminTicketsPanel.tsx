@@ -14,10 +14,6 @@ import type {
   TicketQueue,
   TicketStatus,
 } from '@/lib/tickets/ticket-store';
-import {
-  SUPPORT_ADMIN_ASSIGNEE_EMAIL,
-  SUPPORT_REPLY_FROM_EMAIL,
-} from '@/lib/support/support-addresses';
 
 export default function AdminTicketsPanel({
   initialTickets = [],
@@ -202,7 +198,7 @@ export default function AdminTicketsPanel({
       setComposerFeedback(
         isInternal
           ? 'Internal note recorded.'
-          : `Reply sent to ${selectedTicket.requesterEmail} via ${SUPPORT_REPLY_FROM_EMAIL}.`,
+          : `Reply sent to ${selectedTicket.requesterEmail} via no_reply@paperworking.co.`,
       );
     } catch (err) {
       setComposerFeedback(err instanceof Error ? err.message : 'Error sending message.');
@@ -326,7 +322,7 @@ export default function AdminTicketsPanel({
           {/* Kind Filter */}
           <select
             value={kindFilter}
-            onChange={(e) => setKindFilter(e.target.value as TicketKind | 'all')}
+            onChange={(e) => setKindFilter(e.target.value as any)}
             className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs text-[#111]"
           >
             <option value="all">All Types</option>
@@ -340,7 +336,7 @@ export default function AdminTicketsPanel({
           {/* Status Filter */}
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as TicketStatus | 'all')}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
             className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs text-[#111]"
           >
             <option value="all">All Statuses</option>
@@ -354,7 +350,7 @@ export default function AdminTicketsPanel({
           {/* Priority Filter */}
           <select
             value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value as TicketPriority | 'all')}
+            onChange={(e) => setPriorityFilter(e.target.value as any)}
             className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs text-[#111]"
           >
             <option value="all">All Priorities</option>
@@ -518,7 +514,7 @@ export default function AdminTicketsPanel({
                   <select
                     value={selectedTicket.status}
                     disabled={updatingField === 'status'}
-                    onChange={(e) => handleUpdateTicket({ status: e.target.value as TicketStatus })}
+                    onChange={(e) => handleUpdateTicket({ status: e.target.value as any })}
                     className="rounded-md border border-black/15 bg-white px-2 py-1 font-semibold text-[#111]"
                   >
                     <option value="open">Open</option>
@@ -534,7 +530,7 @@ export default function AdminTicketsPanel({
                   <select
                     value={selectedTicket.priority}
                     disabled={updatingField === 'priority'}
-                    onChange={(e) => handleUpdateTicket({ priority: e.target.value as TicketPriority })}
+                    onChange={(e) => handleUpdateTicket({ priority: e.target.value as any })}
                     className="rounded-md border border-black/15 bg-white px-2 py-1 font-semibold text-[#111]"
                   >
                     <option value="low">Low</option>
@@ -550,7 +546,7 @@ export default function AdminTicketsPanel({
                     type="button"
                     disabled={updatingField === 'assignedTo'}
                     onClick={() => {
-                      const newAssignee = selectedTicket.assignedTo ? undefined : SUPPORT_ADMIN_ASSIGNEE_EMAIL;
+                      const newAssignee = selectedTicket.assignedTo ? undefined : 'admin@paperworking.co';
                       handleUpdateTicket({
                         assignedTo: newAssignee,
                         queue: newAssignee ? 'mine' : 'unassigned',
@@ -771,7 +767,7 @@ export default function AdminTicketsPanel({
                   onChange={(e) => setMessageContent(e.target.value)}
                   placeholder={
                     composerMode === 'reply'
-                      ? `Type official reply to ${selectedTicket.requesterName} (sent from ${SUPPORT_REPLY_FROM_EMAIL})…`
+                      ? `Type official reply to ${selectedTicket.requesterName} (sent from no_reply@paperworking.co)…`
                       : 'Type internal staff note (visible to operations team only)…'
                   }
                   className="min-h-24 w-full rounded-xl border border-black/15 bg-white p-3 text-xs text-[#111] placeholder:text-black/40 focus:border-black focus:outline-hidden"

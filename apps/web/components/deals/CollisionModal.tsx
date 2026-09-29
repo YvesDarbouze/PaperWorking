@@ -191,7 +191,7 @@ export default function CollisionModal({
             ref={primaryButtonRef}
             type="button"
             onClick={handlePrimaryClick}
-            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] bg-[#00DD94] px-5 py-2.5 text-sm font-semibold text-[#0a0a0f] transition hover:brightness-110 active:scale-[0.98] touch-press"
+            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-white/90 active:scale-[0.98] touch-press"
           >
             {isProjectLink ? 'Link to this deal' : 'View deal'}
           </button>

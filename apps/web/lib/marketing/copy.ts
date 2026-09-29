@@ -7,7 +7,7 @@
 // string in this file without explicit, verbatim instructions from the user.
 // =============================================================================
 export const heroHeadline =
-  'Finally, Project Management software made for serious real estate investors and Investments teams.';
+  'Finally, project management software made for serious real estate investors.';
 
 export const heroSubheadline =
   "Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you're already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio.";
@@ -43,7 +43,7 @@ export const howItWorksHeader =
   'Project Management software made specifically for real estate investor.';
 export const howItWorksSubheadline = 'How the Real Estate Investment Lifecycle Works.';
 export const howItWorksBody =
-  'Generic tools log isolated tasks. PaperWorking turns daily operational deal activity into real-time portfolio KPIs and tax-ready reporting. Every document saved, contingency cleared, and expense logged automatically feeds your financial metrics—eliminating static spreadsheets and prepping your books for CPA exports as you work.';
+  'Real estate investments follow a distinct lifecycle unlike standard work-related projects, moving through phases unique to the property industry. PaperWorking streamlines these stages into a unified ecosystem, driving operational efficiency and practical solutions for investors. By ingesting your project data points, PaperWorking generates 33 visualized KPIs (Key Performance Indicators) that provide the critical insights needed for smarter decision-making. We built PaperWorking to equip serious real estate investors with the intelligence required to measure and maximize investment performance.';
 
 export const reilNarrativeLead =
   'The Real Estate Investment Lifecycle (REIL) is a system created to properly manage your real estate investments in 4 compartmentalized steps.';
@@ -73,16 +73,19 @@ export const reilNarrativeExitFull =
   'PHASE 04 · EXIT — how the investor exited: a complete sale, or renting, leasing, Airbnb, pop-ups, commercial, etc.';
 
 
-export const pricingHeader = 'BLOOMBERG TERMINAL FOR REAL ESTATE INVESTORS';
+export const pricingHeader = 'PRICING';
+export const pricingPositioningHeadline = 'The Bloomberg Terminal for Real Estate Investors';
 export const pricingSubheadline =
-  'The average stock trade is $5,000. The average real estate deal is $429,000. Why do stock investors have better fintech apps?';
+  'The average stock trade is $5,000. The average real estate deal is $429,000. Why do stock traders have better technology?';
+export const pricingBody =
+  'Being off by even a fraction of a percent can cost thousands of dollars to poor planning, surprise expenses, and avoidable mistakes. PaperWorking gives real estate investors the clarity and the network to make smart, profitable decisions.';
 
 export const twoMarketplacesTitle = 'Come for the Execution Tools. Stay for the Network.';
 export const twoMarketplacesBody =
   'PaperWorking subscribers get exclusive access to an active network engineered for serious real estate operators, capital partners, and specialized vendors.';
 
 export const dealMarketplaceBlurb =
-  'The Deal Marketplace: Showcase your underwriting baselines to gauge co-investment demand, track soft equity pledges, and partner with verified investors—without sending unsecure attachments over email.';
+  'The Deal Marketplace: Showcase your underwriting baselines to gauge co-investment demand, track soft equity pledges, and partner with verified investors, without sending unsecure attachments over email.';
 
 export const vendorMarketplaceBlurb =
   'The Vendor Marketplace: Get matched with contractors, appraisers, title attorneys, CPAs, and hard money lenders at the exact moment of operational need. PaperWorking recommends local pros directly inside your active budget and contract workspaces.';

@@ -128,7 +128,7 @@ export default function VendorSideSheet({
             </div>
             <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-center">
               <p className="truncate font-mono text-lg font-bold text-[#fdfffc]">
-                {vendor.feeRangeLabel.split('-')[0]?.trim() ?? '—'}
+                {vendor.feeRangeLabel.split('-')[0]?.trim() ?? 'N/A'}
               </p>
               <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Starting Fee</p>
             </div>

@@ -77,7 +77,7 @@ export function BankConnectionCard({
       });
       const data = await res.json();
       if (data.link_token) {
-        console.log('[BankConnectionCard] Update Link token generated:', data.link_token);
+        // Link token received successfully for reconnection
       }
     } catch (err: unknown) {
       console.error('Reconnect error:', err);

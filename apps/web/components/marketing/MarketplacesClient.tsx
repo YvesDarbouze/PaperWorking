@@ -8,13 +8,9 @@ import {
   dealMarketplaceBlurb,
   vendorMarketplaceBlurb,
   legalDisclaimer,
-  vendorPanelTitle,
-  vendorPanelIntro,
-  vendorPanelScope,
-  vendorCategoryLabel,
-  vendorCategories,
-  vendorPanelClosing,
 } from '@/lib/marketing/copy';
+import { ArrowRight } from '@/components/icons/PhosphorIcons';
+import { Button } from '@/components/ui/Button';
 
 /** Ported from PaperWorking `components/landing/MarketplacesClient.tsx`. */
 export default function MarketplacesClient() {
@@ -38,114 +34,87 @@ export default function MarketplacesClient() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-[1200px] flex-col justify-center px-4 py-8 md:py-14 overflow-x-hidden">
-      <section className="mx-auto max-w-3xl space-y-6 pt-4 text-center md:pt-6 w-full">
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-primary)]" />
-          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
-            Two marketplaces, one network
-          </span>
-        </span>
+    <div className="w-full bg-background" id={activeTab === 'vendors' ? 'vendors' : 'deals'}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-8 pb-14 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20">
+        <section className="mx-auto max-w-3xl space-y-6 text-center w-full">
+          <div>
+            <span className="inline-block font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Two marketplaces, one network
+            </span>
+          </div>
 
-        <h1 className="landing-display font-semibold leading-[1.05] tracking-[-0.025em] text-white">
-          {twoMarketplacesTitle}
-        </h1>
+          <h1 className="landing-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl leading-[1.1]">
+            {twoMarketplacesTitle}
+          </h1>
 
-        <div className="mx-auto max-w-3xl space-y-4 text-center">
-          <p className="text-base font-medium leading-[1.65] text-white/70 sm:text-lg">
-            {twoMarketplacesBody}
-          </p>
-          <p className="text-sm leading-[1.65] text-white/60 sm:text-base">
-            {activeTab === 'deals' ? dealMarketplaceBlurb : vendorMarketplaceBlurb}
-          </p>
-        </div>
-
-        {activeTab === 'vendors' && (
-          <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left backdrop-blur-sm sm:p-8">
-            <h2 className="mb-4 text-xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-2xl">
-              {vendorPanelTitle}
-            </h2>
-            <div className="space-y-3 text-sm leading-[1.65] text-white/65 sm:text-base">
-              <p>{vendorPanelIntro}</p>
-              <p>{vendorPanelScope}</p>
-              <p className="font-medium text-white">{vendorCategoryLabel}</p>
-            </div>
-
-            <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-white/65 sm:text-base">
-              {vendorCategories.map((category) => (
-                <li key={category.title}>
-                  <strong className="font-semibold text-white">{category.title}:</strong>{' '}
-                  {category.detail}
-                </li>
-              ))}
-            </ol>
-
-            <p className="mt-5 text-sm leading-[1.65] text-white/65 sm:text-base">
-              {vendorPanelClosing}
+          <div className="mx-auto max-w-2xl space-y-4 text-center">
+            <p className="text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
+              {twoMarketplacesBody}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {activeTab === 'deals' ? dealMarketplaceBlurb : vendorMarketplaceBlurb}
             </p>
           </div>
-        )}
 
-        <div className="flex justify-center pt-2 max-w-full overflow-hidden">
-          <div
-            role="tablist"
-            aria-label="Marketplace options"
-            className="inline-flex max-w-full items-center overflow-x-auto rounded-full border border-white/10 bg-white/[0.04] p-1 backdrop-blur-sm"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'deals'}
-              aria-controls="deals"
-              onClick={() => handleTabClick('deals')}
-              className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full px-3.5 sm:px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
-                activeTab === 'deals'
-                  ? 'bg-[color:var(--color-primary)] text-[#0a0a0f] shadow-md'
-                  : 'text-white/55 hover:text-white'
-              }`}
+          <div className="flex justify-center pt-2 max-w-full overflow-hidden">
+            <div
+              role="tablist"
+              aria-label="Marketplace options"
+              className="inline-flex max-w-full items-center overflow-x-auto rounded-none border border-border bg-muted/40 p-1"
             >
-              Deal Marketplace
-            </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'deals'}
+                aria-controls="deals"
+                onClick={() => handleTabClick('deals')}
+                className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
+                  activeTab === 'deals'
+                    ? 'bg-background text-foreground shadow-sm border border-border'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Deal Marketplace
+              </button>
 
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'vendors'}
-              aria-controls="vendors"
-              onClick={() => handleTabClick('vendors')}
-              className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full px-3.5 sm:px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
-                activeTab === 'vendors'
-                  ? 'bg-[color:var(--color-primary)] text-[#0a0a0f] shadow-md'
-                  : 'text-white/55 hover:text-white'
-              }`}
-            >
-              Vendor Marketplace
-            </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'vendors'}
+                aria-controls="vendors"
+                onClick={() => handleTabClick('vendors')}
+                className={`flex min-h-[44px] cursor-pointer items-center justify-center whitespace-nowrap rounded-none px-6 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
+                  activeTab === 'vendors'
+                    ? 'bg-background text-foreground shadow-sm border border-border'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Vendor Marketplace
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-6 pb-2 pt-6">
-          <div className="flex flex-col items-stretch sm:items-center justify-center gap-3 sm:gap-4 sm:flex-row">
-            <Link
-              href={activeTab === 'deals' ? '/dashboard/deals' : '/dashboard/marketplace'}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[color:var(--color-primary)] px-6 sm:px-8 py-3.5 sm:py-4 text-[14px] font-semibold tracking-wide text-[#0a0a0f] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)] transition-all duration-150 active:scale-95 text-center"
-            >
-              Browse the marketplaces
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </Link>
-            <Link
-              href="/pricing"
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-white/15 px-6 sm:px-8 py-3.5 sm:py-4 text-[14px] font-semibold text-white transition-all duration-150 hover:border-[color:var(--color-primary)]/40 hover:text-[color:var(--color-primary)] text-center"
-            >
-              List your services as a vendor
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </Link>
+          <div className="space-y-6 pb-2 pt-4">
+            <div className="flex flex-col items-stretch sm:items-center justify-center gap-3 sm:gap-4 sm:flex-row">
+              <Button asChild variant="default" size="default" className="min-h-[44px] px-6 text-xs font-medium gap-2">
+                <Link href={activeTab === 'deals' ? '/dashboard/deals' : '/dashboard/marketplace'}>
+                  Browse the marketplaces
+                  <ArrowRight size={14} />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="default" className="min-h-[44px] px-6 text-xs font-medium gap-2">
+                <Link href="/pricing">
+                  List your services as a vendor
+                  <ArrowRight size={14} />
+                </Link>
+              </Button>
+            </div>
+            <p className="mx-auto max-w-lg font-mono text-[11px] leading-relaxed text-muted-foreground">
+              {legalDisclaimer}
+            </p>
           </div>
-          <p className="mx-auto max-w-lg font-[family-name:var(--font-jetbrains-mono)] text-xs leading-relaxed text-white/40">
-            {legalDisclaimer}
-          </p>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

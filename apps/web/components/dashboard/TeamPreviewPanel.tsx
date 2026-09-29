@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
 import { TEAM_MEMBERS, TEAM_SEATS } from '@/lib/dashboard/shell-seed';
+import { UserPlus } from '@/components/icons/PhosphorIcons';
 
 export default function TeamPreviewPanel() {
   const [query, setQuery] = useState('');
@@ -30,9 +31,9 @@ export default function TeamPreviewPanel() {
           <button
             type="button"
             onClick={() => setShowInvite(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-white/12 bg-[#454955]/90 px-3.5 py-2 text-[12px] font-semibold text-[#fdfffc]"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 touch-target"
           >
-            <span className="material-symbols-outlined text-[15px]">person_add</span>
+            <UserPlus className="h-4 w-4 shrink-0" />
             Invite
           </button>
         }
@@ -43,28 +44,28 @@ export default function TeamPreviewPanel() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search members by name, email, or role"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white sm:max-w-md"
+          className="w-full min-h-[44px] rounded-none border border-border bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:max-w-md sm:text-xs"
         />
-        <span className="rounded-full border border-white/12 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white/55">
+        <span className="inline-flex items-center rounded-none border border-border bg-muted/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           {TEAM_SEATS.used} of {TEAM_SEATS.limit} seats used
         </span>
       </div>
 
       {showInvite ? (
-        <div className="rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent-subtle)] p-5">
+        <div className="rounded-none border border-border bg-card p-5 text-card-foreground shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-foreground">
                 Invite teammate
               </p>
-              <p className="mt-2 text-sm text-white/70">
-                Seed preview — live team invitations wire with org handlers post-cutover.
+              <p className="mt-2 text-sm text-muted-foreground">
+                Seed preview: live team invitations wire with org handlers post-cutover.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setShowInvite(false)}
-              className="text-xs font-semibold text-white/55"
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground"
             >
               Close
             </button>
@@ -72,7 +73,7 @@ export default function TeamPreviewPanel() {
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <input
               placeholder="colleague@firm.com"
-              className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-white"
+              className="flex-1 min-h-[44px] rounded-none border border-border bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:text-xs"
             />
             <Button
               type="button"
@@ -86,9 +87,9 @@ export default function TeamPreviewPanel() {
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121014]/90 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+      <div className="overflow-hidden rounded-none border border-border bg-card text-card-foreground shadow-sm ring-1 ring-foreground/10">
         <table className="w-full text-left text-sm">
-          <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wider text-white/45">
+          <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-5 py-3 font-medium">Name</th>
               <th className="px-5 py-3 font-medium">Role</th>
@@ -100,35 +101,36 @@ export default function TeamPreviewPanel() {
           </thead>
           <tbody>
             {members.map((member) => (
-              <tr key={member.id} className="border-t border-white/8">
+              <tr key={member.id} className="border-t border-border/50">
                 <td className="px-5 py-4">
-                  <p className="font-medium text-[#fdfffc]">{member.name}</p>
-                  <p className="text-xs text-white/45">{member.email}</p>
+                  <p className="font-medium text-foreground">{member.name}</p>
+                  <p className="text-xs text-muted-foreground">{member.email}</p>
                 </td>
-                <td className="px-5 py-4 text-white/65">{member.role}</td>
-                <td className="px-5 py-4 text-white/65">{member.type}</td>
+                <td className="px-5 py-4 text-foreground/80">{member.role}</td>
+                <td className="px-5 py-4 text-foreground/80">{member.type}</td>
                 <td className="px-5 py-4">
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                    className={`rounded-none px-2 py-0.5 text-[10px] font-bold uppercase ${
                       member.status === 'Active'
-                        ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
-                        : 'bg-amber-500/15 text-amber-300'
+                        ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                        : 'border border-amber-500/30 bg-amber-500/10 text-amber-300'
                     }`}
                   >
                     {member.status}
                   </span>
                 </td>
-                <td className="px-5 py-4 text-white/65">{member.projects}</td>
-                <td className="px-5 py-4 text-white/45">{member.lastActive}</td>
+                <td className="px-5 py-4 text-foreground/80">{member.projects}</td>
+                <td className="px-5 py-4 text-muted-foreground">{member.lastActive}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <Link href="/dashboard" className="text-sm text-[#7A9EAA] no-underline hover:underline">
+      <Link href="/dashboard" className="inline-flex min-h-[44px] items-center text-sm text-muted-foreground no-underline hover:text-foreground hover:underline">
         Back to portfolio
       </Link>
     </div>
   );
 }
+

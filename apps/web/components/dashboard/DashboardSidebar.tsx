@@ -12,6 +12,9 @@ import {
   type NavItem,
 } from '@/lib/navigation/nav-contract';
 
+import { Lock } from '@/components/icons/PhosphorIcons';
+import { getNavPhosphorIcon } from './nav-icons';
+
 function SidebarLink({
   item,
   isActive,
@@ -26,7 +29,7 @@ function SidebarLink({
       href={item.href}
       data-testid={`sidebar-link-${item.id}`}
       onClick={(event) => onNavigate?.(item, event)}
-      className="group relative flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-150"
+      className="group relative flex items-center gap-2.5 rounded-none px-3 py-2.5 min-h-[44px] md:min-h-0 transition-all duration-150"
       style={{
         background: isActive ? 'rgba(69, 73, 85, 0.25)' : 'transparent',
         color: isActive ? 'rgba(253,255,252,0.92)' : 'rgba(253,255,252,0.65)',
@@ -34,10 +37,10 @@ function SidebarLink({
         textDecoration: 'none',
       }}
     >
-      <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+      {getNavPhosphorIcon(item.id, 'h-5 w-5 shrink-0')}
       <span className="flex-1 truncate text-sm font-medium">{item.label}</span>
       {item.isLocked ? (
-        <span className="material-symbols-outlined text-[16px] text-amber-400">lock</span>
+        <Lock className="h-4 w-4 text-amber-400 shrink-0" />
       ) : null}
     </Link>
   );
@@ -65,7 +68,7 @@ export default function DashboardSidebar() {
       className="hidden h-screen w-[240px] shrink-0 flex-col border-r border-white/6 bg-[var(--bg-surface)] md:flex"
     >
       <div className="border-b border-white/6 px-5 py-5">
-        <Logo href="/dashboard" tone="dashboard" theme="dark" size={22} />
+        <Logo href="/dashboard" tone="dashboard" theme="dark" size={22} variant="full" />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">

@@ -9,6 +9,33 @@ import { Button } from '@/components/ui/Button';
 import { PROFILE_CARD } from '@/lib/dashboard/content';
 import { getPageLabel } from '@/lib/navigation/nav-contract';
 
+import {
+  List,
+  CaretRight,
+  MagnifyingGlass,
+  Tag,
+  Calculator,
+  Storefront,
+  FileText,
+} from '@/components/icons/PhosphorIcons';
+
+function getDropdownIcon(icon: string) {
+  switch (icon) {
+    case 'travel_explore':
+      return <MagnifyingGlass className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+    case 'bookmark':
+      return <Tag className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+    case 'analytics':
+      return <Calculator className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+    case 'storefront':
+      return <Storefront className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+    case 'request_quote':
+      return <FileText className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+    default:
+      return <Tag className="h-4 w-4 text-foreground shrink-0 mt-0.5" />;
+  }
+}
+
 const DEALS_MENU_ITEMS = [
   {
     href: '/dashboard/deals',
@@ -127,7 +154,7 @@ function TopBarDropdown({
           id={`${id}-menu`}
           role="menu"
           aria-labelledby={`${id}-trigger`}
-          className="absolute left-0 top-full z-50 mt-2 min-w-[240px] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.6)]"
+          className="absolute left-0 top-full z-50 mt-2 min-w-[240px] rounded-none border border-border bg-popover text-popover-foreground p-1.5 shadow-xl ring-1 ring-foreground/10"
         >
           {items.map((item, idx) => (
             <Link
@@ -142,14 +169,12 @@ function TopBarDropdown({
                 setOpen(false);
                 triggerRef.current?.focus();
               }}
-              className="flex items-start gap-2.5 rounded-lg px-3 py-2 text-left text-xs no-underline transition-colors hover:bg-white/[0.06] focus:bg-white/[0.08] focus:outline-none"
+              className="flex items-start gap-2.5 rounded-none px-3 py-2 min-h-[44px] text-left text-xs no-underline transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
             >
-              <span className="material-symbols-outlined text-[18px] text-[var(--accent)] shrink-0 mt-0.5">
-                {item.icon}
-              </span>
+              {getDropdownIcon(item.icon)}
               <div>
-                <p className="font-semibold text-[#fdfffc]">{item.label}</p>
-                {item.desc && <p className="text-[10px] text-white/45">{item.desc}</p>}
+                <p className="font-semibold text-foreground">{item.label}</p>
+                {item.desc && <p className="text-[10px] text-muted-foreground">{item.desc}</p>}
               </div>
             </Link>
           ))}
@@ -176,8 +201,7 @@ export default function DashboardTopBar({ onOpenMenu }: DashboardTopBarProps) {
 
   return (
     <header
-      className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-white/8 bg-[#121014]/88 px-3 backdrop-blur-[20px] md:px-6"
-      style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.04)' }}
+      className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-border bg-card/95 px-3 backdrop-blur-[20px] md:px-6"
     >
       <div className="flex min-w-0 items-center gap-2.5">
         <button
@@ -185,27 +209,27 @@ export default function DashboardTopBar({ onOpenMenu }: DashboardTopBarProps) {
           onClick={onOpenMenu}
           aria-label="Open navigation menu"
           data-testid="mobile-topbar-menu"
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/80 hover:text-white md:hidden active:scale-95 touch-press shrink-0"
+          className="flex h-11 w-11 items-center justify-center rounded-none bg-card border border-border text-foreground hover:bg-muted md:hidden touch-target shrink-0 min-h-[44px] min-w-[44px]"
         >
-          <span className="material-symbols-outlined text-[22px]">menu</span>
+          <List className="h-5 w-5" />
         </button>
         <div className="hidden items-center gap-2 md:flex">
-          <span className="text-xs font-bold uppercase tracking-widest text-white/35">Dashboard</span>
-          <span className="material-symbols-outlined text-[14px] text-white/20">chevron_right</span>
-          <span className="truncate text-xs font-bold uppercase tracking-widest text-[#fdfffc]">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Dashboard</span>
+          <CaretRight className="h-3 w-3 text-muted-foreground" />
+          <span className="truncate text-xs font-bold uppercase tracking-widest text-foreground">
             {pageLabel}
           </span>
         </div>
-        <p className="text-sm font-semibold text-[#fdfffc] md:hidden truncate">{pageLabel}</p>
+        <p className="text-sm font-semibold text-foreground md:hidden truncate">{pageLabel}</p>
       </div>
 
       <div className="hidden max-w-md flex-1 items-center gap-2 lg:flex">
-        <div className="relative flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 transition-all focus-within:border-[var(--accent)]/60 focus-within:ring-2 focus-within:ring-[var(--accent)]/60 focus-within:ring-offset-2 focus-within:ring-offset-[#121014]">
-          <span className="material-symbols-outlined text-[18px] text-white/40">search</span>
+        <div className="relative flex w-full items-center gap-2 rounded-none border border-input bg-card px-3 py-1.5 transition-all focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
+          <MagnifyingGlass className="h-4 w-4 text-muted-foreground" />
           <input
             type="search"
             placeholder="Search deals by name or address..."
-            className="w-full bg-transparent text-sm text-white/85 outline-none placeholder:text-white/35"
+            className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             aria-label="Search deals"
           />
         </div>

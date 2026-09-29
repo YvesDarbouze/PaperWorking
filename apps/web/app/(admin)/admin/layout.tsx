@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminPortalShell from '@/components/admin/AdminPortalShell';
-import { isAuthorizedAdmin, resolveServerAuthUser } from '@/lib/api/server-session';
-
-export const dynamic = 'force-dynamic';
+import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -11,16 +10,17 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const authUser = await resolveServerAuthUser();
+  const cookieStore = await cookies();
+  const session = cookieStore.get(SESSION_COOKIE)?.value;
+  const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';
 
-  if (!authUser) {
+  if (!session) {
     redirect('/login?accountType=admin&redirectTo=/admin');
   }
 
-  // Authorization uses DB-authoritative isAdmin — __acct is display-only and not consulted.
-  // Logged-in non-admins go to dashboard (not login) to avoid redirect loops with LoginPanel.
-  if (!isAuthorizedAdmin(authUser)) {
-    redirect('/dashboard?reason=admin_denied');
+  // Investor/vendor sessions must re-auth as admin: don't silently dump to dashboard.
+  if (accountType !== 'admin') {
+    redirect('/login?accountType=admin&redirectTo=/admin');
   }
 
   return <AdminPortalShell>{children}</AdminPortalShell>;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handlePlacesGeocodeGet } from '@paperworking/api';
 import { toNextResponse } from '@/lib/api/adapt-route-result';
-import { requireDevSessionAuth, isDevAuthFailure } from '@/lib/projects/dev-session-auth';
+import { tryDevSessionAuth, requireDevSessionAuth, isDevAuthFailure } from '@/lib/projects/dev-session-auth';
 import { getAdminCachedGeocode, setAdminCachedGeocode } from '@/lib/maps/geocode-cache-admin';
 import { setMemoryCachedGeocode, type CachedGeocode } from '@/lib/maps/geocode-cache';
 
@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const address = searchParams.get('address');
 
-  const auth = await requireDevSessionAuth();
+  const authUser = await tryDevSessionAuth();
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+  const uid = authUser?.uid || `guest-${clientIp}`;
 
   // 1. Read-through cache: check durable Firestore cache via Admin SDK before hitting Google
   if (address && address.trim()) {
@@ -37,10 +39,7 @@ export async function GET(request: NextRequest) {
   const result = await handlePlacesGeocodeGet(
     { address },
     {
-      requireAuth: async () => {
-        if (isDevAuthFailure(auth)) return auth;
-        return { uid: auth.uid };
-      },
+      requireAuth: async () => ({ uid }),
       placesApiKey: apiKey,
       fetchGeocode: async (addr: string, key: string) => {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addr)}&key=${key}`;

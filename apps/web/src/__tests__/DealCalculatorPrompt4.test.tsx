@@ -40,27 +40,30 @@ describe('PROMPT 4 — Top-Nav Deal Calculator Entry & Gated Lifecycle Suite', (
   });
 
   describe('1. Top Navigation Placement & Active Link Treatment', () => {
-    it('renders "Deal Calculator" as the first navigation link in desktop & mobile navigation', () => {
+    it('renders "Deal Calculator" as the last navigation link in desktop & mobile navigation', () => {
       mockFetchSessionProfile.mockResolvedValue({
         authenticated: false,
       });
 
       const headerHtml = renderToString(<MarketingHeader />);
 
-      // Verify "Deal Calculator" appears before "How it works"
-      const dealCalcIndex = headerHtml.indexOf('Deal Calculator');
-      const howItWorksIndex = headerHtml.indexOf('How it works');
+      // Verify navigation order: How It Works -> Pricing -> Marketplace -> Support -> Deal Calculator
+      const howItWorksIndex = headerHtml.indexOf('How It Works');
       const pricingIndex = headerHtml.indexOf('Pricing');
       const marketplaceIndex = headerHtml.indexOf('Marketplace');
+      const supportIndex = headerHtml.indexOf('Support');
+      const dealCalcIndex = headerHtml.indexOf('Deal Calculator');
 
-      expect(dealCalcIndex).toBeGreaterThan(-1);
       expect(howItWorksIndex).toBeGreaterThan(-1);
       expect(pricingIndex).toBeGreaterThan(-1);
       expect(marketplaceIndex).toBeGreaterThan(-1);
+      expect(supportIndex).toBeGreaterThan(-1);
+      expect(dealCalcIndex).toBeGreaterThan(-1);
 
-      expect(dealCalcIndex).toBeLessThan(howItWorksIndex);
       expect(howItWorksIndex).toBeLessThan(pricingIndex);
       expect(pricingIndex).toBeLessThan(marketplaceIndex);
+      expect(marketplaceIndex).toBeLessThan(supportIndex);
+      expect(supportIndex).toBeLessThan(dealCalcIndex);
 
       // Verify href targets /deal-calculator
       expect(headerHtml).toContain('href="/deal-calculator"');

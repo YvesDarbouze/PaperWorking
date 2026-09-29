@@ -1,8 +1,5 @@
-// ═══════════════════════════════════════════════════════
-//  PaperWorking Glossary — Real Estate Investing Terms
-//  Combines industry-standard RE terminology with
-//  PaperWorking platform-specific vocabulary.
-// ═══════════════════════════════════════════════════════
+// PaperWorking Glossary: real estate investing terms combining industry-standard
+// terminology with PaperWorking platform vocabulary.
 
 export interface GlossaryTerm {
   term: string;
@@ -34,7 +31,7 @@ export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string }[] = [
 ];
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = ([
-  // ── Financial Metrics ──
+  // Financial metrics.
   {
     term: 'After-Repair Value (ARV)',
     definition: 'The estimated market value of a property after all planned renovations and repairs have been completed. Critical for fix-and-flip investors to determine if a project will generate enough equity to justify renovation costs.',
@@ -114,7 +111,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     category: 'financial-metrics',
     relatedTerms: ['ARV', 'CapEx'],
   },
-  // ── Acquisition & Sourcing ──
+  // Acquisition and sourcing.
   {
     term: 'Comparable Sales (Comps)',
     definition: 'Recently sold properties similar in size, condition, and location used to estimate a subject property\'s fair market value. The foundation of most real estate appraisals.',
@@ -153,7 +150,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     category: 'acquisition',
     relatedTerms: ['Assignment Fee', 'Off-Market Deal'],
   },
-  // ── Financing & Capital ──
+  // Financing and capital.
   {
     term: 'Bridge Loan',
     definition: 'A short-term loan (typically 6-24 months) used to "bridge" the gap between the purchase of a new property and the sale of an existing one, or until permanent financing is secured.',
@@ -193,7 +190,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     relatedTerms: ['Capital Stack', 'LOI', 'K-1'],
     platformFeature: 'Co-Investment Hub',
   },
-  // ── Due Diligence ──
+  // Due diligence.
   {
     term: 'Appraisal',
     definition: 'A professional, unbiased estimate of a property\'s fair market value, typically required by lenders before approving a mortgage loan.',
@@ -233,7 +230,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     category: 'due-diligence',
     relatedTerms: ['Chain of Title', 'Title Insurance'],
   },
-  // ── Rehab & Construction ──
+  // Rehab and construction.
   {
     term: 'Burn Rate',
     definition: 'The rate at which holding costs accumulate during a rehab project. Includes monthly payments for debt service, property taxes, insurance, and utilities.',
@@ -276,7 +273,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     relatedTerms: ['CapEx', 'ARV'],
     platformFeature: 'Vendor Portal',
   },
-  // ── Exit & Disposition ──
+  // Exit and disposition.
   {
     term: '1031 Exchange',
     definition: 'A tax-deferral strategy allowing an investor to sell a property and reinvest the proceeds into a "like-kind" property, deferring capital gains taxes. Must follow strict IRS timelines.',
@@ -317,7 +314,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     relatedTerms: ['Settlement Ledger', 'Closing Disclosure'],
     platformFeature: 'Exit Hub',
   },
-  // ── Legal & Compliance ──
+  // Legal and compliance.
   {
     term: 'K-1 (Schedule K-1)',
     definition: 'An IRS tax form issued to partners in a partnership or members of an LLC, reporting their share of income, deductions, and credits for the tax year.',
@@ -351,7 +348,7 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = ([
     category: 'legal-compliance',
     relatedTerms: ['LLC', 'Operating Agreement'],
   },
-  // ── PaperWorking Platform Terms ──
+  // PaperWorking platform terms.
   {
     term: 'Acquisition Panel',
     definition: 'The PaperWorking dashboard panel for Phase 1 of the investment lifecycle. Used to source properties, generate LOIs, submit offers, and manage your deal pipeline.',

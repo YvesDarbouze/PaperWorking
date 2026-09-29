@@ -1,4 +1,46 @@
-import type { ProjectSummary, ProjectWorkspace } from './types';
+import type {
+  ProjectSummary,
+  ProjectWorkspace,
+  ProjectDealComponent,
+  AssigneeOption,
+  LegacyProjectPhase,
+} from './types';
+import { addSeedDeal, SEED_RAW_DEALS } from '../marketplace/seed-data';
+
+export const DEFAULT_SAMPLE_PHASE_ASSIGNEES: Partial<Record<LegacyProjectPhase, AssigneeOption | null>> = {
+  acquisition: {
+    id: 'usr-acq-sarah',
+    uid: 'usr-acq-sarah',
+    name: 'Sarah Chen',
+    email: 'sarah.chen@paperworking-investments.com',
+    role: 'Director of Acquisitions',
+    status: 'active',
+  },
+  purchase: {
+    id: 'usr-fund-david',
+    uid: 'usr-fund-david',
+    name: 'David Vance',
+    email: 'david.vance@apexcapitalpartners.com',
+    role: 'Capital Markets Lead',
+    status: 'active',
+  },
+  hold: {
+    id: 'usr-hold-elena',
+    uid: 'usr-hold-elena',
+    name: 'Elena Rostova',
+    email: 'elena.rostova@highlandassetmgmt.com',
+    role: 'Asset Manager',
+    status: 'active',
+  },
+  exit: {
+    id: 'usr-exit-marcus',
+    uid: 'usr-exit-marcus',
+    name: 'Marcus Brody',
+    email: 'marcus.brody@sterlingcapitaladvisors.com',
+    role: 'Disposition Director',
+    status: 'active',
+  },
+};
 
 const BASE_TODOS = {
   acquisition: [
@@ -55,6 +97,77 @@ const globalWithSeed = globalThis as unknown as {
   __PW_SEED_PROJECTS?: ProjectWorkspace[];
 };
 
+export function buildSeedProjectDeals(project: Partial<ProjectWorkspace>): ProjectDealComponent[] {
+  if (project.deals && project.deals.length > 0) {
+    return project.deals;
+  }
+
+  const deals: ProjectDealComponent[] = [];
+  const pId = project.id || project.project_id || 'project';
+  const addr = project.address || project.property_address || 'Property Address';
+  const name = project.propertyName || addr.split(',')[0];
+  const purchasePrice = Number(project.purchasePrice || project.purchase_price || 450000);
+  const rehabCost = Number(project.rehab_costs || 50000);
+
+  // 1. Primary Underwriting Deal Component (canonical pro-forma)
+  const snap = project.underwritingSnapshot;
+  deals.push({
+    id: `deal-calc-${pId}`,
+    slug: `${pId}-underwriting`,
+    name: `${name} Acquisition Underwriting`,
+    address: addr,
+    dealType: 'underwriting',
+    status: snap ? 'underwritten' : 'draft',
+    purchasePrice: snap?.inputs.purchasePrice ?? purchasePrice,
+    rehabBudget: snap?.inputs.rehabBudget ?? rehabCost,
+    cashRequired: snap?.outputs.cashRequired ?? Math.round(purchasePrice * 0.25),
+    projectedIrr: snap?.outputs.projectedIrrPct ?? (project.estimatedIrr ? Number((project.estimatedIrr * 100).toFixed(1)) : 16.5),
+    capRate: snap?.outputs.capRateOnCost ?? 6.2,
+    cashOnCashPct: snap?.outputs.cashOnCashReturnPct ?? 7.5,
+    updatedAt: snap?.createdAt || '2026-08-01T12:00:00.000Z',
+  });
+
+  // 2. Marketplace Syndication Offering Component (if dealId/dealSlug is active)
+  if (project.dealId || project.dealSlug) {
+    const rawDeal = SEED_RAW_DEALS.find((d) => d.id === project.dealId || d.slug === project.dealSlug);
+    deals.push({
+      id: project.dealId || `deal-mp-${pId}`,
+      slug: project.dealSlug || project.dealId || 'offering',
+      name: rawDeal?.projects?.[0]?.name || `${name} Syndication Offering`,
+      address: project.dealAddress || addr,
+      dealType: 'syndication',
+      status: (rawDeal?.status as any) || 'active',
+      purchasePrice: rawDeal?.purchasePrice ?? purchasePrice,
+      rehabBudget: rawDeal?.rehabCost ?? rehabCost,
+      cashRequired: rawDeal?.calculatorResults?.cashRequired ?? Math.round(purchasePrice * 0.25),
+      projectedIrr: rawDeal?.targetIrr ?? (project.estimatedIrr ? Number((project.estimatedIrr * 100).toFixed(1)) : 17.0),
+      capRate: rawDeal?.calculatorResults?.capRateOnCost ?? 6.8,
+      targetRaise: rawDeal?.fundingTarget ?? 150000,
+      committedAmount: rawDeal?.commitments?.reduce((acc, c) => acc + Number(c.amount || 0), 0) || 75000,
+      marketplaceUrl: `/marketplace/${project.dealSlug || project.dealId}`,
+      updatedAt: '2026-08-01T12:00:00.000Z',
+    });
+  }
+
+  // 3. Financing / Debt Component (if project funding exists)
+  if (project.funding?.loanAmount) {
+    deals.push({
+      id: `deal-debt-${pId}`,
+      slug: `${pId}-debt`,
+      name: `${project.funding.lenderName || 'Senior Debt'} Financing Package`,
+      address: addr,
+      dealType: 'financing',
+      status: project.funding.fundingStatus === 'Funded' ? 'funded' : 'active',
+      purchasePrice,
+      cashRequired: project.funding.actualCashToClose ?? Math.round(purchasePrice * 0.25),
+      committedAmount: project.funding.loanAmount,
+      updatedAt: '2026-08-01T12:00:00.000Z',
+    });
+  }
+
+  return deals;
+}
+
 const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
   {
     id: 'deal-lifecycle',
@@ -90,6 +203,7 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
       { id: 'usr-lender-1', uid: 'usr-lender-1', name: 'Elena Rostova', role: 'Lender' },
       { id: 'usr-escrow-1', uid: 'usr-escrow-1', name: 'Marcus Vance', role: 'Escrow Officer' },
     ],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
   {
     id: 'deal-dead-path',
@@ -120,6 +234,7 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.acquisition,
     documents: [],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
   {
     id: 'deal-org-beta',
@@ -150,6 +265,7 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.acquisition,
     documents: [],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
   {
     id: 'deal-1',
@@ -285,6 +401,7 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
         generated_at: '2026-08-01T00:00:00.000Z',
       },
     ],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
   {
     id: 'deal-2',
@@ -318,6 +435,91 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
       lenderName: 'Apex Commercial Capital',
       loanType: 'Hard Money / Bridge',
       monthlyDebtService: 1931.33,
+      capitalStack: {
+        seniorDebt: 294000,
+        mezzanineDebt: 0,
+        preferredEquity: 0,
+        investorEquity: 85000,
+        leadEquity: 68840,
+        totalCostBasis: 447840,
+        ltvPct: 75.0,
+        ltcPct: 65.6,
+      },
+      lenderConditions: [
+        {
+          id: 'cond-1',
+          category: 'PTD',
+          title: 'Narrative appraisal report review & valuation acceptance',
+          status: 'approved',
+          clearedAt: '2026-08-11T14:00:00.000Z',
+        },
+        {
+          id: 'cond-2',
+          category: 'PTD',
+          title: 'Title commitment Schedule B items and 24-month chain of title',
+          status: 'approved',
+          clearedAt: '2026-08-12T10:30:00.000Z',
+        },
+        {
+          id: 'cond-3',
+          category: 'PTD',
+          title: 'Borrower entity Operating Agreement & Certificate of Good Standing',
+          status: 'submitted',
+        },
+        {
+          id: 'cond-4',
+          category: 'PTF',
+          title: 'Commercial hazard & builder risk insurance binder with lender loss payee',
+          status: 'approved',
+          clearedAt: '2026-08-13T16:15:00.000Z',
+        },
+        {
+          id: 'cond-5',
+          category: 'PTF',
+          title: 'Final ALTA / Closing Disclosure reconciliation with escrow desk',
+          status: 'pending',
+        },
+        {
+          id: 'cond-6',
+          category: 'CLOSING',
+          title: 'Senior underwriter final clear-to-close funding authorization',
+          status: 'pending',
+        },
+      ],
+      valuationVerification: {
+        appraisedValue: 510000,
+        appraisalCompany: 'CBRE Valuation Services',
+        appraisalDate: '2026-08-11',
+        contractPurchasePrice: 392000,
+        appraisalGapAmount: 0,
+        gapResolutionStrategy: 'none',
+        phase1EsaStatus: 'clean',
+        surveyStatus: 'clean',
+        physicalInspectionSignedOff: true,
+        notes: 'Commercial appraisal exceeds purchase price by $118,000. Phase I ESA clear with no recognized environmental conditions.',
+      },
+      legalTransfer: {
+        vestingEntityName: '88 Harbor Lane Investments LLC',
+        vestingEntityState: 'FL',
+        vestingEntityEin: 'XX-XXX8921',
+        goodStandingVerified: true,
+        operatingAgreementExecuted: true,
+        authorizedSignatoryName: 'Jordan Taylor (Managing Member)',
+        titleCommitmentNumber: 'TC-FL-2026-88912',
+        titleInsurer: 'First American Title Insurance Co',
+        scheduleBCurativeItems: [
+          { id: 'sch-1', item: 'Prior mortgage payoff letter verified', category: 'requirement', status: 'cleared' },
+          { id: 'sch-2', item: 'Municipal tax certificate paid through current year', category: 'requirement', status: 'cleared' },
+          { id: 'sch-3', item: 'Utility easement standard setback exception noted', category: 'exception', status: 'cleared' },
+        ],
+        wireFraudVerified: true,
+        wireVerifiedPhone: '(813) 555-0144',
+        wireVerifiedWith: 'Sarah Jenkins (Escrow Officer)',
+        wireVerifiedDate: '2026-08-14',
+        outgoingWireReference: 'FED-WIRE-2026-99214',
+        deedInstrumentNumber: 'DOC-2026-089412',
+        deedRecordingDate: '2026-08-15',
+      },
     },
     underwritingSnapshot: {
       snapshotId: 'b23c4d5e-6f7a-4b1c-9d2e-3f4a5b6c7d8e',
@@ -577,6 +779,7 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
         generated_at: '2026-08-11T16:45:00.000Z',
       },
     ],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
   {
     id: 'deal-3',
@@ -596,9 +799,9 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
     entity_type: 'LLC',
     phase_completion_pct: 35,
     estimatedIrr: 0.185,
-    dealId: null,
-    dealSlug: null,
-    dealAddress: null,
+    dealId: 'deal-mp-3',
+    dealSlug: 'oakridgehold',
+    dealAddress: '88 Oak Ridge Dr, Denver, CO 80202',
     underwritingSnapshot: {
       snapshotId: 'c34d5e6f-7a8b-4c2d-0e3f-4a5b6c7d8e9f',
       version: 1,
@@ -684,11 +887,17 @@ const INITIAL_SEED_PROJECTS: ProjectWorkspace[] = [
         generated_at: '2026-07-15T00:00:00.000Z',
       },
     ],
+    phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   },
 ];
 
 export const SEED_PROJECTS: ProjectWorkspace[] =
-  globalWithSeed.__PW_SEED_PROJECTS ?? (globalWithSeed.__PW_SEED_PROJECTS = [...INITIAL_SEED_PROJECTS]);
+  globalWithSeed.__PW_SEED_PROJECTS ??
+  (globalWithSeed.__PW_SEED_PROJECTS = INITIAL_SEED_PROJECTS.map((p) => ({
+    ...p,
+    deals: p.deals || buildSeedProjectDeals(p),
+    phaseAssignees: p.phaseAssignees || { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
+  })));
 
 export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string; propertyName: string }): ProjectWorkspace {
   const newProject: ProjectWorkspace = {
@@ -712,9 +921,13 @@ export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string
     entity_type: project.entity_type || 'LLC',
     phase_completion_pct: project.phase_completion_pct || 10,
     estimatedIrr: project.estimatedIrr || 0.15,
-    dealId: project.dealId || null,
-    dealSlug: project.dealSlug || null,
-    dealAddress: project.dealAddress || project.address || null,
+    dealId: project.dealId || `deal-${project.id}`,
+    dealSlug:
+      project.dealSlug ||
+      (project.address || project.property_address || '1247elmstreet')
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .toLowerCase(),
+    dealAddress: project.dealAddress || project.address || project.property_address || '1247 Elm Street, Austin, TX 78702',
     underwriting: project.underwriting ?? null,
     acquisitionStatus: project.acquisitionStatus || 'lead',
     tasks: project.tasks || [],
@@ -728,11 +941,13 @@ export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string
     checklistItems: project.checklistItems || [],
     earnestMoney: project.earnestMoney ?? null,
     funding: project.funding ?? null,
+    deals: project.deals || buildSeedProjectDeals(project),
     storage_used_bytes: 1000,
     storageQuotaBytes: 536_870_912,
     todos: BASE_TODOS.acquisition,
     documents: project.documents || [],
     organizationId: (project as any).organizationId || 'org-1',
+    phaseAssignees: project.phaseAssignees || { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
   };
 
   const existingIndex = SEED_PROJECTS.findIndex((p) => p.id === newProject.id);
@@ -741,6 +956,64 @@ export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string
   } else {
     SEED_PROJECTS.unshift(newProject);
   }
+
+  // Two-way synchronization: Every Deal lives inside a Project
+  try {
+    const rawPurchasePrice = Number(newProject.purchasePrice || newProject.purchase_price || 450000);
+    const rawIrr = Number(newProject.estimatedIrr ? (newProject.estimatedIrr * 100).toFixed(1) : 16.5);
+    const estArv = Number((newProject.underwritingSnapshot?.inputs as any)?.estimatedARV || Math.round(rawPurchasePrice * 1.25));
+
+    addSeedDeal({
+      id: newProject.dealId || `deal-${newProject.id}`,
+      slug: newProject.dealSlug || 'deal' + newProject.id.replace(/[^a-zA-Z0-9]/g, '').toLowerCase(),
+      address: newProject.dealAddress || newProject.address || 'Property Address',
+      status: 'published',
+      visibility: 'marketplace',
+      purchasePrice: rawPurchasePrice,
+      rehabCost: Number(newProject.rehab_costs || 50000),
+      arv: estArv,
+      holdingCosts: 15_000,
+      projectedRoi: rawIrr,
+      targetIrr: rawIrr,
+      equityMultiple: 1.75,
+      holdPeriod: '3–5 Years',
+      minInvestment: 25_000,
+      dealType: 'syndication',
+      imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80',
+      isVerifiedOperator: true,
+      creatorId: (newProject as any).creatorId || 'lead-1',
+      createdAt: new Date().toISOString(),
+      projectId: newProject.id,
+      projects: [
+        {
+          name: newProject.propertyName,
+          city: (newProject.city || 'Austin, TX').split(',')[0]?.trim() || 'Austin',
+          state: (newProject.city || 'Austin, TX').split(',')[1]?.trim() || 'TX',
+          zip: '78702',
+          propertyType: 'Single-family',
+          subStrategy: 'FLIP',
+        },
+      ],
+      commitments: [],
+      invitations: [],
+      creator: { name: 'Lead Underwriter' },
+      calculatorResults: {
+        purchasePrice: rawPurchasePrice,
+        rehabBudget: Number(newProject.rehab_costs || 50000),
+        arv: estArv,
+        targetIrr: rawIrr,
+        cashRequired: Math.round(rawPurchasePrice * 0.25),
+        netOperatingIncome: Math.round(rawPurchasePrice * 0.06),
+        capRateOnCost: 6.0,
+        equityMultiple: 1.75,
+        strategy: newProject.exit_strategy || 'Fix & Flip',
+        holdPeriod: '3–5 Years',
+      },
+    });
+  } catch {
+    // Non-fatal synchronization fallback
+  }
+
   return newProject;
 }
 
@@ -792,6 +1065,7 @@ export function updateSeedProject(
     underwritingRecord: updates.underwritingRecord !== undefined ? updates.underwritingRecord : (current.underwritingRecord ?? null),
     funding: updates.funding !== undefined ? updates.funding : (current.funding ?? defaultFunding),
     documents: updates.documents ?? current.documents ?? [],
+    phaseAssignees: updates.phaseAssignees !== undefined ? updates.phaseAssignees : current.phaseAssignees,
   };
   SEED_PROJECTS[index] = updated;
   return updated;
@@ -818,6 +1092,7 @@ export function listSeedProjectSummaries(): ProjectSummary[] {
       dealId: project.dealId,
       dealSlug: project.dealSlug,
       dealAddress: project.dealAddress,
+      deals: project.deals || buildSeedProjectDeals(project),
       acquisitionStatus: project.acquisitionStatus,
       tasks: project.tasks,
       deadRecord: project.deadRecord,
@@ -825,12 +1100,63 @@ export function listSeedProjectSummaries(): ProjectSummary[] {
       underwritingSnapshot: project.underwritingSnapshot,
       isArchived: project.isArchived,
       funding: project.funding || null,
+      phaseAssignees: project.phaseAssignees,
     };
   });
 }
 
 export function getSeedProjectById(projectId: string): ProjectWorkspace | null {
-  return SEED_PROJECTS.find((project) => project.id === projectId) ?? null;
+  const existing = SEED_PROJECTS.find((project) => project.id === projectId);
+  if (existing) {
+    if (!existing.deals || existing.deals.length === 0) {
+      existing.deals = buildSeedProjectDeals(existing);
+    }
+    return existing;
+  }
+
+  // Synthesize overarching project from matching deal component
+  const deal = SEED_RAW_DEALS.find((d) => d.projectId === projectId || d.projects?.some((p) => p.id === projectId));
+  if (deal) {
+    const rawProject = deal.projects?.[0];
+    const synthetic: ProjectWorkspace = {
+      id: projectId,
+      project_id: projectId,
+      propertyName: rawProject?.name || deal.address.split(',')[0],
+      address: deal.address,
+      property_address: deal.address,
+      city: (deal as any).city && (deal as any).state ? `${(deal as any).city}, ${(deal as any).state}` : deal.address.split(',')[1]?.trim() || 'Austin, TX',
+      currentPhase: 'acquisition',
+      phase: 'acquisition',
+      status: 'Active',
+      dispositionType: (deal.calculatorResults?.strategy?.toLowerCase().includes('hold') || deal.calculatorResults?.strategy?.toLowerCase().includes('rent')) ? 'RENT' : 'SALE',
+      purchasePrice: deal.purchasePrice || 500000,
+      purchase_price: deal.purchasePrice || 500000,
+      rehab_costs: deal.rehabCost || 50000,
+      exit_strategy: deal.calculatorResults?.strategy || 'Fix & Flip',
+      entity_type: 'LLC',
+      phase_completion_pct: 25,
+      estimatedIrr: (deal.targetIrr || 15) / 100,
+      dealId: deal.id,
+      dealSlug: deal.slug,
+      dealAddress: deal.address,
+      organizationId: 'org-1',
+      tasks: [],
+      contingencies: [],
+      storage_used_bytes: 1000000,
+      storageQuotaBytes: 536870912,
+      todos: BASE_TODOS.acquisition,
+      documents: [],
+      teamMembers: [
+        { id: 'usr-analyst-1', uid: 'usr-analyst-1', name: 'Alex Mercer', role: 'Analyst' },
+      ],
+      phaseAssignees: { ...DEFAULT_SAMPLE_PHASE_ASSIGNEES },
+    };
+    synthetic.deals = buildSeedProjectDeals(synthetic);
+    SEED_PROJECTS.push(synthetic);
+    return synthetic;
+  }
+
+  return null;
 }
 
 export function deleteSeedProject(projectId: string): boolean {
@@ -864,6 +1190,7 @@ export function seedProjectsForApiList(): Array<Record<string, unknown>> {
       dealId: project.dealId,
       dealSlug: project.dealSlug,
       dealAddress: project.dealAddress,
+      deals: project.deals || buildSeedProjectDeals(project),
       acquisitionStatus: project.acquisitionStatus || 'lead',
       tasks: project.tasks || [],
       deadRecord: project.deadRecord || null,
@@ -871,6 +1198,7 @@ export function seedProjectsForApiList(): Array<Record<string, unknown>> {
       underwritingSnapshot: project.underwritingSnapshot || null,
       isArchived: Boolean(project.isArchived),
       funding: project.funding || null,
+      phaseAssignees: project.phaseAssignees || null,
     };
   });
 }

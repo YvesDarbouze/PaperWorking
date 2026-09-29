@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CaretDown } from '@/components/icons/PhosphorIcons';
 
 const PHASES = [
   {
@@ -41,17 +42,17 @@ export default function PhaseEngine() {
   };
 
   return (
-    <section className="relative border-b border-white/5 py-16 md:py-24">
+    <section className="relative border-b border-border py-16 md:py-24">
       <div className="mx-auto max-w-[1200px] px-6 md:px-8">
         {/* Title / Description */}
         <div className="mb-12 max-w-3xl">
-          <span className="mb-4 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[12px] font-semibold uppercase tracking-[0.1em] text-[#00DD94]">
+          <span className="mb-4 inline-block text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
             OPERATIONAL ENGINE
           </span>
-          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
             The 4-Phase Operational Engine
           </h2>
-          <p className="mt-3 text-sm text-white/60 sm:text-base">
+          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
             PaperWorking structures the chaotic real estate lifecycle into four distinct operational phases.
             Each phase maps raw day-to-day actions to automated, auditable financial metrics.
           </p>
@@ -60,41 +61,41 @@ export default function PhaseEngine() {
         {/* Desktop View (Table-style layout) - Hidden on Mobile */}
         <div className="hidden md:flex flex-col gap-4">
           {/* Header Row */}
-          <div className="grid grid-cols-12 px-6 py-3 font-[family-name:var(--font-jetbrains-mono)] text-xs font-semibold uppercase tracking-wider text-white/40">
+          <div className="grid grid-cols-12 px-6 py-3 text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
             <div className="col-span-3">Phase</div>
             <div className="col-span-5">Operational Focus</div>
             <div className="col-span-4">Financial &amp; Risk Outputs</div>
           </div>
 
           {/* Phase Rows */}
-          {PHASES.map((p, idx) => (
+          {PHASES.map((p) => (
             <div
               key={p.name}
-              className="grid grid-cols-12 items-center rounded-xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-[8px] transition-all duration-300 hover:border-[#00DD94]/15"
+              className="grid grid-cols-12 items-center rounded-lg border border-border bg-card p-6 transition-colors hover:border-foreground/20"
             >
               {/* Phase Column */}
               <div className="col-span-3 flex items-baseline gap-3">
-                <span className="font-[family-name:var(--font-jetbrains-mono)] text-2xl font-medium text-[#00DD94]">
+                <span className="text-2xl font-mono font-medium text-foreground">
                   {p.num}
                 </span>
-                <span className="text-lg font-semibold text-white">
+                <span className="text-lg font-semibold text-foreground">
                   {p.name}
                 </span>
               </div>
 
               {/* Focus Column */}
               <div className="col-span-5 pr-8">
-                <p className="text-sm leading-relaxed text-white/70">
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {p.focus}
                 </p>
               </div>
 
               {/* Outputs Column */}
-              <div className="col-span-4 rounded-lg bg-white/[0.01] border border-white/5 p-4">
-                <p className="font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold text-[#00DD94] uppercase tracking-wide">
+              <div className="col-span-4 rounded-md bg-muted/40 border border-border p-4">
+                <p className="text-xs font-mono font-semibold uppercase tracking-wide text-foreground">
                   {p.outputLabel}
                 </p>
-                <p className="mt-1 text-sm text-white leading-snug">
+                <p className="mt-1 text-sm text-foreground leading-snug">
                   {p.outputVal}
                 </p>
               </div>
@@ -109,7 +110,7 @@ export default function PhaseEngine() {
             return (
               <div
                 key={p.name}
-                className="rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-[8px] overflow-hidden"
+                className="rounded-lg border border-border bg-card overflow-hidden"
               >
                 {/* Header */}
                 <button
@@ -117,29 +118,30 @@ export default function PhaseEngine() {
                   className="w-full flex items-center justify-between p-5 text-left focus:outline-none"
                 >
                   <div className="flex items-baseline gap-3">
-                    <span className="font-[family-name:var(--font-jetbrains-mono)] text-xl font-medium text-[#00DD94]">
+                    <span className="text-xl font-mono font-medium text-foreground">
                       {p.num}
                     </span>
-                    <span className="text-base font-semibold text-white">
+                    <span className="text-base font-semibold text-foreground">
                       {p.name}
                     </span>
                   </div>
-                  <span className="material-symbols-outlined text-white/50 text-[20px] transition-transform duration-200" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}>
-                    keyboard_arrow_down
-                  </span>
+                  <CaretDown
+                    className="size-5 text-muted-foreground transition-transform duration-200"
+                    style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)' }}
+                  />
                 </button>
 
                 {/* Content */}
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-0 space-y-4 border-t border-white/5">
-                    <p className="text-sm leading-relaxed text-white/70 mt-4">
+                  <div className="px-5 pb-5 pt-0 space-y-4 border-t border-border">
+                    <p className="text-sm leading-relaxed text-muted-foreground mt-4">
                       {p.focus}
                     </p>
-                    <div className="rounded-lg bg-white/[0.01] border border-white/5 p-4">
-                      <p className="font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-bold text-[#00DD94] uppercase tracking-wide">
+                    <div className="rounded-md bg-muted/40 border border-border p-4">
+                      <p className="text-[10px] font-mono font-semibold uppercase tracking-wide text-foreground">
                         {p.outputLabel}
                       </p>
-                      <p className="mt-1 text-xs text-white leading-normal">
+                      <p className="mt-1 text-xs text-foreground leading-normal">
                         {p.outputVal}
                       </p>
                     </div>

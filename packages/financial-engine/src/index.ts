@@ -123,6 +123,7 @@ export type {
   ProjectedIrrAssumptions,
   ProjectedIrrParams,
   ProjectedIrrBreakdown,
+  AnnualProjectionItem,
   IrrRoot,
   IrrStatus,
 } from './projected-irr.js';
@@ -150,5 +151,34 @@ export type {
   LocalContractRepresentation,
   ContractualDeadlineResult,
 } from './deadline-engine.js';
+
+export {
+  computeShortTermRentalMetrics,
+  computeFixAndFlipMetrics,
+  computeBrrrrMetrics,
+  computeCommercialMetrics,
+  computeWholesalingMetrics,
+  computeDealStructuringMetrics,
+  evaluatePurchaseCriteria,
+} from './strategy-engines.js';
+
+export type {
+  ShortTermRentalInputs,
+  ShortTermRentalMetrics,
+  FixAndFlipInputs,
+  FixAndFlipMetrics,
+  BrrrrInputs,
+  BrrrrMetrics,
+  CommercialInputs,
+  CommercialMetrics,
+  WholesalingInputs,
+  WholesalingMetrics,
+  DealStructuringInputs,
+  DealStructuringMetrics,
+  PurchaseCriteriaInputs,
+  PurchaseCriteriaResult,
+  CriterionEvaluation,
+} from './strategy-engines.js';
+
 
 

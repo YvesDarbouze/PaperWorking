@@ -233,10 +233,10 @@ export default function AcquisitionPipelineBoard({
       {generatedTasksNotice && (
         <div
           data-testid="auto-generated-tasks-banner"
-          className="flex items-center justify-between rounded-2xl border border-[#00dd94]/40 bg-[#00dd94]/15 p-4 text-xs sm:text-sm text-emerald-100 shadow-xl shadow-[#00dd94]/10 transition-all animate-in fade-in slide-in-from-top-2"
+          className="flex items-center justify-between rounded-none border border-emerald-500/40 bg-emerald-500/10 p-4 text-xs sm:text-sm text-emerald-200 transition-all"
         >
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-xl text-[#00dd94]">task_alt</span>
+            <span className="material-symbols-outlined text-xl text-emerald-400">task_alt</span>
             <div>
               <p className="font-bold text-white">Under Contract Milestones Established!</p>
               <p className="text-white/80">
@@ -289,16 +289,16 @@ export default function AcquisitionPipelineBoard({
                 key={s.id}
                 type="button"
                 onClick={() => setSelectedMobileStage(s.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition ${
+                className={`flex shrink-0 items-center gap-2 rounded-none px-3.5 py-2 text-xs font-semibold transition ${
                   isSelected
-                    ? 'border border-[#00dd94] bg-[#00dd94]/15 text-white'
-                    : 'border border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
+                    ? 'border border-neutral-400 bg-neutral-800 text-white'
+                    : 'border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white'
                 }`}
               >
                 <span>{s.label}</span>
                 <span
-                  className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                    isSelected ? 'bg-[#00dd94] text-black' : 'bg-white/10 text-white/70'
+                  className={`rounded-none px-1.5 py-0.5 text-[10px] font-bold ${
+                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-neutral-800 text-neutral-300'
                   }`}
                 >
                   {count}
@@ -364,7 +364,7 @@ export default function AcquisitionPipelineBoard({
                       </span>
                       <h3 className="font-bold text-white text-xs truncate">{stage.label}</h3>
                     </div>
-                    <span className="rounded-full bg-[#00dd94]/15 px-2 py-0.5 text-[10px] font-bold text-[#00dd94]">
+                    <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-200">
                       {count}
                     </span>
                   </div>
@@ -465,7 +465,7 @@ export default function AcquisitionPipelineBoard({
                   type="text"
                   value={psaDocUrl}
                   onChange={(e) => setPsaDocUrl(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00dd94] focus:outline-none font-mono text-[11px]"
+                  className="w-full rounded-none border border-neutral-700 bg-neutral-900 p-2.5 text-white focus:border-neutral-400 focus:outline-none font-mono text-[11px] min-h-[44px]"
                 />
               </div>
               <div>
@@ -475,7 +475,7 @@ export default function AcquisitionPipelineBoard({
                   inputMode="numeric"
                   value={emdAmount}
                   onChange={(e) => setEmdAmount(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00dd94] focus:outline-none"
+                  className="w-full rounded-none border border-neutral-700 bg-neutral-900 p-2.5 text-white focus:border-neutral-400 focus:outline-none min-h-[44px]"
                 />
               </div>
             </div>
@@ -484,7 +484,7 @@ export default function AcquisitionPipelineBoard({
               <button
                 type="button"
                 onClick={() => setShowUnderContractModal(false)}
-                className="rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
+                className="rounded-none border border-neutral-700 px-4 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 transition min-h-[44px]"
               >
                 Cancel
               </button>
@@ -504,7 +504,7 @@ export default function AcquisitionPipelineBoard({
                     },
                   })
                 }
-                className="rounded-xl bg-[#00dd94] px-5 py-2 text-xs font-bold text-[#0a0a0f] hover:brightness-110 shadow-lg shadow-[#00dd94]/20 transition disabled:opacity-40"
+                className="rounded-none bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/80 transition min-h-[44px] disabled:opacity-40"
               >
                 {transitioning ? 'Executing…' : 'Confirm & Generate Milestones'}
               </button>
@@ -620,11 +620,11 @@ function DealBoardCard({
       <div className="flex items-start justify-between gap-2">
         <Link
           href={`/project/${project.id}`}
-          className="font-bold text-white text-xs hover:text-[#00dd94] truncate no-underline"
+          className="font-bold text-white text-xs hover:text-neutral-300 truncate no-underline"
         >
           {project.propertyName}
         </Link>
-        <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9.5px] font-semibold text-white/70 shrink-0">
+        <span className="rounded-none bg-neutral-800 border border-neutral-700 px-1.5 py-0.5 text-[9.5px] font-semibold text-neutral-300 shrink-0">
           {project.dispositionType}
         </span>
       </div>
@@ -649,9 +649,9 @@ function DealBoardCard({
 
       {/* Task Milestones Progress */}
       {tasks.length > 0 && (
-        <div className="mt-2.5 flex items-center justify-between rounded-lg bg-black/40 px-2 py-1 text-[10.5px]">
-          <span className="text-white/60">Milestones:</span>
-          <span className="font-mono font-semibold text-[#00dd94]">
+        <div className="mt-2.5 flex items-center justify-between rounded-none bg-neutral-900 border border-neutral-800 px-2 py-1 text-[10.5px]">
+          <span className="text-neutral-400">Milestones:</span>
+          <span className="font-mono font-semibold text-neutral-200">
             {completedTasks}/{tasks.length} Done
           </span>
         </div>
@@ -664,7 +664,7 @@ function DealBoardCard({
             type="button"
             data-testid={`mark-dead-btn-${project.id}`}
             onClick={onMarkDead}
-            className="text-[10px] text-red-400/80 hover:text-red-300 font-medium transition"
+            className="text-[10px] text-red-400/80 hover:text-red-300 font-medium transition min-h-[32px] px-1"
           >
             Mark Dead
           </button>
@@ -673,7 +673,7 @@ function DealBoardCard({
             data-testid={`advance-stage-btn-${project.id}`}
             disabled={transitioning}
             onClick={onAdvance}
-            className="flex items-center gap-1 rounded-lg bg-[#00dd94]/20 border border-[#00dd94]/30 px-2.5 py-1 text-[10.5px] font-bold text-[#00dd94] hover:bg-[#00dd94]/30 transition disabled:opacity-40"
+            className="flex items-center gap-1 rounded-none bg-neutral-800 border border-neutral-700 px-2.5 py-1 text-[10.5px] font-semibold text-neutral-200 hover:bg-neutral-700 transition disabled:opacity-40 min-h-[32px]"
           >
             <span>Advance</span>
             <span className="material-symbols-outlined text-[12px]">arrow_forward</span>

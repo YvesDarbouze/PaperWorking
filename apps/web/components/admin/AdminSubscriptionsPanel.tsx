@@ -48,7 +48,7 @@ export default function AdminSubscriptionsPanel() {
   return (
     <AdminPageShell
       title="Billing"
-      subtitle="MRR overview + dunning actions — seed port of v0 /admin/subscriptions."
+      subtitle="MRR overview + dunning actions: seed port of v0 /admin/subscriptions."
       actions={
         <button
           type="button"

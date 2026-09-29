@@ -1,5 +1,13 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { PencilSimple, Plus } from '@/components/icons/PhosphorIcons';
+
+function renderButtonIcon(icon?: string) {
+  if (!icon) return null;
+  if (icon === 'edit') return <PencilSimple className="h-4 w-4 shrink-0" />;
+  if (icon === 'add') return <Plus className="h-4 w-4 shrink-0" />;
+  return null;
+}
 
 export default function DashboardPageHeader({
   title,
@@ -34,6 +42,7 @@ export default function DashboardPageHeader({
   );
 }
 
+
 export function DashboardPrimaryButton({
   href,
   icon,
@@ -46,9 +55,9 @@ export function DashboardPrimaryButton({
   return (
     <Link
       href={href}
-      className="flex items-center gap-1.5 rounded-lg border border-white/12 bg-[#454955]/90 px-3.5 py-2 text-[12px] font-semibold text-[#fdfffc] no-underline"
+      className="inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground no-underline shadow-sm transition hover:opacity-90 touch-target"
     >
-      {icon ? <span className="material-symbols-outlined text-[15px]">{icon}</span> : null}
+      {renderButtonIcon(icon)}
       {children}
     </Link>
   );
@@ -66,10 +75,11 @@ export function DashboardSecondaryButton({
   return (
     <Link
       href={href}
-      className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-semibold text-white/70 no-underline hover:text-white"
+      className="inline-flex min-h-[44px] items-center gap-2 rounded-none border border-border bg-card px-4 py-2 text-xs font-semibold text-card-foreground no-underline shadow-sm transition hover:bg-muted touch-target"
     >
-      {icon ? <span className="material-symbols-outlined text-[15px]">{icon}</span> : null}
+      {renderButtonIcon(icon)}
       {children}
     </Link>
   );
 }
+

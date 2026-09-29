@@ -222,12 +222,7 @@ export default function ProjectsListPanel() {
 
           <Link
             href="/projects/new"
-            className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95"
-            style={{
-              background: '#00dd94',
-              color: '#0d0a0b',
-              boxShadow: '0 4px 16px rgba(0,221,148,0.25)',
-            }}
+            className="flex items-center gap-2 rounded-none bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground min-h-[44px] transition-all hover:bg-primary/80 focus-visible:ring-1 focus-visible:ring-ring/50"
           >
             <span
               className="material-symbols-outlined text-[18px]"
@@ -332,12 +327,12 @@ export default function ProjectsListPanel() {
       {!loading && !error && filteredProjects.length === 0 ? (
         projects.length === 0 ? (
           /* Rich Empty State for New Investors / Fresh Workspace */
-          <div className="mb-8 rounded-2xl border border-white/10 bg-white/[0.02] p-8 md:p-12 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#00dd94]/30 bg-[#00dd94]/10 text-[#00dd94]">
+          <div className="mb-8 rounded-none border border-neutral-800 bg-neutral-950 p-8 md:p-12 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-none border border-neutral-700 bg-neutral-900 text-white">
               <span className="material-symbols-outlined text-[30px]">add_home_work</span>
             </div>
             <h3 className="text-xl font-bold text-white">Start Your First Investment Project</h3>
-            <p className="mt-2 max-w-lg mx-auto text-xs sm:text-sm text-white/60 leading-relaxed">
+            <p className="mt-2 max-w-lg mx-auto text-xs sm:text-sm text-neutral-400 leading-relaxed">
               PaperWorking structures deals around the 4-phase Real Estate Investment Lifecycle (REIL).
               Choose an entry point to launch your first deal into Acquisition:
             </p>
@@ -345,14 +340,14 @@ export default function ProjectsListPanel() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/deal-calculator"
-                className="flex items-center gap-2 rounded-xl bg-[#00dd94] px-5 py-2.5 text-xs sm:text-sm font-bold text-[#0a0a0f] hover:brightness-110 shadow-lg shadow-[#00dd94]/20 transition"
+                className="flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground hover:bg-primary/80 transition min-h-[44px]"
               >
                 <span className="material-symbols-outlined text-[18px]">calculate</span>
                 Create from Calculator
               </Link>
               <Link
                 href="/projects/new"
-                className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition"
+                className="flex items-center gap-2 rounded-none border border-neutral-700 bg-neutral-900 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-neutral-800 transition min-h-[44px]"
               >
                 <span className="material-symbols-outlined text-[18px]">edit_note</span>
                 Create Manually
@@ -363,48 +358,48 @@ export default function ProjectsListPanel() {
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-3xl mx-auto">
               <Link
                 href="/projects/new?strategy=flip"
-                className="group rounded-xl border border-white/10 bg-black/40 p-4 transition hover:border-[#00dd94]/50 hover:bg-[#00dd94]/5 no-underline"
+                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-[#00dd94]">Fix & Flip</h4>
-                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/70">SALE</span>
+                  <h4 className="text-sm font-bold text-white group-hover:text-white">Fix & Flip</h4>
+                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">SALE</span>
                 </div>
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-neutral-400">
                   Short 6–12 mo hold. Prefills 12% rehab ratio, 0% rehab vacancy, and 5 standard rehab categories.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-[#00dd94]">
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
                   Use Flip Template →
                 </span>
               </Link>
 
               <Link
                 href="/projects/new?strategy=brrrr"
-                className="group rounded-xl border border-white/10 bg-black/40 p-4 transition hover:border-[#00dd94]/50 hover:bg-[#00dd94]/5 no-underline"
+                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-[#00dd94]">BRRRR</h4>
-                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/70">REFINANCE</span>
+                  <h4 className="text-sm font-bold text-white group-hover:text-white">BRRRR</h4>
+                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">REFINANCE</span>
                 </div>
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-neutral-400">
                   Buy, Rehab, Rent, Refinance. 7.0% institutional vacancy floor and post-rehab equity extraction.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-[#00dd94]">
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
                   Use BRRRR Template →
                 </span>
               </Link>
 
               <Link
                 href="/projects/new?strategy=buy_and_hold_rental"
-                className="group rounded-xl border border-white/10 bg-black/40 p-4 transition hover:border-[#00dd94]/50 hover:bg-[#00dd94]/5 no-underline"
+                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-[#00dd94]">Buy & Hold Rental</h4>
-                  <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/70">CASH FLOW</span>
+                  <h4 className="text-sm font-bold text-white group-hover:text-white">Buy & Hold Rental</h4>
+                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">CASH FLOW</span>
                 </div>
-                <p className="mt-2 text-xs text-white/60">
+                <p className="mt-2 text-xs text-neutral-400">
                   Durable monthly cash flow. 6.0% institutional vacancy floor, 35% opex ratio, and 30-yr amortization.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-[#00dd94]">
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
                   Use Rental Template →
                 </span>
               </Link>
@@ -510,7 +505,7 @@ export default function ProjectsListPanel() {
                       <div>
                         <span className="block text-[10px] uppercase text-white/40 font-mono">IRR</span>
                         <span className="font-semibold text-[color:var(--color-primary)]">
-                          {project.estimatedIrr ? `${(project.estimatedIrr * 100).toFixed(1)}%` : '—'}
+                          {project.estimatedIrr ? `${(project.estimatedIrr * 100).toFixed(1)}%` : 'N/A'}
                         </span>
                       </div>
                     </div>
@@ -558,7 +553,7 @@ export default function ProjectsListPanel() {
                         <td className="p-4 text-sm text-white/85">
                           {project.estimatedIrr
                             ? `${(project.estimatedIrr * 100).toFixed(1)}%`
-                            : '—'}
+                            : 'N/A'}
                         </td>
                         <td className="p-4 text-right">
                           <Link

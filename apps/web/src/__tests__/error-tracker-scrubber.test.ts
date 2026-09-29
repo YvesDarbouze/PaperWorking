@@ -115,7 +115,7 @@ describe("Error Capture & PII Scrubber (W1-09 Task 1)", () => {
 
       const serialized = JSON.stringify(scrubbed);
 
-      // --- CRITICAL NEGATIVE ASSERTIONS (Zero Leaks) ---
+      // Assert zero leaks across all sensitive token types.
       // 1. Protected support inbox address MUST NEVER appear
       expect(serialized).not.toContain(RAW_PATTERNS.protectedInbox);
 
@@ -143,7 +143,7 @@ describe("Error Capture & PII Scrubber (W1-09 Task 1)", () => {
       expect(serialized).not.toContain("neon-db.internal");
       expect(serialized).not.toContain("postgres://");
 
-      // --- POSITIVE CONFIRMATION ASSERTIONS ---
+      // Assert redacted values replace sensitive fields.
       expect(scrubbed!.tags?.supportContact).toBe("[EMAIL_REDACTED]");
       expect(scrubbed!.tags?.userEmailTag).toBe("[EMAIL_REDACTED]");
       expect(scrubbed!.user?.email).toBe("[EMAIL_REDACTED]");

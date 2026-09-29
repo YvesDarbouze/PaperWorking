@@ -98,7 +98,7 @@ function KpiSparkline({
           style={{
             height: `${Math.max(20, Math.min(100, factor * 85))}%`,
             backgroundColor:
-              i === 4 ? 'var(--accent, #00dd94)' : 'var(--text-secondary, #9E9DA0)',
+              i === 4 ? 'var(--accent, #34d399)' : 'var(--text-secondary, #9E9DA0)',
           }}
         />
       ))}

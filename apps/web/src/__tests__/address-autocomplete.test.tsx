@@ -34,7 +34,8 @@ describe('AddressSearch Autocomplete & Accessibility Suite', () => {
 
     expect(html).toContain('custom-test-class');
     expect(html).toContain('search');
-    expect(html).toContain('focus:border-[#00DD94]');
+    expect(html).toContain('focus:border-ring');
+    expect(html).not.toContain('#00DD94');
   });
 
   it('does not render predictions listbox when closed/empty', () => {

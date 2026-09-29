@@ -35,7 +35,7 @@ function getInitials(name?: string): string {
 }
 
 function formatAum(cents?: number): string {
-  if (!cents || cents <= 0) return '—';
+  if (!cents || cents <= 0) return 'N/A';
   const dollars = cents / 100;
   if (dollars >= 1_000_000_000) return `$${(dollars / 1_000_000_000).toFixed(1)}B+`;
   if (dollars >= 1_000_000) return `$${Math.round(dollars / 1_000_000)}M+`;
@@ -63,10 +63,10 @@ export default function CounterpartyPreviewCard({
 
   const hasAnyMetrics = hasAum || hasIrr || hasMultiple || hasExits;
 
-  const aum = hasAum ? formatAum(profile.aumCents) : '—';
-  const irr = hasIrr ? `${profile.avgRoiPct!.toFixed(1)}%` : '—';
-  const multiple = hasMultiple ? `${profile.equityMultiple!.toFixed(2)}x` : '—';
-  const exits = hasExits ? `${profile.dealCount} Exits` : '—';
+  const aum = hasAum ? formatAum(profile.aumCents) : 'N/A';
+  const irr = hasIrr ? `${profile.avgRoiPct!.toFixed(1)}%` : 'N/A';
+  const multiple = hasMultiple ? `${profile.equityMultiple!.toFixed(2)}x` : 'N/A';
+  const exits = hasExits ? `${profile.dealCount} Exits` : 'N/A';
 
   const strategies = (profile.strategies || []).filter((s) => s in STRATEGY_LABELS) as InvestmentStrategy[];
 

@@ -124,13 +124,13 @@ describe('phase B8 — Next route wiring', () => {
     expect(source).toContain('buildProjectsReadService');
   });
 
-  it('projects/new page uses createProjectFromBff not apiFetch for POST', () => {
+  it('projects/new page writes through same-origin Next routes', () => {
     const source = readFileSync(
       join(here, '../../app/(dashboard)/projects/new/page.tsx'),
       'utf8',
     );
-    expect(source).toContain('createProjectFromBff');
-    expect(source).not.toMatch(/apiFetch\(['"`]\/api\/projects['"`]/);
+    expect(source).toMatch(/fetch\('\/api\/projects\/(drafts|promote)'/);
+    expect(source).not.toContain('NEXT_PUBLIC_API_URL');
   });
 });
 

@@ -96,7 +96,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
           {resolveSeedProjectName(projectId)}
         </h2>
         <p className="mt-2 text-sm text-text-secondary">
-          Period ledger via `handleReportsPeriodGet` — {payload.periodStart.slice(0, 10)} to{' '}
+          Period ledger via `handleReportsPeriodGet` · {payload.periodStart.slice(0, 10)} to{' '}
           {payload.periodEnd.slice(0, 10)}.
         </p>
       </section>

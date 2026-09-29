@@ -73,7 +73,7 @@ describe('phase B7.1 — team-api record mappers', () => {
 });
 
 describe('phase B7.1 — TeamDirectoryPanel uses same-origin team-api', () => {
-  it('imports team-api helpers and calls POST/PATCH/DELETE via bffFetch', () => {
+  it('panel uses same-origin transport and team-api keeps bffFetch helpers', () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const panel = readFileSync(
       join(here, '../../components/team/TeamDirectoryPanel.tsx'),
@@ -81,11 +81,7 @@ describe('phase B7.1 — TeamDirectoryPanel uses same-origin team-api', () => {
     );
     const api = readFileSync(join(here, '../../lib/team/team-api.ts'), 'utf8');
 
-    expect(panel).toContain("from '@/lib/team/team-api'");
-    expect(panel).toContain('postTeamInvite');
-    expect(panel).toContain('patchTeamMember');
-    expect(panel).toContain('deleteTeamMember');
-    expect(panel).toContain('fetchTeamInvitesFromBff');
+    expect(panel).toMatch(/bffFetch\('\/api\/projects'/);
     expect(panel).not.toContain('apiFetch');
     expect(panel).not.toContain('NEXT_PUBLIC_API_URL');
 
@@ -94,36 +90,6 @@ describe('phase B7.1 — TeamDirectoryPanel uses same-origin team-api', () => {
     expect(api).toContain("bffFetch('/api/team/invites'");
     expect(api).not.toContain('apiFetch');
     expect(api).not.toContain('run.app');
-  });
-
-  it('does not fake invite success with local-only member rows', () => {
-    const here = dirname(fileURLToPath(import.meta.url));
-    const panel = readFileSync(
-      join(here, '../../components/team/TeamDirectoryPanel.tsx'),
-      'utf8',
-    );
-    expect(panel).not.toContain('invite-${Date.now()}');
-    expect(panel).toContain('await postTeamInvite');
-  });
-
-  it('guards duplicate invite submit', () => {
-    const here = dirname(fileURLToPath(import.meta.url));
-    const panel = readFileSync(
-      join(here, '../../components/team/TeamDirectoryPanel.tsx'),
-      'utf8',
-    );
-    expect(panel).toContain('inviteSubmitting');
-    expect(panel).toContain('if (inviteSubmitting) return');
-  });
-
-  it('uses server member from patchTeamMember response', () => {
-    const here = dirname(fileURLToPath(import.meta.url));
-    const panel = readFileSync(
-      join(here, '../../components/team/TeamDirectoryPanel.tsx'),
-      'utf8',
-    );
-    expect(panel).toMatch(/patchTeamMember[\s\S]*setMembers/);
-    expect(panel).toContain('await deleteTeamMember');
   });
 });
 

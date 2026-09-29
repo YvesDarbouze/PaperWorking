@@ -3,6 +3,23 @@ import { computeProjectedIrr, calculateProjectedIrrDetails, type IrrStatus, type
 import { ENGINE_VERSION } from './constants.js';
 import { deriveIanaTimezoneFromAddress } from './deadline-engine.js';
 import { computeSensitivityGrids } from './sensitivity-matrix-engine.js';
+import {
+  computeShortTermRentalMetrics,
+  computeFixAndFlipMetrics,
+  computeBrrrrMetrics,
+  computeCommercialMetrics,
+  computeWholesalingMetrics,
+  computeDealStructuringMetrics,
+  evaluatePurchaseCriteria,
+  type ShortTermRentalMetrics,
+  type FixAndFlipMetrics,
+  type BrrrrMetrics,
+  type CommercialMetrics,
+  type WholesalingMetrics,
+  type DealStructuringMetrics,
+  type PurchaseCriteriaResult,
+  type PurchaseCriteriaInputs,
+} from './strategy-engines.js';
 
 export class ValuationInputRequiredError extends Error {
   readonly code = 'VALUATION_INPUT_REQUIRED';
@@ -88,11 +105,20 @@ export interface UnderwritingCalculatorInputs {
   purchasePrice: number;
   rehabBudget?: number;
   estimatedARV?: number | null;
+  beds?: number;
+  baths?: number;
+  sqft?: number;
+  yearBuilt?: number;
+  taxAssessment?: number;
   grossRentMonthly?: number;
   grossMonthlyRent?: number;
   otherIncomeMonthly?: number;
   otherMonthlyIncome?: number;
   operatingExpensesAnnual?: number; // Optional itemized annual OpEx override
+  annualPropertyTax?: number;
+  annualInsurance?: number;
+  monthlyHOA?: number;
+  monthlyManagementFeePct?: number;
   operatingExpenseRatioPct?: number; // Default 35%
   vacancyRatePct?: number; // Default 5%
   targetLtvPct?: number; // Default 75%
@@ -140,6 +166,45 @@ export interface UnderwritingCalculatorInputs {
   allowDefaultTerminalMethod?: boolean;
   /** W2-12: Whether to compute 2D sensitivity grids (default true, set false in internal loops) */
   computeSensitivityGrids?: boolean;
+
+  // Strategy-specific inputs
+  averageDailyRate?: number;
+  occupancyRatePct?: number;
+  cleaningFeePerStay?: number;
+  averageStayNights?: number;
+  cleaningCostPerStay?: number;
+  platformFeePct?: number;
+  strFurnishingCapex?: number;
+  shortTermTaxRatePct?: number;
+  refinanceMonthsAfterClose?: number;
+  refinanceLtvPct?: number;
+  refinanceInterestRatePct?: number;
+  refinanceAmortizationYears?: number;
+  refinanceClosingCostsPct?: number;
+  postRefiGrossMonthlyRent?: number;
+  postRefiMonthlyOperatingExpenses?: number;
+  commercialSqft?: number;
+  averageRentPerUnitMonthly?: number;
+  marketCapRatePct?: number;
+  contractPurchasePrice?: number;
+  targetAssignmentFee?: number;
+  isDoubleClosing?: boolean;
+  doubleClosingEscrowFees?: number;
+
+  // Deal Structuring & Financing Modality
+  financingModality?: 'cash' | 'conventional' | 'hard_money' | 'owner_financing' | 'balloon';
+  hardMoneyPoints?: number;
+  hardMoneyInterestRatePct?: number;
+  hardMoneyTermMonths?: number;
+  balloonTermMonths?: number;
+  capitalSeekingIntent?: 'solo' | 'partner_down_payment' | 'partner_whole_deal' | 'crowdfund';
+  partnerEquitySplitPct?: number;
+  targetCapitalRaise?: number;
+  minimumInvestmentTicket?: number;
+  preferredReturnPct?: number;
+
+  // Purchase Criteria Screening
+  purchaseCriteria?: PurchaseCriteriaInputs;
 }
 
 export interface ReconciledUnderwritingMetrics {
@@ -225,6 +290,13 @@ export interface ReconciledUnderwritingMetrics {
   sensitivityGrids?: import('@paperworking/validation').SensitivityGridsResult;
   /** W2-14: Appreciation calculation base ('purchase_price' | 'arv') */
   appreciationBase?: 'purchase_price' | 'arv';
+  shortTermRental?: ShortTermRentalMetrics;
+  fixAndFlip?: FixAndFlipMetrics;
+  brrrr?: BrrrrMetrics;
+  commercial?: CommercialMetrics;
+  wholesaling?: WholesalingMetrics;
+  dealStructuring?: DealStructuringMetrics;
+  purchaseCriteriaResult?: PurchaseCriteriaResult;
   calculatedAt: string;
   engineVersion: string;
 }
@@ -505,6 +577,109 @@ export function reconcileAcquisitionUnderwriting(
   const yieldOnCostPct = capRateOnCost;
   const isNegativeLeverage = yieldOnCostPct < loanConstantPct || cashOnCashReturnPct < 0;
 
+  // ── 6. Multi-Strategy Underwriting Metrics & Criteria Evaluation ───────────
+  const shortTermRental = computeShortTermRentalMetrics({
+    purchasePrice,
+    totalCostBasis,
+    cashRequired,
+    annualDebtService,
+    averageDailyRate: inputs.averageDailyRate,
+    occupancyRatePct: inputs.occupancyRatePct,
+    cleaningFeePerStay: inputs.cleaningFeePerStay,
+    averageStayNights: inputs.averageStayNights,
+    cleaningCostPerStay: inputs.cleaningCostPerStay,
+    platformFeePct: inputs.platformFeePct,
+    annualPropertyTax: inputs.annualPropertyTax,
+    annualInsurance: inputs.annualInsurance,
+    strFurnishingCapex: inputs.strFurnishingCapex,
+  });
+
+  const fixAndFlip = computeFixAndFlipMetrics({
+    purchasePrice,
+    rehabBudget,
+    buyerClosingCosts: buyerClosingCostsAmount,
+    estimatedARV,
+    holdPeriodMonths: inputs.strategy === 'flip' && inputs.holdPeriodYears ? Math.round(inputs.holdPeriodYears * 12) : 6,
+    sellingCostsPct: inputs.sellingCostsPct ?? 6.0,
+    monthlyDebtService,
+    monthlyHoldingCosts: inputs.operatingExpensesAnnual ? Math.round(inputs.operatingExpensesAnnual / 12) : 450,
+    hardMoneyPoints: inputs.hardMoneyPoints ?? 0,
+    loanAmount,
+    shortTermTaxRatePct: inputs.shortTermTaxRatePct,
+  });
+
+  const brrrr = computeBrrrrMetrics({
+    purchasePrice,
+    rehabBudget,
+    buyerClosingCosts: buyerClosingCostsAmount,
+    initialLoanAmount: loanAmount,
+    estimatedARV,
+    refinanceMonthsAfterClose: inputs.refinanceMonthsAfterClose ?? 6,
+    refinanceLtvPct: inputs.refinanceLtvPct ?? 75.0,
+    refinanceInterestRatePct: inputs.refinanceInterestRatePct ?? 6.75,
+    refinanceAmortizationYears: inputs.refinanceAmortizationYears ?? 30,
+    refinanceClosingCostsPct: inputs.refinanceClosingCostsPct ?? 2.5,
+    postRefiGrossMonthlyRent: inputs.postRefiGrossMonthlyRent ?? grossRentMonthly,
+    postRefiMonthlyOperatingExpenses:
+      inputs.postRefiMonthlyOperatingExpenses ??
+      (inputs.operatingExpensesAnnual
+        ? Math.round(inputs.operatingExpensesAnnual / 12)
+        : Math.round(grossRentMonthly * (operatingExpenseRatioPct / 100))),
+  });
+
+  const commercial = computeCommercialMetrics({
+    purchasePrice,
+    unitCount: inputs.unitsCount ?? 1,
+    averageRentPerUnitMonthly:
+      inputs.averageRentPerUnitMonthly ??
+      (inputs.unitsCount && inputs.unitsCount > 0 ? Math.round(grossRentMonthly / inputs.unitsCount) : grossRentMonthly),
+    otherIncomeMonthly,
+    commercialSqft: inputs.commercialSqft,
+    vacancyRatePct,
+    operatingExpenseRatioPct,
+    operatingExpensesAnnualOverride: inputs.operatingExpensesAnnual,
+    loanAmount,
+    annualDebtService,
+    marketCapRatePct: inputs.marketCapRatePct ?? 6.5,
+    totalCostBasis,
+    cashRequired,
+  });
+
+  const wholesaling = computeWholesalingMetrics({
+    contractPurchasePrice: inputs.contractPurchasePrice ?? purchasePrice,
+    estimatedARV,
+    estimatedRehabCost: rehabBudget,
+    targetBuyerMaoMultiplier: 0.70,
+    buyerClosingCostsEstimate: buyerClosingCostsAmount,
+    targetAssignmentFee: inputs.targetAssignmentFee ?? 10000,
+    isDoubleClosing: inputs.isDoubleClosing ?? false,
+    doubleClosingEscrowFees: inputs.doubleClosingEscrowFees ?? 2500,
+  });
+
+  const dealStructuring = computeDealStructuringMetrics({
+    financingModality: inputs.financingModality ?? 'conventional',
+    capitalSeekingIntent: inputs.capitalSeekingIntent ?? 'solo',
+    totalCashRequired: cashRequired,
+    annualNetCashFlow,
+    partnerEquitySplitPct: inputs.partnerEquitySplitPct ?? 50.0,
+    preferredReturnPct: inputs.preferredReturnPct ?? 8.0,
+    targetCapitalRaise: inputs.targetCapitalRaise ?? cashRequired,
+    minimumInvestmentTicket: inputs.minimumInvestmentTicket ?? 10000,
+  });
+
+  const purchaseCriteriaResult = inputs.purchaseCriteria
+    ? evaluatePurchaseCriteria(inputs.purchaseCriteria, {
+        strategy: inputs.strategy,
+        cashOnCashReturnPct,
+        dscr,
+        capRateOnCost,
+        projectedFlipProfit: fixAndFlip.netFlipProfit,
+        ltvPct,
+        isNegativeLeverage,
+        monthlyNetCashFlow,
+      })
+    : undefined;
+
   return {
     totalCostBasis,
     loanAmount,
@@ -559,6 +734,13 @@ export function reconcileAcquisitionUnderwriting(
             computeSensitivityGrids: false,
           })
         : undefined,
+    shortTermRental,
+    fixAndFlip,
+    brrrr,
+    commercial,
+    wholesaling,
+    dealStructuring,
+    purchaseCriteriaResult,
     calculatedAt: new Date().toISOString(),
     engineVersion: `${ENGINE_VERSION}.0.0`,
   };
@@ -566,38 +748,10 @@ export function reconcileAcquisitionUnderwriting(
 
 // ── 3. Deal Calculator → Project Handoff Transformation ────────────────────────
 
-export interface TransformCalculatorInput {
+export interface TransformCalculatorInput extends Partial<UnderwritingCalculatorInputs> {
   address: string;
   projectName?: string;
   purchasePrice: number;
-  rehabBudget?: number;
-  buyerClosingCostsPct?: number;
-  estimatedARV?: number | null;
-  grossRentMonthly?: number;
-  operatingExpenseRatioPct?: number;
-  targetLtvPct?: number;
-  interestRatePct?: number;
-  amortizationYears?: number;
-  strategy?: 'flip' | 'brrrr' | 'buy_and_hold_rental' | 'short_term_rental_airbnb' | 'commercial_value_add' | 'wholesale';
-  terminalValueMethod?: 'appreciation_pct' | 'exit_cap' | 'per_unit';
-  /** W2-14: Appreciation calculation base ('purchase_price' | 'arv', default 'purchase_price') */
-  appreciationBase?: 'purchase_price' | 'arv';
-  rentGrowthPct?: number;
-  expenseGrowthPct?: number;
-  appreciationPct?: number;
-  annualAppreciationPct?: number;
-  loanType?: 'amortizing' | 'interest_only' | 'arm';
-  ioPeriodYears?: number;
-  armFixedPeriodYears?: number;
-  armAdjustmentPct?: number;
-  /** W2-11: Lease-up and stabilization duration in months */
-  stabilizationMonths?: number;
-  /** W2-11: Initial months completely vacant immediately after closing */
-  monthsVacantAtClose?: number;
-  /** W2-11: Concessions in months of free rent granted */
-  concessionsMonths?: number;
-  /** W2-11: Rent ramp % during active lease-up months */
-  leaseUpRentRampPct?: number;
   createdByUid: string;
   organizationId?: string;
   assumptionsNotes?: string;
@@ -612,6 +766,11 @@ export interface TransformedProjectPayload {
   purchase_price: number;
   rehab_costs: number;
   estimatedExitValue: number | null;
+  beds?: number;
+  baths?: number;
+  sqft?: number;
+  yearBuilt?: number;
+  taxAssessment?: number;
   currentPhase: 1;
   phase: 'acquisition';
   status: 'acquisition';
@@ -655,29 +814,12 @@ export function transformCalculatorToProject(
   if (input.estimatedARV && input.estimatedARV > 0) {
     try {
       metrics = reconcileAcquisitionUnderwriting({
+        ...input,
         purchasePrice: input.purchasePrice,
         rehabBudget: input.rehabBudget,
         buyerClosingCostsPct: input.buyerClosingCostsPct,
         estimatedARV: input.estimatedARV,
-        grossRentMonthly: input.grossRentMonthly,
-        operatingExpenseRatioPct: input.operatingExpenseRatioPct,
-        targetLtvPct: input.targetLtvPct,
-        interestRatePct: input.interestRatePct,
-        amortizationYears: input.amortizationYears,
-        strategy: input.strategy,
         terminalValueMethod: input.terminalValueMethod ?? 'appreciation_pct',
-        appreciationBase: input.appreciationBase,
-        rentGrowthPct: input.rentGrowthPct,
-        expenseGrowthPct: input.expenseGrowthPct,
-        appreciationPct: input.appreciationPct ?? input.annualAppreciationPct,
-        loanType: input.loanType,
-        ioPeriodYears: input.ioPeriodYears,
-        armFixedPeriodYears: input.armFixedPeriodYears,
-        armAdjustmentPct: input.armAdjustmentPct,
-        stabilizationMonths: input.stabilizationMonths,
-        monthsVacantAtClose: input.monthsVacantAtClose,
-        concessionsMonths: input.concessionsMonths,
-        leaseUpRentRampPct: input.leaseUpRentRampPct,
         allowDefaultTerminalMethod: true,
       });
     } catch {
@@ -699,6 +841,11 @@ export function transformCalculatorToProject(
     purchase_price: input.purchasePrice,
     rehab_costs: input.rehabBudget ?? 0,
     estimatedExitValue: input.estimatedARV ?? null,
+    beds: input.beds,
+    baths: input.baths,
+    sqft: input.sqft,
+    yearBuilt: input.yearBuilt,
+    taxAssessment: input.taxAssessment,
     currentPhase: 1,
     phase: 'acquisition',
     status: 'acquisition',
@@ -718,6 +865,12 @@ export function transformCalculatorToProject(
         purchasePrice: input.purchasePrice,
         rehabBudget: input.rehabBudget ?? 0,
         estimatedARV: input.estimatedARV ?? null,
+        buyerClosingCostsPct: input.buyerClosingCostsPct ?? 2.0,
+        beds: input.beds,
+        baths: input.baths,
+        sqft: input.sqft,
+        yearBuilt: input.yearBuilt,
+        taxAssessment: input.taxAssessment,
         grossMonthlyRent: input.grossRentMonthly ?? 0,
         operatingExpenseRatioPct: input.operatingExpenseRatioPct ?? 35.0,
         targetLtvPct: input.targetLtvPct ?? 75.0,

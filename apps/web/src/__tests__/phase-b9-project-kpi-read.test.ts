@@ -207,7 +207,7 @@ describe('phase B9 — project browser transport audit', () => {
     expect(sources).not.toContain('run.app');
     expect(listPanel).toMatch(/bffFetch\('\/api\/projects'/);
     expect(workspace).toMatch(/bffFetch\(`\/api\/projects\/\$\{projectId\}`/);
-    expect(newProject).toContain('createProjectFromBff');
+    expect(newProject).toMatch(/fetch\('\/api\/projects\/(drafts|promote)'/);
   });
 });
 

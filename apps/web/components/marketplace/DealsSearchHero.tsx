@@ -76,6 +76,31 @@ export default function DealsSearchHero({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [placesPredictions, setPlacesPredictions] = useState<Array<{ placeId: string; description: string; mainText?: string; secondaryText?: string }>>([]);
+
+  useEffect(() => {
+    const trimmed = inputValue.trim();
+    if (trimmed.length < 2) {
+      setPlacesPredictions([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetch('/api/places/autocomplete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: trimmed, sessionToken: `search-${Date.now()}` }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data.predictions)) {
+            setPlacesPredictions(data.predictions.slice(0, 5));
+          }
+        })
+        .catch(() => {});
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
   // Compute grouped suggestions
   const suggestions = useMemo<SuggestionItem[]>(() => {
     const q = inputValue.trim().toLowerCase();
@@ -91,7 +116,18 @@ export default function DealsSearchHero({
 
     const items: SuggestionItem[] = [];
 
-    // 1. Markets (Cities & States)
+    // 1. Google Places Predictions
+    placesPredictions.forEach((p) => {
+      items.push({
+        id: `places-${p.placeId}`,
+        type: 'address',
+        label: p.description,
+        sublabel: p.secondaryText || 'Google Places Verified Address',
+        searchValue: p.description,
+      });
+    });
+
+    // 2. Markets (Cities & States)
     const marketsSet = new Set<string>();
     deals.forEach((d) => {
       const city = d.city || '';
@@ -114,7 +150,7 @@ export default function DealsSearchHero({
       }
     });
 
-    // 2. Deals (Property / Project Names)
+    // 3. Deals (Property / Project Names)
     deals.forEach((d) => {
       const name = d.propertyName || d.name || '';
       if (name && name.toLowerCase().includes(q) && items.length < 12) {
@@ -128,7 +164,7 @@ export default function DealsSearchHero({
       }
     });
 
-    // 3. Addresses
+    // 4. Addresses
     deals.forEach((d) => {
       const addr = d.address || '';
       if (addr && addr.toLowerCase().includes(q) && items.length < 12) {
@@ -143,7 +179,7 @@ export default function DealsSearchHero({
     });
 
     return items;
-  }, [inputValue, deals, recentSearches]);
+  }, [inputValue, deals, recentSearches, placesPredictions]);
 
   const handleSelect = (item: SuggestionItem) => {
     setInputValue(item.searchValue);

@@ -7,10 +7,23 @@ import {
   computeProjectedIrr,
   canonicalDemoDeal,
 } from '@paperworking/financial-engine';
+import {
+  Calculator,
+  ChartLineUp,
+  Buildings,
+  Check,
+  CheckCircle,
+  Clock,
+  ListChecks,
+  UserPlus,
+  CaretDown,
+  CaretLeft,
+  CaretRight,
+  Lock,
+  ArrowRight,
+} from '@/components/icons/PhosphorIcons';
 
-// ─────────────────────────────────────────────────────────────
-// TYPES & DATA STRUCTURES
-// ─────────────────────────────────────────────────────────────
+// Types and data structures.
 
 export interface TeamMember {
   id: string;
@@ -66,7 +79,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     name: 'S. Reyes',
     role: 'Lead Investor',
     initials: 'SR',
-    avatarBg: 'bg-[#00DD94]',
+    avatarBg: 'bg-primary',
     textColor: 'text-[#0a0a0f]',
   },
   {
@@ -118,9 +131,7 @@ const INITIAL_FUND_TASKS: FundTask[] = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────
-// SUB-VIEW 1: DEAL CALCULATOR (Powered by Real Financial Engine Math)
-// ─────────────────────────────────────────────────────────────
+// Showcase sub-view: Deal calculator.
 
 interface CalcInputs {
   purchasePrice: number;
@@ -237,77 +248,77 @@ function ShowcaseDealCalculator() {
   return (
     <div className="space-y-3">
       {/* Context Header */}
-      <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5">
+      <div className="flex items-center justify-between border-b border-border pb-2.5">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#00DD94]/10 text-[#00DD94]">
-            <span className="material-symbols-outlined text-[15px]">calculate</span>
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-none bg-muted text-foreground border border-border">
+            <Calculator size={15} />
           </span>
           <div>
-            <h3 className="text-[12.5px] font-semibold text-white tracking-tight leading-none">
+            <h3 className="text-[12.5px] font-semibold text-foreground tracking-tight leading-none">
               Deal Calculator
             </h3>
-            <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-white/40">
+            <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-muted-foreground">
               512 Oak Ridge Ave, Austin, TX 78704 · Acquisition Underwriting
             </span>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full border border-[#00DD94]/25 bg-[#00DD94]/10 px-2 py-0.5 text-[9.5px] font-semibold text-[#00DD94]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00DD94] animate-pulse" />
+        <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[9.5px] font-medium text-foreground">
+          <span className="h-1.5 w-1.5 rounded-none bg-foreground" />
           Engine Math Live
         </span>
       </div>
 
       {/* Top 3 Headline Output KPI Cards (Reconciled to Engine Math) */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2.5 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             Cap Rate on Cost
           </span>
           <span
             data-testid="showcase-calc-cap-rate"
-            className="block text-[15px] sm:text-[17px] font-bold text-[#00DD94] tracking-tight"
+            className="block text-[15px] sm:text-[17px] font-bold text-foreground tracking-tight"
           >
             {`${math.capRate.toFixed(1)}%`}
           </span>
-          <span className="block text-[8.5px] text-white/40">
+          <span className="block text-[8.5px] text-muted-foreground">
             {`NOI $${(math.netOperatingIncome / 1000).toFixed(1)}k ÷ Basis`}
           </span>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2.5 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             Cash-on-Cash
           </span>
           <span
             data-testid="showcase-calc-coc"
-            className="block text-[15px] sm:text-[17px] font-bold text-[#00DD94] tracking-tight"
+            className="block text-[15px] sm:text-[17px] font-bold text-foreground tracking-tight"
           >
             {`${math.cashOnCash.toFixed(1)}%`}
           </span>
-          <span className="block text-[8.5px] text-white/40">
+          <span className="block text-[8.5px] text-muted-foreground">
             {`$${math.annualCashFlow.toLocaleString()} ÷ Equity`}
           </span>
         </div>
 
-        <div className="rounded-xl border border-[#00DD94]/20 bg-[#00DD94]/[0.04] p-2.5">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-[#00DD94]/80 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2.5 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-foreground/80 mb-0.5">
             Projected IRR
           </span>
           <span
             data-testid="showcase-calc-irr"
-            className="block text-[15px] sm:text-[17px] font-extrabold text-[#00DD94] tracking-tight"
+            className="block text-[15px] sm:text-[17px] font-extrabold text-foreground tracking-tight"
           >
-            {math.projectedIrr !== null ? `${math.projectedIrr.toFixed(1)}%` : 'n/a — adjust assumptions'}
+            {math.projectedIrr !== null ? `${math.projectedIrr.toFixed(1)}%` : 'n/a: adjust assumptions'}
           </span>
-          <span className="block text-[8.5px] text-[#00DD94]/70">
+          <span className="block text-[8.5px] text-foreground/70">
             5-Yr DCF Target
           </span>
         </div>
       </div>
 
       {/* Interactive Scenario Presets */}
-      <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.015] px-3 py-2">
-        <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40">
+      <div className="flex items-center justify-between rounded-none border border-border bg-muted/20 px-3 py-2">
+        <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground">
           Stress Test Inputs:
         </span>
         <div className="flex items-center gap-1.5">
@@ -325,10 +336,10 @@ function ShowcaseDealCalculator() {
                     grossRentMonthly: preset.rent,
                   }))
                 }
-                className={`px-2 py-0.5 rounded-md text-[9.5px] font-[family-name:var(--font-jetbrains-mono)] transition ${
+                className={`px-2 py-0.5 rounded-none text-[9.5px] font-[family-name:var(--font-jetbrains-mono)] transition ${
                   isSelected
-                    ? 'bg-[#00DD94]/20 border border-[#00DD94]/50 text-[#00DD94] font-semibold'
-                    : 'bg-white/[0.04] border border-white/5 text-white/60 hover:text-white'
+                    ? 'bg-primary text-primary-foreground font-semibold'
+                    : 'bg-muted/50 border border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {preset.label}
@@ -339,7 +350,7 @@ function ShowcaseDealCalculator() {
       </div>
 
       {/* Underwriting Capital & Debt Summary Grid */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3 text-[10.5px] space-y-1.5">
+      <div className="rounded-none border border-border bg-card/60 p-3 text-[10.5px] space-y-1.5">
         <div className="flex justify-between items-center text-white/60">
           <span>Purchase Price</span>
           <span className="font-semibold text-white">
@@ -374,7 +385,7 @@ function ShowcaseDealCalculator() {
           <span>Cash Required to Close</span>
           <span
             data-testid="showcase-calc-cash-req"
-            className="font-semibold text-[#00DD94] font-[family-name:var(--font-jetbrains-mono)]"
+            className="font-semibold text-foreground font-[family-name:var(--font-jetbrains-mono)]"
           >
             {`$${math.cashRequired.toLocaleString()}`}
           </span>
@@ -397,19 +408,17 @@ function ShowcaseDealCalculator() {
         </span>
         <Link
           href="/deal-calculator"
-          className="inline-flex items-center gap-1 font-semibold text-[#00DD94] hover:underline"
+          className="inline-flex items-center gap-1 font-semibold text-foreground hover:underline"
         >
           Open Deal Calculator
-          <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// SUB-VIEW 2: PORTFOLIO INSIGHTS (Driven by Seeded Demo Dataset)
-// ─────────────────────────────────────────────────────────────
+// Showcase sub-view: Portfolio insights.
 
 function ShowcasePortfolioInsights() {
   const properties = [
@@ -422,121 +431,121 @@ function ShowcasePortfolioInsights() {
   return (
     <div className="space-y-3">
       {/* Context Header */}
-      <div className="flex items-center justify-between border-b border-white/[0.08] pb-2.5">
+      <div className="flex items-center justify-between border-b border-border pb-2.5">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#00DD94]/10 text-[#00DD94]">
-            <span className="material-symbols-outlined text-[15px]">analytics</span>
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-none bg-muted text-foreground border border-border">
+            <ChartLineUp size={15} />
           </span>
           <div>
-            <h3 className="text-[12.5px] font-semibold text-white tracking-tight leading-none">
+            <h3 className="text-[12.5px] font-semibold text-foreground tracking-tight leading-none">
               Portfolio Insights
             </h3>
-            <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-white/40">
+            <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-muted-foreground">
               Apex Equity Fund I · 4 Properties (15 Units)
             </span>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[9.5px] font-medium text-white/60">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#00DD94]" />
+        <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[9.5px] font-medium text-foreground">
+          <span className="h-1.5 w-1.5 rounded-none bg-foreground" />
           Live Actuals
         </span>
       </div>
 
       {/* Top 5 Headline Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             NOI (Annual)
           </span>
-          <span className="block text-[14px] sm:text-[15px] font-bold text-white tracking-tight">
+          <span className="block text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight">
             $294,000
           </span>
-          <span className="block text-[8px] font-medium text-[#00DD94]">
+          <span className="block text-[8px] font-medium text-foreground">
             +4.4% YoY
           </span>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             Market Cap Rate
           </span>
-          <span className="block text-[14px] sm:text-[15px] font-bold text-[#00DD94] tracking-tight">
+          <span className="block text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight">
             7.0%
           </span>
-          <span className="block text-[8px] text-white/40">
+          <span className="block text-[8px] text-muted-foreground">
             NOI ÷ $4.20M
           </span>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             DSCR
           </span>
-          <span className="block text-[14px] sm:text-[15px] font-bold text-white tracking-tight">
+          <span className="block text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight">
             1.40x
           </span>
-          <span className="block text-[8px] text-white/40">
+          <span className="block text-[8px] text-muted-foreground">
             $210k Debt Serv
           </span>
         </div>
 
-        <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
+        <div className="rounded-none border border-border bg-card p-2 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-muted-foreground mb-0.5">
             Cash-on-Cash
           </span>
-          <span className="block text-[14px] sm:text-[15px] font-bold text-[#00DD94] tracking-tight">
+          <span className="block text-[14px] sm:text-[15px] font-bold text-foreground tracking-tight">
             8.0%
           </span>
-          <span className="block text-[8px] text-white/40">
+          <span className="block text-[8px] text-muted-foreground">
             $84k ÷ $1.05M
           </span>
         </div>
 
-        <div className="col-span-2 sm:col-span-1 rounded-xl border border-[#00DD94]/20 bg-[#00DD94]/[0.04] p-2">
-          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-[#00DD94]/80 mb-0.5">
+        <div className="col-span-2 sm:col-span-1 rounded-none border border-border bg-card p-2 shadow-sm ring-1 ring-foreground/10">
+          <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-foreground/80 mb-0.5">
             Projected IRR
           </span>
-          <span className="block text-[14px] sm:text-[15px] font-extrabold text-[#00DD94] tracking-tight">
+          <span className="block text-[14px] sm:text-[15px] font-extrabold text-foreground tracking-tight">
             18.4%
           </span>
-          <span className="block text-[8px] text-[#00DD94]/70">
+          <span className="block text-[8px] text-foreground/70">
             5-Yr Target
           </span>
         </div>
       </div>
 
       {/* Financial Engine Strip + Sparkline */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-white/[0.015] px-3 py-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 rounded-none border border-border bg-card/60 px-3 py-2">
         <div className="grid grid-cols-3 gap-2 text-left">
           <div>
-            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40">
+            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-muted-foreground">
               Portfolio Value
             </span>
-            <span className="text-[11.5px] font-semibold text-white">
+            <span className="text-[11.5px] font-semibold text-foreground">
               $4,200,000
             </span>
           </div>
           <div>
-            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40">
+            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-muted-foreground">
               Equity Invested
             </span>
-            <span className="text-[11.5px] font-semibold text-white">
+            <span className="text-[11.5px] font-semibold text-foreground">
               $1,050,000
             </span>
           </div>
           <div>
-            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40">
+            <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-muted-foreground">
               Net Cash Flow
             </span>
-            <span className="text-[11.5px] font-semibold text-[#00DD94]">
+            <span className="text-[11.5px] font-semibold text-foreground">
               $84,000/yr
             </span>
           </div>
         </div>
 
         {/* SVG Sparkline */}
-        <div className="flex items-center gap-2 border-t sm:border-t-0 sm:border-l border-white/[0.06] pt-1 sm:pt-0 sm:pl-3">
-          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase text-white/40">
+        <div className="flex items-center gap-2 border-t sm:border-t-0 sm:border-l border-border pt-1 sm:pt-0 sm:pl-3">
+          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase text-muted-foreground">
             NOI Trend
           </span>
           <svg className="w-20 h-5 shrink-0" viewBox="0 0 100 24" fill="none" aria-hidden="true">
@@ -547,14 +556,14 @@ function ShowcasePortfolioInsights() {
             />
             <path
               d="M 0 18 Q 15 17 30 14 T 60 11 T 85 8 T 100 5"
-              stroke="#00DD94"
+              stroke="currentColor" className="text-foreground"
               strokeWidth="1.75"
               strokeLinecap="round"
             />
             <defs>
               <linearGradient id="showcase-emerald-gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#00DD94" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#00DD94" stopOpacity="0.0" />
+                <stop offset="0%" stopColor="currentColor" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="currentColor" stopOpacity="0.0" />
               </linearGradient>
             </defs>
           </svg>
@@ -562,7 +571,7 @@ function ShowcasePortfolioInsights() {
       </div>
 
       {/* Per-Property Breakdown Table */}
-      <div className="overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.015]">
+      <div className="overflow-hidden rounded-none border border-border bg-card/60">
         <div className="grid grid-cols-12 bg-white/[0.03] px-3 py-1 font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40 border-b border-white/[0.06]">
           <span className="col-span-4">Property</span>
           <span className="col-span-2 text-right">Units</span>
@@ -576,19 +585,19 @@ function ShowcasePortfolioInsights() {
               <span className="col-span-4 font-medium text-white truncate">{row.name}</span>
               <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-white/50">{row.units}</span>
               <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)]">{row.val}</span>
-              <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-[#00DD94]">{row.noi}</span>
+              <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-foreground">{row.noi}</span>
               <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)]">{row.cf}</span>
             </div>
           ))}
           {/* Total Summary Row */}
           <div className="grid grid-cols-12 items-center px-3 py-1 bg-white/[0.025] font-semibold text-white text-[10px]">
-            <span className="col-span-4 font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-[#00DD94]">
+            <span className="col-span-4 font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-foreground">
               Total (4 Props)
             </span>
             <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)]">15</span>
             <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)]">$4.20M</span>
-            <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-[#00DD94]">$294,000</span>
-            <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-[#00DD94]">$84,000</span>
+            <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-foreground">$294,000</span>
+            <span className="col-span-2 text-right font-[family-name:var(--font-jetbrains-mono)] text-foreground">$84,000</span>
           </div>
         </div>
       </div>
@@ -598,19 +607,17 @@ function ShowcasePortfolioInsights() {
         <span className="text-white/40">Canonical Financial Ledger</span>
         <Link
           href="/dashboard/insights"
-          className="inline-flex items-center gap-1 font-semibold text-[#00DD94] hover:underline"
+          className="inline-flex items-center gap-1 font-semibold text-foreground hover:underline"
         >
           View Portfolio Insights
-          <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// SUB-VIEW 3: REIL FUND PHASE (With Live Interactive Task Assignment)
-// ─────────────────────────────────────────────────────────────
+// Showcase sub-view: REIL fund phase.
 
 function ShowcaseFundPhase() {
   const [tasks, setTasks] = useState<FundTask[]>(INITIAL_FUND_TASKS);
@@ -630,39 +637,39 @@ function ShowcaseFundPhase() {
   return (
     <div className="space-y-3">
       {/* Context & REIL Stepper */}
-      <div className="flex flex-col gap-2 border-b border-white/[0.08] pb-2.5">
+      <div className="flex flex-col gap-2 border-b border-border pb-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-sky-400/10 text-sky-400">
-              <span className="material-symbols-outlined text-[15px]">account_balance</span>
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+              <Buildings className="h-3.5 w-3.5" />
             </span>
             <div>
-              <h3 className="text-[12.5px] font-semibold text-white tracking-tight leading-none">
+              <h3 className="text-[12.5px] font-semibold text-foreground tracking-tight leading-none">
                 Oakridge Quadplex
               </h3>
-              <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-white/40">
+              <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9.5px] text-muted-foreground">
                 Phase 02: Fund · Target Closing Nov 14
               </span>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/25 bg-sky-400/10 px-2 py-0.5 text-[9.5px] font-semibold text-sky-300">
+          <span className="inline-flex items-center gap-1 rounded-none border border-border bg-card px-2 py-0.5 text-[9.5px] font-semibold text-foreground">
             Earnest Money: $25,000 Escrowed
           </span>
         </div>
 
         {/* 4-Phase REIL Stepper */}
         <div className="grid grid-cols-4 gap-1 text-center font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider">
-          <div className="rounded-md border border-white/10 bg-white/[0.02] py-1 text-white/45 flex items-center justify-center gap-0.5">
-            <span className="material-symbols-outlined text-[9px] text-emerald-400">check</span>
+          <div className="rounded-none border border-border bg-card py-1 text-muted-foreground flex items-center justify-center gap-0.5">
+            <Check className="h-2.5 w-2.5 text-foreground" />
             01 Acquisition
           </div>
-          <div className="rounded-md border border-[#00DD94] bg-[#00DD94]/10 py-1 text-[#00DD94] font-bold shadow-[0_0_10px_rgba(0,221,148,0.2)]">
+          <div className="rounded-none border border-primary bg-primary/10 py-1 text-foreground font-bold">
             02 Fund (Active)
           </div>
-          <div className="rounded-md border border-white/5 bg-white/[0.01] py-1 text-white/30">
+          <div className="rounded-none border border-border/40 bg-card/40 py-1 text-muted-foreground/60">
             03 Hold
           </div>
-          <div className="rounded-md border border-white/5 bg-white/[0.01] py-1 text-white/30">
+          <div className="rounded-none border border-border/40 bg-card/40 py-1 text-muted-foreground/60">
             04 Exit
           </div>
         </div>
@@ -678,34 +685,26 @@ function ShowcaseFundPhase() {
             <div
               key={task.id}
               data-testid={`fund-task-item-${task.id}`}
-              className={`relative rounded-xl border p-2 transition ${
+              className={`relative rounded-none border p-2 transition ${
                 task.status === 'Urgent'
-                  ? 'border-[#00DD94]/40 bg-[#00DD94]/[0.04]'
-                  : 'border-white/[0.06] bg-white/[0.02]'
+                  ? 'border-border bg-muted/40'
+                  : 'border-border bg-card'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span
-                    className={`material-symbols-outlined text-[15px] shrink-0 ${
-                      task.status === 'Done'
-                        ? 'text-emerald-400'
-                        : task.status === 'Urgent'
-                          ? 'text-amber-300'
-                          : 'text-white/40'
-                    }`}
-                  >
-                    {task.status === 'Done'
-                      ? 'check_circle'
-                      : task.status === 'Urgent'
-                        ? 'schedule'
-                        : 'checklist'}
-                  </span>
+                  {task.status === 'Done' ? (
+                    <CheckCircle className="h-4 w-4 shrink-0 text-foreground" />
+                  ) : task.status === 'Urgent' ? (
+                    <Clock className="h-4 w-4 shrink-0 text-foreground" />
+                  ) : (
+                    <ListChecks className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  )}
                   <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-white truncate">{task.title}</p>
+                    <p className="text-[11px] font-medium text-foreground truncate">{task.title}</p>
                     <span
                       className={`font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] ${
-                        task.status === 'Urgent' ? 'text-amber-300/90 font-medium' : 'text-white/40'
+                        task.status === 'Urgent' ? 'text-foreground font-medium' : 'text-muted-foreground'
                       }`}
                     >
                       {task.dueDate}
@@ -718,14 +717,14 @@ function ShowcaseFundPhase() {
                   type="button"
                   data-testid={`assign-btn-${task.id}`}
                   onClick={() => setActivePopoverTaskId(isPopoverOpen ? null : task.id)}
-                  className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] hover:border-[#00DD94]/40 px-2 py-0.5 text-[9.5px] font-medium text-white transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00DD94]"
+                  className="flex items-center gap-1.5 rounded-none border border-border bg-background hover:border-foreground px-2 py-1 min-h-[44px] sm:min-h-0 text-[9.5px] font-medium text-foreground transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   aria-expanded={isPopoverOpen}
                   aria-label={`Change assignee for task: ${task.title}`}
                 >
                   {assignee ? (
                     <>
                       <span
-                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-full ${assignee.avatarBg} text-[7.5px] font-bold ${assignee.textColor}`}
+                        className={`flex h-3.5 w-3.5 items-center justify-center rounded-none ${assignee.avatarBg} text-[7.5px] font-bold ${assignee.textColor}`}
                       >
                         {assignee.initials}
                       </span>
@@ -738,17 +737,13 @@ function ShowcaseFundPhase() {
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined text-[12px] text-white/40">
-                        person_add
-                      </span>
-                      <span data-testid={`task-assignee-name-${task.id}`} className="text-white/50">
+                      <UserPlus className="h-3 w-3 text-muted-foreground" />
+                      <span data-testid={`task-assignee-name-${task.id}`} className="text-muted-foreground">
                         Assign
                       </span>
                     </>
                   )}
-                  <span className="material-symbols-outlined text-[11px] text-white/30">
-                    expand_more
-                  </span>
+                  <CaretDown className="h-3 w-3 text-muted-foreground" />
                 </button>
               </div>
 
@@ -756,19 +751,19 @@ function ShowcaseFundPhase() {
               {isPopoverOpen && (
                 <div
                   data-testid={`assignee-popover-${task.id}`}
-                  className="absolute right-2 top-full z-20 mt-1 w-56 rounded-xl border border-white/15 bg-[#141624] p-2 shadow-2xl space-y-1 animate-in fade-in zoom-in-95 duration-100"
+                  className="absolute right-2 top-full z-20 mt-1 w-56 rounded-none border border-border bg-popover text-popover-foreground p-2 shadow-2xl space-y-1 animate-in fade-in zoom-in-95 duration-100"
                 >
-                  <div className="flex items-center justify-between px-1 text-[8.5px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-wider text-white/40">
+                  <div className="flex items-center justify-between px-1 text-[8.5px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-wider text-muted-foreground">
                     <span>Assign Team Member</span>
                     <button
                       type="button"
                       onClick={() => setActivePopoverTaskId(null)}
-                      className="text-white/40 hover:text-white"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       ✕
                     </button>
                   </div>
-                  <div className="divide-y divide-white/5">
+                  <div className="divide-y divide-border">
                     {TEAM_MEMBERS.map((member) => {
                       const isAssigned = task.assigneeId === member.id;
                       return (
@@ -777,27 +772,25 @@ function ShowcaseFundPhase() {
                           type="button"
                           data-testid={`assign-member-${task.id}-${member.id}`}
                           onClick={() => handleAssign(task.id, member.id)}
-                          className={`w-full flex items-center justify-between p-1.5 rounded-lg text-[10px] transition text-left ${
+                          className={`w-full flex items-center justify-between p-1.5 rounded-none text-[10px] transition text-left ${
                             isAssigned
-                              ? 'bg-[#00DD94]/15 text-[#00DD94] font-semibold'
-                              : 'hover:bg-white/[0.04] text-white/80'
+                              ? 'bg-primary/10 text-foreground font-semibold'
+                              : 'hover:bg-muted text-foreground'
                           }`}
                         >
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`flex h-4 w-4 items-center justify-center rounded-full ${member.avatarBg} text-[7.5px] font-bold ${member.textColor}`}
+                              className={`flex h-4 w-4 items-center justify-center rounded-none ${member.avatarBg} text-[7.5px] font-bold ${member.textColor}`}
                             >
                               {member.initials}
                             </span>
                             <div>
                               <p className="font-medium leading-none">{member.name}</p>
-                              <span className="text-[8px] text-white/40">{member.role}</span>
+                              <span className="text-[8px] text-muted-foreground">{member.role}</span>
                             </div>
                           </div>
                           {isAssigned && (
-                            <span className="material-symbols-outlined text-[13px] text-[#00DD94]">
-                              check
-                            </span>
+                            <Check className="h-3 w-3 text-foreground" />
                           )}
                         </button>
                       );
@@ -807,7 +800,7 @@ function ShowcaseFundPhase() {
                         type="button"
                         data-testid={`unassign-${task.id}`}
                         onClick={() => handleAssign(task.id, null)}
-                        className="w-full text-left p-1.5 rounded-lg text-[9px] text-red-400 hover:bg-red-500/10 transition"
+                        className="w-full text-left p-1.5 rounded-none text-[9px] text-destructive hover:bg-destructive/10 transition"
                       >
                         ✕ Remove assignment
                       </button>
@@ -821,16 +814,16 @@ function ShowcaseFundPhase() {
       </div>
 
       {/* Team Roster Bar */}
-      <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[9.5px] text-white/50">
+      <div className="flex items-center justify-between pt-1 border-t border-border text-[9.5px] text-muted-foreground">
         <div className="flex items-center gap-1.5">
-          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40">
+          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-muted-foreground">
             Active Team:
           </span>
           <div className="flex -space-x-1.5">
             {TEAM_MEMBERS.map((m) => (
               <span
                 key={m.id}
-                className={`flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-[#0c0d15] ${m.avatarBg} text-[7px] font-bold ${m.textColor}`}
+                className={`flex h-4 w-4 items-center justify-center rounded-none ring-1 ring-border ${m.avatarBg} text-[7px] font-bold ${m.textColor}`}
                 title={`${m.name} (${m.role})`}
               >
                 {m.initials}
@@ -840,19 +833,17 @@ function ShowcaseFundPhase() {
         </div>
         <Link
           href="/dashboard/projects"
-          className="inline-flex items-center gap-1 font-semibold text-[#00DD94] hover:underline"
+          className="inline-flex items-center gap-1 font-semibold text-foreground hover:underline"
         >
           View Fund Phase
-          <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+          <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────
-// MAIN SHOWCASE COMPONENT: HERO PRODUCT SHOWCASE
-// ─────────────────────────────────────────────────────────────
+// Hero product showcase component.
 
 export default function HeroProductShowcase() {
   const [currentTab, setCurrentTab] = useState(0);
@@ -946,19 +937,19 @@ export default function HeroProductShowcase() {
         switch views.
       </p>
       <div className="sr-only" aria-live="polite">
-        Showing view {currentTab + 1} of {SHOWCASE_TABS.length}: {SHOWCASE_TABS[currentTab].title} —{' '}
+        Showing view {currentTab + 1} of {SHOWCASE_TABS.length}: {SHOWCASE_TABS[currentTab].title}:{' '}
         {SHOWCASE_TABS[currentTab].altText}
       </div>
 
       {/* Browser Chrome Frame */}
       <div
-        className="relative w-full rounded-2xl overflow-hidden border border-white/10 bg-[#0f111a] shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+        className="relative w-full rounded-none overflow-hidden border border-border bg-[#0f111a] shadow-sm ring-1 ring-foreground/10"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* Top Window Chrome Bar */}
-        <div className="flex items-center justify-between bg-[#141624] px-4 py-2.5 border-b border-white/[0.08] select-none pointer-events-none">
+        <div className="flex items-center justify-between bg-card px-4 py-2.5 border-b border-border select-none pointer-events-none">
           {/* Traffic Lights */}
           <div className="flex items-center gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] opacity-85" />
@@ -967,24 +958,24 @@ export default function HeroProductShowcase() {
           </div>
 
           {/* Address Bar with Dynamic URL */}
-          <div className="flex h-6 w-3/5 max-w-[280px] items-center justify-center gap-1.5 rounded-lg bg-black/40 px-3 border border-white/[0.08] text-[11px] text-white/50 font-[family-name:var(--font-jetbrains-mono)] truncate">
-            <span className="material-symbols-outlined text-[12px] text-[#00DD94]">lock</span>
-            <span data-testid="showcase-address-bar" className="truncate text-white/70">
+          <div className="flex h-6 w-3/5 max-w-[280px] items-center justify-center gap-1.5 rounded-none bg-background px-3 border border-border text-[11px] text-muted-foreground font-[family-name:var(--font-jetbrains-mono)] truncate">
+            <Lock className="h-3 w-3 text-foreground" />
+            <span data-testid="showcase-address-bar" className="truncate text-foreground/80">
               {SHOWCASE_TABS[currentTab].url}
             </span>
           </div>
 
           {/* Discreet Sample Data Badge */}
-          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] uppercase tracking-wider text-[#00DD94]/80 border border-[#00DD94]/20 rounded bg-[#00DD94]/10 px-1.5 py-0.5 font-medium">
+          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] uppercase tracking-wider text-foreground border border-border rounded-none bg-muted px-1.5 py-0.5 font-medium">
             Demo data
           </span>
         </div>
 
         {/* Screen Viewport Container */}
-        <div className="relative w-full min-h-[440px] sm:min-h-[460px] bg-[#0c0d15] p-3.5 sm:p-4 text-white overflow-hidden">
+        <div className="relative w-full min-h-[440px] sm:min-h-[460px] bg-background p-3.5 sm:p-4 text-foreground overflow-hidden">
           {/* Ambient subtle glow */}
           <div
-            className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#00DD94]/5 blur-[80px]"
+            className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-none bg-foreground/5 blur-[80px]"
             aria-hidden="true"
           />
 
@@ -1036,16 +1027,16 @@ export default function HeroProductShowcase() {
       </div>
 
       {/* Showcase Navigation Bar (Prev / 3 Tabs / Next) */}
-      <div className="flex items-center justify-between px-2 text-white/60">
+      <div className="flex items-center justify-between px-2 text-muted-foreground">
         {/* Previous Button */}
         <button
           type="button"
           onClick={prevTab}
           data-testid="showcase-prev-btn"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94]"
+          className="inline-flex h-9 w-9 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 sm:w-8 items-center justify-center rounded-none border border-border bg-card hover:bg-muted text-card-foreground transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           aria-label="Previous view"
         >
-          <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+          <CaretLeft className="h-4 w-4" />
         </button>
 
         {/* 3 Manual Tabs */}
@@ -1058,17 +1049,17 @@ export default function HeroProductShowcase() {
                 type="button"
                 data-testid={`showcase-tab-${tab.id}`}
                 onClick={() => goToTab(index)}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-medium whitespace-nowrap shrink-0 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94] ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:py-1 min-h-[44px] sm:min-h-0 rounded-none text-xs font-medium whitespace-nowrap shrink-0 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring ${
                   isActive
-                    ? 'bg-[#00DD94]/15 border border-[#00DD94]/40 text-[#00DD94]'
-                    : 'bg-white/[0.03] border border-white/10 text-white/50 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-primary/10 border border-primary text-foreground'
+                    : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
                 aria-label={`Go to ${tab.title} view`}
                 aria-selected={isActive}
               >
                 <span
-                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                    isActive ? 'bg-[#00DD94] animate-pulse' : 'bg-white/30'
+                  className={`h-1.5 w-1.5 rounded-none shrink-0 ${
+                    isActive ? 'bg-primary' : 'bg-muted-foreground/40'
                   }`}
                   aria-hidden="true"
                 />
@@ -1083,10 +1074,10 @@ export default function HeroProductShowcase() {
           type="button"
           onClick={nextTab}
           data-testid="showcase-next-btn"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00DD94]"
+          className="inline-flex h-9 w-9 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 sm:w-8 items-center justify-center rounded-none border border-border bg-card hover:bg-muted text-card-foreground transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           aria-label="Next view"
         >
-          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <CaretRight className="h-4 w-4" />
         </button>
       </div>
     </div>

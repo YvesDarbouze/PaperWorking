@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import {
   formatCurrency,
 } from '@/lib/projects/phase-utils';
@@ -15,6 +16,13 @@ import type {
   AcquisitionTask,
 } from '@paperworking/validation';
 import { SupersededSnapshotBadge } from '@/components/calculator/SupersededSnapshotBadge';
+import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
+import PropertyImageGallery from '@/components/projects/PropertyImageGallery';
+import AssignOrInviteModal, { type AssigneeOption } from './AssignOrInviteModal';
+import ConversationalStepWizard from './ConversationalStepWizard';
+import PublishToMarketplaceModal from '@/components/marketing/deal-calculator/PublishToMarketplaceModal';
+import BroadcastDealModal from '@/components/marketing/deal-calculator/BroadcastDealModal';
+import ShareDealModal from '@/components/marketplace/ShareDealModal';
 
 const PIPELINE_STEPS: Array<{
   status: AcquisitionPipelineStatus;
@@ -66,6 +74,20 @@ export default function AcquisitionWorkspaceView({
   const [acknowledgedCritical, setAcknowledgedCritical] = useState(false);
   const [liveAlerts, setLiveAlerts] = useState<any[]>([]);
   const [showSnapshotModal, setShowSnapshotModal] = useState(false);
+  const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [marketplaceSuccessToast, setMarketplaceSuccessToast] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'conversational' | 'workspace'>('workspace');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'conversational') {
+        setViewMode('conversational');
+      }
+    }
+  }, []);
 
   // Counteroffer & Closing modal states
   const [showCounterofferModal, setShowCounterofferModal] = useState(false);
@@ -105,6 +127,33 @@ export default function AcquisitionWorkspaceView({
       cancelled = true;
     };
   }, [project.id]);
+
+  const [assignTaskModal, setAssignTaskModal] = useState<{
+    id: string;
+    title: string;
+    assignedTo?: string;
+  } | null>(null);
+
+  const handleMemberInvitedAndAssigned = (newMember: AssigneeOption, taskId: string) => {
+    const currentMembers = (project.teamMembers || []) as any[];
+    const updatedMembers = [...currentMembers, newMember];
+    const currentTasks = project.tasks || [];
+    const updatedTasks = currentTasks.map((t) => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          assignedTo: newMember.name,
+        };
+      }
+      return t;
+    });
+
+    onUpdateProject({
+      ...project,
+      teamMembers: updatedMembers,
+      tasks: updatedTasks,
+    });
+  };
 
   const handleAssignTask = async (taskId: string, assignee: string) => {
     const currentTasks = project.tasks || [];
@@ -397,41 +446,88 @@ export default function AcquisitionWorkspaceView({
 
   return (
     <div className="space-y-6">
-      {/* SendGrid Email Notification Alert Setting (Rule 5 honest state) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-[18px] text-white/40">forward_to_inbox</span>
-          <div>
-            <span className="font-semibold text-white">Contingency Hard Date Automated Email Dispatch</span>
-            <p className="text-[11px] text-white/50">Dispatches automated email warnings to assigned team members at 72h, 48h, and 24h before dates go hard.</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-          <span className="rounded bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-300">
-            REQUIRES CREDENTIALS: Email Provider (SendGrid) Unconfigured
+      {/* Mode Switcher Toggle Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-neutral-800 bg-neutral-950 p-3 rounded-none">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-neutral-400 text-base">tune</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
+            Acquisition Phase Mode
           </span>
+        </div>
+        <div className="flex items-center border border-neutral-800 bg-neutral-900/80 p-0.5 rounded-none">
           <button
             type="button"
-            disabled
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/40 cursor-not-allowed"
+            data-testid="toggle-conversational-view"
+            onClick={() => setViewMode('conversational')}
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-semibold rounded-none transition ${
+              viewMode === 'conversational'
+                ? 'bg-neutral-800 text-white border border-neutral-700'
+                : 'text-neutral-400 hover:text-white border border-transparent'
+            }`}
           >
-            Disabled
+            Conversational Walkthrough
+          </button>
+          <button
+            type="button"
+            data-testid="toggle-executive-view"
+            onClick={() => setViewMode('workspace')}
+            className={`min-h-[44px] px-3.5 py-2 text-xs font-semibold rounded-none transition ${
+              viewMode === 'workspace'
+                ? 'bg-neutral-800 text-white border border-neutral-700'
+                : 'text-neutral-400 hover:text-white border border-transparent'
+            }`}
+          >
+            Executive Workspace
           </button>
         </div>
       </div>
 
-      {/* Property Data Adapter Banner (Rule 5 honest state) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-xs text-white/60">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-amber-400/80 animate-pulse" />
-          <span className="font-mono font-medium text-white/80">
-            [Property Data API: Not Configured — Manual Entry Enabled]
-          </span>
-        </div>
-        <span className="text-amber-400/80 font-mono text-[11px]" data-testid="acquisition-comps-credentials">
-          no comp data — REQUIRES CREDENTIALS
-        </span>
-      </div>
+      {viewMode === 'conversational' ? (
+        <ConversationalStepWizard
+          project={project}
+          phaseKey="acquisition"
+          phaseTitle="Acquisition"
+          onUpdateProject={onUpdateProject}
+          onSwitchToExecutiveView={() => setViewMode('workspace')}
+          activeRoster={(project.teamMembers || []) as AssigneeOption[]}
+        />
+      ) : (
+        <>
+          {/* SendGrid Email Notification Alert Setting (Rule 5 honest state) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs">
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-[18px] text-white/40">forward_to_inbox</span>
+              <div>
+                <span className="font-semibold text-white">Contingency Hard Date Automated Email Dispatch</span>
+                <p className="text-[11px] text-white/50">Dispatches automated email warnings to assigned team members at 72h, 48h, and 24h before dates go hard.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+              <span className="rounded bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-300">
+                REQUIRES CREDENTIALS: Email Provider (SendGrid) Unconfigured
+              </span>
+              <button
+                type="button"
+                disabled
+                className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/40 cursor-not-allowed"
+              >
+                Disabled
+              </button>
+            </div>
+          </div>
+
+          {/* Property Data Adapter Banner (Rule 5 honest state) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-xs text-white/60">
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-400/80 animate-pulse" />
+              <span className="font-mono font-medium text-white/80">
+                [Property Data API: Not Configured — Manual Entry Enabled]
+              </span>
+            </div>
+            <span className="text-amber-400/80 font-mono text-[11px]" data-testid="acquisition-comps-credentials">
+              no comp data — REQUIRES CREDENTIALS
+            </span>
+          </div>
 
       {/* Hard Date Alerts Banners (progressive warning contract) */}
       {hardDateAlerts.map((alert) => (
@@ -511,12 +607,62 @@ export default function AcquisitionWorkspaceView({
         </div>
       )}
 
+      {/* Target Property / Deal Serial Identification Card */}
+      <section
+        data-testid="acquisition-deal-identification-card"
+        className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 border border-white/15 text-white">
+              <span className="material-symbols-outlined text-[22px]">pin_drop</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-white/70 font-bold">
+                  Target Property Deal / Serial #
+                </span>
+                <span className="rounded bg-black/60 px-2 py-0.5 text-[10px] font-mono text-white/70 border border-white/10">
+                  {project.dealId || project.id}
+                </span>
+              </div>
+              <h1 className="text-lg font-bold text-white mt-0.5">{project.address || project.propertyName}</h1>
+              <p className="text-xs text-white/50">{project.propertyName !== project.address ? project.propertyName : 'Target Acquisition Asset'}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl border border-white/10 bg-black/40 px-3.5 py-2 text-right">
+              <span className="text-[10px] text-white/50 uppercase block font-semibold">Underwritten Price</span>
+              <span className="text-sm font-bold font-mono text-white">{formatCurrency(project.purchasePrice || 0)}</span>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-black/40 px-3.5 py-2 text-right">
+              <span className="text-[10px] text-white/50 uppercase block font-semibold">Rehab Estimate</span>
+              <span className="text-sm font-bold font-mono text-white">{formatCurrency(project.rehab_costs || 0)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Integrated Satellite Parcel Viewer & Photo Gallery preview */}
+        <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <PropertySatelliteViewer
+            address={project.address || project.propertyName}
+            defaultZoom={18}
+            className="min-h-[200px]"
+          />
+          <PropertyImageGallery
+            projectId={project.id}
+            dealAddress={project.address || project.propertyName}
+            className="min-h-[200px]"
+          />
+        </div>
+      </section>
+
       {/* Pipeline Stepper Card */}
       <section className="rounded-2xl border border-white/10 bg-black/25 p-5 md:p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#00DD94]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-white font-mono">
                 REIL Phase 01: Acquisition
               </span>
               <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-white/80 uppercase">
@@ -543,7 +689,7 @@ export default function AcquisitionWorkspaceView({
                     handleTransition(nextStatusTarget.status);
                   }
                 }}
-                className="flex min-h-[44px] items-center justify-center rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold text-black hover:bg-[#00DD94]/90 transition active:scale-95 disabled:opacity-50 touch-press"
+                className="flex min-h-[44px] items-center justify-center rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-white/90 transition active:scale-95 disabled:opacity-50 touch-press"
                 data-testid="advance-pipeline-button"
               >
                 {transitioning ? 'Advancing…' : `${nextStatusTarget.label} →`}
@@ -554,7 +700,7 @@ export default function AcquisitionWorkspaceView({
               <button
                 type="button"
                 onClick={() => setShowCounterofferModal(true)}
-                className="flex min-h-[44px] items-center justify-center rounded-xl border border-[#00DD94]/40 bg-[#00DD94]/10 px-3.5 py-2 text-xs font-semibold text-[#00DD94] hover:bg-[#00DD94]/20 transition active:scale-95 touch-press"
+                className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 transition active:scale-95 touch-press"
                 data-testid="log-counteroffer-btn"
               >
                 Log Seller Counteroffer (v2)
@@ -599,7 +745,7 @@ export default function AcquisitionWorkspaceView({
                 key={step.status}
                 className={`relative flex flex-col justify-between rounded-xl border p-3 text-center transition-all ${
                   isCurrent
-                    ? 'border-[#00DD94] bg-[#00DD94]/10 shadow-sm shadow-[#00DD94]/20'
+                    ? 'border-white bg-white/10 shadow-sm shadow-white/10'
                     : isCompleted
                     ? 'border-white/20 bg-white/[0.04]'
                     : 'border-white/5 bg-black/20 opacity-50'
@@ -609,7 +755,7 @@ export default function AcquisitionWorkspaceView({
                   <span
                     className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
                       isCurrent
-                        ? 'bg-[#00DD94] text-black'
+                        ? 'bg-white text-black'
                         : isCompleted
                         ? 'bg-white/20 text-white'
                         : 'bg-white/5 text-white/40'
@@ -620,7 +766,7 @@ export default function AcquisitionWorkspaceView({
                 </div>
                 <p
                   className={`text-xs font-semibold truncate ${
-                    isCurrent ? 'text-[#00DD94]' : isCompleted ? 'text-white' : 'text-white/45'
+                    isCurrent ? 'text-white font-bold' : isCompleted ? 'text-white/90' : 'text-white/45'
                   }`}
                 >
                   {step.label.replace(/^\d+\.\s*/, '')}
@@ -650,7 +796,7 @@ export default function AcquisitionWorkspaceView({
                     {project.underwritingSnapshot.superseded ? (
                       <SupersededSnapshotBadge />
                     ) : (
-                      <span className="rounded-full border border-[#00DD94]/30 bg-[#00DD94]/10 px-2.5 py-1 text-[10px] font-semibold text-[#00DD94]">
+                      <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-semibold text-white">
                         Locked from Deal Calculator
                       </span>
                     )}
@@ -669,13 +815,51 @@ export default function AcquisitionWorkspaceView({
                           year: 'numeric',
                         })}
                       </span>
-                      <span className="text-xs text-[#00DD94]">↗</span>
+                      <span className="text-xs text-white/70">↗</span>
                     </button>
+                    <Link
+                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice ?? project.underwritingSnapshot.inputs.purchasePrice}&rehab=${project.rehab_costs ?? project.underwritingSnapshot.inputs.rehabBudget}&arv=${project.underwritingSnapshot.inputs.estimatedARV}&rent=${project.underwritingSnapshot.inputs.grossMonthlyRent}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
+                      data-testid="re-underwrite-deal-calc-btn"
+                      className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
+                      title="Re-open in Deal Calculator"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">replay</span>
+                      <span>Re-underwrite</span>
+                    </Link>
+                    <Link
+                      href={`/project/${project.id}/insights`}
+                      data-testid="project-view-33-datapoints-btn"
+                      className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
+                      title="View all 33 Underwriting Datapoints"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">analytics</span>
+                      <span>33 Datapoints</span>
+                    </Link>
                   </>
                 ) : (
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-white/60">
-                    Manual Underwriting
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-white/60">
+                      Manual Underwriting
+                    </span>
+                    <Link
+                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice ?? ''}&rehab=${project.rehab_costs ?? ''}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
+                      data-testid="open-in-deal-calc-btn"
+                      className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
+                      title="Underwrite in Deal Calculator"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">calculate</span>
+                      <span>Deal Calculator</span>
+                    </Link>
+                    <Link
+                      href={`/project/${project.id}/insights`}
+                      data-testid="project-view-33-datapoints-btn"
+                      className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
+                      title="View all 33 Underwriting Datapoints"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">analytics</span>
+                      <span>33 Datapoints</span>
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>
@@ -702,7 +886,7 @@ export default function AcquisitionWorkspaceView({
               </div>
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">MAO (70% Rule)</p>
-                <p className="mt-1 text-lg font-bold text-[#00DD94]">
+                <p className="mt-1 text-lg font-bold text-emerald-400">
                   {metrics ? formatCurrency(metrics.maximumAllowableOffer70Pct) : '—'}
                 </p>
                 <p className="text-[10px] text-white/40">
@@ -727,7 +911,7 @@ export default function AcquisitionWorkspaceView({
               </div>
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Projected IRR</p>
-                <p className="mt-1 text-lg font-bold text-[#00DD94]">
+                <p className="mt-1 text-lg font-bold text-emerald-400">
                   {metrics && metrics.projectedIrrPct !== null && metrics.projectedIrrPct !== undefined
                     ? `${metrics.projectedIrrPct.toFixed(1)}%`
                     : metrics?.irrStatus === 'multiple_roots'
@@ -761,6 +945,87 @@ export default function AcquisitionWorkspaceView({
               </div>
             )}
 
+            {/* Deal Marketplace & Crowdfunding Module */}
+            <div
+              data-testid="project-deal-marketplace-module"
+              className="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-3"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-white">storefront</span>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+                      Deal Component: Syndication &amp; Marketplace Engine
+                    </h4>
+                    {project.dealId || (project as any).dealSlug ? (
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                        Deal Component Active
+                      </span>
+                    ) : (
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/50">
+                        Deal Component Draft
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-white/60">
+                    The Deal is the transactional and syndication component of this overarching Project, powering investor discovery, underwriting pro-forma sharing, and capital commitments.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  {project.dealId || (project as any).dealSlug ? (
+                    <Link
+                      href={`/marketplace/${(project as any).dealSlug || project.dealId}`}
+                      data-testid="project-view-deal-btn"
+                      className="flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/20 transition min-h-[44px]"
+                      title="Open Deal Component on Marketplace"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">visibility</span>
+                      <span>View Deal Component</span>
+                    </Link>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowMarketplaceModal(true)}
+                    data-testid="project-list-marketplace-btn"
+                    className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/10 transition active:scale-95 min-h-[44px]"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">storefront</span>
+                    <span>{project.dealId ? 'Update Listing' : 'List on Marketplace'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowBroadcastModal(true)}
+                    data-testid="project-broadcast-email-btn"
+                    className="flex items-center gap-1.5 rounded-xl bg-white text-black hover:bg-white/90 px-3.5 py-2 text-xs font-bold transition active:scale-95 min-h-[44px]"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">forward_to_inbox</span>
+                    <span>Crowdfund via Email</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowShareModal(true)}
+                    data-testid="project-share-deal-btn"
+                    className="flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 px-3.5 py-2 text-xs font-bold text-white transition active:scale-95 min-h-[44px]"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">share</span>
+                    <span>Share Privately</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Off-Platform Closing Reminder */}
+              <div className="rounded-lg border border-white/5 bg-white/[0.01] p-2.5 flex items-start gap-2 text-[11px] text-white/50">
+                <span className="material-symbols-outlined text-[16px] text-white/40 shrink-0 mt-0.5">gavel</span>
+                <p>
+                  <span className="text-white font-medium">Off-Platform Closing:</span> PaperWorking powers deal intake, underwriting, and in-app messaging negotiation. Legal entity formation, subscription agreements, accredited investor verification, and capital funding occur directly between counterparties outside of PaperWorking.
+                </p>
+              </div>
+            </div>
+
             {project.underwritingSnapshot && !project.underwritingSnapshot.superseded ? (
               <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.02] p-3.5 text-xs text-white/70">
                 <div className="flex items-center justify-between">
@@ -769,7 +1034,7 @@ export default function AcquisitionWorkspaceView({
                     type="button"
                     onClick={() => setShowSnapshotModal(true)}
                     data-testid="view-snapshot-lineage-btn"
-                    className="text-[11px] font-medium text-[#00DD94] hover:underline"
+                    className="text-[11px] font-medium text-white/80 hover:text-white hover:underline"
                   >
                     View Snapshot &rarr;
                   </button>
@@ -842,7 +1107,7 @@ export default function AcquisitionWorkspaceView({
                     Must be satisfied or waived prior to marking Clear to Close
                   </p>
                 </div>
-                <span className="text-xs font-mono font-semibold text-[#00DD94]">
+                <span className="text-xs font-mono font-semibold text-emerald-400">
                   {project.contingencies.filter((c) => c.status === 'satisfied' || c.status === 'waived').length} /{' '}
                   {project.contingencies.length} Cleared
                 </span>
@@ -886,7 +1151,7 @@ export default function AcquisitionWorkspaceView({
                             type="button"
                             onClick={() => handleContingencyStatusChange(c.id, 'satisfied')}
                             data-testid={`satisfy-contingency-${c.id}`}
-                            className="rounded-lg bg-[#00DD94] px-2.5 py-1 text-[11px] font-bold text-black hover:bg-[#00DD94]/90 transition active:scale-95"
+                            className="rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-black hover:bg-white/90 transition active:scale-95"
                           >
                             Satisfy
                           </button>
@@ -920,7 +1185,7 @@ export default function AcquisitionWorkspaceView({
                 </p>
               </div>
               {totalTasksCount > 0 && (
-                <span className="text-xs font-mono font-semibold text-[#00DD94]">
+                <span className="text-xs font-mono font-semibold text-white">
                   {Math.round((completedTasksCount / totalTasksCount) * 100)}% Done
                 </span>
               )}
@@ -961,7 +1226,7 @@ export default function AcquisitionWorkspaceView({
                         type="checkbox"
                         checked={isDone}
                         onChange={() => {}} // handled by parent onClick
-                        className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/40 text-[#00DD94] focus:ring-0 cursor-pointer"
+                        className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/40 text-white accent-white focus:ring-0 cursor-pointer"
                       />
                       <div className="min-w-0 flex-1">
                         <p className={`font-medium ${isDone ? 'line-through text-white/50' : 'text-white'}`}>
@@ -980,14 +1245,24 @@ export default function AcquisitionWorkspaceView({
                           )}
                           <span>· {task.status}</span>
                           <div
-                            className="flex items-center gap-1 ml-auto"
+                            className="flex items-center gap-1.5 ml-auto"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <span className="text-[10px] text-white/40">Assign:</span>
                             <select
                               value={(task as any).assignedTo || ''}
-                              onChange={(e) => handleAssignTask(task.id, e.target.value)}
-                              className="rounded border border-white/15 bg-black/60 px-1.5 py-0.5 text-[10px] text-white/80 focus:border-[#00DD94] focus:outline-none"
+                              onChange={(e) => {
+                                if (e.target.value === '__invite_new__') {
+                                  setAssignTaskModal({
+                                    id: task.id,
+                                    title: task.title,
+                                    assignedTo: (task as any).assignedTo,
+                                  });
+                                } else {
+                                  handleAssignTask(task.id, e.target.value);
+                                }
+                              }}
+                              className="rounded border border-white/15 bg-black/60 px-1.5 py-0.5 text-[10px] text-white/80 focus:border-white/40 focus:outline-none"
                             >
                               <option value="">Unassigned</option>
                               {(project.teamMembers && project.teamMembers.length > 0
@@ -998,7 +1273,23 @@ export default function AcquisitionWorkspaceView({
                                   {m.name} ({m.role || 'Team'})
                                 </option>
                               ))}
+                              <option value="__invite_new__">+ Invite via Email...</option>
                             </select>
+                            <button
+                              type="button"
+                              title="Assign or Invite Team Member"
+                              data-testid={`open-assign-modal-${task.id}`}
+                              onClick={() =>
+                                setAssignTaskModal({
+                                  id: task.id,
+                                  title: task.title,
+                                  assignedTo: (task as any).assignedTo,
+                                })
+                              }
+                              className="rounded p-1 text-white/40 hover:bg-white/10 hover:text-white transition"
+                            >
+                              <span className="material-symbols-outlined text-[14px]">person_add</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -1015,12 +1306,12 @@ export default function AcquisitionWorkspaceView({
                 placeholder="Add custom acquisition task…"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
-                className="flex-1 rounded-xl border border-white/15 bg-black/40 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:border-[#00DD94] focus:outline-none"
+                className="flex-1 rounded-xl border border-white/15 bg-black/40 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:border-white/40 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!newTaskTitle.trim()}
-                className="min-h-[38px] rounded-xl bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 disabled:opacity-40 transition active:scale-95 touch-press"
+                className="min-h-[44px] rounded-xl bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 disabled:opacity-40 transition active:scale-95 touch-press"
               >
                 + Add
               </button>
@@ -1055,7 +1346,7 @@ export default function AcquisitionWorkspaceView({
                   type="text"
                   value={contractPsaUrl}
                   onChange={(e) => setContractPsaUrl(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none"
                 />
               </div>
               <div>
@@ -1065,7 +1356,7 @@ export default function AcquisitionWorkspaceView({
                   data-testid="contract-emd-input"
                   value={contractEmdAmount}
                   onChange={(e) => setContractEmdAmount(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none"
                 />
               </div>
             </div>
@@ -1074,7 +1365,7 @@ export default function AcquisitionWorkspaceView({
               <button
                 type="button"
                 onClick={() => setShowUnderContractPrompt(false)}
-                className="min-h-[40px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
+                className="min-h-[44px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
               >
                 Cancel
               </button>
@@ -1096,7 +1387,7 @@ export default function AcquisitionWorkspaceView({
                     },
                   });
                 }}
-                className="min-h-[40px] rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold text-black hover:bg-[#00DD94]/90 transition active:scale-95 disabled:opacity-50 touch-press"
+                className="min-h-[44px] rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-white/90 transition active:scale-95 disabled:opacity-50 touch-press"
                 data-testid="confirm-under-contract-btn"
               >
                 {transitioning ? 'Executing…' : 'Confirm & Generate Tasks'}
@@ -1239,7 +1530,7 @@ export default function AcquisitionWorkspaceView({
                   {project.underwritingSnapshot.superseded ? (
                     <SupersededSnapshotBadge />
                   ) : (
-                    <span className="rounded-full border border-[#00DD94]/30 bg-[#00DD94]/10 px-2 py-0.5 text-[10px] font-semibold text-[#00DD94]">
+                    <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white">
                       Engine v{project.underwritingSnapshot.engineVersion ?? (metrics?.engineVersion ?? 3)}
                     </span>
                   )}
@@ -1338,11 +1629,11 @@ export default function AcquisitionWorkspaceView({
 
             {/* Calculated Canonical Outputs */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#00DD94]/80 mb-2">Canonical Engine Outputs</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">Canonical Engine Outputs</h4>
               <div className="grid grid-cols-3 gap-2.5 text-xs">
-                <div className="rounded-xl border border-[#00DD94]/20 bg-[#00DD94]/[0.03] p-2.5">
+                <div className="rounded-xl border border-white/15 bg-white/[0.04] p-2.5">
                   <p className="text-[10px] uppercase text-white/40">MAO (70% Rule)</p>
-                  <p className="mt-0.5 font-bold text-[#00DD94]">{formatCurrency(project.underwritingSnapshot.outputs.maximumAllowableOffer70Pct)}</p>
+                  <p className="mt-0.5 font-bold text-emerald-400">{formatCurrency(project.underwritingSnapshot.outputs.maximumAllowableOffer70Pct)}</p>
                 </div>
                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                   <p className="text-[10px] uppercase text-white/40">Cap Rate on Cost</p>
@@ -1381,7 +1672,7 @@ export default function AcquisitionWorkspaceView({
                   </div>
                   <p
                     data-testid="snapshot-projected-irr"
-                    className={`mt-0.5 font-bold ${project.underwritingSnapshot.superseded ? 'text-amber-300/70 line-through' : 'text-[#00DD94]'}`}
+                    className={`mt-0.5 font-bold ${project.underwritingSnapshot.superseded ? 'text-amber-300/70 line-through' : 'text-emerald-400'}`}
                   >
                     {project.underwritingSnapshot.outputs.projectedIrrPct !== null && project.underwritingSnapshot.outputs.projectedIrrPct !== undefined
                       ? `${project.underwritingSnapshot.outputs.projectedIrrPct.toFixed(1)}%`
@@ -1399,7 +1690,7 @@ export default function AcquisitionWorkspaceView({
                 </div>
                 <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
                   <p className="text-[10px] uppercase text-white/40">Flip Profit</p>
-                  <p className="mt-0.5 font-bold text-[#00DD94]">
+                  <p className="mt-0.5 font-bold text-emerald-400">
                     {project.underwritingSnapshot.outputs.projectedFlipProfit !== undefined
                       ? formatCurrency(project.underwritingSnapshot.outputs.projectedFlipProfit)
                       : formatCurrency(
@@ -1424,13 +1715,22 @@ export default function AcquisitionWorkspaceView({
               <span className="text-white/40">
                 Source: <span className="font-mono text-white/60">{project.underwritingSnapshot.source}</span> · Version {project.underwritingSnapshot.version}
               </span>
-              <button
-                type="button"
-                onClick={() => setShowSnapshotModal(false)}
-                className="rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15 transition"
-              >
-                Close Snapshot
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice ?? project.underwritingSnapshot.inputs.purchasePrice}&rehab=${project.rehab_costs ?? project.underwritingSnapshot.inputs.rehabBudget}&arv=${project.underwritingSnapshot.inputs.estimatedARV}&rent=${project.underwritingSnapshot.inputs.grossMonthlyRent}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
+                  className="rounded-xl border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-bold text-white hover:bg-white/15 transition no-underline flex items-center gap-1.5 min-h-[44px]"
+                >
+                  <span className="material-symbols-outlined text-[15px]">replay</span>
+                  <span>Re-open in Deal Calculator</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowSnapshotModal(false)}
+                  className="rounded-xl bg-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15 transition"
+                >
+                  Close Snapshot
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1466,7 +1766,7 @@ export default function AcquisitionWorkspaceView({
                   type="number"
                   value={counterPrice}
                   onChange={(e) => setCounterPrice(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                   data-testid="counteroffer-price-input"
                   required
                 />
@@ -1478,7 +1778,7 @@ export default function AcquisitionWorkspaceView({
                     type="number"
                     value={counterEmd}
                     onChange={(e) => setCounterEmd(Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                     data-testid="counteroffer-emd-input"
                     required
                   />
@@ -1489,7 +1789,7 @@ export default function AcquisitionWorkspaceView({
                     type="number"
                     value={counterInspectionDays}
                     onChange={(e) => setCounterInspectionDays(Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                     data-testid="counteroffer-inspection-days-input"
                     required
                   />
@@ -1501,7 +1801,7 @@ export default function AcquisitionWorkspaceView({
                   rows={2}
                   value={counterNotes}
                   onChange={(e) => setCounterNotes(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                   data-testid="counteroffer-notes-input"
                 />
               </div>
@@ -1510,14 +1810,14 @@ export default function AcquisitionWorkspaceView({
                 <button
                   type="button"
                   onClick={() => setShowCounterofferModal(false)}
-                  className="min-h-[40px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
+                  className="min-h-[44px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={transitioning}
-                  className="min-h-[40px] rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold text-black hover:bg-[#00DD94]/90 transition active:scale-95 disabled:opacity-50 touch-press"
+                  className="min-h-[44px] rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-white/90 transition active:scale-95 disabled:opacity-50 touch-press"
                   data-testid="submit-counteroffer-btn"
                 >
                   {transitioning ? 'Logging…' : 'Record Counteroffer & Negotiate'}
@@ -1558,7 +1858,7 @@ export default function AcquisitionWorkspaceView({
                   type="date"
                   value={closingDateInput}
                   onChange={(e) => setClosingDateInput(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                   data-testid="closing-date-input"
                   required
                 />
@@ -1569,14 +1869,14 @@ export default function AcquisitionWorkspaceView({
                   type="number"
                   value={actualCashToCloseInput}
                   onChange={(e) => setActualCashToCloseInput(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-[#00DD94] focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-black/40 p-2.5 text-white focus:border-white/40 focus:outline-none text-base sm:text-xs"
                   data-testid="closing-cash-input"
                   required
                 />
               </div>
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-[11px] text-white/60">
                 <p className="font-semibold text-white">Recorded Closing Document:</p>
-                <p className="font-mono text-[#00DD94] mt-0.5">ALTA_Settlement_Statement_Executed.pdf</p>
+                <p className="font-mono text-emerald-400 mt-0.5">ALTA_Settlement_Statement_Executed.pdf</p>
                 <p className="mt-1 text-white/40">Will be archived into project document vault automatically.</p>
               </div>
             </div>
@@ -1585,7 +1885,7 @@ export default function AcquisitionWorkspaceView({
               <button
                 type="button"
                 onClick={() => setShowClosingModal(false)}
-                className="min-h-[40px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
+                className="min-h-[44px] rounded-xl border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:text-white transition"
               >
                 Cancel
               </button>
@@ -1593,7 +1893,7 @@ export default function AcquisitionWorkspaceView({
                 type="button"
                 disabled={transitioning}
                 onClick={handleConfirmClosing}
-                className="min-h-[40px] rounded-xl bg-[#00DD94] px-4 py-2 text-xs font-bold text-black hover:bg-[#00DD94]/90 transition active:scale-95 disabled:opacity-50 touch-press"
+                className="min-h-[44px] rounded-xl bg-white px-4 py-2 text-xs font-bold text-black hover:bg-white/90 transition active:scale-95 disabled:opacity-50 touch-press"
                 data-testid="confirm-closing-btn"
               >
                 {transitioning ? 'Closing…' : 'Finalize Closing & Handoff to Fund'}
@@ -1601,6 +1901,102 @@ export default function AcquisitionWorkspaceView({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Task Assignment and Email Invite Modal */}
+      <AssignOrInviteModal
+        isOpen={Boolean(assignTaskModal)}
+        onClose={() => setAssignTaskModal(null)}
+        projectId={project.id}
+        projectName={project.propertyName || project.property_address || 'Acquisition Workspace'}
+        task={assignTaskModal}
+        existingMembers={
+          project.teamMembers && project.teamMembers.length > 0
+            ? project.teamMembers
+            : [{ id: 'lead', name: 'Lead Underwriter', role: 'Acquisitions' }]
+        }
+        onAssignExisting={async (taskId, assigneeName) => {
+          await handleAssignTask(taskId, assigneeName);
+        }}
+        onMemberInvitedAndAssigned={handleMemberInvitedAndAssigned}
+      />
+
+      {/* Publish / List Deal on Marketplace Modal */}
+      <PublishToMarketplaceModal
+        isOpen={showMarketplaceModal}
+        onClose={() => setShowMarketplaceModal(false)}
+        address={project.address || project.propertyName || ''}
+        purchasePrice={project.purchasePrice || 450000}
+        strategy={(project as any).strategy || project.exit_strategy || 'VALUE_ADD'}
+        calculations={metrics || ({} as any)}
+        projectId={project.id}
+        onSuccess={(dealId) => {
+          onUpdateProject({
+            ...project,
+            dealId,
+            dealSlug: (project as any).dealSlug || `deal-${dealId}`,
+          });
+          setShowMarketplaceModal(false);
+          setMarketplaceSuccessToast('Deal card successfully published to Deals Marketplace!');
+          setTimeout(() => setMarketplaceSuccessToast(null), 4000);
+        }}
+      />
+
+      {/* Crowdfund via Email Promotion Modal */}
+      <BroadcastDealModal
+        isOpen={showBroadcastModal}
+        onClose={() => setShowBroadcastModal(false)}
+        address={project.address || project.propertyName || ''}
+        purchasePrice={project.purchasePrice || 450000}
+        calculations={metrics || ({} as any)}
+        dealId={project.dealId || undefined}
+        projectId={project.id}
+        onSuccess={(count) => {
+          setShowBroadcastModal(false);
+          setMarketplaceSuccessToast(`Deal successfully promoted to ${count} investor email recipients!`);
+          setTimeout(() => setMarketplaceSuccessToast(null), 4000);
+        }}
+      />
+
+      {/* Share & Privacy Control Modal */}
+      <ShareDealModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        dealId={project.dealId || (project as any).dealSlug || project.id}
+        dealSlug={(project as any).dealSlug}
+        dealTitle={project.address || project.propertyName || 'Investment Opportunity'}
+        dealAddress={project.address || project.propertyName || ''}
+        currentVisibility={project.dealId ? 'marketplace' : 'private'}
+        targetIrr={metrics?.projectedIrrPct ?? 15}
+        purchasePrice={project.purchasePrice || 450000}
+        calculatorResults={metrics ? {
+          purchasePrice: project.purchasePrice || 450000,
+          rehabBudget: (metrics as any).rehabBudget || 0,
+          arv: (metrics as any).afterRepairValue || Math.round((project.purchasePrice || 450000) * 1.25),
+          targetIrr: metrics.projectedIrrPct ?? 15,
+          cashRequired: metrics.cashRequired || 150000,
+          netOperatingIncome: metrics.netOperatingIncome || 35000,
+          capRateOnCost: metrics.capRateOnCost || 6.0,
+          holdPeriod: '3-5 Years',
+          strategy: (project as any).strategy || 'VALUE_ADD',
+        } : undefined}
+        onVisibilityChange={(newVis) => {
+          setMarketplaceSuccessToast(`Deal visibility updated to ${newVis === 'private' ? 'Private Deal' : 'Deals Marketplace'}!`);
+          setTimeout(() => setMarketplaceSuccessToast(null), 4000);
+        }}
+      />
+
+      {/* Action Toast Feedback */}
+      {marketplaceSuccessToast && (
+        <div
+          data-testid="marketplace-success-toast"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl border border-white/20 bg-black/90 px-4 py-3 text-xs font-semibold text-white shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2"
+        >
+          <span className="material-symbols-outlined text-[18px] text-emerald-400">check_circle</span>
+          <span>{marketplaceSuccessToast}</span>
+        </div>
+      )}
+        </>
       )}
     </div>
   );

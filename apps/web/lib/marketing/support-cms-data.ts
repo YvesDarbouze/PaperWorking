@@ -1,15 +1,9 @@
-/* ═══════════════════════════════════════════════════════
-   PaperWorking Support Data — Problem-Centric Architecture
+/**
+ * PaperWorking support data: problem-centric architecture.
+ * Categories and articles are named after investor goals rather than feature names.
+ */
 
-   Organization principle: categories and articles are named
-   after INVESTOR GOALS, not product feature names.
-   "Tracking deadlines" not "Transaction Module".
-   "Working with your CPA" not "Export Features".
-
-   Applied from: docs-architect + customer-support skills.
-   ═══════════════════════════════════════════════════════ */
-
-// ── Interfaces ──────────────────────────────────────────
+// Support interfaces.
 
 export interface SupportCategory {
   id: string;
@@ -39,7 +33,7 @@ export interface SupportFAQ {
   categoryId: string;
 }
 
-// ── Categories — problem-centric ────────────────────────
+// Support categories organized by investor problem.
 
 export const SUPPORT_CATEGORIES: SupportCategory[] = [
   {
@@ -104,7 +98,7 @@ export const SUPPORT_CATEGORIES: SupportCategory[] = [
   },
 ];
 
-// ── Articles — investor-language titles ─────────────────
+// Support articles titled with investor terminology.
 
 export const SUPPORT_ARTICLES: SupportArticle[] = [
   // First Deal Setup
@@ -353,7 +347,7 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
   },
 ];
 
-// ── Popular searches (for the search tag chips) ─────────
+// Popular search terms for search tag chips.
 
 export const POPULAR_SEARCHES: string[] = [
   'Missed deadline',
@@ -364,7 +358,7 @@ export const POPULAR_SEARCHES: string[] = [
   'Cancel subscription',
 ];
 
-// ── Support FAQs — Grounded in Real Product Code ───────────────
+// Support FAQs grounded in product workflows.
 
 export const SUPPORT_FAQS: SupportFAQ[] = [
   {
@@ -446,7 +440,7 @@ export const SUPPORT_FAQS: SupportFAQ[] = [
   },
 ];
 
-// ── System status ────────────────────────────────────────
+// System status indicators.
 
 export interface SystemStatusItem {
   service: string;

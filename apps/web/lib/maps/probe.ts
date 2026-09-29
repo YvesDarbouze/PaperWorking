@@ -123,7 +123,7 @@ export async function executeMapsProbe(overrideKey?: string): Promise<MapsProbeE
     return result;
   }
 
-  // --- Step 1: Script / Key sanity verification ---
+  // Script and API key validation.
   const step1Start = Date.now();
   result.steps.scriptLoad = {
     step: 1,
@@ -137,7 +137,7 @@ export async function executeMapsProbe(overrideKey?: string): Promise<MapsProbeE
     },
   };
 
-  // --- Step 2: Places Autocomplete ---
+  // Places autocomplete probe.
   const step2Start = Date.now();
   try {
     const autocompleteUrl = new URL('https://maps.googleapis.com/maps/api/place/autocomplete/json');
@@ -187,7 +187,7 @@ export async function executeMapsProbe(overrideKey?: string): Promise<MapsProbeE
     };
   }
 
-  // --- Step 3: Geocoding API ---
+  // Geocoding API probe.
   const step3Start = Date.now();
   let resolvedLat = 30.278;
   let resolvedLng = -97.718;
@@ -246,7 +246,7 @@ export async function executeMapsProbe(overrideKey?: string): Promise<MapsProbeE
     };
   }
 
-  // --- Step 4: Street View Static metadata & Maps Static API ---
+  // Street View metadata and Static Maps API probe.
   const step4Start = Date.now();
   try {
     const svUrl = new URL('https://maps.googleapis.com/maps/api/streetview/metadata');

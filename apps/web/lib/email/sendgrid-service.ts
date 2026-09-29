@@ -64,12 +64,23 @@ export interface SendGridMailPayload {
   customArgs?: Record<string, string>;
 }
 
-export interface SendGridDispatchResult {
+
+export type SendGridProductionResult = {
   success: boolean;
   messageId?: string;
-  mode: 'live' | 'mock';
+  mode: 'live';
   attempts: number;
-}
+};
+
+export type SendGridMockResult = {
+  success: boolean;
+  messageId?: string;
+  mode: 'mock';
+  attempts: number;
+  simulated: true;
+};
+
+export type SendGridDispatchResult = SendGridProductionResult | SendGridMockResult;
 
 // In-memory record for test inspection
 export const sentEmailsForTesting: SendGridMailPayload[] = [];
@@ -114,16 +125,28 @@ export class SendGridService {
       throw new SendGridPayloadError('Email must include text or HTML content.');
     }
 
-    const isMockKey =
-      !this.apiKey ||
-      this.apiKey.startsWith('mock-') ||
-      this.apiKey === 'AIzaSyFakeKeyForLocalEmulatorTesting000';
-    if (process.env.NODE_ENV === 'production' && isMockKey) {
-      throw new SendGridAuthError('SENDGRID_API_KEY is required in production');
-    }
-    const isTestEnv = process.env.NODE_ENV === 'test' || isMockKey;
+    const isProduction = process.env.NODE_ENV === 'production';
 
-    // In mock/test/CI mode: record in inspection buffer and return success
+    // In production, missing or mock API key is an immediate hard fatal error
+    if (isProduction) {
+      if (
+        !this.apiKey ||
+        this.apiKey.startsWith('mock-') ||
+        this.apiKey === 'AIzaSyFakeKeyForLocalEmulatorTesting000'
+      ) {
+        throw new SendGridAuthError(
+          '[FATAL] SENDGRID_API_KEY is missing or invalid in production. Simulated/mock email dispatch is strictly prohibited.',
+        );
+      }
+    }
+
+    const isTestEnv =
+      !isProduction &&
+      (process.env.NODE_ENV === 'test' ||
+        !this.apiKey ||
+        this.apiKey.startsWith('mock-') ||
+        this.apiKey === 'AIzaSyFakeKeyForLocalEmulatorTesting000');
+
     const normalizeRecipient = (r: RecipientInput): SendGridMailRecipient => {
       if (typeof r === 'string') return { email: r };
       return { email: r.email, ...(r.name ? { name: r.name } : {}) };
@@ -133,6 +156,7 @@ export class SendGridService {
     const fromRecipient = payload.from ? normalizeRecipient(payload.from) : this.defaultFrom;
     const replyToRecipient = payload.replyTo ? normalizeRecipient(payload.replyTo) : undefined;
 
+    // In mock/test/CI mode: record in inspection buffer and return success with simulated: true
     if (isTestEnv) {
       sentEmailsForTesting.push({
         ...payload,
@@ -145,6 +169,7 @@ export class SendGridService {
         messageId: `mock-msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         mode: 'mock',
         attempts: 1,
+        simulated: true,
       };
     }
 
@@ -189,12 +214,23 @@ export class SendGridService {
 
         if (response.status === 202 || response.status === 200) {
           const messageId = response.headers.get('x-message-id') || undefined;
-          return {
+          const result: SendGridProductionResult = {
             success: true,
             messageId,
             mode: 'live',
             attempts: attempt,
           };
+          if (isProduction) {
+            if ('simulated' in result) {
+              throw new Error(
+                '[FATAL] SendGrid dispatch returned result containing simulated in production',
+              );
+            }
+            if (result.mode !== 'live') {
+              throw new Error('[FATAL] SendGrid dispatch failed to return live mode in production');
+            }
+          }
+          return result;
         }
 
         if (response.status === 401 || response.status === 403) {
@@ -345,8 +381,9 @@ ${AVA_CONFIG.agentName} & the PaperWorking Team
       : 'Business hours desk: We will call you during your requested window tomorrow between 9:00 AM – 6:00 PM EST.';
 
     // 1. Internal Team Alert
+    const internalAlertEmail = process.env.SUPPORT_INTERNAL_EMAIL || 'hi@paperworking.co';
     const teamAlert = await this.send({
-      to: { email: AVA_CONFIG.supportEmail, name: 'PaperWorking Support Desk' },
+      to: { email: internalAlertEmail, name: 'PaperWorking Support Desk' },
       subject: `${isPriority ? '[URGENT PRIORITY DESK] ' : ''}Callback Request: ${options.name} (${options.userTier})`,
       text: `Callback requested via ${AVA_CONFIG.agentName}:
 
@@ -443,3 +480,26 @@ https://paperworking.co
 }
 
 export const sendGridService = new SendGridService();
+
+/**
+ * Deployment Canary Smoke Check.
+ * When SENDGRID_CANARY_ON_DEPLOY=true, sends an email to an internal canary address
+ * and requires a SendGrid 202 response.
+ */
+export async function runSendGridDeployCanary(service: SendGridService = sendGridService): Promise<void> {
+  const canaryRecipient = process.env.SENDGRID_CANARY_EMAIL || 'canary@paperworking.co';
+  console.log(`[Deploy Canary] Sending SendGrid canary verification to ${canaryRecipient}...`);
+
+  const result = await service.send({
+    to: { email: canaryRecipient, name: 'Deploy Canary' },
+    subject: `[Deploy Canary] PaperWorking Boot Verification ${new Date().toISOString()}`,
+    text: 'Deployment smoke check verifying live SendGrid credentials and deliverability.',
+  });
+
+  if (result.mode !== 'live' || (result as any).simulated) {
+    throw new Error(
+      `[Deploy Canary Failed] SendGrid canary did not execute live dispatch (mode: ${result.mode})`,
+    );
+  }
+  console.log(`[Deploy Canary] Live SendGrid delivery verified (messageId: ${result.messageId}).`);
+}

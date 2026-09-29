@@ -48,7 +48,7 @@ export function VendorRequestModal({ isOpen, vendor, onClose }: VendorRequestMod
     }
     setSubmitting(true);
     setError(null);
-    // Seed-mode acknowledgement — full assignVendor flow lands with Firebase wiring.
+    // Seed-mode acknowledgement: full assignVendor flow lands with Firebase wiring.
     await new Promise((r) => setTimeout(r, 400));
     setSubmitting(false);
     setDone(true);
@@ -66,7 +66,7 @@ export function VendorRequestModal({ isOpen, vendor, onClose }: VendorRequestMod
         role="dialog"
         aria-modal="true"
         aria-label="Request vendor quote"
-        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#121014] p-6 shadow-2xl"
+        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#121014] p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -79,7 +79,7 @@ export function VendorRequestModal({ isOpen, vendor, onClose }: VendorRequestMod
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/10 p-1.5 text-white/50 hover:text-white"
+            className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border border-white/10 text-white/50 hover:text-white transition"
             aria-label="Close"
           >
             <span className="material-symbols-outlined text-[18px]">close</span>

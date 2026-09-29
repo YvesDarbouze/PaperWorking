@@ -81,9 +81,9 @@ describe('phase B7 — browser team endpoint audit', () => {
       join(here, '../../components/team/TeamDirectoryPanel.tsx'),
       'utf8',
     );
-    expect(source).toContain("from '@/lib/team/team-api'");
-    expect(source).toContain('postTeamInvite');
+    expect(source).toMatch(/bffFetch\('\/api\/projects'/);
     expect(source).not.toContain('apiFetch');
+    expect(source).not.toContain('NEXT_PUBLIC_API_URL');
   });
 
   it('api-provider teamMembers uses bffFetch for GET only', () => {

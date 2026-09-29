@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { decodeBroadcastToken, type BroadcastTokenPayload } from '@/lib/deals/token';
-import { checkDealExistsFromBff, replyToDealFromBff } from '@/lib/deals/deal-api';
+import PrivateDealAccessGate from '@/components/marketplace/PrivateDealAccessGate';
+import { isUserSubscribed } from '@/lib/marketplace/seed-data';
 
 interface ExternalDealData {
   id: string;
@@ -59,6 +60,8 @@ export default function ExternalDealPage() {
   const [sendingReply, setSendingReply] = useState(false);
   const [replySuccess, setReplySuccess] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
+  const [calculatorResults, setCalculatorResults] = useState<any>(null);
+  const [accessGated, setAccessGated] = useState(false);
 
   // Invite action states (Invite mode)
   const [inviteStatus, setInviteStatus] = useState<'pending' | 'accepted' | 'declined'>('pending');
@@ -68,10 +71,27 @@ export default function ExternalDealPage() {
 
     async function fetchDeal() {
       try {
-        const data = await checkDealExistsFromBff(slug);
+        const res = await fetch(`/api/deals/exists?slug=${encodeURIComponent(slug)}`);
+        const data = (await res.json()) as { exists: boolean; deal: Record<string, unknown> | null };
         if (cancelled) return;
 
         if (data.exists && data.deal) {
+          const isPrivate = data.deal.visibility === 'private' || data.deal.visibility === 'invitation_only';
+          setCalculatorResults(data.deal.calculatorResults);
+
+          if (isPrivate) {
+            try {
+              const meRes = await fetch('/api/auth/me');
+              const meData = meRes.ok ? await meRes.json() : null;
+              const subscribed = isUserSubscribed(meData?.user || meData);
+              if (!subscribed) {
+                setAccessGated(true);
+              }
+            } catch {
+              setAccessGated(true);
+            }
+          }
+
           setDeal({
             id: String(data.deal.id || 'deal-1'),
             name: String(data.deal.name || 'Elm Street Flip'),
@@ -100,18 +120,24 @@ export default function ExternalDealPage() {
     setReplyError(null);
 
     try {
-      await replyToDealFromBff(
-        {
+      const response = await fetch('/api/deals/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           dealId: deal.id || tokenPayload?.dealId || 'deal-1',
-          token: tokenParam || undefined,
           senderEmail:
             replySenderEmail.trim() ||
             tokenPayload?.email ||
             'external_investor@example.com',
           content: replyText,
-        },
-        { credentials: 'omit' },
-      );
+          source: 'email_inbound',
+        }),
+      });
+
+      const resBody = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok || !resBody.success) {
+        throw new Error(resBody.error ?? 'Failed to send reply');
+      }
 
       setReplySuccess(true);
       setReplyText('');
@@ -142,12 +168,26 @@ export default function ExternalDealPage() {
 
   const formattedRoi = `${Number(deal.projectedRoi ?? 18.4).toFixed(1)}%`;
 
+  if (accessGated) {
+    return (
+      <PrivateDealAccessGate
+        dealName={deal.name}
+        dealAddress={deal.address}
+        dealSlug={slug}
+        dealId={deal.id}
+        calculatorResults={calculatorResults}
+        creatorName={senderName}
+        reason="unsubscribed_gate"
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white selection:bg-[#00DD94]/30 pt-4">
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-[#0a0a0f] text-white selection:bg-primary/20">
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 pt-6 pb-12 sm:pt-8 sm:pb-14 md:pt-10 md:pb-16">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/50">
-            <span className="material-symbols-outlined animate-spin text-3xl text-[#00DD94]">
+            <span className="material-symbols-outlined animate-spin text-3xl text-foreground">
               progress_activity
             </span>
             <p className="mt-3 text-sm">Loading deal preview…</p>
@@ -160,7 +200,7 @@ export default function ExternalDealPage() {
           <div className="space-y-6">
             {/* Broadcast or Invite Notice Banner */}
             <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs text-white/70">
-              <span className="material-symbols-outlined text-[18px] text-[#00DD94]">
+              <span className="material-symbols-outlined text-[18px] text-foreground">
                 {isBroadcast ? 'campaign' : 'mail'}
               </span>
               <span>
@@ -173,7 +213,7 @@ export default function ExternalDealPage() {
             {/* Deal Overview Card */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md space-y-6">
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#00DD94]">
+                <div className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Deal Underwriting Preview
                 </div>
                 <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">
@@ -192,7 +232,7 @@ export default function ExternalDealPage() {
                 </div>
                 <div>
                   <div className="text-[11px] font-semibold uppercase text-white/50">Projected ROI</div>
-                  <div className="mt-1 text-lg font-bold text-[#00DD94]">{formattedRoi}</div>
+                  <div className="mt-1 text-lg font-bold text-foreground">{formattedRoi}</div>
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <div className="text-[11px] font-semibold uppercase text-white/50">Lead Investor</div>
@@ -203,7 +243,7 @@ export default function ExternalDealPage() {
               {/* Sender Note Glass Card */}
               {senderMessage && (
                 <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-sm text-white/80">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#00DD94] mb-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
                     <span className="material-symbols-outlined text-[16px]">notes</span>
                     Note from {senderName}
                   </div>
@@ -257,8 +297,8 @@ export default function ExternalDealPage() {
                   </div>
 
                   {replySuccess ? (
-                    <div className="rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/10 p-4 text-center space-y-2">
-                      <span className="material-symbols-outlined text-2xl text-[#00DD94]">
+                    <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
+                      <span className="material-symbols-outlined text-2xl text-foreground">
                         check_circle
                       </span>
                       <p className="text-sm font-semibold text-white">
@@ -270,7 +310,7 @@ export default function ExternalDealPage() {
                       <button
                         type="button"
                         onClick={() => setReplySuccess(false)}
-                        className="mt-2 text-xs text-[#00DD94] underline hover:text-[#00DD94]/80"
+                        className="mt-2 text-xs text-foreground underline hover:text-foreground/80"
                       >
                         Send another reply
                       </button>
@@ -296,7 +336,7 @@ export default function ExternalDealPage() {
                           value={replySenderEmail}
                           onChange={(e) => setReplySenderEmail(e.target.value)}
                           placeholder="investor@partnerfund.com"
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-ring focus:outline-none"
                         />
                       </div>
 
@@ -314,7 +354,7 @@ export default function ExternalDealPage() {
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder={`Hi ${senderName}, I saw your broadcast for ${deal.name || 'this deal'}. We would like to learn more about...`}
                           required
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-[#00DD94] focus:outline-none"
+                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-ring focus:outline-none"
                         />
                       </div>
 
@@ -322,7 +362,7 @@ export default function ExternalDealPage() {
                         <button
                           type="submit"
                           disabled={sendingReply || !replyText.trim()}
-                          className="inline-flex items-center gap-2 rounded-xl bg-[#00DD94] px-5 py-2.5 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110 disabled:opacity-50"
+                          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2 text-xs font-medium text-primary-foreground transition hover:bg-primary/80 disabled:opacity-50"
                         >
                           {sendingReply ? (
                             <>
@@ -344,7 +384,7 @@ export default function ExternalDealPage() {
                 </div>
 
                 {/* Subscribe CTA Block */}
-                <div className="rounded-2xl border border-[#00DD94]/30 bg-gradient-to-br from-[#00DD94]/10 to-transparent p-6 text-center space-y-3">
+                <div className="rounded-2xl border border-border bg-card p-6 text-center space-y-3">
                   <h3 className="text-base font-bold text-white">
                     Unlock Full Financial Modeling &amp; Underwriting
                   </h3>
@@ -355,7 +395,7 @@ export default function ExternalDealPage() {
                   <div className="pt-2">
                     <Link
                       href={`/signup?redirect=/deals/${slug}`}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#00DD94] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#0a0a0f] transition hover:brightness-110 shadow-lg shadow-[#00DD94]/10"
+                      className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-primary-foreground transition hover:bg-primary/80 shadow-sm"
                     >
                       Subscribe to view full deal analysis and invest
                       <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -372,7 +412,7 @@ export default function ExternalDealPage() {
                 </p>
 
                 {inviteStatus === 'accepted' ? (
-                  <div className="rounded-xl border border-[#00DD94]/30 bg-[#00DD94]/10 p-4 text-center text-sm font-semibold text-[#00DD94]">
+                  <div className="rounded-xl border border-border bg-card p-4 text-center text-sm font-semibold text-foreground">
                     Thank you! Your interest has been submitted to {senderName}.
                   </div>
                 ) : inviteStatus === 'declined' ? (
@@ -391,7 +431,7 @@ export default function ExternalDealPage() {
                     <button
                       type="button"
                       onClick={() => setInviteStatus('accepted')}
-                      className="w-full sm:w-auto rounded-xl bg-[#00DD94] px-6 py-2.5 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 transition"
+                      className="w-full sm:w-auto rounded-xl bg-primary px-6 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/80 transition"
                     >
                       I&apos;m Interested
                     </button>

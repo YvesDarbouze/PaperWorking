@@ -11,21 +11,21 @@ export default function ReilPhaseModules() {
         <div
           key={module.title}
           data-testid={`reil-phase-${module.title.replace(/['']/g, '').toLowerCase()}`}
-          className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0c090b]/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-[#00DD94]/30 sm:p-7"
+          className="group/card flex flex-col justify-between rounded-none border border-border bg-card p-6 shadow-sm ring-1 ring-foreground/10 text-card-foreground transition-colors hover:border-foreground/25"
         >
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] font-semibold uppercase tracking-[0.15em] text-[#00DD94]">
+              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {module.phaseNumber}
               </span>
-              <span className="h-2 w-2 rounded-full bg-[#00DD94]/40" />
+              <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
             </div>
 
-            <h3 className="mb-4 text-xl font-bold tracking-tight text-white">
+            <h3 className="mb-4 text-lg font-bold tracking-tight text-foreground">
               {module.title}
             </h3>
 
-            <ul className="space-y-2.5 pl-4 text-xs leading-[1.6] text-white/70 list-disc marker:text-[#00DD94] sm:text-[13px]">
+            <ul className="space-y-2.5 pl-4 text-xs sm:text-[13px] leading-relaxed text-muted-foreground list-disc marker:text-muted-foreground/60">
               {module.bullets.map((bullet, idx) => (
                 <li key={idx} className="pl-0.5">
                   {bullet}

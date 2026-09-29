@@ -63,8 +63,8 @@ describe('phase B13 — browser transport migration', () => {
     );
 
     expect(broadcast).toMatch(/bffFetch\('\/api\/deals\/broadcast'/);
-    expect(external).toContain('replyToDealFromBff');
-    expect(external).toContain('checkDealExistsFromBff');
+    expect(external).toMatch(/fetch\('\/api\/deals\/reply'/);
+    expect(external).toMatch(/fetch\(`\/api\/deals\/exists/);
     expect(broadcast).not.toContain("apiFetch('/api/deals/broadcast'");
     expect(external).not.toContain("apiFetch('/api/deals/reply'");
   });

@@ -1643,6 +1643,7 @@ export { validateCsrf, type CsrfResult } from './lib/auth/csrf.js';
 export { circuitBreakers } from './lib/circuit-breaker.js';
 export { calculateKPIs } from './lib/insights/kpi-engine.js';
 export { aggregatePortfolioData, type ReportPeriod } from './lib/reports/aggregation.js';
+export { exportReportPdf } from './lib/reports/pdf-export.js';
 
 export {
   RentCastPropertyAdapter,

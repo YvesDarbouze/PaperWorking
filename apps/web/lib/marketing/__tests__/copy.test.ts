@@ -57,6 +57,12 @@ describe('Marketing Copy Constants', () => {
     }
   });
 
+  it('should verify authorized howItWorksBody copy for How It Works page', () => {
+    expect(copy.howItWorksBody).toBe(
+      'Real estate investments follow a distinct lifecycle unlike standard work-related projects, moving through phases unique to the property industry. PaperWorking streamlines these stages into a unified ecosystem, driving operational efficiency and practical solutions for investors. By ingesting your project data points, PaperWorking generates 33 visualized KPIs (Key Performance Indicators) that provide the critical insights needed for smarter decision-making. We built PaperWorking to equip serious real estate investors with the intelligence required to measure and maximize investment performance.'
+    );
+  });
+
   it('should verify REIL system narrative copy constants', () => {
     expect(copy.reilNarrativeLead).toBe(
       'The Real Estate Investment Lifecycle (REIL) is a system created to properly manage your real estate investments in 4 compartmentalized steps.'
@@ -82,8 +88,15 @@ describe('Marketing Copy Constants', () => {
     }
   });
 
-  it('should verify pricingHeader positioning copy (PROMPT 12)', () => {
-    expect(copy.pricingHeader).toBe('BLOOMBERG TERMINAL FOR REAL ESTATE INVESTORS');
+  it('should verify pricing page copy constants (PROMPT 10 / PROMPT 12)', () => {
+    expect(copy.pricingHeader).toBe('PRICING');
+    expect(copy.pricingPositioningHeadline).toBe('The Bloomberg Terminal for Real Estate Investors');
+    expect(copy.pricingSubheadline).toBe(
+      'The average stock trade is $5,000. The average real estate deal is $429,000. Why do stock traders have better technology?'
+    );
+    expect(copy.pricingBody).toBe(
+      'Being off by even a fraction of a percent can cost thousands of dollars to poor planning, surprise expenses, and avoidable mistakes. PaperWorking gives real estate investors the clarity and the network to make smart, profitable decisions.'
+    );
     const legacyPricing = ['REAL', 'ESTATE', 'BLOOMBERG', 'TERMINAL'].join(' ');
     for (const [key, value] of Object.entries(copy)) {
       expect(value).not.toContain(legacyPricing);
@@ -92,7 +105,7 @@ describe('Marketing Copy Constants', () => {
 
   it('should verify authorized landing hero headline and subheadline (USER-AUTHORIZED)', () => {
     expect(copy.heroHeadline).toBe(
-      'Finally, Project Management software made for serious real estate investors and Investments teams.'
+      'Finally, project management software made for serious real estate investors.'
     );
     expect(copy.heroSubheadline).toBe(
       "Every real estate deal runs through the same four phases: Acquisition, Fund, Hold, Exit. PaperWorking manages all four phases of an investment in one place and turns the work you're already doing into the 33 numbers that show whether your investments are actually working. NOI, cap rate, DSCR, cash-on-cash, IRR — calculated from your own project data, per deal and across your portfolio."

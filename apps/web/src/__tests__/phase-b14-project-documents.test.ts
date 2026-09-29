@@ -12,10 +12,10 @@ describe('phase B14 — browser document transport', () => {
       'utf8',
     );
 
-    expect(panel).toContain('listProjectDocumentsFromBff');
-    expect(panel).toContain('uploadProjectDocumentFromBff');
-    expect(panel).toContain('getProjectDocumentAccessFromBff');
-    expect(panel).not.toContain('loadProjectById');
+    expect(panel).toMatch(/`\/api\/projects\/\$\{projectId\}\/documents`/);
+    expect(panel).toMatch(/fetch\(`\/api\/projects\/\$\{projectId\}\/documents`/);
+    expect(panel).not.toContain('apiFetch(');
+    expect(panel).not.toContain('NEXT_PUBLIC_API_URL');
   });
 
   it('Next document routes delegate to shared document services', () => {

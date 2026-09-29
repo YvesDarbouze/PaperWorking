@@ -11,7 +11,8 @@ import { isSettingsSectionRestricted } from '@/lib/auth/progressive-unlock';
 
 export default function SettingsSectionRouter() {
   const searchParams = useSearchParams();
-  const section = searchParams.get('section') || 'general';
+  const rawSection = searchParams.get('section') || searchParams.get('tab') || 'general';
+  const section = rawSection === 'subscription' ? 'billing' : rawSection;
   const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {

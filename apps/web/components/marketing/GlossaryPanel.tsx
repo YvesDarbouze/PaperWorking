@@ -52,8 +52,8 @@ export default function GlossaryPanel() {
 
   return (
     <div className="pb-16">
-      <section className="pb-8 pt-8 sm:pb-10 sm:pt-12">
-        <div className="mx-auto max-w-3xl text-center">
+      <section className="pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-10">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 text-center">
           <Link
             href="/support"
             className="mb-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50 no-underline hover:text-white"
@@ -66,7 +66,7 @@ export default function GlossaryPanel() {
             Real Estate Glossary
           </h1>
           <p className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
-            Industry terminology and PaperWorking platform definitions — from ARV to Zoning Scan.
+            Industry terminology and PaperWorking platform definitions: from ARV to Zoning Scan.
           </p>
 
           <div className="relative mx-auto mb-8 max-w-md">
@@ -86,7 +86,7 @@ export default function GlossaryPanel() {
       </section>
 
       <section className="pb-8">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 md:px-8">
           <div className="flex flex-wrap justify-center gap-2">
             <button
               type="button"
@@ -121,7 +121,7 @@ export default function GlossaryPanel() {
       </section>
 
       <section className="pb-24">
-        <div className="mx-auto flex max-w-4xl gap-6">
+        <div className="mx-auto flex max-w-4xl gap-6 px-4 sm:px-6 md:px-8">
           <nav
             className="sticky top-24 hidden flex-col gap-0.5 self-start pt-2 lg:flex"
             aria-label="Jump to letter"

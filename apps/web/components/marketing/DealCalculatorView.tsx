@@ -8,9 +8,24 @@ import {
   canonicalDemoDeal,
   reconcileAcquisitionUnderwriting,
   type ReconciledUnderwritingMetrics,
+  type PurchaseCriteriaInputs,
 } from '@paperworking/financial-engine';
 import type { PropertyComparableSale } from '@/lib/calculator/property-types';
 import { SensitivityGridsView } from '../analysis/SensitivityGridsView';
+import AddressSearch from '@/components/deals/AddressSearch';
+import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
+import StrategySelectorBar, { type InvestmentStrategyType } from './deal-calculator/StrategySelectorBar';
+import DealStructuringCard, { type FinancingModality, type CapitalSeekingIntent } from './deal-calculator/DealStructuringCard';
+import RehabWorksheetModal, { type RehabLineItem } from './deal-calculator/RehabWorksheetModal';
+import ScheduleEExpenseModal from './deal-calculator/ScheduleEExpenseModal';
+import PurchaseCriteriaCard from './deal-calculator/PurchaseCriteriaCard';
+import StrategyOutputsCard from './deal-calculator/StrategyOutputsCard';
+import MultiYearDcfTable from './deal-calculator/MultiYearDcfTable';
+import PublishToMarketplaceModal from './deal-calculator/PublishToMarketplaceModal';
+import BroadcastDealModal from './deal-calculator/BroadcastDealModal';
+import StrategyInputsPanel from './deal-calculator/StrategyInputsPanel';
+import StartProjectFromCalculatorModal from './deal-calculator/StartProjectFromCalculatorModal';
+import ClosingCostsModal, { type ClosingCostLineItem } from './deal-calculator/ClosingCostsModal';
 
 interface CalculatorInputs {
   address: string;
@@ -23,6 +38,8 @@ interface CalculatorInputs {
   arv: number;
   rehabBudget: number;
   grossRentMonthly: number;
+  otherIncomeMonthly?: number;
+  downPaymentPct?: number;
   operatingExpensesAnnual?: number;
   operatingExpensePct: number;
   vacancyRatePct: number;
@@ -53,6 +70,46 @@ interface CalculatorInputs {
   concessionsMonths?: number;
   /** W2-11: Rent ramp % during active lease-up months */
   leaseUpRentRampPct?: number;
+
+  // 6 Strategies
+  strategy: InvestmentStrategyType;
+
+  // Strategy-Specific Inputs
+  averageDailyRate: number;
+  occupancyRatePct: number;
+  cleaningFeePerStay: number;
+  averageStayNights: number;
+  cleaningCostPerStay: number;
+  platformFeePct: number;
+  strFurnishingCapex: number;
+  refinanceMonthsAfterClose: number;
+  refinanceLtvPct: number;
+  refinanceInterestRatePct: number;
+  refinanceAmortizationYears: number;
+  refinanceClosingCostsPct: number;
+  postRefiGrossMonthlyRent?: number;
+  postRefiMonthlyOperatingExpenses?: number;
+  commercialSqft: number;
+  marketCapRatePct: number;
+  contractPurchasePrice: number;
+  targetAssignmentFee: number;
+  isDoubleClosing: boolean;
+  doubleClosingEscrowFees: number;
+
+  // Deal Structuring & Financing
+  financingModality: FinancingModality;
+  hardMoneyPoints: number;
+  hardMoneyInterestRatePct: number;
+  hardMoneyTermMonths: number;
+  balloonTermMonths: number;
+  capitalSeekingIntent: CapitalSeekingIntent;
+  partnerEquitySplitPct: number;
+  targetCapitalRaise: number;
+  minimumInvestmentTicket: number;
+  preferredReturnPct: number;
+
+  // Purchase Criteria Screening
+  purchaseCriteria: PurchaseCriteriaInputs;
 }
 
 const DEFAULT_INPUTS: CalculatorInputs = {
@@ -66,6 +123,8 @@ const DEFAULT_INPUTS: CalculatorInputs = {
   arv: 680000,
   rehabBudget: canonicalDemoDeal.rehabBudget,
   grossRentMonthly: canonicalDemoDeal.grossRentMonthly,
+  otherIncomeMonthly: 0,
+  downPaymentPct: 25,
   operatingExpensesAnnual: canonicalDemoDeal.operatingExpensesAnnual,
   operatingExpensePct: Number(canonicalDemoDeal.operatingExpenseRatioPct.toFixed(2)),
   vacancyRatePct: canonicalDemoDeal.vacancyRatePct,
@@ -92,10 +151,47 @@ const DEFAULT_INPUTS: CalculatorInputs = {
   monthsVacantAtClose: 0,
   concessionsMonths: 0,
   leaseUpRentRampPct: 100.0,
+  // Strategy defaults
+  strategy: 'buy_and_hold_rental',
+  averageDailyRate: 220,
+  occupancyRatePct: 70,
+  cleaningFeePerStay: 150,
+  averageStayNights: 3.5,
+  cleaningCostPerStay: 120,
+  platformFeePct: 3.0,
+  strFurnishingCapex: 20000,
+  refinanceMonthsAfterClose: 6,
+  refinanceLtvPct: 75.0,
+  refinanceInterestRatePct: 6.75,
+  refinanceAmortizationYears: 30,
+  refinanceClosingCostsPct: 2.5,
+  commercialSqft: 4500,
+  marketCapRatePct: 6.5,
+  contractPurchasePrice: canonicalDemoDeal.purchasePrice,
+  targetAssignmentFee: 15000,
+  isDoubleClosing: false,
+  doubleClosingEscrowFees: 2500,
+  financingModality: 'conventional',
+  hardMoneyPoints: 2.0,
+  hardMoneyInterestRatePct: 10.0,
+  hardMoneyTermMonths: 12,
+  balloonTermMonths: 60,
+  capitalSeekingIntent: 'solo',
+  partnerEquitySplitPct: 50.0,
+  targetCapitalRaise: 150000,
+  minimumInvestmentTicket: 10000,
+  preferredReturnPct: 8.0,
+  purchaseCriteria: {
+    minCashOnCashPct: 8.0,
+    minDscr: 1.25,
+    minCapRatePct: 6.0,
+    minFlipProfit: 30000,
+    maxLtvPct: 80.0,
+  },
 };
 
 function formatCurrency(amount: number | null | undefined): string {
-  if (amount === null || amount === undefined || isNaN(amount)) return '—';
+  if (amount === null || amount === undefined || isNaN(amount)) return '$0';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -135,6 +231,7 @@ export default function DealCalculatorView({
     const pRehab = searchParams.get('rehab') ? Number(searchParams.get('rehab')) : NaN;
     const pRent = searchParams.get('rent') ? Number(searchParams.get('rent')) : NaN;
     const pAddress = searchParams.get('address');
+    const pStrategy = searchParams.get('strategy') as InvestmentStrategyType | null;
 
     // 2. LocalStorage serves as in-progress preserve (signed-out -> sign-in recovery)
     let savedInputs: Partial<CalculatorInputs> = {};
@@ -151,6 +248,7 @@ export default function DealCalculatorView({
       ...DEFAULT_INPUTS,
       ...savedInputs,
       address: pAddress || savedInputs.address || DEFAULT_INPUTS.address,
+      strategy: pStrategy || savedInputs.strategy || DEFAULT_INPUTS.strategy,
       purchasePrice: !isNaN(pPrice) ? pPrice : (savedInputs.purchasePrice ?? DEFAULT_INPUTS.purchasePrice),
       arv: !isNaN(pArv) ? pArv : (savedInputs.arv ?? DEFAULT_INPUTS.arv),
       rehabBudget: !isNaN(pRehab) ? pRehab : (savedInputs.rehabBudget ?? DEFAULT_INPUTS.rehabBudget),
@@ -166,6 +264,50 @@ export default function DealCalculatorView({
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [showAssumptions, setShowAssumptions] = useState(false);
 
+  // New Modals for Worksheets and Collaboration
+  const [showStartProjectModal, setShowStartProjectModal] = useState(false);
+  const [showClosingCostsModal, setShowClosingCostsModal] = useState(false);
+  const [whatIfVacancy, setWhatIfVacancy] = useState<number>(5);
+  const [whatIfRentDeltaPct, setWhatIfRentDeltaPct] = useState<number>(0);
+  const [exitPlanningHorizon, setExitPlanningHorizon] = useState<5 | 10 | 20>(5);
+  const [showRehabModal, setShowRehabModal] = useState(false);
+  const [showScheduleEModal, setShowScheduleEModal] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [publishSuccessDealId, setPublishSuccessDealId] = useState<string | null>(null);
+  const [showBroadcastModal, setShowBroadcastModal] = useState(false);
+  const [broadcastSuccessCount, setBroadcastSuccessCount] = useState<number | null>(null);
+
+  // Overarching Project resolution from query parameters
+  const queryProjectId = searchParams.get('projectId');
+  const [overarchingProjectName, setOverarchingProjectName] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadProject() {
+      if (!queryProjectId) {
+        setOverarchingProjectName(null);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/projects/${queryProjectId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && data) {
+            setOverarchingProjectName(data.propertyName || data.name || queryProjectId);
+          }
+        } else {
+          if (!cancelled) setOverarchingProjectName(queryProjectId);
+        }
+      } catch {
+        if (!cancelled) setOverarchingProjectName(queryProjectId);
+      }
+    }
+    loadProject();
+    return () => {
+      cancelled = true;
+    };
+  }, [queryProjectId]);
+
   // Property Data Lookup state
   const [lookupLoading, setLookupLoading] = useState(false);
   const [propertyData, setPropertyData] = useState<{
@@ -175,6 +317,10 @@ export default function DealCalculatorView({
     message?: string;
     facts: any;
     comps: PropertyComparableSale[];
+    estimatedRent?: number;
+    rentRangeLow?: number;
+    rentRangeHigh?: number;
+    estimatedValue?: number;
     source?: 'rentcast' | 'cache' | 'offline';
     as_of?: string;
     asOf?: string;
@@ -268,16 +414,26 @@ export default function DealCalculatorView({
       armAdjustmentPct,
     } = inputs;
 
+    // Modality overrides
+    const effectiveLtv = inputs.financingModality === 'cash' ? 0 : ltvPct;
+    const effectiveRate =
+      inputs.financingModality === 'cash'
+        ? 0
+        : inputs.financingModality === 'hard_money'
+          ? inputs.hardMoneyInterestRatePct
+          : interestRatePct;
+
     return reconcileAcquisitionUnderwriting({
       purchasePrice,
       rehabBudget,
       estimatedARV: arv,
       grossRentMonthly,
+      otherIncomeMonthly: inputs.otherIncomeMonthly ?? 0,
       operatingExpensesAnnual: inputs.operatingExpensesAnnual,
       operatingExpenseRatioPct: operatingExpensePct,
       vacancyRatePct,
-      targetLtvPct: ltvPct,
-      interestRatePct,
+      targetLtvPct: effectiveLtv,
+      interestRatePct: effectiveRate,
       amortizationYears,
       holdPeriodYears,
       annualAppreciationPct,
@@ -288,6 +444,7 @@ export default function DealCalculatorView({
       exitCapRatePct,
       buyerClosingCostsPct,
       costOfSalePct,
+      strategy: inputs.strategy,
       terminalValueMethod,
       appreciationBase: inputs.appreciationBase,
       unitsCount,
@@ -300,6 +457,38 @@ export default function DealCalculatorView({
       monthsVacantAtClose: inputs.monthsVacantAtClose ?? 0,
       concessionsMonths: inputs.concessionsMonths ?? 0,
       leaseUpRentRampPct: inputs.leaseUpRentRampPct ?? 100.0,
+      // Multi-strategy inputs
+      averageDailyRate: inputs.averageDailyRate,
+      occupancyRatePct: inputs.occupancyRatePct,
+      cleaningFeePerStay: inputs.cleaningFeePerStay,
+      averageStayNights: inputs.averageStayNights,
+      cleaningCostPerStay: inputs.cleaningCostPerStay,
+      platformFeePct: inputs.platformFeePct,
+      strFurnishingCapex: inputs.strFurnishingCapex,
+      refinanceMonthsAfterClose: inputs.refinanceMonthsAfterClose,
+      refinanceLtvPct: inputs.refinanceLtvPct,
+      refinanceInterestRatePct: inputs.refinanceInterestRatePct,
+      refinanceAmortizationYears: inputs.refinanceAmortizationYears,
+      refinanceClosingCostsPct: inputs.refinanceClosingCostsPct,
+      commercialSqft: inputs.commercialSqft,
+      marketCapRatePct: inputs.marketCapRatePct,
+      contractPurchasePrice: inputs.contractPurchasePrice || purchasePrice,
+      targetAssignmentFee: inputs.targetAssignmentFee,
+      isDoubleClosing: inputs.isDoubleClosing,
+      doubleClosingEscrowFees: inputs.doubleClosingEscrowFees,
+      // Deal Structuring
+      financingModality: inputs.financingModality,
+      hardMoneyPoints: inputs.hardMoneyPoints,
+      hardMoneyInterestRatePct: inputs.hardMoneyInterestRatePct,
+      hardMoneyTermMonths: inputs.hardMoneyTermMonths,
+      balloonTermMonths: inputs.balloonTermMonths,
+      capitalSeekingIntent: inputs.capitalSeekingIntent,
+      partnerEquitySplitPct: inputs.partnerEquitySplitPct,
+      targetCapitalRaise: inputs.targetCapitalRaise,
+      minimumInvestmentTicket: inputs.minimumInvestmentTicket,
+      preferredReturnPct: inputs.preferredReturnPct,
+      // Purchase Criteria
+      purchaseCriteria: inputs.purchaseCriteria,
     });
   }, [inputs]);
 
@@ -329,19 +518,17 @@ export default function DealCalculatorView({
         const data = await res.json();
         setPropertyData(data);
 
-        // If facts were returned from real provider, populate inputs
-        if (data.facts) {
-          setInputs((prev) => ({
-            ...prev,
-            beds: data.facts.beds ?? prev.beds,
-            baths: data.facts.baths ?? prev.baths,
-            sqft: data.facts.squareFeet ?? data.facts.sqft ?? prev.sqft,
-            yearBuilt: data.facts.yearBuilt ?? prev.yearBuilt,
-            taxAssessment: data.facts.taxAssessment ?? prev.taxAssessment,
-            arv: data.estimatedValue > 0 ? data.estimatedValue : prev.arv,
-            grossRentMonthly: data.estimatedRent > 0 ? data.estimatedRent : prev.grossRentMonthly,
-          }));
-        }
+        // If facts or valuation/rent were returned, populate inputs
+        setInputs((prev) => ({
+          ...prev,
+          beds: data.facts?.beds ?? prev.beds,
+          baths: data.facts?.baths ?? prev.baths,
+          sqft: data.facts?.squareFeet ?? data.facts?.sqft ?? prev.sqft,
+          yearBuilt: data.facts?.yearBuilt ?? prev.yearBuilt,
+          taxAssessment: data.facts?.taxAssessment ?? prev.taxAssessment,
+          arv: data.estimatedValue && data.estimatedValue > 0 ? data.estimatedValue : prev.arv,
+          grossRentMonthly: data.estimatedRent && data.estimatedRent > 0 ? data.estimatedRent : prev.grossRentMonthly,
+        }));
       }
     } catch {
       // Offline / network failure: degrade gracefully without crashing
@@ -405,10 +592,19 @@ export default function DealCalculatorView({
   // Handler for input change
   const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
     setInputs((prev) => {
-      const next = {
+      const next: CalculatorInputs = {
         ...prev,
         [field]: value,
       };
+      if (field === 'downPaymentPct') {
+        const numVal = Math.max(0, Math.min(100, Number(value) || 0));
+        next.downPaymentPct = numVal;
+        next.ltvPct = Number((100 - numVal).toFixed(2));
+      } else if (field === 'ltvPct') {
+        const numVal = Math.max(0, Math.min(100, Number(value) || 0));
+        next.ltvPct = numVal;
+        next.downPaymentPct = Number((100 - numVal).toFixed(2));
+      }
       if (field === 'operatingExpensePct' || field === 'grossRentMonthly') {
         delete next.operatingExpensesAnnual;
       }
@@ -426,7 +622,7 @@ export default function DealCalculatorView({
   };
 
   // "Yes" path: promotes deal to Project with full mapping per Spec 5.2
-  const handleAcceptProjectPrompt = async () => {
+  const handleAcceptProjectPrompt = async (directToWorkspace: boolean = false) => {
     setIsCreatingProject(true);
     setProjectCreationError(null);
 
@@ -437,12 +633,20 @@ export default function DealCalculatorView({
       rehabBudget: inputs.rehabBudget,
       estimatedARV: inputs.arv,
       grossRentMonthly: inputs.grossRentMonthly,
+      otherIncomeMonthly: inputs.otherIncomeMonthly ?? 0,
       operatingExpenseRatioPct: inputs.operatingExpensePct,
+      operatingExpensesAnnual: inputs.operatingExpensesAnnual,
       targetLtvPct: inputs.ltvPct,
       interestRatePct: inputs.interestRatePct,
       amortizationYears: inputs.amortizationYears,
       rentGrowthPct: inputs.rentGrowthPct ?? 0.0,
       expenseGrowthPct: inputs.expenseGrowthPct ?? 0.0,
+      buyerClosingCostsPct: inputs.buyerClosingCostsPct,
+      beds: inputs.beds,
+      baths: inputs.baths,
+      sqft: inputs.sqft,
+      yearBuilt: inputs.yearBuilt,
+      taxAssessment: inputs.taxAssessment,
       loanType: inputs.loanType ?? 'amortizing',
       ioPeriodYears: inputs.ioPeriodYears ?? 5,
       armFixedPeriodYears: inputs.armFixedPeriodYears ?? 5,
@@ -453,11 +657,43 @@ export default function DealCalculatorView({
       leaseUpRentRampPct: inputs.leaseUpRentRampPct ?? 100.0,
       terminalValueMethod: inputs.terminalValueMethod,
       appreciationBase: inputs.appreciationBase ?? 'purchase_price',
-      strategy: 'buy_and_hold_rental' as const,
+      strategy: inputs.strategy,
       assumptionsNotes: `Underwritten via Deal Calculator (Snapshot: ${persistedSnapshotId || 'snapshot-initial'})`,
     };
 
-    let createdProjectId: string | undefined;
+    const existingProjectId = searchParams?.get('projectId') || null;
+    let createdProjectId: string | undefined = existingProjectId || undefined;
+
+    if (existingProjectId) {
+      try {
+        await fetch(`/api/projects/${existingProjectId}/underwriting`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            underwritingRecord: {
+              inputs: {
+                purchasePrice: inputs.purchasePrice,
+                estimatedARV: inputs.arv,
+                rehabBudget: inputs.rehabBudget,
+                grossMonthlyRent: inputs.grossRentMonthly,
+                operatingExpenseRatioPct: inputs.operatingExpensePct,
+                targetLtvPct: inputs.ltvPct,
+                interestRatePct: inputs.interestRatePct,
+                amortizationYears: inputs.amortizationYears,
+                holdPeriodYears: inputs.holdPeriodYears,
+              },
+              outputs: calculations,
+              version: persistedSnapshotId ? Number(persistedSnapshotId.replace(/\D/g, '')) + 1 : 2,
+              createdAt: new Date().toISOString(),
+            },
+          }),
+        });
+      } catch {
+        // continue
+      }
+      router.push(`/project/${existingProjectId}`);
+      return;
+    }
 
     try {
       // 1. Real atomic promotion API call (Requirement 4 & satisfies deal-calculator-auth-gate test)
@@ -489,6 +725,12 @@ export default function DealCalculatorView({
       amortizationYears: inputs.amortizationYears,
       rentGrowthPct: inputs.rentGrowthPct ?? 0.0,
       expenseGrowthPct: inputs.expenseGrowthPct ?? 0.0,
+      buyerClosingCostsPct: inputs.buyerClosingCostsPct,
+      beds: inputs.beds,
+      baths: inputs.baths,
+      sqft: inputs.sqft,
+      yearBuilt: inputs.yearBuilt,
+      taxAssessment: inputs.taxAssessment,
       loanType: inputs.loanType ?? 'amortizing',
       ioPeriodYears: inputs.ioPeriodYears ?? 5,
       armFixedPeriodYears: inputs.armFixedPeriodYears ?? 5,
@@ -497,7 +739,7 @@ export default function DealCalculatorView({
       monthsVacantAtClose: inputs.monthsVacantAtClose ?? 0,
       concessionsMonths: inputs.concessionsMonths ?? 0,
       leaseUpRentRampPct: inputs.leaseUpRentRampPct ?? 100.0,
-      strategy: 'buy_and_hold_rental' as const,
+      strategy: inputs.strategy,
       source: 'deal_calculator' as const,
       dealNotes: `Promoted from Deal Calculator scenario (${persistedSnapshotId || 'initial'})`,
     };
@@ -516,7 +758,12 @@ export default function DealCalculatorView({
       // ignore
     }
 
-    const searchParams = new URLSearchParams({
+    if (directToWorkspace && createdProjectId) {
+      router.push(`/project/${createdProjectId}`);
+      return;
+    }
+
+    const projectCreationParams = new URLSearchParams({
       fromCalculator: 'true',
       phase: 'acquisition',
       address: inputs.address,
@@ -524,13 +771,13 @@ export default function DealCalculatorView({
       rehab: String(inputs.rehabBudget),
       arv: String(inputs.arv),
       rent: String(inputs.grossRentMonthly),
-      strategy: 'buy_and_hold_rental',
+      strategy: inputs.strategy,
     });
     if (createdProjectId) {
-      searchParams.set('projectId', createdProjectId);
+      projectCreationParams.set('projectId', createdProjectId);
     }
 
-    router.push(`/projects/new?${searchParams.toString()}`);
+    router.push(`/projects/new?${projectCreationParams.toString()}`);
   };
 
   const isExpired =
@@ -545,8 +792,43 @@ export default function DealCalculatorView({
       : null;
 
   return (
-    <div className="min-h-[calc(100vh-144px)] bg-[#0a0a0f] text-[#fdfffc] px-4 py-8 md:px-8 lg:py-12">
-      <div className="mx-auto max-w-[1240px]">
+    <div className="min-h-[calc(100vh-144px)] bg-[#0a0a0f] text-[#fdfffc] px-4 sm:px-6 md:px-8 pt-6 pb-12 sm:pt-8 sm:pb-14 md:pt-10 md:pb-16">
+      <div className="mx-auto max-w-[1200px]">
+        {/* Overarching Project Context Banner */}
+        {queryProjectId && (
+          <div
+            data-testid="calc-overarching-project-badge"
+            className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-neutral-700 bg-neutral-900/90 p-4 backdrop-blur-md shadow-lg"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-700 bg-neutral-800 text-neutral-300">
+                <span className="material-symbols-outlined text-[20px]">folder_open</span>
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    Overarching Project Workspace
+                  </span>
+                  <span className="rounded bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-300 border border-neutral-700">
+                    Phase 01 Underwriting
+                  </span>
+                </div>
+                <h2 className="text-sm font-bold text-white truncate mt-0.5">
+                  Underwriting Deal Component for Overarching Project: {overarchingProjectName || queryProjectId}
+                </h2>
+              </div>
+            </div>
+
+            <Link
+              href={`/project/${queryProjectId}`}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-700 bg-neutral-800 px-3.5 py-2 text-xs font-semibold text-neutral-200 hover:bg-neutral-700 hover:text-white transition shrink-0 min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              <span>Back to Project Workspace</span>
+            </Link>
+          </div>
+        )}
+
         {/* Page Header */}
         <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
@@ -573,18 +855,98 @@ export default function DealCalculatorView({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              data-testid="start-project-from-calculator-btn"
+              onClick={() => setShowStartProjectModal(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[17px] text-emerald-400">
+                rocket_launch
+              </span>
+              <span>Start Project from Deal</span>
+            </button>
+
+            <button
+              type="button"
+              data-testid="broadcast-deal-btn"
+              onClick={() => setShowBroadcastModal(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition hover:bg-white/10 hover:text-white min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[17px] text-foreground">
+                forward_to_inbox
+              </span>
+              <span>Share via Email</span>
+            </button>
+
+            <button
+              type="button"
+              data-testid="post-marketplace-btn"
+              onClick={() => setShowPublishModal(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition hover:bg-white/10 hover:text-white min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[17px] text-foreground">
+                storefront
+              </span>
+              <span>Post to Marketplace</span>
+            </button>
+
             <button
               type="button"
               onClick={handleRunAnalysis}
               disabled={snapshotSaving}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-6 py-3 text-xs font-bold text-[#0a0a0f] transition hover:brightness-110 shadow-[0_0_20px_rgba(0,221,148,0.2)] touch-press min-h-[44px]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary/90 shadow-sm touch-press min-h-[44px]"
             >
               <span className="material-symbols-outlined text-[18px]">calculate</span>
               {snapshotSaving ? 'Calculating...' : 'Calculate Deal'}
             </button>
           </div>
         </div>
+
+        {/* Strategy Selector Bar */}
+        <div className="mb-6">
+          <StrategySelectorBar
+            selectedStrategy={inputs.strategy}
+            onSelectStrategy={(strat) => handleInputChange('strategy', strat)}
+          />
+        </div>
+
+        {/* Success Notifications for Marketplace / Broadcast */}
+        {publishSuccessDealId && (
+          <div className="mb-6 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-emerald-400 text-[18px]">check_circle</span>
+              <span>
+                Deal published to Marketplace. Investors can now submit soft commitments and request introduction meetings.
+              </span>
+            </div>
+            <Link
+              href="/marketplace"
+              className="font-bold underline text-emerald-300 hover:text-white"
+            >
+              View in Marketplace
+            </Link>
+          </div>
+        )}
+
+        {broadcastSuccessCount !== null && (
+          <div className="mb-6 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-emerald-400 text-[18px]">mark_email_read</span>
+              <span>
+                Pro-forma broadcast successfully dispatched to {broadcastSuccessCount} investor recipient(s).
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setBroadcastSuccessCount(null)}
+              className="text-xs text-emerald-300 hover:text-white"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Honest Provider Status Banner (Rule 5) */}
         {propertyData?.requiresCredentials && (
@@ -645,15 +1007,16 @@ export default function DealCalculatorView({
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5">
-                <span className="material-symbols-outlined text-[18px] text-white/40">location_on</span>
-                <input
-                  id="address-input"
-                  type="text"
+              <div className="space-y-3">
+                <AddressSearch
+                  mode="select"
                   value={inputs.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter property address..."
-                  className="w-full bg-transparent text-sm text-white focus:outline-none placeholder-white/30"
+                  placeholder="Search any street address (Google Maps Places Autocomplete)…"
+                  onSearchChange={(val) => handleInputChange('address', val)}
+                  onSelectAddress={(selected) => {
+                    handleInputChange('address', selected);
+                    handleLookupProperty(selected);
+                  }}
                 />
               </div>
 
@@ -759,15 +1122,34 @@ export default function DealCalculatorView({
                 <div className="col-span-2 sm:col-span-1 rounded-xl border border-white/5 bg-black/30 p-2 text-center">
                   <span className="block text-[9.5px] uppercase font-mono text-white/40">$/SqFt</span>
                   <span className="block font-bold text-[color:var(--color-primary)]">
-                    {pricePerSqFt ? `$${pricePerSqFt}` : '—'}
+                    {pricePerSqFt ? `$${pricePerSqFt}` : 'N/A'}
                   </span>
                 </div>
               </div>
               {!inputs.sqft && (
                 <p className="text-[11px] text-white/40 italic">
-                  Sqft not provided by public records — enter to calculate price/sqft.
+                  Sqft not provided by public records. Enter to calculate price/sqft.
                 </p>
               )}
+
+              {/* Satellite Parcel Screencap */}
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[14px] text-foreground">satellite_alt</span>
+                    <span>Satellite Aerial Parcel Screencap</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-white/40">
+                    Google Maps Platform
+                  </span>
+                </div>
+                <PropertySatelliteViewer
+                  address={inputs.address}
+                  aspectRatio="16/9"
+                  title={inputs.address}
+                  className="rounded-xl border border-white/10"
+                />
+              </div>
             </div>
 
             {/* Acquisition Inputs */}
@@ -803,14 +1185,25 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.arv}
                     onChange={(e) => handleInputChange('arv', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="rehab-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
-                    Rehab Budget ($)
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="rehab-input" className="block text-[11px] font-medium text-white/50">
+                      Rehab Budget ($)
+                    </label>
+                    <button
+                      type="button"
+                      data-testid="open-rehab-worksheet-btn"
+                      onClick={() => setShowRehabModal(true)}
+                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-primary hover:underline"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">construction</span>
+                      <span>Itemized Worksheet</span>
+                    </button>
+                  </div>
                   <input
                     id="rehab-input"
                     data-testid="rehab-input"
@@ -818,14 +1211,74 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.rehabBudget}
                     onChange={(e) => handleInputChange('rehabBudget', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="rent-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
-                    Monthly Gross Rent ($)
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="closing-costs-input" className="block text-[11px] font-medium text-white/50">
+                      Buyer Closing Costs (%)
+                    </label>
+                    <button
+                      type="button"
+                      data-testid="open-closing-costs-modal-btn"
+                      onClick={() => setShowClosingCostsModal(true)}
+                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">receipt</span>
+                      <span>Itemized Worksheet</span>
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="closing-costs-input"
+                      data-testid="closing-costs-pct-input"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="20"
+                      value={inputs.buyerClosingCostsPct}
+                      onChange={(e) => handleInputChange('buyerClosingCostsPct', Number(e.target.value))}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-mono text-white/40">
+                      {formatCurrency(calculations.buyerClosingCostsAmount)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Total Cost Basis Summary */}
+                <div
+                  data-testid="total-cost-basis-display"
+                  className="col-span-1 sm:col-span-2 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs flex items-center justify-between"
+                >
+                  <div>
+                    <span className="text-[10px] uppercase font-mono text-white/50 block">Total Acquisition Basis</span>
+                    <span className="text-sm font-bold text-white">
+                      Purchase + Closing ({inputs.buyerClosingCostsPct}%) + Rehab
+                    </span>
+                  </div>
+                  <span className="text-base font-bold font-mono text-emerald-400">
+                    {formatCurrency(calculations.totalCostBasis)}
+                  </span>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="rent-input" className="block text-[11px] font-medium text-white/50">
+                      Monthly Gross Rent ($)
+                    </label>
+                    <button
+                      type="button"
+                      data-testid="open-schedule-e-btn"
+                      onClick={() => setShowScheduleEModal(true)}
+                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">receipt_long</span>
+                      <span>Schedule E OpEx</span>
+                    </button>
+                  </div>
                   <input
                     id="rent-input"
                     data-testid="gross-rent-input"
@@ -833,11 +1286,165 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.grossRentMonthly}
                     onChange={(e) => handleInputChange('grossRentMonthly', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="other-income-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    Additional Income (Laundry/Parking) ($/mo)
+                  </label>
+                  <input
+                    id="other-income-input"
+                    data-testid="other-income-input"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={inputs.otherIncomeMonthly ?? 0}
+                    onChange={(e) => handleInputChange('otherIncomeMonthly', Number(e.target.value))}
+                    placeholder="e.g. 150"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                  />
+                </div>
+
+                {/* Effective Gross Income Waterfall Card */}
+                <div
+                  data-testid="effective-gross-income-card"
+                  className="col-span-1 sm:col-span-2 rounded-xl border border-white/10 bg-black/30 p-4 text-xs space-y-3"
+                >
+                  <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-1.5 font-bold text-white">
+                      <span className="material-symbols-outlined text-[16px] text-emerald-400">payments</span>
+                      <span>Income &amp; Expense Projections (Effective Gross Income)</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-white/40">Canonical Underwriting</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono">
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                      <span className="block text-[9.5px] uppercase text-white/40">Gross Potential Rent</span>
+                      <span className="block font-bold text-white text-xs mt-0.5">
+                        {formatCurrency(inputs.grossRentMonthly * 12)}/yr
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                      <span className="block text-[9.5px] uppercase text-white/40">Ancillary Income</span>
+                      <span className="block font-bold text-emerald-400 text-xs mt-0.5">
+                        +{formatCurrency((inputs.otherIncomeMonthly ?? 0) * 12)}/yr
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                      <span className="block text-[9.5px] uppercase text-white/40">Vacancy Loss ({inputs.vacancyRatePct}%)</span>
+                      <span className="block font-bold text-amber-300 text-xs mt-0.5">
+                        -{formatCurrency(Math.round((inputs.grossRentMonthly * 12) * (inputs.vacancyRatePct / 100)))}/yr
+                      </span>
+                    </div>
+                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                      <span className="block text-[9.5px] uppercase text-white/40">Effective Gross Income</span>
+                      <span className="block font-bold text-white text-xs mt-0.5">
+                        {formatCurrency(calculations.grossOperatingIncome)}/yr
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs pt-1 border-t border-white/5 gap-1">
+                    <span className="text-white/60">
+                      Operating Expenses ({inputs.operatingExpensePct}% or Schedule E):{' '}
+                      <strong className="text-white font-mono">-{formatCurrency(calculations.totalOperatingExpenses)}/yr</strong>
+                    </span>
+                    <span className="text-white/60">
+                      Net Operating Income (NOI):{' '}
+                      <strong className="text-emerald-400 font-mono font-bold" data-testid="noi-output-metric">
+                        {formatCurrency(calculations.netOperatingIncome)}/yr
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+
+                {/* RentCast Rent Potential Indicator */}
+                <div
+                  data-testid="rentcast-rent-potential-panel"
+                  className="col-span-1 sm:col-span-2 rounded-none border border-border bg-card p-3 text-xs space-y-2 ring-1 ring-foreground/10 text-card-foreground"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 font-bold text-foreground">
+                      <span className="material-symbols-outlined text-[15px]">real_estate_agent</span>
+                      <span>Rent Potential (RentCast API Engine)</span>
+                    </div>
+                    {propertyData?.source && (
+                      <span className="rounded-none bg-muted px-2 py-0.5 text-[9.5px] font-mono uppercase text-muted-foreground border border-border">
+                        {propertyData.source === 'offline' ? 'Benchmark Dataset' : 'Live RentCast'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-foreground/80">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground block">Estimated Market Rent</span>
+                        <span className="text-sm font-bold text-foreground">
+                          {propertyData?.estimatedRent ? formatCurrency(propertyData.estimatedRent) : formatCurrency(inputs.grossRentMonthly)}/mo
+                        </span>
+                      </div>
+                      {propertyData?.rentRangeLow && (
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block">Range (Low to High)</span>
+                          <span className="text-xs font-mono text-muted-foreground">
+                            {formatCurrency(propertyData.rentRangeLow)} to {formatCurrency(propertyData.rentRangeHigh)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-[10px] text-muted-foreground block">Gross Yield Potential</span>
+                        <span className="text-xs font-mono text-foreground font-semibold">
+                          {formatPercent(((inputs.grossRentMonthly * 12) / (inputs.purchasePrice || 1)) * 100)}
+                        </span>
+                      </div>
+                    </div>
+                    {Boolean(propertyData?.estimatedRent) && propertyData!.estimatedRent !== inputs.grossRentMonthly && (
+                      <button
+                        type="button"
+                        data-testid="apply-market-rent-btn"
+                        onClick={() => handleInputChange('grossRentMonthly', propertyData!.estimatedRent as number)}
+                        className="rounded-none bg-primary text-primary-foreground border border-primary px-2.5 py-1 text-[11px] font-medium hover:bg-primary/80 transition"
+                      >
+                        Apply Market Rent ({formatCurrency(propertyData!.estimatedRent as number)})
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Strategy-Specific Inputs Panel */}
+            <StrategyInputsPanel
+              strategy={inputs.strategy}
+              inputs={inputs}
+              onInputChange={(field, value) => handleInputChange(field as any, value)}
+            />
+
+            {/* Deal Structuring & Capital Seeking Intent Module */}
+            <DealStructuringCard
+              financingModality={inputs.financingModality}
+              onSelectModality={(m) => handleInputChange('financingModality', m)}
+              capitalSeekingIntent={inputs.capitalSeekingIntent}
+              onSelectIntent={(i) => handleInputChange('capitalSeekingIntent', i)}
+              hardMoneyPoints={inputs.hardMoneyPoints}
+              onChangeHardMoneyPoints={(v) => handleInputChange('hardMoneyPoints', v)}
+              hardMoneyInterestRatePct={inputs.hardMoneyInterestRatePct}
+              onChangeHardMoneyRate={(v) => handleInputChange('hardMoneyInterestRatePct', v)}
+              hardMoneyTermMonths={inputs.hardMoneyTermMonths}
+              onChangeHardMoneyTerm={(v) => handleInputChange('hardMoneyTermMonths', v)}
+              balloonTermMonths={inputs.balloonTermMonths}
+              onChangeBalloonTerm={(v) => handleInputChange('balloonTermMonths', v)}
+              partnerEquitySplitPct={inputs.partnerEquitySplitPct}
+              onChangePartnerSplit={(v) => handleInputChange('partnerEquitySplitPct', v)}
+              targetCapitalRaise={inputs.targetCapitalRaise}
+              onChangeTargetCapitalRaise={(v) => handleInputChange('targetCapitalRaise', v)}
+              minimumInvestmentTicket={inputs.minimumInvestmentTicket}
+              onChangeMinimumTicket={(v) => handleInputChange('minimumInvestmentTicket', v)}
+              preferredReturnPct={inputs.preferredReturnPct}
+              onChangePreferredReturn={(v) => handleInputChange('preferredReturnPct', v)}
+              structuringMetrics={calculations.dealStructuring}
+              totalCashRequired={calculations.cashRequired}
+            />
 
             {/* Financing & Assumptions (Collapsible) */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
@@ -858,18 +1465,50 @@ export default function DealCalculatorView({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <label htmlFor="ltv-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
-                    Target LTV (%)
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="down-payment-input" className="block text-[11px] font-medium text-white/50">
+                      Down Payment (%)
+                    </label>
+                    <span className="text-[10px] font-mono text-white/40">
+                      {formatCurrency(inputs.purchasePrice * ((inputs.downPaymentPct ?? (100 - inputs.ltvPct)) / 100))}
+                    </span>
+                  </div>
                   <input
-                    id="ltv-input"
+                    id="down-payment-input"
+                    data-testid="down-payment-pct-input"
                     type="number"
                     inputMode="decimal"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={inputs.downPaymentPct ?? (100 - inputs.ltvPct)}
+                    onChange={(e) => handleInputChange('downPaymentPct', Number(e.target.value))}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="ltv-input" className="block text-[11px] font-medium text-white/50">
+                      Target LTV (%)
+                    </label>
+                    <span className="text-[10px] font-mono text-white/40">
+                      {formatCurrency(inputs.purchasePrice * (inputs.ltvPct / 100))}
+                    </span>
+                  </div>
+                  <input
+                    id="ltv-input"
+                    data-testid="ltv-pct-input"
+                    type="number"
+                    inputMode="decimal"
+                    min="0"
+                    max="100"
+                    step="1"
                     value={inputs.ltvPct}
                     onChange={(e) => handleInputChange('ltvPct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
@@ -879,12 +1518,13 @@ export default function DealCalculatorView({
                   </label>
                   <input
                     id="rate-input"
+                    data-testid="interest-rate-input"
                     type="number"
                     inputMode="decimal"
                     step="0.1"
                     value={inputs.interestRatePct}
                     onChange={(e) => handleInputChange('interestRatePct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
@@ -894,12 +1534,42 @@ export default function DealCalculatorView({
                   </label>
                   <input
                     id="opex-input"
+                    data-testid="opex-ratio-input"
                     type="number"
                     inputMode="decimal"
                     value={inputs.operatingExpensePct}
                     onChange={(e) => handleInputChange('operatingExpensePct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
                   />
+                </div>
+              </div>
+
+              {/* Loan Terms Quick-Selector */}
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-[11px] font-medium text-white/50">
+                    Loan Term / Amortization Schedule
+                  </label>
+                  <span className="text-[10px] font-mono text-emerald-400">
+                    {inputs.amortizationYears} Years
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {[30, 20, 15, 10].map((term) => (
+                    <button
+                      key={term}
+                      type="button"
+                      data-testid={`loan-term-${term}yr-btn`}
+                      onClick={() => handleInputChange('amortizationYears', term)}
+                      className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                        inputs.amortizationYears === term
+                          ? 'border-primary bg-primary/10 text-white'
+                          : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                      }`}
+                    >
+                      {term}-Yr
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -1475,6 +2145,13 @@ export default function DealCalculatorView({
               )}
             </div>
 
+            {/* Purchase Criteria Screening (Green Light Buy Box) */}
+            <PurchaseCriteriaCard
+              criteria={inputs.purchaseCriteria}
+              onChangeCriteria={(crit) => handleInputChange('purchaseCriteria' as any, crit as any)}
+              result={calculations.purchaseCriteriaResult}
+            />
+
             {/* Live Comparable Sales Section (Zero Fabricated Data) */}
             <div data-testid="comps-section" className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
               <div className="flex items-center justify-between">
@@ -1522,8 +2199,8 @@ export default function DealCalculatorView({
                             <td className="py-2 text-right font-mono font-semibold text-emerald-400">
                               {formatCurrency(comp.sale_price)}
                             </td>
-                            <td className="py-2 text-right text-white/70">{comp.sqft ? `${comp.sqft}` : '—'}</td>
-                            <td className="py-2 text-right text-white/50">{comp.distance !== undefined ? `${comp.distance} mi` : '—'}</td>
+                            <td className="py-2 text-right text-white/70">{comp.sqft ? `${comp.sqft}` : 'N/A'}</td>
+                            <td className="py-2 text-right text-white/50">{comp.distance !== undefined ? `${comp.distance} mi` : 'N/A'}</td>
                             <td className="py-2 text-right">
                               {isStale ? (
                                 <span
@@ -1554,7 +2231,7 @@ export default function DealCalculatorView({
                   data-testid="no-comps-credentials"
                   className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-center text-xs font-mono text-amber-300"
                 >
-                  no comp data — REQUIRES CREDENTIALS
+                  no comp data: REQUIRES CREDENTIALS
                 </div>
               ) : (
                 <div
@@ -1569,6 +2246,9 @@ export default function DealCalculatorView({
 
           {/* Outputs Column */}
           <div className="space-y-6 lg:col-span-6">
+            {/* Strategy-Specific Financial Outputs */}
+            <StrategyOutputsCard strategy={inputs.strategy} calculations={calculations} />
+
             {/* Payment Shock Disclosure Banner (W2-10) */}
             {calculations.paymentShock && (
               <div
@@ -1597,8 +2277,26 @@ export default function DealCalculatorView({
               </div>
             )}
 
-            {/* Primary KPI Cards */}
+            {/* Primary KPI Cards (4 Key Metrics) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+                <span
+                  className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1 cursor-help"
+                  title="Cash-on-Cash Return: Annual Net Cash Flow ÷ Total Cash Required"
+                >
+                  Cash-on-Cash Return
+                </span>
+                <span
+                  data-testid="coc-output-metric"
+                  className={`text-3xl font-extrabold ${calculations.cashOnCashReturnPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
+                >
+                  {formatPercent(calculations.cashOnCashReturnPct)}
+                </span>
+                <span className="mt-2 block text-[11px] text-white/40">
+                  {formatCurrency(calculations.annualNetCashFlow)}/yr cash flow ÷ {formatCurrency(calculations.cashRequired)} equity
+                </span>
+              </div>
+
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
                 <span
                   className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1 cursor-help"
@@ -1606,11 +2304,29 @@ export default function DealCalculatorView({
                 >
                   Cap Rate on Cost
                 </span>
-                <span className="text-3xl font-extrabold text-white">
+                <span
+                  data-testid="cap-rate-output-metric"
+                  className="text-3xl font-extrabold text-white"
+                >
                   {formatPercent(calculations.capRateOnCost)}
                 </span>
                 <span className="mt-2 block text-[11px] text-white/40">
-                  Year-1 NOI {formatCurrency(calculations.netOperatingIncome)} ÷ Total Cost Basis
+                  Year-1 NOI {formatCurrency(calculations.netOperatingIncome)} ÷ Basis {formatCurrency(calculations.totalCostBasis)}
+                </span>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">
+                  Net Operating Income (NOI)
+                </span>
+                <span
+                  data-testid="noi-kpi-metric"
+                  className="text-3xl font-extrabold text-white"
+                >
+                  {formatCurrency(calculations.netOperatingIncome)}
+                </span>
+                <span className="mt-2 block text-[11px] text-white/40">
+                  EGI {formatCurrency(calculations.grossOperatingIncome)} - OpEx {formatCurrency(calculations.totalOperatingExpenses)}
                 </span>
               </div>
 
@@ -1620,7 +2336,7 @@ export default function DealCalculatorView({
                 </span>
                 <span
                   data-testid="irr-output-metric"
-                  className="text-3xl font-extrabold text-[color:var(--color-primary)]"
+                  className="text-3xl font-extrabold text-emerald-400"
                 >
                   {calculations.projectedIrrPct !== null
                     ? `${calculations.projectedIrrPct.toFixed(1)}%`
@@ -1628,15 +2344,15 @@ export default function DealCalculatorView({
                       ? 'Multiple Roots'
                       : calculations.irrStatus === 'no_sign_change'
                         ? 'No Sign Change'
-                        : '—'}
+                        : 'N/A'}
                 </span>
                 <span className="mt-2 block text-[11px] text-white/40">
                   {calculations.projectedIrrPct !== null
                     ? `${inputs.holdPeriodYears}-Yr hold (${calculations.terminalValueLabel})`
                     : calculations.irrStatus === 'multiple_roots'
-                      ? 'Ambiguous cash flows cross zero multiple times — review assumptions'
+                      ? 'Ambiguous cash flows cross zero multiple times; review assumptions'
                       : calculations.irrStatus === 'no_sign_change'
-                        ? 'Cash flows never cross zero — IRR undefined'
+                        ? 'Cash flows never cross zero: IRR undefined'
                         : 'Cash flows do not converge'}
                 </span>
               </div>
@@ -1778,13 +2494,13 @@ export default function DealCalculatorView({
                 <div className="flex justify-between py-2">
                   <span className="text-white/60">Debt Service Coverage Ratio (DSCR)</span>
                   <span className={`font-semibold font-mono ${calculations.dscr !== null && calculations.dscr >= 1.20 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                    {calculations.dscr !== null ? calculations.dscr.toFixed(2) : '—'}
+                    {calculations.dscr !== null ? calculations.dscr.toFixed(2) : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-white/60">Gross Rent Multiplier (GRM)</span>
                   <span className="font-semibold text-white">
-                    {calculations.grossRentMultiplier !== null ? calculations.grossRentMultiplier.toFixed(1) : '—'}
+                    {calculations.grossRentMultiplier !== null ? calculations.grossRentMultiplier.toFixed(1) : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
@@ -1816,50 +2532,15 @@ export default function DealCalculatorView({
 
             {/* Multi-Year DCF Cash Flow Schedule (W2-09) */}
             {calculations.annualProjections && calculations.annualProjections.length > 0 && (
-              <div data-testid="dcf-projections-table" className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white/70">
-                    {`Multi-Year DCF Projection (${inputs.holdPeriodYears} Years)`}
-                  </h3>
-                  <span className="text-[10px] font-mono text-emerald-400/80">
-                    {`${inputs.stabilizationMonths ? `${inputs.stabilizationMonths}-mo lease-up • ` : ''}${inputs.loanType === 'interest_only' ? `${inputs.ioPeriodYears}-yr IO` : inputs.loanType === 'arm' ? `${inputs.armFixedPeriodYears}/1 ARM` : 'Amortizing'} • ${inputs.rentGrowthPct || 0}% rent / ${inputs.expenseGrowthPct || 0}% exp`}
-                  </span>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs font-mono">
-                    <thead>
-                      <tr className="border-b border-white/10 text-white/40 text-[10px]">
-                        <th className="py-2 pr-2">Yr</th>
-                        <th className="py-2 pr-2">Gross Rent</th>
-                        <th className="py-2 pr-2">OpEx</th>
-                        <th className="py-2 pr-2">NOI</th>
-                        <th className="py-2 pr-2">Op Cash Flow</th>
-                        <th className="py-2 pr-2">Exit Proceeds</th>
-                        <th className="py-2 text-right">Total Equity CF</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5 text-white/80">
-                      {calculations.annualProjections.map((p) => (
-                        <tr key={p.year} className="hover:bg-white/[0.02]">
-                          <td className="py-2 pr-2 font-bold text-white">{`Y${p.year}`}</td>
-                          <td className="py-2 pr-2">{formatCurrency(p.grossRent)}</td>
-                          <td className="py-2 pr-2 text-white/60">{formatCurrency(p.opex)}</td>
-                          <td className="py-2 pr-2 font-semibold text-white">{formatCurrency(p.noi)}</td>
-                          <td className={`py-2 pr-2 font-semibold ${p.operatingCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                            {formatCurrency(p.operatingCashFlow)}
-                          </td>
-                          <td className="py-2 pr-2 text-white/60">
-                            {p.netSaleProceeds > 0 ? formatCurrency(p.netSaleProceeds) : '—'}
-                          </td>
-                          <td className={`py-2 text-right font-bold ${p.totalCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                            {formatCurrency(p.totalCashFlow)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <MultiYearDcfTable
+                projections={calculations.annualProjections}
+                holdPeriodYears={inputs.holdPeriodYears}
+                onChangeHoldPeriod={(years) => handleInputChange('holdPeriodYears', years)}
+                stabilizationMonths={inputs.stabilizationMonths}
+                loanType={inputs.loanType}
+                rentGrowthPct={inputs.rentGrowthPct}
+                expenseGrowthPct={inputs.expenseGrowthPct}
+              />
             )}
 
             {/* Institutional Sensitivity Matrix (W2-12) */}
@@ -1874,20 +2555,286 @@ export default function DealCalculatorView({
               />
             )}
 
+            {/* Advanced Risk & Forward-Looking: "What-If" Sensitivity Scenarios */}
+            <div
+              data-testid="what-if-scenarios-panel"
+              className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px] text-amber-400">tune</span>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white/80">
+                    Sensitivity &amp; &ldquo;What-If&rdquo; Stress Testing
+                  </h2>
+                </div>
+                <span className="text-[10px] font-mono text-white/40">Real-time Simulation</span>
+              </div>
+              <p className="text-xs text-white/60">
+                Stress test returns if market vacancy rises or achieved rents deviate from pro-forma underwriting.
+              </p>
+
+              {/* Stress Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5 text-xs">
+                    <span className="text-white/60 font-medium">Stressed Vacancy Rate:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        data-testid="what-if-vacancy-input"
+                        value={whatIfVacancy}
+                        onChange={(e) => setWhatIfVacancy(Math.max(0, Math.min(100, Number(e.target.value))))}
+                        className="w-14 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-right font-bold text-white font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
+                      />
+                      <span className="text-white/50 text-xs">%</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[5, 8, 10, 15].map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        data-testid={`what-if-vacancy-${v}-btn`}
+                        onClick={() => setWhatIfVacancy(v)}
+                        className={`rounded-lg border px-2 py-1.5 text-center text-xs font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                          whatIfVacancy === v
+                            ? 'border-amber-400 bg-amber-400/10 text-amber-300'
+                            : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        }`}
+                      >
+                        {v}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5 text-xs">
+                    <span className="text-white/60 font-medium">Rent Variance:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="-50"
+                        max="50"
+                        data-testid="what-if-rent-delta-input"
+                        value={whatIfRentDeltaPct}
+                        onChange={(e) => setWhatIfRentDeltaPct(Math.max(-50, Math.min(50, Number(e.target.value))))}
+                        className="w-14 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-right font-bold text-white font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
+                      />
+                      <span className="text-white/50 text-xs">%</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-5 gap-1">
+                    {[-10, -5, 0, 5, 10].map((delta) => (
+                      <button
+                        key={delta}
+                        type="button"
+                        data-testid={`what-if-rent-delta-${delta}-btn`}
+                        onClick={() => setWhatIfRentDeltaPct(delta)}
+                        className={`rounded-lg border px-1.5 py-1.5 text-center text-[11px] font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                          whatIfRentDeltaPct === delta
+                            ? 'border-amber-400 bg-amber-400/10 text-amber-300'
+                            : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        }`}
+                      >
+                        {delta > 0 ? `+${delta}%` : `${delta}%`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Simulated Real-Time Outcomes */}
+              {(() => {
+                const stressedRent = inputs.grossRentMonthly * (1 + whatIfRentDeltaPct / 100);
+                const stressedGrossAnnual = stressedRent * 12;
+                const ancillaryAnnual = (inputs.otherIncomeMonthly ?? 0) * 12;
+                const stressedEGI = Math.round(stressedGrossAnnual * (1 - whatIfVacancy / 100) + ancillaryAnnual);
+                const opex = inputs.operatingExpensesAnnual ?? Math.round(stressedGrossAnnual * (inputs.operatingExpensePct / 100));
+                const stressedNOI = stressedEGI - opex;
+                const annualDebt = calculations.annualDebtService;
+                const stressedAnnualCashFlow = stressedNOI - annualDebt;
+                const stressedMonthlyCashFlow = Math.round(stressedAnnualCashFlow / 12);
+                const stressedCoC = calculations.cashRequired > 0 ? (stressedAnnualCashFlow / calculations.cashRequired) * 100 : 0;
+                const stressedDSCR = annualDebt > 0 ? stressedNOI / annualDebt : null;
+
+                return (
+                  <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">Stressed Effective Gross Income:</span>
+                      <span className="font-mono text-white font-semibold">{formatCurrency(stressedEGI)}/yr</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">Stressed Net Operating Income (NOI):</span>
+                      <span className="font-mono text-white font-semibold">{formatCurrency(stressedNOI)}/yr</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/5 text-center">
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Monthly Cash Flow</span>
+                        <span className={`block font-bold text-xs mt-0.5 ${stressedMonthlyCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {formatCurrency(stressedMonthlyCashFlow)}/mo
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Cash-on-Cash</span>
+                        <span className={`block font-bold text-xs mt-0.5 ${stressedCoC >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {stressedCoC.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Stressed DSCR</span>
+                        <span className={`block font-bold text-xs mt-0.5 ${stressedDSCR !== null && stressedDSCR >= 1.20 ? 'text-emerald-400' : 'text-amber-300'}`}>
+                          {stressedDSCR !== null ? stressedDSCR.toFixed(2) : 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Advanced Risk & Forward-Looking: Exit Strategy Planning (5, 10, 20 Years) */}
+            <div
+              data-testid="exit-strategy-planning-panel"
+              className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px] text-cyan-400">flag</span>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-white/80">
+                    Exit Strategy Planning &amp; Wealth Horizon
+                  </h2>
+                </div>
+                <span className="text-[10px] font-mono text-cyan-300">{exitPlanningHorizon}-Year Horizon</span>
+              </div>
+              <p className="text-xs text-white/60">
+                Model long-term wealth building, cumulative rental cash flows, equity paydown, and exit sales proceeds over 5, 10, or 20 years.
+              </p>
+
+              {/* Horizon Buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {([5, 10, 20] as const).map((years) => (
+                  <button
+                    key={years}
+                    type="button"
+                    data-testid={`exit-horizon-${years}yr-btn`}
+                    onClick={() => {
+                      setExitPlanningHorizon(years);
+                      handleInputChange('holdPeriodYears', years);
+                    }}
+                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] ${
+                      exitPlanningHorizon === years
+                        ? 'border-cyan-400 bg-cyan-400/10 text-cyan-300 font-bold'
+                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                    }`}
+                  >
+                    {years}-Year Exit Plan
+                  </button>
+                ))}
+              </div>
+
+              {/* Exit Horizon Calculated Breakdown */}
+              {(() => {
+                const H = exitPlanningHorizon;
+                const basePrice = inputs.appreciationBase === 'arv' && inputs.arv > 0 ? inputs.arv : inputs.purchasePrice;
+                const rateApprec = (inputs.annualAppreciationPct ?? 3) / 100;
+                let futurePropertyVal = Math.round(basePrice * Math.pow(1 + rateApprec, H));
+
+                if (inputs.terminalValueMethod === 'exit_cap' && inputs.exitCapRatePct > 0) {
+                  const growthRate = (inputs.rentGrowthPct ?? 2.0) / 100;
+                  const futureNOI = calculations.netOperatingIncome * Math.pow(1 + growthRate, H);
+                  futurePropertyVal = Math.round(futureNOI / (inputs.exitCapRatePct / 100));
+                } else if (inputs.terminalValueMethod === 'per_unit' && inputs.unitsCount && inputs.perUnitExitValue) {
+                  futurePropertyVal = Math.round(inputs.unitsCount * inputs.perUnitExitValue * Math.pow(1 + rateApprec, H));
+                }
+
+                // Debt paydown estimate
+                const monthlyRate = (inputs.interestRatePct ?? 6.5) / 100 / 12;
+                const totalMonths = (inputs.amortizationYears ?? 30) * 12;
+                const monthsElapsed = H * 12;
+                const initialDebt = calculations.loanAmount;
+                let remainingDebt = 0;
+                if (initialDebt > 0 && monthlyRate > 0) {
+                  if (monthsElapsed >= totalMonths) {
+                    remainingDebt = 0;
+                  } else {
+                    const factorTotal = Math.pow(1 + monthlyRate, totalMonths);
+                    const factorElapsed = Math.pow(1 + monthlyRate, monthsElapsed);
+                    remainingDebt = Math.max(0, Math.round(initialDebt * ((factorTotal - factorElapsed) / (factorTotal - 1))));
+                  }
+                }
+                const debtPaidDown = Math.max(0, initialDebt - remainingDebt);
+                const totalEquityBuilt = Math.max(0, futurePropertyVal - remainingDebt);
+                const sellingCosts = Math.round(futurePropertyVal * ((inputs.sellingCostsPct ?? 6) / 100));
+                const netExitProceeds = Math.max(0, futurePropertyVal - sellingCosts - remainingDebt);
+                const cumulativeCashFlow = Math.round(calculations.annualNetCashFlow * H);
+                const totalCumulativeGain = netExitProceeds + cumulativeCashFlow - calculations.cashRequired;
+                const multiYearRoiPct = calculations.cashRequired > 0 ? (totalCumulativeGain / calculations.cashRequired) * 100 : 0;
+
+                return (
+                  <div className="rounded-xl border border-white/10 bg-black/40 p-4 space-y-3 font-mono text-xs">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Future Property Value</span>
+                        <span className="block font-bold text-white text-xs mt-0.5">
+                          {formatCurrency(futurePropertyVal)}
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Remaining Debt</span>
+                        <span className="block font-bold text-white/70 text-xs mt-0.5">
+                          {formatCurrency(remainingDebt)}
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Principal Paydown</span>
+                        <span className="block font-bold text-emerald-400 text-xs mt-0.5">
+                          +{formatCurrency(debtPaidDown)}
+                        </span>
+                      </div>
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
+                        <span className="block text-[9.5px] uppercase text-white/40">Total Equity at Exit</span>
+                        <span className="block font-bold text-cyan-300 text-xs mt-0.5">
+                          {formatCurrency(totalEquityBuilt)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-white/5 pt-2.5 space-y-1.5 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-white/60">Cumulative {H}-Yr Cash Flow:</span>
+                        <span className="font-semibold text-white">{formatCurrency(cumulativeCashFlow)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/60">Estimated Net Sales Proceeds (After Debt &amp; {inputs.sellingCostsPct}% Cost of Sale):</span>
+                        <span className="font-semibold text-emerald-400">{formatCurrency(netExitProceeds)}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-white/5 pt-1.5 font-bold">
+                        <span className="text-white">Total Projected Multi-Year ROI:</span>
+                        <span className="text-cyan-300 text-sm">{multiYearRoiPct.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
             {/* Confidence Gauge */}
             <div className="space-y-3">
-              <div className="rounded-2xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.04] p-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
                     Model Confidence
                   </span>
-                  <span className="font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold text-[color:var(--color-primary)]">
+                  <span className="font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold text-primary">
                     {confidenceScore}%
                   </span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-black/40">
                   <div
-                    className="h-full rounded-full bg-[color:var(--color-primary)] transition-all duration-500"
+                    className="h-full rounded-full bg-primary transition-all duration-500"
                     style={{ width: `${confidenceScore}%` }}
                   />
                 </div>
@@ -1907,10 +2854,10 @@ export default function DealCalculatorView({
               {analysisCompleted && !isExpired && (
                 <div
                   data-testid="make-project-persistent-cta"
-                  className="rounded-2xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/[0.08] p-4 text-left transition-all backdrop-blur-md shadow-[0_4px_24px_rgba(0,221,148,0.12)]"
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all backdrop-blur-md shadow-sm"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="material-symbols-outlined text-[20px] text-[color:var(--color-primary)]">
+                    <span className="material-symbols-outlined text-[20px] text-emerald-400">
                       rocket_launch
                     </span>
                     <h3 className="text-sm font-bold text-white">
@@ -1918,13 +2865,13 @@ export default function DealCalculatorView({
                     </h3>
                   </div>
                   <p className="text-xs text-white/70 leading-relaxed">
-                    Convert these underwriting numbers into an authoritative project workspace in Phase 01 — Acquisition.
+                    Convert these underwriting numbers into an authoritative project workspace in Phase 01: Acquisition.
                   </p>
                   <button
                     type="button"
-                    onClick={handleAcceptProjectPrompt}
+                    onClick={() => setShowStartProjectModal(true)}
                     disabled={isCreatingProject}
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-4 py-2.5 text-xs font-bold text-[#0a0a0f] hover:brightness-110 shadow-[0_0_16px_rgba(0,221,148,0.25)] min-h-[40px]"
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
                   >
                     {isCreatingProject ? 'Opening Project...' : 'Make this deal a Project'}
                   </button>
@@ -1952,9 +2899,7 @@ export default function DealCalculatorView({
         </div>
       </div>
 
-      {/* ========================================================= */}
-      {/* 1. SIGN-IN GATE MODAL (Unauthenticated State)             */}
-      {/* ========================================================= */}
+      {/* 1. Sign-In Gate Modal (Unauthenticated State) */}
       {!authLoading && !authenticated ? (
         <div
           role="dialog"
@@ -1979,7 +2924,7 @@ export default function DealCalculatorView({
             <div className="mt-6 space-y-3">
               <Link
                 href={`/login?next=${encodeURIComponent('/deal-calculator')}`}
-                className="flex w-full items-center justify-center rounded-xl bg-[color:var(--color-primary)] px-4 py-3 text-sm font-semibold text-[#0a0a0f] transition hover:brightness-110 no-underline shadow-[0_0_20px_rgba(0,221,148,0.25)]"
+                className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 no-underline shadow-sm min-h-[44px]"
               >
                 Sign in
               </Link>
@@ -2004,9 +2949,7 @@ export default function DealCalculatorView({
         </div>
       ) : null}
 
-      {/* ========================================================= */}
-      {/* 2. PAYWALL NOTICE (Expired / Inactive Subscription)       */}
-      {/* ========================================================= */}
+      {/* 2. Paywall Notice (Expired / Inactive Subscription) */}
       {!authLoading && authenticated && isExpired ? (
         <div
           role="dialog"
@@ -2047,9 +2990,7 @@ export default function DealCalculatorView({
         </div>
       ) : null}
 
-      {/* ========================================================= */}
-      {/* 3. "MAKE IT A PROJECT" PROMPT MODAL                       */}
-      {/* ========================================================= */}
+      {/* 3. Make It a Project Prompt Modal */}
       {showProjectPrompt && !isExpired ? (
         <div
           id="project-prompt-modal"
@@ -2132,13 +3073,13 @@ export default function DealCalculatorView({
 
               <button
                 type="button"
-                onClick={handleAcceptProjectPrompt}
+                onClick={() => handleAcceptProjectPrompt(false)}
                 disabled={isCreatingProject}
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-7 py-2.5 text-sm font-bold text-[#0a0a0f] transition hover:brightness-110 disabled:opacity-50 shadow-[0_0_16px_rgba(0,221,148,0.25)] touch-press"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 shadow-sm touch-press"
               >
                 {isCreatingProject ? (
                   <>
-                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#0a0a0f] border-t-transparent" />
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                     Opening Project...
                   </>
                 ) : (
@@ -2149,6 +3090,123 @@ export default function DealCalculatorView({
           </div>
         </div>
       ) : null}
+
+      {/* Mobile Sticky Bottom Action Bar (Thumb-reach CTAs) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0b10]/95 backdrop-blur-md border-t border-white/10 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-2 shadow-2xl">
+        <div className="flex flex-col min-w-0">
+          <span className="text-[10px] uppercase font-bold text-white/40 truncate">
+            {inputs.strategy.replace(/_/g, ' ')}
+          </span>
+          <span className="text-sm font-black text-white font-mono truncate">
+            {formatCurrency(calculations.cashRequired)} <span className="text-[10px] text-white/50 font-normal">Cash</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowPublishModal(true)}
+            className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white active:bg-white/10"
+          >
+            Share
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAcceptProjectPrompt(false)}
+            disabled={isCreatingProject}
+            className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm active:brightness-95"
+          >
+            <span className="material-symbols-outlined text-[16px]">rocket_launch</span>
+            <span>Make Project</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Rehab Worksheet Modal */}
+      <RehabWorksheetModal
+        isOpen={showRehabModal}
+        onClose={() => setShowRehabModal(false)}
+        currentRehabBudget={inputs.rehabBudget}
+        onApplyTotal={(total) => {
+          handleInputChange('rehabBudget', total);
+          setShowRehabModal(false);
+        }}
+      />
+
+      {/* 5. Schedule E Operating Expenses Modal */}
+      <ScheduleEExpenseModal
+        isOpen={showScheduleEModal}
+        onClose={() => setShowScheduleEModal(false)}
+        grossRentAnnual={inputs.grossRentMonthly * 12}
+        currentAnnualOpex={inputs.operatingExpensesAnnual ?? (inputs.grossRentMonthly * 12 * (inputs.operatingExpensePct / 100))}
+        onApplyExpenses={(annualTotal, opexRatioPct) => {
+          handleInputChange('operatingExpensesAnnual' as any, annualTotal);
+          handleInputChange('operatingExpensePct', opexRatioPct);
+          setShowScheduleEModal(false);
+        }}
+      />
+
+      {/* 6. Publish to Marketplace Modal */}
+      <PublishToMarketplaceModal
+        isOpen={showPublishModal}
+        onClose={() => setShowPublishModal(false)}
+        address={inputs.address}
+        purchasePrice={inputs.purchasePrice}
+        strategy={inputs.strategy}
+        calculations={calculations}
+        projectId={searchParams?.get('projectId') || null}
+        onSuccess={(dealId) => {
+          setPublishSuccessDealId(dealId);
+          setShowPublishModal(false);
+        }}
+      />
+
+      {/* 7. Broadcast Deal Modal */}
+      <BroadcastDealModal
+        isOpen={showBroadcastModal}
+        onClose={() => setShowBroadcastModal(false)}
+        address={inputs.address}
+        purchasePrice={inputs.purchasePrice}
+        calculations={calculations}
+        onSuccess={(recipientCount) => {
+          setBroadcastSuccessCount(recipientCount);
+          setShowBroadcastModal(false);
+        }}
+      />
+
+      {/* 8. Start Project from Deal Modal */}
+      <StartProjectFromCalculatorModal
+        isOpen={showStartProjectModal}
+        onClose={() => setShowStartProjectModal(false)}
+        address={inputs.address}
+        strategy={inputs.strategy}
+        purchasePrice={inputs.purchasePrice}
+        rehabBudget={inputs.rehabBudget}
+        arv={inputs.arv}
+        grossRentMonthly={inputs.grossRentMonthly}
+        noi={calculations.netOperatingIncome}
+        projectedIrrPct={calculations.projectedIrrPct}
+        capRateOnCost={calculations.capRateOnCost}
+        cashOnCashReturnPct={calculations.cashOnCashReturnPct}
+        loanAmount={calculations.loanAmount}
+        cashRequired={calculations.cashRequired}
+        persistedSnapshotId={persistedSnapshotId}
+        isCreatingProject={isCreatingProject}
+        projectCreationError={projectCreationError}
+        onLaunchProjectWorkspace={() => handleAcceptProjectPrompt(true)}
+        onOpenProjectWizard={() => handleAcceptProjectPrompt(false)}
+      />
+
+      {/* 9. Itemized Closing Costs Modal */}
+      <ClosingCostsModal
+        isOpen={showClosingCostsModal}
+        onClose={() => setShowClosingCostsModal(false)}
+        purchasePrice={inputs.purchasePrice}
+        currentClosingCostsPct={inputs.buyerClosingCostsPct}
+        onApplyClosingCosts={(_totalAmount, closingCostsPct) => {
+          handleInputChange('buyerClosingCostsPct', closingCostsPct);
+          setShowClosingCostsModal(false);
+        }}
+      />
     </div>
   );
 }

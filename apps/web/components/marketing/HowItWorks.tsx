@@ -1,64 +1,97 @@
 'use client';
 
 import Link from 'next/link';
+import HowItWorksLifecycleGraphic from '@/components/marketing/HowItWorksLifecycleGraphic';
 import {
+  howItWorksHeader,
+  howItWorksSubheadline,
+  howItWorksBody,
+  reilNarrativeLead,
   dealCalculatorSectionTitle,
   dealCalculatorSectionBody,
   dealCalculatorSectionSub,
 } from '@/lib/marketing/copy';
+import { REIL_NARRATIVE_STEPS } from '@/lib/marketing/how-it-works-data';
 import ReilPhaseModules from '@/components/marketing/ReilPhaseModules';
+import ReilLifecycleCards from '@/components/marketing/ReilLifecycleCards';
 
 /** Ported from PaperWorking `components/landing/HowItWorks.tsx`. */
 export default function HowItWorks() {
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-white/5 pb-16 pt-10 md:pb-24 md:pt-12">
-        <div className="pointer-events-none absolute left-1/2 top-1/4 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--color-primary)]/5 blur-[160px]" />
+      <section className="relative overflow-hidden border-b border-border pt-8 pb-12 sm:pt-10 sm:pb-14 md:pt-12 md:pb-16">
 
-        <div className="relative z-10 mx-auto max-w-[1280px] px-6 text-center">
-          {/* Client direction: the 4 phase cards only — no headline/narrative. */}
+        <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 text-center">
+          <span className="mb-3 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[12px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            {howItWorksHeader}
+          </span>
+
+          <h1 className="landing-display mx-auto mb-6 max-w-4xl font-semibold leading-[1.1] tracking-[-0.025em] text-foreground">
+            {howItWorksSubheadline}
+          </h1>
+
+          {/* Moved REIL 4-Phase Block directly under header above the fold */}
+          <ReilLifecycleCards />
+
+          {/* REIL System Defining Content Block */}
+          <div className="mx-auto mt-14 mb-14 max-w-3xl text-left">
+            <p className="mb-5 text-sm leading-[1.7] text-muted-foreground sm:text-base">
+              {reilNarrativeLead}
+            </p>
+            <ul className="space-y-3.5 list-none pl-0">
+              {REIL_NARRATIVE_STEPS.map((step) => (
+                <li key={step.phaseNumber} className="text-sm leading-[1.65] text-muted-foreground sm:text-base">
+                  <strong className="font-semibold text-foreground">
+                    {step.label}
+                  </strong>{' '}
+                  <span>{step.body}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <ReilPhaseModules />
         </div>
       </section>
 
-      <section className="border-b border-white/5 bg-white/[0.02] py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <section className="border-b border-border bg-muted/20 py-12 md:py-16 text-foreground">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8">
           <div className="max-w-3xl">
-            <h2 className="mb-6 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white md:text-3xl">
+            <h2 className="mb-6 text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground md:text-3xl">
               What a Project is
             </h2>
-            <p className="mb-5 text-base leading-[1.65] text-white/65 sm:text-lg">
+            <p className="mb-5 text-base leading-[1.65] text-muted-foreground sm:text-lg">
               A Project is the home base for one investment. It holds the Deal (the property and its
               numbers), the phase it&apos;s in, the tasks and deadlines ahead, the documents, the
               budget, and the ledger of every dollar in and out. You work in the Project; PaperWorking
               calculates your metrics from it.
             </p>
-            <p className="text-base font-semibold leading-relaxed text-white sm:text-lg">
+            <p className="text-base font-semibold leading-relaxed text-foreground sm:text-lg">
               The work you already do becomes the numbers you need.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="border-b border-white/5 py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] space-y-10 px-6 md:px-10">
+      <section className="border-b border-border py-12 md:py-16 text-foreground">
+        <div className="mx-auto max-w-[1200px] space-y-10 px-4 sm:px-6 md:px-8">
           <div className="mb-8 max-w-3xl">
             <span className="mb-2 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
               DEEP-DIVE WORKFLOWS
             </span>
-            <h2 className="text-2xl font-semibold leading-tight tracking-[-0.02em] text-white md:text-3xl">
+            <h2 className="text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground md:text-3xl">
               Inside each phase of your deal
             </h2>
           </div>
 
-          <div className="glass-card rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl sm:p-10">
+          <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-[color:var(--color-primary)]">
               {dealCalculatorSectionTitle}
             </span>
-            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white">
+            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
               {dealCalculatorSectionBody}
             </h3>
-            <div className="space-y-4 text-base leading-[1.65] text-white/65">
+            <div className="space-y-4 text-base leading-[1.65] text-muted-foreground">
               <p>
                 {dealCalculatorSectionSub}
               </p>
@@ -75,14 +108,14 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl sm:p-10">
+          <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-sky-400">
               PHASE 02 · CAPITAL & CONTINGENCIES
             </span>
-            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white">
-              Phase 2 — Fund
+            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
+              Phase 2: Fund
             </h3>
-            <div className="space-y-4 text-base leading-[1.65] text-white/65">
+            <div className="space-y-4 text-base leading-[1.65] text-muted-foreground">
               <p>
                 Secure capital and centralize all critical transaction documents before closing. Active
                 countdown gauges monitor financing milestones, inspection windows, and title conditions.
@@ -94,14 +127,14 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl sm:p-10">
+          <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-amber-400">
               PHASE 03 · EXECUTE & OPTIMIZE
             </span>
-            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white">
-              Phase 3 — Hold
+            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
+              Phase 3: Hold
             </h3>
-            <div className="space-y-4 text-base leading-[1.65] text-white/65">
+            <div className="space-y-4 text-base leading-[1.65] text-muted-foreground">
               <p>
                 Manage active renovations, contractor draw requests, and operating cashflow in real time.
                 Every draw invoice is logged directly against your approved scope of work.
@@ -113,14 +146,14 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="glass-card rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl sm:p-10">
-            <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-white/50">
+          <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
+            <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
               PHASE 04 · REALIZE & PROVE
             </span>
-            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white">
-              Phase 4 — Exit
+            <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
+              Phase 4: Exit
             </h3>
-            <div className="space-y-4 text-base leading-[1.65] text-white/65">
+            <div className="space-y-4 text-base leading-[1.65] text-muted-foreground">
               <p>
                 Compile lender-ready disposition packages, 1031 exchange audit trails, and CPA tax
                 exports with one click. Generate verified NOI, DSCR, and equity multiple reports.
@@ -130,37 +163,28 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="border-b border-white/5 bg-white/[0.02] py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <section className="border-b border-border bg-muted/20 py-12 md:py-16 text-foreground">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8">
           <div className="max-w-3xl">
-            <h2 className="mb-6 text-2xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-3xl md:text-4xl">
+            <h2 className="mb-6 text-2xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-3xl md:text-4xl">
               The Real Estate Investment Lifecycle
             </h2>
-            <div className="space-y-5 text-base leading-[1.65] text-white/65 sm:text-lg">
+            <div className="space-y-5 text-base leading-[1.65] text-muted-foreground sm:text-lg">
               <p>
-                Real Estate investments move through a unique lifecycle that is different from most
-                traditional project management workflows. PaperWorking structures every deal around
-                four core phases: Acquisition, Fund, Hold, and Exit. Each phase has its own specific
-                inputs, milestones, compliance gates, and financial calculations.
-              </p>
-              <p>
-                By organizing your work around these four phases, PaperWorking ensures that no critical
-                deadline is missed, expenses are tracked from day one, and investment metrics are
-                calculated automatically from your actual project data — per deal and across your
-                entire portfolio.
+                {howItWorksBody}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-b border-white/5 py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <section className="border-b border-border py-12 md:py-16 text-foreground">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8">
           <div className="max-w-3xl">
-            <h2 className="mb-8 text-3xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-4xl">
+            <h2 className="mb-8 text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
               One deal, all the way through
             </h2>
-            <div className="space-y-6 text-base leading-[1.65] text-white/65 sm:text-lg">
+            <div className="space-y-6 text-base leading-[1.65] text-muted-foreground sm:text-lg">
               <p>
                 Take one deal. You find a duplex and run the address through the Deal Calculator; the
                 projected cap rate and cash-on-cash clear your bar, so you save it to the pipeline.
@@ -187,40 +211,39 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      <section className="border-b border-white/5 bg-white/[0.02] py-14 md:py-20">
-        <div className="mx-auto max-w-[1280px] px-6 md:px-10">
+      <section className="border-b border-border bg-muted/20 py-12 md:py-16 text-foreground">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8">
           <div className="max-w-3xl">
-            <h2 className="mb-6 text-3xl font-semibold leading-tight tracking-[-0.02em] text-white sm:text-4xl">
+            <h2 className="mb-6 text-3xl font-semibold leading-tight tracking-[-0.02em] text-foreground sm:text-4xl">
               Lead Investor and Team roles
             </h2>
-            <p className="mb-6 text-base leading-[1.65] text-white/65 sm:text-lg">
+            <p className="mb-6 text-base leading-[1.65] text-muted-foreground sm:text-lg">
               An Investor account runs solo. An Investment Team account has a Lead Investor, the person
               running the team, who invites members, assigns tasks and phases, and controls what each
               can view or edit.
             </p>
-            <ul className="mb-6 list-disc space-y-3 pl-5 text-base text-white/65 sm:text-lg">
+            <ul className="mb-6 list-disc space-y-3 pl-5 text-base text-muted-foreground sm:text-lg">
               <li>Partners work the phases they&apos;re assigned.</li>
               <li>Your CPA reads the books without being able to touch them.</li>
               <li>Contractors and vendors see only the work they&apos;re assigned.</li>
             </ul>
-            <p className="mb-4 text-base font-semibold leading-relaxed text-white sm:text-lg">
+            <p className="mb-4 text-base font-semibold leading-relaxed text-foreground sm:text-lg">
               Two investors can also team up on a single Project without merging accounts.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-b border-white/5 bg-white/[0.03] py-14 md:py-20 lg:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-[color:var(--color-primary)]/[0.03] to-transparent" />
+      <section className="relative overflow-hidden border-b border-border bg-muted/10 py-12 md:py-16 text-foreground">
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-          <p className="mb-8 text-base font-medium text-white sm:text-lg">
+          <p className="mb-8 text-base font-medium text-foreground sm:text-lg">
             Want to see it first? Walk through a live demo deal: pipeline, budgets, deadlines, and
             metrics included.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/pricing"
-              className="inline-flex cursor-pointer items-center gap-2.5 rounded-full bg-[color:var(--color-primary)] px-8 py-4 text-[15px] font-semibold tracking-wide text-[#0a0a0f] shadow-[0_0_24px_-4px_rgba(0,221,148,0.45)]"
+              className="inline-flex cursor-pointer items-center justify-center gap-2.5 rounded-none bg-primary px-8 py-3 min-h-[44px] text-xs font-semibold tracking-wide text-primary-foreground hover:bg-primary/90 transition shadow-sm"
             >
               Start Free 14-Day Trial
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -228,6 +251,8 @@ export default function HowItWorks() {
           </div>
         </div>
       </section>
+
+      <HowItWorksLifecycleGraphic />
     </div>
   );
 }

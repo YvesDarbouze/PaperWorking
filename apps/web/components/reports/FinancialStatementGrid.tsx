@@ -151,7 +151,7 @@ export function FinancialStatementGrid({
                     const formatted =
                       val !== null && val !== undefined
                         ? formatCurrency(val, { decimals: 0, negativeParens: true })
-                        : '—';
+                        : 'N/A';
 
                     return (
                       <td

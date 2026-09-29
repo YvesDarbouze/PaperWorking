@@ -63,7 +63,7 @@ export function PlaidConsentModal({
       data-testid="plaid-consent-modal"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
     >
-      <div className="relative w-full max-w-[520px] rounded-2xl border border-white/15 bg-[#0f111a] p-6 shadow-2xl md:p-7 text-left space-y-5 animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-[520px] rounded-2xl border border-white/15 bg-[#0f111a] p-6 shadow-2xl md:p-7 text-left space-y-5 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
@@ -82,7 +82,7 @@ export function PlaidConsentModal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-lg p-1.5 text-white/50 hover:bg-white/5 hover:text-white transition"
+            className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-white/50 hover:bg-white/5 hover:text-white transition"
           >
             <span className="material-symbols-outlined text-lg">close</span>
           </button>

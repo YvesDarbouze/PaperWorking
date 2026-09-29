@@ -219,7 +219,9 @@ async function retrieveDomainContext(query: string) {
   }
   if (lower.includes('terminal') || lower.includes('bloomberg') || lower.includes('pricing')) {
     matchedCopy.push(siteCopy.pricingHeader);
+    matchedCopy.push(siteCopy.pricingPositioningHeadline);
     matchedCopy.push(siteCopy.pricingSubheadline);
+    matchedCopy.push(siteCopy.pricingBody);
   }
 
   return {

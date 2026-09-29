@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Button, { type ButtonVariant, type ButtonSize } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 
 export default function DesignSystemButtonsPage() {
   const [toggleState, setToggleState] = useState(false);
@@ -19,22 +20,22 @@ export default function DesignSystemButtonsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-[#fdfffc] p-6 lg:p-12 font-sans selection:bg-[#00DD94]/30 selection:text-white">
+    <main className="min-h-screen bg-background text-foreground p-6 lg:p-12 font-sans selection:bg-primary/20 selection:text-foreground">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
-        <header className="border-b border-white/10 pb-8 space-y-2">
+        <header className="border-b border-border pb-8 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#00DD94] shadow-[0_0_8px_#00DD94]" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-white/50">
+            <span className="size-2 rounded-full bg-primary" />
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
               PaperWorking Design System
             </span>
           </div>
-          <h1 className="text-[28px] font-bold tracking-tight text-[#fdfffc]">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Canonical Button Component Matrix
           </h1>
-          <p className="text-[14px] text-[#9E9DA0] max-w-3xl">
+          <p className="text-sm text-muted-foreground max-w-3xl">
             Dark, dense, high-contrast button specifications for Bloomberg-terminal real estate investment workflows.
-            Complies with the single-primary rule, 4px layout grid, and strict state accessibility contracts.
+            Complies with the single-primary rule, Radix-Lyra crisp precision edges, and strict state accessibility contracts.
           </p>
         </header>
 
@@ -42,12 +43,12 @@ export default function DesignSystemButtonsPage() {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-[16px] font-bold text-[#fdfffc]">1. Visual Hierarchy &times; Sizes</h2>
-              <p className="text-[13px] text-white/50">Default resting state across all 4 canonical variants.</p>
+              <h2 className="text-base font-bold text-foreground">1. Visual Hierarchy &times; Sizes</h2>
+              <p className="text-xs text-muted-foreground">Default resting state across all 4 canonical variants.</p>
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#00DD94] bg-[#00DD94]/10 border border-[#00DD94]/20 px-2.5 py-1 rounded">
+            <Badge variant="outline">
               Rule: Max 1 Primary Per Section
-            </span>
+            </Badge>
           </div>
 
           <div className="rounded-[14px] border border-white/10 bg-[#121014] p-6 overflow-x-auto shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
@@ -307,15 +308,15 @@ export default function DesignSystemButtonsPage() {
         </section>
 
         {/* Section 4: Focus-Visible Ring Keyboard Demonstration */}
-        <section className="rounded-[14px] border border-[#00DD94]/20 bg-[#121014] p-6 space-y-4">
-          <div className="flex items-center gap-2 text-[#00DD94]">
+        <section className="rounded-lg border border-border bg-card p-6 space-y-4">
+          <div className="flex items-center gap-2 text-foreground">
             <span className="material-symbols-outlined text-[20px]">keyboard</span>
             <h2 className="text-[15px] font-bold">4. Focus-Visible Keyboard Contract (Tab Navigation)</h2>
           </div>
-          <p className="text-[13px] text-white/70 max-w-2xl">
-            Press <kbd className="px-2 py-0.5 bg-white/10 border border-white/20 rounded text-[11px] font-mono">Tab</kbd> on your keyboard
-            to navigate sequentially between buttons. Each variant renders a high-contrast 2px accent ring
-            (`ring-[#00DD94]/60`) with a 2px offset against the deep background, guaranteeing strict a11y compliance.
+          <p className="text-[13px] text-muted-foreground max-w-2xl">
+            Press <kbd className="px-2 py-0.5 bg-muted border border-border rounded text-[11px] font-mono">Tab</kbd> on your keyboard
+            to navigate sequentially between buttons. Each variant renders a high-contrast 1px ring
+            in accordance with the Radix-Lyra design system, guaranteeing strict a11y compliance.
           </p>
           <div className="flex flex-wrap gap-4 pt-2">
             <Button variant="primary" size="md" data-testid="tab-target-1">

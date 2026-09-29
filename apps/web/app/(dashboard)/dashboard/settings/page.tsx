@@ -4,7 +4,7 @@ import SettingsSectionRouter from './SettingsSectionRouter';
 
 export const metadata: Metadata = {
   title: 'Settings',
-  description: 'Private configuration — general preferences, security, billing, and data privacy.',
+  description: 'Private configuration: general preferences, security, billing, and data privacy.',
 };
 
 /**

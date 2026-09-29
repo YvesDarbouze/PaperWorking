@@ -74,18 +74,14 @@ async function main() {
   }
   fs.writeFileSync(diskFilePath, JSON.stringify([], null, 2), 'utf-8');
 
-  // ---------------------------------------------------------------------------
-  // STEP 1: Boot Dev Server #1
-  // ---------------------------------------------------------------------------
+  // Step 1: Boot dev server 1.
   console.log(`[Step 1] Launching Next.js dev server on port ${PORT}...`);
   const { server: server1, ready: ready1 } = await startDevServer();
   await ready1;
   await sleep(1000);
   console.log(`✓ Dev Server #1 is ready and accepting requests at ${BASE_URL} (PID: ${server1.pid})`);
 
-  // ---------------------------------------------------------------------------
-  // STEP 2: POST Snapshot to Dev Server #1
-  // ---------------------------------------------------------------------------
+  // Step 2: POST snapshot to dev server 1.
   console.log('\n[Step 2] Sending POST /api/calculator/snapshots to Dev Server #1...');
   const postPayload = {
     source: 'deal_calculator',
@@ -147,9 +143,7 @@ async function main() {
   const diskBefore = JSON.parse(fs.readFileSync(diskFilePath, 'utf-8'));
   console.log(`  Persisted on disk: ${diskBefore.length} record(s) (${fs.statSync(diskFilePath).size} bytes)`);
 
-  // ---------------------------------------------------------------------------
-  // STEP 3: Terminate Dev Server #1 (Simulate Cold Server Restart)
-  // ---------------------------------------------------------------------------
+  // Step 3: Terminate dev server 1 to simulate cold restart.
   console.log('\n[Step 3] Stopping Dev Server #1 (SIGTERM)...');
   server1.kill('SIGTERM');
   await sleep(2500);
@@ -160,18 +154,14 @@ async function main() {
   }
   console.log('✓ Dev Server #1 terminated. All memory wiped.');
 
-  // ---------------------------------------------------------------------------
-  // STEP 4: Boot Fresh Dev Server #2 (Cold Reboot)
-  // ---------------------------------------------------------------------------
+  // Step 4: Boot fresh dev server 2 (cold reboot).
   console.log(`\n[Step 4] Starting Dev Server #2 on port ${PORT} (Cold Reboot)...`);
   const { server: server2, ready: ready2 } = await startDevServer();
   await ready2;
   await sleep(1000);
   console.log(`✓ Dev Server #2 is live at ${BASE_URL} (PID: ${server2.pid})`);
 
-  // ---------------------------------------------------------------------------
-  // STEP 5: GET Snapshot from Dev Server #2 Across Restart
-  // ---------------------------------------------------------------------------
+  // Step 5: GET snapshot from dev server 2 across restart.
   console.log('\n[Step 5] Sending GET /api/calculator/snapshots to Dev Server #2...');
   const getRes = await fetch(`${BASE_URL}/api/calculator/snapshots`);
   console.log(`  HTTP Response Status: ${getRes.status} ${getRes.statusText}`);
@@ -200,9 +190,7 @@ async function main() {
   }
   console.log('✓ Cryptographic SHA-256 seal verified identical across cold server restart!');
 
-  // ---------------------------------------------------------------------------
-  // STEP 6: Attempt Mutation via PUT on Dev Server #2 (Prove Immutability)
-  // ---------------------------------------------------------------------------
+  // Step 6: Attempt mutation via PUT on dev server 2 to verify immutability.
   console.log('\n[Step 6] Attempting mutation via PUT /api/calculator/snapshots...');
   const putRes = await fetch(`${BASE_URL}/api/calculator/snapshots`, {
     method: 'PUT',

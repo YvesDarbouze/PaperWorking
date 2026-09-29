@@ -42,11 +42,11 @@ describe('CommandCenterPanel: Contextual Primary Resolution', () => {
     expect(exploreDealsHtml).toContain('data-variant="secondary"');
     expect(createProjectHtml).toContain('data-variant="secondary"');
 
-    // Both must have identical size="md" classes (h-10 px-4 text-[13px] gap-2) ensuring zero layout shift
-    expect(exploreDealsHtml).toContain('h-10');
-    expect(createProjectHtml).toContain('h-10');
-    expect(exploreDealsHtml).toContain('px-4');
-    expect(createProjectHtml).toContain('px-4');
+    // Both must have identical size="md" classes (h-8 px-2.5) ensuring zero layout shift
+    expect(exploreDealsHtml).toContain('h-8');
+    expect(createProjectHtml).toContain('h-8');
+    expect(exploreDealsHtml).toContain('px-2.5');
+    expect(createProjectHtml).toContain('px-2.5');
   });
 
   it('investor session resolves Explore Deals as primary and Create New Project as secondary', () => {
@@ -72,12 +72,12 @@ describe('CommandCenterPanel: Contextual Primary Resolution', () => {
 
     // Explore Deals is promoted to primary
     expect(exploreDealsHtml).toContain('data-variant="primary"');
-    expect(exploreDealsHtml).toContain('bg-[#00DD94]');
-    expect(exploreDealsHtml).toContain('text-[#0a0a0f]');
+    expect(exploreDealsHtml).toContain('bg-primary');
+    expect(exploreDealsHtml).toContain('text-primary-foreground');
 
     // Create New Project remains secondary
     expect(createProjectHtml).toContain('data-variant="secondary"');
-    expect(createProjectHtml).toContain('border-white/10');
+    expect(createProjectHtml).toContain('border-border');
   });
 
   it('operator/admin session resolves Create New Project as primary and Explore Deals as secondary', () => {
@@ -103,12 +103,12 @@ describe('CommandCenterPanel: Contextual Primary Resolution', () => {
 
     // Create New Project is promoted to primary
     expect(createProjectHtml).toContain('data-variant="primary"');
-    expect(createProjectHtml).toContain('bg-[#00DD94]');
-    expect(createProjectHtml).toContain('text-[#0a0a0f]');
+    expect(createProjectHtml).toContain('bg-primary');
+    expect(createProjectHtml).toContain('text-primary-foreground');
 
     // Explore Deals is secondary
     expect(exploreDealsHtml).toContain('data-variant="secondary"');
-    expect(exploreDealsHtml).toContain('border-white/10');
+    expect(exploreDealsHtml).toContain('border-border');
   });
 
   it('contains zero hardcoded bg-emerald-500 classes in the panel', () => {

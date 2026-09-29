@@ -56,24 +56,27 @@ describe('PROMPT 1 — Support Center & Top Navigation Integration Suite', () =>
 
       const headerHtml = renderToString(<MarketingHeader />);
 
-      const dealCalcIndex = headerHtml.indexOf('Deal Calculator');
-      const howItWorksIndex = headerHtml.indexOf('How it works');
+      const howItWorksIndex = headerHtml.indexOf('How It Works');
       const pricingIndex = headerHtml.indexOf('Pricing');
       const marketplaceIndex = headerHtml.indexOf('Marketplace');
       const supportIndex = headerHtml.indexOf('Support');
+      const dealCalcIndex = headerHtml.indexOf('Deal Calculator');
       const logInIndex = headerHtml.indexOf('Log in');
 
       // Verify presence
-      expect(dealCalcIndex).toBeGreaterThan(-1);
       expect(howItWorksIndex).toBeGreaterThan(-1);
       expect(pricingIndex).toBeGreaterThan(-1);
       expect(marketplaceIndex).toBeGreaterThan(-1);
       expect(supportIndex).toBeGreaterThan(-1);
+      expect(dealCalcIndex).toBeGreaterThan(-1);
       expect(logInIndex).toBeGreaterThan(-1);
 
       // Verify exact order
+      expect(howItWorksIndex).toBeLessThan(pricingIndex);
+      expect(pricingIndex).toBeLessThan(marketplaceIndex);
       expect(marketplaceIndex).toBeLessThan(supportIndex);
-      expect(supportIndex).toBeLessThan(logInIndex);
+      expect(supportIndex).toBeLessThan(dealCalcIndex);
+      expect(dealCalcIndex).toBeLessThan(logInIndex);
 
       // Verify href
       expect(headerHtml).toContain('href="/support"');

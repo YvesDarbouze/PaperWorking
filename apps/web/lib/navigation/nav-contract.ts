@@ -15,14 +15,16 @@ export interface NavItem {
   rolesAllowed: ('investor' | 'vendor')[];
 }
 
-export function isVendorContext(ctx: NavigationContext): boolean {
+export function isVendorContext(ctx?: NavigationContext | null): boolean {
+  if (!ctx) return false;
   const role = (ctx.role || '').toLowerCase();
   const acct = (ctx.accountType || '').toLowerCase();
   const plan = (ctx.subscriptionPlan || '').toLowerCase();
   return role.includes('vendor') || acct === 'vendor' || plan.includes('vendor');
 }
 
-export function isSubscribedInvestor(ctx: NavigationContext): boolean {
+export function isSubscribedInvestor(ctx?: NavigationContext | null): boolean {
+  if (!ctx) return true;
   if (isVendorContext(ctx)) return false;
   if (ctx.isSubscribed !== undefined) return ctx.isSubscribed;
   const plan = (ctx.subscriptionPlan || '').toLowerCase();
@@ -78,7 +80,7 @@ export function resolveAccountNav(_ctx: NavigationContext): NavItem[] {
   ];
 }
 
-export function resolveBottomNav(ctx: NavigationContext): NavItem[] {
+export function resolveBottomNav(ctx?: NavigationContext | null): NavItem[] {
   if (isVendorContext(ctx)) {
     return [
       { id: 'projects', label: 'Projects', href: '/projects', icon: 'folder_open', rolesAllowed: ['vendor'] },
@@ -98,7 +100,7 @@ export function resolveBottomNav(ctx: NavigationContext): NavItem[] {
   ];
 }
 
-export function resolveDrawerNav(ctx: NavigationContext): NavItem[] {
+export function resolveDrawerNav(ctx?: NavigationContext | null): NavItem[] {
   const isVendor = isVendorContext(ctx);
   const isSubscribed = isSubscribedInvestor(ctx);
 

@@ -11,6 +11,8 @@ export interface AddressSearchProps {
   placeholder?: string;
   className?: string;
   autoFocus?: boolean;
+  value?: string;
+  mode?: 'navigate' | 'select';
   onSearchChange?: (value: string) => void;
   onSelectAddress?: (address: string) => void;
   collisionVariant?: 'deal-collision' | 'project-link';
@@ -41,6 +43,8 @@ export default function AddressSearch({
   placeholder = 'Search any street address or deal name…',
   className = '',
   autoFocus = false,
+  value,
+  mode = 'navigate',
   onSearchChange,
   onSelectAddress,
   collisionVariant = 'deal-collision',
@@ -55,10 +59,16 @@ export default function AddressSearch({
   } catch {
     router = null;
   }
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(value || '');
   const [loading, setLoading] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [collisionDeal, setCollisionDeal] = useState<CollisionDeal | null>(null);
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuery(value);
+    }
+  }, [value]);
 
   // Autocomplete state
   const [predictions, setPredictions] = useState<AutocompleteSuggestion[]>([]);
@@ -221,6 +231,10 @@ export default function AddressSearch({
 
     if (onSelectAddress) onSelectAddress(targetAddress);
 
+    if (mode === 'select') {
+      return;
+    }
+
     const slug = targetAddress.replace(/\s+/g, '').toLowerCase();
 
     // Start loading spinner after 200ms delay to prevent visual flicker
@@ -355,7 +369,7 @@ export default function AddressSearch({
           }}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-10 text-sm text-white outline-none placeholder:text-white/35 transition focus:border-[#00DD94]"
+          className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-10 text-sm text-white outline-none placeholder:text-white/35 transition focus:border-ring"
         />
 
         {/* 16px Spinner (delayed 200ms) or submit icon */}
@@ -363,7 +377,7 @@ export default function AddressSearch({
           {showSpinner && loading ? (
             <span
               data-testid="address-search-spinner"
-              className="material-symbols-outlined animate-spin text-[16px] text-[#00DD94]"
+              className="material-symbols-outlined animate-spin text-[16px] text-primary"
             >
               progress_activity
             </span>

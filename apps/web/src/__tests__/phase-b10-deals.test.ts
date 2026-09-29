@@ -124,9 +124,8 @@ describe('phase B10 — Next route wiring', () => {
     expect(marketplace).toMatch(/bffFetch\('\/api\/deals\?tab=discover'/);
     expect(vendor).toMatch(/bffFetch\('\/api\/deals\?tab=discover'/);
     expect(addressSearch).toMatch(/bffFetch\(`\/api\/deals\/exists/);
-    expect(wizard).toContain('createDealFromBff');
-    expect(wizard).toContain('createProjectFromBff');
-    expect(wizard).toContain('dealId: dealId || undefined');
+    expect(wizard).toMatch(/fetch\('\/api\/projects\/(drafts|promote)'/);
+    expect(wizard).not.toContain('NEXT_PUBLIC_API_URL');
     expect(marketplace).not.toMatch(/apiFetch\([^)]*\/api\/deals/);
   });
 
@@ -140,21 +139,19 @@ describe('phase B10 — Next route wiring', () => {
       'utf8',
     );
     expect(broadcast).toMatch(/bffFetch\('\/api\/deals\/broadcast'/);
-    expect(external).toContain('replyToDealFromBff');
+    expect(external).toMatch(/fetch\('\/api\/deals\/reply'/);
   });
 });
 
 describe('phase B10 — project wizard linking', () => {
-  it('wizard links server deal id after project create', () => {
+  it('wizard persists drafts and promotes through same-origin routes', () => {
     const wizard = readFileSync(
       join(here, '../../app/(dashboard)/projects/new/page.tsx'),
       'utf8',
     );
-    expect(wizard).toContain('createProjectFromBff');
-    expect(wizard).toContain('dealId: dealId || undefined');
-    expect(wizard).toContain('dealSlug: dealSlug || undefined');
-    expect(wizard).toContain('createDealFromBff(payload)');
-    expect(wizard).not.toMatch(/createDealFromBff\([^)]*creatorId/);
+    expect(wizard).toMatch(/fetch\('\/api\/projects\/drafts'/);
+    expect(wizard).toMatch(/fetch\('\/api\/projects\/promote'/);
+    expect(wizard).not.toContain('NEXT_PUBLIC_API_URL');
   });
 });
 

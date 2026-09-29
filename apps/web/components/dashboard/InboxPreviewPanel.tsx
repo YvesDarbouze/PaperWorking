@@ -49,17 +49,19 @@ export default function InboxPreviewPanel() {
               key={option.id}
               type="button"
               onClick={() => setTab(option.id)}
-              className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12px] font-semibold ${
+              className={`inline-flex min-h-[44px] items-center gap-2 rounded-none px-3.5 py-2 text-xs font-semibold transition touch-target ${
                 tab === option.id
-                  ? 'bg-white text-black'
-                  : 'border border-white/12 text-white/60 hover:bg-white/5'
+                  ? 'bg-primary text-primary-foreground font-bold'
+                  : 'border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               {option.label}
               {count > 0 ? (
                 <span
-                  className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] ${
-                    tab === option.id ? 'bg-black/10' : 'bg-[var(--accent-subtle)] text-[var(--accent)]'
+                  className={`rounded-none px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                    tab === option.id
+                      ? 'bg-primary-foreground/20 text-primary-foreground'
+                      : 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
                   }`}
                 >
                   {count}
@@ -71,9 +73,9 @@ export default function InboxPreviewPanel() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121014]/90">
+        <div className="overflow-hidden rounded-none border border-border bg-card">
           {threads.length === 0 ? (
-            <p className="p-8 text-sm text-white/45">No threads in this tab.</p>
+            <p className="p-8 text-sm text-muted-foreground">No threads in this tab.</p>
           ) : (
             threads.map((thread) => {
               const isUnread = thread.unread && !readIds.has(thread.id);
@@ -83,60 +85,60 @@ export default function InboxPreviewPanel() {
                   key={thread.id}
                   type="button"
                   onClick={() => openThread(thread.id)}
-                  className={`block w-full border-b border-white/6 px-4 py-3.5 text-left transition ${
-                    isActive ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'
+                  className={`block w-full min-h-[44px] border-b border-border/50 px-4 py-3.5 text-left transition ${
+                    isActive ? 'bg-muted/60' : 'hover:bg-muted/30'
                   }`}
                 >
                   <div className="mb-1 flex items-center gap-2">
                     {isUnread ? (
-                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--status-live)]" />
+                      <span className="h-1.5 w-1.5 rounded-none bg-[var(--status-live)]" />
                     ) : (
-                      <span className="h-1.5 w-1.5 rounded-full bg-transparent" />
+                      <span className="h-1.5 w-1.5 rounded-none bg-transparent" />
                     )}
-                    <span className="text-[11px] text-white/40">{thread.project}</span>
-                    <span className="ml-auto text-[10px] text-white/35">
+                    <span className="text-[11px] text-muted-foreground">{thread.project}</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground/70">
                       {new Date(thread.receivedAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className={`text-sm ${isUnread ? 'font-semibold text-white' : 'text-white/75'}`}>
+                  <p className={`text-sm ${isUnread ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
                     {thread.subject}
                   </p>
-                  <p className="mt-0.5 truncate text-xs text-white/45">{thread.preview}</p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{thread.preview}</p>
                 </button>
               );
             })
           )}
         </div>
 
-        <article className="rounded-2xl border border-white/10 bg-[#121014]/90 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <article className="rounded-none border border-border bg-card p-5 text-card-foreground shadow-sm ring-1 ring-foreground/10">
           {selected ? (
             <>
-              <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">{selected.project}</p>
-              <h2 className="mt-2 text-xl font-semibold text-[#fdfffc]">{selected.subject}</h2>
-              <p className="mt-1 text-sm text-white/55">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground">{selected.project}</p>
+              <h2 className="mt-2 text-xl font-semibold text-foreground">{selected.subject}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
                 From {selected.from} · {new Date(selected.receivedAt).toLocaleString()}
               </p>
-              <div className="mt-5 rounded-xl border border-white/8 bg-white/[0.03] p-4 text-sm leading-relaxed text-white/75">
+              <div className="mt-5 rounded-none border border-border/60 bg-muted/20 p-4 text-sm leading-relaxed text-foreground/90">
                 {selected.preview}
               </div>
               <div className="mt-5 flex flex-wrap gap-2">
                 <Link
                   href="/dashboard"
-                  className="rounded-lg border border-white/12 px-3 py-2 text-[12px] font-semibold text-white/70 no-underline"
+                  className="inline-flex min-h-[44px] items-center rounded-none border border-border bg-card px-4 py-2 text-xs font-semibold text-card-foreground no-underline shadow-sm transition hover:bg-muted touch-target"
                 >
                   Open related
                 </Link>
                 <button
                   type="button"
                   onClick={() => openThread(selected.id)}
-                  className="rounded-lg bg-white/10 px-3 py-2 text-[12px] font-semibold text-white"
+                  className="inline-flex min-h-[44px] items-center rounded-none bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 touch-target"
                 >
                   Mark read
                 </button>
               </div>
             </>
           ) : (
-            <p className="text-sm text-white/45">Select a thread to read.</p>
+            <p className="text-sm text-muted-foreground">Select a thread to read.</p>
           )}
         </article>
       </div>

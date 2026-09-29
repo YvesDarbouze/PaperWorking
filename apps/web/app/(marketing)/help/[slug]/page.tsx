@@ -28,13 +28,17 @@ export default async function HelpArticlePage({
   if (!article) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 md:px-10">
-      <Link href="/help" className="mb-6 inline-block text-sm underline-offset-2 hover:underline">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 pt-8 pb-14 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20">
+      <Link href="/help" className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition no-underline">
         ← All articles
       </Link>
-      <p className="pw-section-eyebrow mb-2">{article.category}</p>
-      <h1 className="mb-6 text-3xl font-semibold tracking-[-0.02em]">{article.title}</h1>
-      <article className="pw-card p-6 text-sm leading-relaxed" style={{ color: 'var(--color-on-surface-variant)' }}>
+      <p className="mb-2 font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {article.category}
+      </p>
+      <h1 className="landing-display mb-6 text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-3xl">
+        {article.title}
+      </h1>
+      <article className="rounded-none border border-border bg-card p-6 text-card-foreground shadow-sm ring-1 ring-foreground/10 text-sm leading-relaxed">
         {article.body}
       </article>
     </div>

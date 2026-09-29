@@ -32,12 +32,33 @@ export const SEED_MARKETPLACE_LISTINGS = [
   },
 ];
 
-export const SEED_RAW_DEALS: Array<{
+export interface RawDealCalculatorResults {
+  purchasePrice?: number;
+  rehabBudget?: number;
+  arv?: number;
+  projectedRoi?: number;
+  targetIrr?: number;
+  cashRequired?: number;
+  equityMultiple?: number;
+  capRateOnCost?: number;
+  cashOnCashReturnPct?: number;
+  monthlyDebtService?: number;
+  grossMonthlyRent?: number;
+  netOperatingIncome?: number;
+  maximumAllowableOffer70Pct?: number;
+  strategy?: string;
+  holdPeriod?: string;
+}
+
+export interface RawDeal {
   id: string;
   slug: string;
   address: string;
   status: string;
-  visibility?: string;
+  visibility?: 'marketplace' | 'public' | 'private' | 'invitation_only';
+  sharedWith?: string[];
+  shareToken?: string;
+  calculatorResults?: RawDealCalculatorResults;
   purchasePrice?: number;
   rehabCost?: number;
   arv?: number | null;
@@ -55,24 +76,49 @@ export const SEED_RAW_DEALS: Array<{
     zip?: string;
     propertyType?: string;
     subStrategy?: string;
+    stage?: string;
+    progress?: number;
+    completionPct?: number;
   }>;
   commitments?: Array<{ amount?: number; investorId?: string }>;
   invitations?: Array<{ inviteeUserId?: string; inviteeEmail?: string }>;
-  creator?: { name?: string };
+  creator?: { name?: string; company?: string; email?: string };
   targetIrr?: number;
   equityMultiple?: number;
   holdPeriod?: string;
   minInvestment?: number;
+  fundingTarget?: number;
   dealType?: 'crowdfunding' | 'syndication';
   imageUrl?: string;
   isVerifiedOperator?: boolean;
-}> = [
+}
+
+export const SEED_RAW_DEALS: RawDeal[] = [
   {
     id: 'deal-mp-1',
     slug: '1247elmst',
     address: '1247 Elm Street, Austin, TX 78702',
     status: 'published',
     visibility: 'marketplace',
+    shareToken: 'token_1247elmst_pub',
+    sharedWith: ['dev-user-1', 'inv-1'],
+    calculatorResults: {
+      purchasePrice: 485_000,
+      rehabBudget: 62_000,
+      arv: 620_000,
+      targetIrr: 18.4,
+      projectedRoi: 18.4,
+      cashRequired: 192_950,
+      equityMultiple: 1.85,
+      capRateOnCost: 5.53,
+      cashOnCashReturnPct: 1.66,
+      monthlyDebtService: 2299,
+      grossMonthlyRent: 4200,
+      netOperatingIncome: 30_794,
+      maximumAllowableOffer70Pct: 362_300,
+      strategy: 'Fix & Flip',
+      holdPeriod: '2–3 Years',
+    },
     purchasePrice: 485_000,
     rehabCost: 62_000,
     arv: 620_000,
@@ -99,6 +145,23 @@ export const SEED_RAW_DEALS: Array<{
     address: '4208 Melrose Ave, Los Angeles, CA 90029',
     status: 'funding',
     visibility: 'marketplace',
+    calculatorResults: {
+      purchasePrice: 890_000,
+      rehabBudget: 110_000,
+      arv: 1_150_000,
+      targetIrr: 14.2,
+      projectedRoi: 14.2,
+      cashRequired: 332_500,
+      equityMultiple: 1.60,
+      capRateOnCost: 6.8,
+      cashOnCashReturnPct: 8.1,
+      monthlyDebtService: 4250,
+      grossMonthlyRent: 8500,
+      netOperatingIncome: 68_000,
+      maximumAllowableOffer70Pct: 695_000,
+      strategy: 'Value-Add / BRRRR',
+      holdPeriod: '3-5 Years',
+    },
     purchasePrice: 890_000,
     rehabCost: 110_000,
     arv: 1_150_000,
@@ -106,14 +169,15 @@ export const SEED_RAW_DEALS: Array<{
     projectedRoi: 14.2,
     targetIrr: 14.2,
     equityMultiple: 1.60,
-    holdPeriod: '3–5 Years',
+    holdPeriod: '3-5 Years',
     minInvestment: 50_000,
     dealType: 'syndication',
     imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
     isVerifiedOperator: true,
     creatorId: 'creator-2',
     createdAt: '2026-06-15T00:00:00.000Z',
-    projects: [{ name: 'Melrose Duplex', city: 'Los Angeles', state: 'CA', zip: '90029', propertyType: 'Multi-family', subStrategy: 'BRRRR' }],
+    projectId: 'deal-melrose',
+    projects: [{ id: 'deal-melrose', name: 'Melrose Duplex', city: 'Los Angeles', state: 'CA', zip: '90029', propertyType: 'Multi-family', subStrategy: 'BRRRR' }],
     commitments: [
       { amount: 250_000, investorId: 'inv-1' },
       { amount: 150_000, investorId: 'inv-2' },
@@ -127,6 +191,25 @@ export const SEED_RAW_DEALS: Array<{
     address: '88 Oak Ridge Dr, Denver, CO 80202',
     status: 'draft',
     visibility: 'private',
+    shareToken: 'token_oakridge_pvt_2026',
+    sharedWith: ['dev-user-1', 'authorized@paperworking.test'],
+    calculatorResults: {
+      purchasePrice: 720_000,
+      rehabBudget: 0,
+      arv: 780_000,
+      targetIrr: 9.5,
+      projectedRoi: 9.5,
+      cashRequired: 216_000,
+      equityMultiple: 1.45,
+      capRateOnCost: 6.25,
+      cashOnCashReturnPct: 5.8,
+      monthlyDebtService: 3100,
+      grossMonthlyRent: 5200,
+      netOperatingIncome: 45_000,
+      maximumAllowableOffer70Pct: 546_000,
+      strategy: 'Buy & Hold',
+      holdPeriod: '5–7 Years',
+    },
     purchasePrice: 720_000,
     rehabCost: 0,
     arv: 780_000,
@@ -141,10 +224,109 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: false,
     creatorId: 'creator-private-3',
     createdAt: '2026-08-10T00:00:00.000Z',
-    projects: [{ name: 'Oak Ridge Hold', city: 'Denver', state: 'CO', zip: '80202', propertyType: 'Single-family', subStrategy: 'BUY_AND_HOLD' }],
+    projectId: 'deal-3',
+    projects: [{ id: 'deal-3', name: 'Oak Ridge Hold', city: 'Denver', state: 'CO', zip: '80202', propertyType: 'Single-family', subStrategy: 'BUY_AND_HOLD' }],
     commitments: [],
     invitations: [],
     creator: { name: 'Private Investor' },
+  },
+  {
+    id: 'deal-mp-lifecycle',
+    slug: '742evergreen',
+    address: '742 Evergreen Terrace, Austin, TX 78704',
+    status: 'published',
+    visibility: 'marketplace',
+    shareToken: 'token_742evergreen_pub',
+    sharedWith: ['dev-user-1', 'inv-1'],
+    calculatorResults: {
+      purchasePrice: 450_000,
+      rehabBudget: 55_000,
+      arv: 580_000,
+      targetIrr: 18.5,
+      projectedRoi: 18.5,
+      cashRequired: 167_500,
+      equityMultiple: 1.85,
+      capRateOnCost: 6.1,
+      cashOnCashReturnPct: 7.2,
+      monthlyDebtService: 2150,
+      grossMonthlyRent: 3950,
+      netOperatingIncome: 30_810,
+      maximumAllowableOffer70Pct: 351_000,
+      strategy: 'Fix & Flip',
+      holdPeriod: '2–3 Years',
+    },
+    purchasePrice: 450_000,
+    rehabCost: 55_000,
+    arv: 580_000,
+    holdingCosts: 15_000,
+    projectedRoi: 18.5,
+    targetIrr: 18.5,
+    equityMultiple: 1.85,
+    holdPeriod: '2–3 Years',
+    minInvestment: 25_000,
+    dealType: 'syndication',
+    imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80',
+    isVerifiedOperator: true,
+    creatorId: 'creator-1',
+    createdAt: '2026-08-01T00:00:00.000Z',
+    projectId: 'deal-lifecycle',
+    projects: [{ id: 'deal-lifecycle', name: '742 Evergreen Terrace', city: 'Austin', state: 'TX', zip: '78704', propertyType: 'Single-family', subStrategy: 'FLIP' }],
+    commitments: [{ amount: 75_000, investorId: 'inv-1' }],
+    invitations: [],
+    creator: { name: 'PaperWorking Capital' },
+  },
+  {
+    id: 'deal-mp-dead',
+    slug: '904oakwood',
+    address: '904 Oakwood Ridge, Austin, TX 78703',
+    status: 'dead',
+    visibility: 'private',
+    purchasePrice: 510_000,
+    rehabCost: 40_000,
+    arv: 620_000,
+    holdingCosts: 16_000,
+    projectedRoi: 16.5,
+    targetIrr: 16.5,
+    equityMultiple: 1.65,
+    holdPeriod: '2–3 Years',
+    minInvestment: 25_000,
+    dealType: 'syndication',
+    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    isVerifiedOperator: true,
+    creatorId: 'creator-1',
+    createdAt: '2026-08-05T00:00:00.000Z',
+    projectId: 'deal-dead-path',
+    projects: [{ id: 'deal-dead-path', name: '904 Oakwood Ridge', city: 'Austin', state: 'TX', zip: '78703', propertyType: 'Single-family', subStrategy: 'FLIP' }],
+    commitments: [],
+    invitations: [],
+    creator: { name: 'PaperWorking Capital' },
+  },
+  {
+    id: 'deal-mp-harbor',
+    slug: '88harbor',
+    address: '88 Harbor Lane, Tampa, FL 33602',
+    status: 'funding',
+    visibility: 'marketplace',
+    purchasePrice: 392_000,
+    rehabCost: 48_000,
+    arv: 520_000,
+    holdingCosts: 14_000,
+    projectedRoi: 16.2,
+    targetIrr: 16.2,
+    equityMultiple: 1.70,
+    holdPeriod: '3–5 Years',
+    minInvestment: 25_000,
+    fundingTarget: 146_000,
+    dealType: 'syndication',
+    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+    isVerifiedOperator: true,
+    creatorId: 'creator-1',
+    createdAt: '2026-08-10T00:00:00.000Z',
+    projectId: 'deal-harbor',
+    projects: [{ id: 'deal-harbor', name: '88 Harbor Lane', city: 'Tampa', state: 'FL', zip: '33602', propertyType: 'Single-family', subStrategy: 'FLIP' }],
+    commitments: [{ amount: 50_000, investorId: 'inv-2' }],
+    invitations: [],
+    creator: { name: 'Apex Syndicate' },
   },
   {
     id: 'deal-mp-4',
@@ -166,7 +348,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-3',
     createdAt: '2026-07-25T00:00:00.000Z',
-    projects: [{ name: 'Riverside Value-Add', city: 'Nashville', state: 'TN', zip: '37201', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
+    projectId: 'deal-riverside',
+    projects: [{ id: 'deal-riverside', name: 'Riverside Value-Add', city: 'Nashville', state: 'TN', zip: '37201', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
     commitments: [{ amount: 80_000, investorId: 'inv-2' }],
     invitations: [{ inviteeUserId: 'dev-user-1', inviteeEmail: 'dev@paperworking.test' }],
     creator: { name: 'River Capital' },
@@ -191,7 +374,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-miami-5',
     createdAt: '2026-08-01T00:00:00.000Z',
-    projects: [{ name: 'Brickell Gateway Towers', city: 'Miami', state: 'FL', zip: '33131', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
+    projectId: 'deal-brickell',
+    projects: [{ id: 'deal-brickell', name: 'Brickell Gateway Towers', city: 'Miami', state: 'FL', zip: '33131', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
     commitments: [
       { amount: 1_200_000, investorId: 'inv-1' },
       { amount: 500_000, investorId: 'inv-3' },
@@ -219,7 +403,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-dallas-6',
     createdAt: '2026-07-15T00:00:00.000Z',
-    projects: [{ name: 'Trinity Logistics Park', city: 'Dallas', state: 'TX', zip: '75207', propertyType: 'Industrial', subStrategy: 'CORE_PLUS' }],
+    projectId: 'deal-trinity',
+    projects: [{ id: 'deal-trinity', name: 'Trinity Logistics Park', city: 'Dallas', state: 'TX', zip: '75207', propertyType: 'Industrial', subStrategy: 'CORE_PLUS' }],
     commitments: [{ amount: 850_000, investorId: 'inv-2' }],
     invitations: [],
     creator: { name: 'Lone Star Industrial' },
@@ -244,7 +429,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-phx-7',
     createdAt: '2026-08-05T00:00:00.000Z',
-    projects: [{ name: 'Camelback Luxury Villas', city: 'Phoenix', state: 'AZ', zip: '85018', propertyType: 'Hospitality', subStrategy: 'OPPORTUNISTIC' }],
+    projectId: 'deal-camelback',
+    projects: [{ id: 'deal-camelback', name: 'Camelback Luxury Villas', city: 'Phoenix', state: 'AZ', zip: '85018', propertyType: 'Hospitality', subStrategy: 'OPPORTUNISTIC' }],
     commitments: [{ amount: 400_000, investorId: 'inv-4' }],
     invitations: [],
     creator: { name: 'Desert Sun Hospitality' },
@@ -269,7 +455,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-atl-8',
     createdAt: '2026-07-20T00:00:00.000Z',
-    projects: [{ name: 'Peachtree Health Plaza', city: 'Atlanta', state: 'GA', zip: '30309', propertyType: 'Office', subStrategy: 'VALUE_ADD' }],
+    projectId: 'deal-peachtree',
+    projects: [{ id: 'deal-peachtree', name: 'Peachtree Health Plaza', city: 'Atlanta', state: 'GA', zip: '30309', propertyType: 'Office', subStrategy: 'VALUE_ADD' }],
     commitments: [{ amount: 650_000, investorId: 'inv-1' }],
     invitations: [],
     creator: { name: 'Midtown Capital Group' },
@@ -294,7 +481,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-denver-9',
     createdAt: '2026-08-08T00:00:00.000Z',
-    projects: [{ name: 'Highland Urban Center', city: 'Denver', state: 'CO', zip: '80211', propertyType: 'Mixed-Use', subStrategy: 'VALUE_ADD' }],
+    projectId: 'deal-highland',
+    projects: [{ id: 'deal-highland', name: 'Highland Urban Center', city: 'Denver', state: 'CO', zip: '80211', propertyType: 'Mixed-Use', subStrategy: 'VALUE_ADD' }],
     commitments: [{ amount: 950_000, investorId: 'inv-3' }],
     invitations: [],
     creator: { name: 'Mile High Syndicate' },
@@ -319,7 +507,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-atx-10',
     createdAt: '2026-07-28T00:00:00.000Z',
-    projects: [{ name: 'South Congress Galleria', city: 'Austin', state: 'TX', zip: '78704', propertyType: 'Retail', subStrategy: 'CORE_PLUS' }],
+    projectId: 'deal-southcongress',
+    projects: [{ id: 'deal-southcongress', name: 'South Congress Galleria', city: 'Austin', state: 'TX', zip: '78704', propertyType: 'Retail', subStrategy: 'CORE_PLUS' }],
     commitments: [{ amount: 500_000, investorId: 'inv-2' }],
     invitations: [],
     creator: { name: 'ATX Prime Assets' },
@@ -344,7 +533,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-tampa-11',
     createdAt: '2026-08-02T00:00:00.000Z',
-    projects: [{ name: 'Bayshore Waterfront Parcels', city: 'Tampa', state: 'FL', zip: '33606', propertyType: 'Land', subStrategy: 'OPPORTUNISTIC' }],
+    projectId: 'deal-bayshore',
+    projects: [{ id: 'deal-bayshore', name: 'Bayshore Waterfront Parcels', city: 'Tampa', state: 'FL', zip: '33606', propertyType: 'Land', subStrategy: 'OPPORTUNISTIC' }],
     commitments: [{ amount: 300_000, investorId: 'inv-5' }],
     invitations: [],
     creator: { name: 'Gulf Coast Land Trust' },
@@ -369,7 +559,8 @@ export const SEED_RAW_DEALS: Array<{
     isVerifiedOperator: true,
     creatorId: 'creator-sm-12',
     createdAt: '2026-05-10T00:00:00.000Z',
-    projects: [{ name: 'Lincoln Heights Flats', city: 'Santa Monica', state: 'CA', zip: '90401', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
+    projectId: 'deal-lincoln',
+    projects: [{ id: 'deal-lincoln', name: 'Lincoln Heights Flats', city: 'Santa Monica', state: 'CA', zip: '90401', propertyType: 'Multi-family', subStrategy: 'VALUE_ADD' }],
     commitments: [{ amount: 2_000_000, investorId: 'inv-1' }],
     invitations: [],
     creator: { name: 'Pacific Crest Partners' },
@@ -516,6 +707,86 @@ export const SEED_MARKETPLACE_VENDORS: Array<{
     feeRangeLabel: '2.5–3% commission',
     verified: true,
     insuranceVerified: false,
+  },
+  {
+    id: 'vendor-7',
+    uid: 'vendor-7',
+    companyName: 'Apex Valuation & Appraisals',
+    type: 'Appraiser',
+    bio: 'MAI-designated commercial and residential real-estate appraisals with rapid turnaround for lender underwriting.',
+    specialties: ['Commercial valuation', 'Residential ARV', 'Narrative Appraisal'],
+    licensingStates: ['TX', 'FL', 'CO'],
+    serviceAreas: ['Austin, TX', 'Denver, CO', 'Miami, FL'],
+    city: 'Austin',
+    location: 'Austin, TX',
+    zip: '78701',
+    avgTurnaroundDays: 5,
+    overallRating: 4.9,
+    totalReviews: 54,
+    availability: 'Available',
+    feeRangeLabel: '$650–$1,400',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-8',
+    uid: 'vendor-8',
+    companyName: 'First National Title & Settlement',
+    type: 'Title & Escrow',
+    bio: 'Investor-focused title search, closing settlement, Schedule B curative, and escrow wire coordination.',
+    specialties: ['Title search', 'Escrow closing', 'Schedule B curative', 'Investor closings'],
+    licensingStates: ['TX', 'CA', 'FL'],
+    serviceAreas: ['Austin, TX', 'Los Angeles, CA', 'Miami, FL'],
+    city: 'Austin',
+    location: 'Austin, TX',
+    zip: '78704',
+    avgTurnaroundDays: 3,
+    overallRating: 4.8,
+    totalReviews: 89,
+    availability: 'Available',
+    feeRangeLabel: '$1,200–$2,500',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-9',
+    uid: 'vendor-9',
+    companyName: 'Sentinel Commercial Risk & Insurance',
+    type: 'Insurance Agent',
+    bio: 'Commercial P&C, builder risk, flood, and comprehensive hazard binders for private and institutional lenders.',
+    specialties: ['Builder risk', 'Hazard insurance', 'Commercial P&C', 'Flood policies'],
+    licensingStates: ['TX', 'CA', 'CO', 'FL'],
+    serviceAreas: ['Austin, TX', 'Denver, CO', 'Los Angeles, CA'],
+    city: 'Austin',
+    location: 'Austin, TX',
+    zip: '78702',
+    avgTurnaroundDays: 1,
+    overallRating: 4.7,
+    totalReviews: 38,
+    availability: 'Available',
+    feeRangeLabel: 'Premium quote on request',
+    verified: true,
+    insuranceVerified: true,
+  },
+  {
+    id: 'vendor-10',
+    uid: 'vendor-10',
+    companyName: 'Pacific Rim Appraisals',
+    type: 'Appraiser',
+    bio: 'State-certified real estate appraisers specializing in fix-and-flip ARV appraisals and multi-unit assets.',
+    specialties: ['ARV Appraisals', 'Multi-unit 2-4', 'Subject-to-completion'],
+    licensingStates: ['CA'],
+    serviceAreas: ['Los Angeles, CA', 'San Diego, CA'],
+    city: 'Los Angeles',
+    location: 'Los Angeles, CA',
+    zip: '90028',
+    avgTurnaroundDays: 6,
+    overallRating: 4.9,
+    totalReviews: 41,
+    availability: 'Available in 1 week',
+    feeRangeLabel: '$750–$1,600',
+    verified: true,
+    insuranceVerified: true,
   },
 ];
 
@@ -702,6 +973,13 @@ export interface SeedDealMessage {
   senderEmail: string;
   content: string;
   source: 'platform' | 'email_inbound';
+  meetingDetails?: {
+    preferredDate: string;
+    timeSlot: string;
+    format: string;
+    phone?: string;
+    agenda?: string;
+  };
   createdAt: string;
 }
 
@@ -715,5 +993,344 @@ export function addSeedDealMessage(msg: SeedDealMessage): SeedDealMessage {
 export function getSeedDealMessages(dealId?: string): SeedDealMessage[] {
   if (!dealId) return SEED_DEAL_MESSAGES;
   return SEED_DEAL_MESSAGES.filter((m) => m.dealId === dealId);
+}
+
+// ── Deal Social Post Storage (Endorsements & Comments) ─────────────────────────
+
+export interface SeedDealComment {
+  id: string;
+  dealId: string;
+  authorId: string;
+  authorName: string;
+  authorRole?: string;
+  authorCompany?: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface SeedDealSocialState {
+  endorsements: string[]; // user IDs
+  comments: SeedDealComment[];
+}
+
+export const SEED_DEAL_SOCIAL: Record<string, SeedDealSocialState> = {
+  'deal-mp-1': {
+    endorsements: ['dev-user-1', 'inv-1', 'inv-2', 'creator-2'],
+    comments: [
+      {
+        id: 'comment-1',
+        dealId: 'deal-mp-1',
+        authorId: 'inv-1',
+        authorName: 'Marcus Vance',
+        authorCompany: 'Vance Realty Capital',
+        authorRole: 'Accredited LP',
+        content: 'Solid submarket dynamics in 78702. What is your sensitivity on the contractor draw timeline given the current city permitting queue?',
+        createdAt: '2026-08-02T14:30:00.000Z',
+      },
+      {
+        id: 'comment-2',
+        dealId: 'deal-mp-1',
+        authorId: 'creator-1',
+        authorName: 'Sarah Jenkins',
+        authorCompany: 'PaperWorking Capital',
+        authorRole: 'Lead Equity / GP',
+        content: 'Permits are already pulled under expedited commercial review. Rehab scope is 100% interior cosmetic + mechanical updates.',
+        createdAt: '2026-08-02T15:10:00.000Z',
+      },
+    ],
+  },
+  'deal-mp-2': {
+    endorsements: ['creator-1', 'inv-3'],
+    comments: [
+      {
+        id: 'comment-3',
+        dealId: 'deal-mp-2',
+        authorId: 'inv-2',
+        authorName: 'Elena Rostova',
+        authorCompany: 'Beacon HoldCo',
+        authorRole: 'Syndicate Partner',
+        content: 'Refi assumption at month 6 looks disciplined. Have you stress-tested against a 50 bps rate expansion on the permanent debt?',
+        createdAt: '2026-07-22T11:00:00.000Z',
+      },
+    ],
+  },
+};
+
+export function getDealSocial(dealId: string, viewerId?: string) {
+  const normId = dealId.toLowerCase().replace(/[^a-z0-9]/g, '');
+  // Match by id or slug
+  const entryKey = Object.keys(SEED_DEAL_SOCIAL).find(
+    (k) => k === dealId || k.toLowerCase().replace(/[^a-z0-9]/g, '') === normId
+  ) || dealId;
+
+  const social = SEED_DEAL_SOCIAL[entryKey] || { endorsements: [], comments: [] };
+  const isEndorsedByViewer = viewerId ? social.endorsements.includes(viewerId) : false;
+
+  return {
+    dealId,
+    endorsementsCount: social.endorsements.length,
+    isEndorsedByViewer,
+    commentsCount: social.comments.length,
+    comments: social.comments,
+  };
+}
+
+export function toggleDealEndorsement(dealId: string, userId: string): { count: number; endorsed: boolean } {
+  const entryKey = Object.keys(SEED_DEAL_SOCIAL).find(
+    (k) => k === dealId || k.toLowerCase().replace(/[^a-z0-9]/g, '') === dealId.toLowerCase().replace(/[^a-z0-9]/g, '')
+  ) || dealId;
+
+  if (!SEED_DEAL_SOCIAL[entryKey]) {
+    SEED_DEAL_SOCIAL[entryKey] = { endorsements: [], comments: [] };
+  }
+
+  const social = SEED_DEAL_SOCIAL[entryKey];
+  const idx = social.endorsements.indexOf(userId);
+  let endorsed = false;
+
+  if (idx >= 0) {
+    social.endorsements.splice(idx, 1);
+    endorsed = false;
+  } else {
+    social.endorsements.push(userId);
+    endorsed = true;
+  }
+
+  return {
+    count: social.endorsements.length,
+    endorsed,
+  };
+}
+
+export function addDealComment(
+  dealId: string,
+  comment: {
+    authorId: string;
+    authorName: string;
+    authorCompany?: string;
+    authorRole?: string;
+    content: string;
+  }
+): SeedDealComment {
+  const entryKey = Object.keys(SEED_DEAL_SOCIAL).find(
+    (k) => k === dealId || k.toLowerCase().replace(/[^a-z0-9]/g, '') === dealId.toLowerCase().replace(/[^a-z0-9]/g, '')
+  ) || dealId;
+
+  if (!SEED_DEAL_SOCIAL[entryKey]) {
+    SEED_DEAL_SOCIAL[entryKey] = { endorsements: [], comments: [] };
+  }
+
+  const newComment: SeedDealComment = {
+    id: `comment-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    dealId,
+    authorId: comment.authorId,
+    authorName: comment.authorName,
+    authorCompany: comment.authorCompany,
+    authorRole: comment.authorRole,
+    content: comment.content,
+    createdAt: new Date().toISOString(),
+  };
+
+  SEED_DEAL_SOCIAL[entryKey].comments.unshift(newComment);
+  return newComment;
+}
+
+export function findSeedDeal(dealIdOrSlug: string): RawDeal | undefined {
+  const normalized = dealIdOrSlug.trim().toLowerCase();
+  return SEED_RAW_DEALS.find(
+    (d) =>
+      d.id.toLowerCase() === normalized ||
+      d.slug?.toLowerCase() === normalized ||
+      d.slug?.toLowerCase().replace(/[^a-z0-9]/g, '') === normalized.replace(/[^a-z0-9]/g, '')
+  );
+}
+
+export function getDealCalculatorResults(deal: RawDeal): RawDealCalculatorResults {
+  if (deal.calculatorResults) return deal.calculatorResults;
+  return {
+    purchasePrice: deal.purchasePrice || 0,
+    rehabBudget: deal.rehabCost || 0,
+    arv: deal.arv || deal.purchasePrice || 0,
+    targetIrr: deal.targetIrr || deal.projectedRoi || 0,
+    projectedRoi: deal.projectedRoi || deal.targetIrr || 0,
+    cashRequired: Math.round((deal.purchasePrice || 0) * 0.2 + (deal.rehabCost || 0)),
+    equityMultiple: deal.equityMultiple || 1.5,
+    capRateOnCost: 6.0,
+    cashOnCashReturnPct: 4.5,
+    monthlyDebtService: Math.round(((deal.purchasePrice || 0) * 0.8 * 0.07) / 12),
+    grossMonthlyRent: Math.round((deal.purchasePrice || 0) * 0.008),
+    netOperatingIncome: Math.round((deal.purchasePrice || 0) * 0.008 * 12 * 0.65),
+    maximumAllowableOffer70Pct: Math.round((deal.arv || deal.purchasePrice || 0) * 0.7 - (deal.rehabCost || 0)),
+    strategy: deal.projects?.[0]?.subStrategy || 'Fix & Flip',
+    holdPeriod: deal.holdPeriod || '2–3 Years',
+  };
+}
+
+export function isUserSubscribed(
+  user?: {
+    subscriptionStatus?: string;
+    subscriptionPlan?: string;
+    authenticated?: boolean;
+  } | null
+): boolean {
+  if (!user) return false;
+  const status = (user.subscriptionStatus || '').toLowerCase();
+  const plan = (user.subscriptionPlan || '').toLowerCase();
+  if (['active', 'trialing'].includes(status)) return true;
+  if (
+    ['pro', 'starter', 'team', 'enterprise', 'subscriber', 'individual', 'operator', 'investor'].includes(plan) &&
+    status !== 'canceled' &&
+    status !== 'inactive'
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export interface DealAccessVerification {
+  allowed: boolean;
+  isPrivate: boolean;
+  reason: 'public' | 'creator' | 'subscribed_authorized' | 'unsubscribed_gate' | 'unauthorized' | 'not_found';
+  deal?: RawDeal;
+  calculatorResults?: RawDealCalculatorResults;
+}
+
+export interface VerifyDealAccessOptions {
+  requireSubscriberForFullDeal?: boolean;
+}
+
+export function verifyDealAccess(
+  dealIdOrSlug: string,
+  user?: {
+    id?: string;
+    email?: string;
+    subscriptionStatus?: string;
+    subscriptionPlan?: string;
+    authenticated?: boolean;
+  } | null,
+  token?: string | null,
+  options?: VerifyDealAccessOptions
+): DealAccessVerification {
+  const deal = findSeedDeal(dealIdOrSlug);
+  if (!deal) {
+    return { allowed: false, isPrivate: false, reason: 'not_found' };
+  }
+
+  const isPrivate = deal.visibility === 'private' || deal.visibility === 'invitation_only';
+  const calcResults = getDealCalculatorResults(deal);
+
+  // If option requireSubscriberForFullDeal is set, verify subscriber status
+  if (options?.requireSubscriberForFullDeal) {
+    const isCreator = Boolean(user?.id && deal.creatorId && user.id === deal.creatorId);
+    if (!isCreator && !isUserSubscribed(user)) {
+      return {
+        allowed: false,
+        isPrivate,
+        reason: 'unsubscribed_gate',
+        deal,
+        calculatorResults: calcResults,
+      };
+    }
+  }
+
+  // If deal is public or marketplace, full access is granted
+  if (!isPrivate) {
+    return {
+      allowed: true,
+      isPrivate: false,
+      reason: 'public',
+      deal,
+      calculatorResults: calcResults,
+    };
+  }
+
+  // Operator / Creator always has full access
+  if (user?.id && deal.creatorId && user.id === deal.creatorId) {
+    return {
+      allowed: true,
+      isPrivate: true,
+      reason: 'creator',
+      deal,
+      calculatorResults: calcResults,
+    };
+  }
+
+  // Check if access is requested via valid shareToken or user is in sharedWith / invitations
+  const hasValidToken = Boolean(token && deal.shareToken && token === deal.shareToken);
+  const cleanEmail = user?.email?.toLowerCase().trim();
+  const isDirectlyShared = Boolean(
+    user &&
+      ((user.id && deal.sharedWith?.includes(user.id)) ||
+        (cleanEmail && deal.sharedWith?.includes(cleanEmail)) ||
+        (user.id && deal.invitations?.some((i) => i.inviteeUserId === user.id)) ||
+        (cleanEmail && deal.invitations?.some((i) => i.inviteeEmail?.toLowerCase() === cleanEmail)))
+  );
+
+  const isTargetedRecipient = hasValidToken || isDirectlyShared;
+
+  if (isTargetedRecipient) {
+    if (isUserSubscribed(user)) {
+      return {
+        allowed: true,
+        isPrivate: true,
+        reason: 'subscribed_authorized',
+        deal,
+        calculatorResults: calcResults,
+      };
+    }
+
+    // Unsubscribed targeted recipient: CANNOT see the full deal, only receives/sees Deal Calculator Results
+    return {
+      allowed: false,
+      isPrivate: true,
+      reason: 'unsubscribed_gate',
+      deal,
+      calculatorResults: calcResults,
+    };
+  }
+
+  return {
+    allowed: false,
+    isPrivate: true,
+    reason: 'unauthorized',
+    deal,
+    calculatorResults: undefined,
+  };
+}
+
+export function updateSeedDealVisibility(
+  dealIdOrSlug: string,
+  visibility: 'marketplace' | 'private' | 'invitation_only'
+): RawDeal | null {
+  const deal = findSeedDeal(dealIdOrSlug);
+  if (!deal) return null;
+  deal.visibility = visibility;
+  if (visibility === 'private' && !deal.shareToken) {
+    deal.shareToken = `token_${deal.slug || deal.id}_${Math.random().toString(36).substring(2, 9)}`;
+  }
+  return deal;
+}
+
+export function shareSeedDealWith(
+  dealIdOrSlug: string,
+  recipientEmailOrUid: string
+): { success: boolean; deal?: RawDeal; shareToken?: string } {
+  const deal = findSeedDeal(dealIdOrSlug);
+  if (!deal) return { success: false };
+  if (!deal.sharedWith) {
+    deal.sharedWith = [];
+  }
+  const cleanRecipient = recipientEmailOrUid.trim().toLowerCase();
+  if (!deal.sharedWith.includes(cleanRecipient)) {
+    deal.sharedWith.push(cleanRecipient);
+  }
+  if (!deal.shareToken) {
+    deal.shareToken = `token_${deal.slug || deal.id}_${Math.random().toString(36).substring(2, 9)}`;
+  }
+  return {
+    success: true,
+    deal,
+    shareToken: deal.shareToken,
+  };
 }
 

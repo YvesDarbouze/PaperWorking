@@ -20,6 +20,23 @@ export interface DealBroadcastEmailProps {
     investmentCriteria?: string;
   };
   baseUrl?: string;
+  calculatorResults?: {
+    purchasePrice?: number;
+    rehabBudget?: number;
+    arv?: number;
+    targetIrr?: number;
+    projectedRoi?: number;
+    cashRequired?: number;
+    equityMultiple?: number;
+    capRateOnCost?: number;
+    cashOnCashReturnPct?: number;
+    monthlyDebtService?: number;
+    grossMonthlyRent?: number;
+    netOperatingIncome?: number;
+    maximumAllowableOffer70Pct?: number;
+    strategy?: string;
+    holdPeriod?: string;
+  };
 }
 
 export function formatDealCurrency(value: number): string {
@@ -44,6 +61,7 @@ export function DealBroadcastEmail({
   includeBusinessCard = true,
   businessCard,
   baseUrl = 'https://paperworking.com',
+  calculatorResults,
 }: DealBroadcastEmailProps) {
   const externalLink = `${baseUrl}/deals/${dealSlug}/external?token=${encodeURIComponent(token)}&broadcast=true`;
   const formattedPrice = formatDealCurrency(purchasePrice);
@@ -78,7 +96,7 @@ export function DealBroadcastEmail({
         <tbody>
           <tr>
             <td style={{ padding: '24px 32px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#00DD94', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#ffffff', letterSpacing: '-0.02em' }}>
                 PaperWorking
               </div>
             </td>
@@ -111,7 +129,7 @@ export function DealBroadcastEmail({
                     lineHeight: 1.5,
                   }}
                 >
-                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#00DD94', marginBottom: '6px', fontWeight: 600 }}>
+                  <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#e2e8f0', marginBottom: '6px', fontWeight: 600 }}>
                     Note from {senderName}
                   </div>
                   {message}
@@ -150,7 +168,78 @@ export function DealBroadcastEmail({
                       </td>
                       <td style={{ width: '50%', paddingLeft: '8px' }}>
                         <div style={{ fontSize: '11px', textTransform: 'uppercase', color: '#94a3b8' }}>Projected ROI</div>
-                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#00DD94', marginTop: '2px' }}>{formattedRoi}</div>
+                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ffffff', marginTop: '2px' }}>{formattedRoi}</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+
+          {/* Deal Calculator Results Section */}
+          <tr>
+            <td style={{ padding: '0 32px 24px 32px' }}>
+              <div
+                data-testid="deal-calculator-results-section"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '12px',
+                  padding: '18px',
+                }}
+              >
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', marginBottom: '8px', fontWeight: 600 }}>
+                  Deal Calculator Results
+                </div>
+                <table width="100%" border={0} cellPadding={0} cellSpacing={0} style={{ fontSize: '13px' }}>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Purchase Price</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {formatDealCurrency(calculatorResults?.purchasePrice ?? purchasePrice)}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Rehab Budget</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {formatDealCurrency(calculatorResults?.rehabBudget ?? 0)}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>After Repair Value (ARV)</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {formatDealCurrency(calculatorResults?.arv ?? Math.round(purchasePrice * 1.25))}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Target IRR</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {Number(calculatorResults?.targetIrr ?? calculatorResults?.projectedRoi ?? projectedRoi).toFixed(1)}%
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Cash Required</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {formatDealCurrency(calculatorResults?.cashRequired ?? Math.round(purchasePrice * 0.25))}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Net Operating Income (NOI)</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {formatDealCurrency(calculatorResults?.netOperatingIncome ?? Math.round(purchasePrice * 0.06))}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Cap Rate on Cost</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {Number(calculatorResults?.capRateOnCost ?? 5.8).toFixed(2)}%
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '7px 0', color: '#94a3b8' }}>Strategy & Hold Period</td>
+                      <td style={{ padding: '7px 0', textAlign: 'right', fontWeight: 600, color: '#ffffff' }}>
+                        {calculatorResults?.strategy || 'Fix & Flip'} ({calculatorResults?.holdPeriod || '2–3 Years'})
                       </td>
                     </tr>
                   </tbody>
@@ -202,7 +291,7 @@ export function DealBroadcastEmail({
               <a
                 href={externalLink}
                 style={{
-                  backgroundColor: '#00DD94',
+                  backgroundColor: '#ffffff',
                   color: '#0a0a0f',
                   borderRadius: '10px',
                   padding: '12px 28px',
@@ -277,7 +366,7 @@ export function renderDealBroadcastHtml(props: DealBroadcastEmailProps): string 
   <table align="center" border="0" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; margin:0 auto; background-color:#121014; border-radius:16px; border:1px solid rgba(255, 255, 255, 0.1); overflow:hidden;">
     <tr>
       <td style="padding:24px 32px; border-bottom:1px solid rgba(255, 255, 255, 0.08);">
-        <div style="font-size:20px; font-weight:bold; color:#00DD94; letter-spacing:-0.02em;">PaperWorking</div>
+        <div style="font-size:20px; font-weight:bold; color:#ffffff; letter-spacing:-0.02em;">PaperWorking</div>
       </td>
     </tr>
     <tr>
@@ -291,7 +380,7 @@ export function renderDealBroadcastHtml(props: DealBroadcastEmailProps): string 
         ? `<tr>
       <td style="padding:8px 32px 24px 32px;">
         <div style="background-color:rgba(255, 255, 255, 0.05); border:1px solid rgba(255, 255, 255, 0.1); border-radius:12px; padding:16px; color:#e2e8f0; font-size:14px; line-height:1.5;">
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#00DD94; margin-bottom:6px; font-weight:600;">Note from ${props.senderName}</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#e2e8f0; margin-bottom:6px; font-weight:600;">Note from ${props.senderName}</div>
           ${props.message}
         </div>
       </td>
@@ -300,7 +389,7 @@ export function renderDealBroadcastHtml(props: DealBroadcastEmailProps): string 
     }
     <tr>
       <td style="padding:0 32px 24px 32px;">
-        <div style="background-color:rgba(0, 221, 148, 0.04); border:1px solid rgba(0, 221, 148, 0.2); border-radius:14px; padding:20px;">
+        <div style="background-color:rgba(255, 255, 255, 0.04); border:1px solid rgba(255, 255, 255, 0.15); border-radius:14px; padding:20px;">
           <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#94a3b8; margin-bottom:4px;">Real Estate Opportunity</div>
           <div style="font-size:18px; font-weight:600; color:#ffffff; margin-bottom:4px;">${props.dealName}</div>
           <div style="font-size:13px; color:#cbd5e1; margin-bottom:16px;">${props.dealAddress}</div>
@@ -312,8 +401,49 @@ export function renderDealBroadcastHtml(props: DealBroadcastEmailProps): string 
               </td>
               <td style="width:50%; padding-left:8px;">
                 <div style="font-size:11px; text-transform:uppercase; color:#94a3b8;">Projected ROI</div>
-                <div style="font-size:16px; font-weight:bold; color:#00DD94; margin-top:2px;">${formattedRoi}</div>
+                <div style="font-size:16px; font-weight:bold; color:#ffffff; margin-top:2px;">${formattedRoi}</div>
               </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0 32px 24px 32px;">
+        <div data-testid="deal-calculator-results-section" style="background-color:rgba(255, 255, 255, 0.03); border:1px solid rgba(255, 255, 255, 0.08); border-radius:12px; padding:18px;">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#94a3b8; margin-bottom:8px; font-weight:600;">Deal Calculator Results</div>
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="font-size:13px;">
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Purchase Price</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${formatDealCurrency(props.calculatorResults?.purchasePrice ?? props.purchasePrice)}</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Rehab Budget</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${formatDealCurrency(props.calculatorResults?.rehabBudget ?? 0)}</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">After Repair Value (ARV)</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${formatDealCurrency(props.calculatorResults?.arv ?? Math.round(props.purchasePrice * 1.25))}</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Target IRR</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${Number(props.calculatorResults?.targetIrr ?? props.calculatorResults?.projectedRoi ?? props.projectedRoi).toFixed(1)}%</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Cash Required</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${formatDealCurrency(props.calculatorResults?.cashRequired ?? Math.round(props.purchasePrice * 0.25))}</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Net Operating Income (NOI)</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${formatDealCurrency(props.calculatorResults?.netOperatingIncome ?? Math.round(props.purchasePrice * 0.06))}</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding:7px 0; color:#94a3b8;">Cap Rate on Cost</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${Number(props.calculatorResults?.capRateOnCost ?? 5.8).toFixed(2)}%</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0; color:#94a3b8;">Strategy & Hold Period</td>
+              <td style="padding:7px 0; text-align:right; font-weight:600; color:#ffffff;">${props.calculatorResults?.strategy || 'Fix & Flip'} (${props.calculatorResults?.holdPeriod || '2–3 Years'})</td>
             </tr>
           </table>
         </div>
@@ -322,7 +452,7 @@ export function renderDealBroadcastHtml(props: DealBroadcastEmailProps): string 
     ${businessCardHtml}
     <tr>
       <td style="padding:8px 32px 32px 32px; text-align:center;">
-        <a href="${externalLink}" style="background-color:#00DD94; color:#0a0a0f; border-radius:10px; padding:12px 28px; font-size:14px; font-weight:600; text-decoration:none; display:inline-block;">View deal</a>
+        <a href="${externalLink}" style="background-color:#ffffff; color:#0a0a0f; border-radius:10px; padding:12px 28px; font-size:14px; font-weight:600; text-decoration:none; display:inline-block;">View deal</a>
       </td>
     </tr>
     <tr>
@@ -360,6 +490,16 @@ Property: ${props.dealName}
 Address: ${props.dealAddress}
 Purchase Price: ${formattedPrice}
 Projected ROI: ${formattedRoi}
+
+DEAL CALCULATOR RESULTS:
+- Purchase Price: ${formatDealCurrency(props.calculatorResults?.purchasePrice ?? props.purchasePrice)}
+- Rehab Budget: ${formatDealCurrency(props.calculatorResults?.rehabBudget ?? 0)}
+- ARV: ${formatDealCurrency(props.calculatorResults?.arv ?? Math.round(props.purchasePrice * 1.25))}
+- Target IRR: ${Number(props.calculatorResults?.targetIrr ?? props.calculatorResults?.projectedRoi ?? props.projectedRoi).toFixed(1)}%
+- Cash Required: ${formatDealCurrency(props.calculatorResults?.cashRequired ?? Math.round(props.purchasePrice * 0.25))}
+- Net Operating Income (NOI): ${formatDealCurrency(props.calculatorResults?.netOperatingIncome ?? Math.round(props.purchasePrice * 0.06))}
+- Cap Rate on Cost: ${Number(props.calculatorResults?.capRateOnCost ?? 5.8).toFixed(2)}%
+- Strategy & Hold: ${props.calculatorResults?.strategy || 'Fix & Flip'} (${props.calculatorResults?.holdPeriod || '2–3 Years'})
 ${cardText}
 View full deal preview and analysis:
 ${externalLink}

@@ -68,10 +68,10 @@ export default function ProjectUnderwritingPage() {
       <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-4 md:flex-row md:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#00DD94]">
+            <span className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
               Financial Underwriting
             </span>
-            <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/70">
+            <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
               33 KPIs Engine
             </span>
           </div>
@@ -81,6 +81,46 @@ export default function ProjectUnderwritingPage() {
           <p className="mt-1 text-xs text-white/60">
             Authoritative financial inputs feeding Deal Intake, Return Modeling, Debt Sizing, and Exit Analysis.
           </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          {project.dealId || (project as any).dealSlug ? (
+            <a
+              href={`/marketplace/${(project as any).dealSlug || project.dealId}`}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[16px]">storefront</span>
+              <span>View Deal Card</span>
+            </a>
+          ) : null}
+
+          <a
+            href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice || project.purchase_price || 485000}&strategy=${(project as any).strategy || 'buy_and_hold_rental'}`}
+            data-testid="project-open-deal-calc-btn"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition min-h-[44px]"
+          >
+            <span className="material-symbols-outlined text-[16px]">calculate</span>
+            <span>Open in Deal Calculator</span>
+          </a>
+
+          <a
+            href={`/project/${project.id}/insights`}
+            data-testid="project-underwriting-to-33-kpis-btn"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition min-h-[44px]"
+          >
+            <span className="material-symbols-outlined text-[16px]">analytics</span>
+            <span>33 Datapoints Analysis</span>
+          </a>
+        </div>
+      </div>
+
+      {/* Off-Platform Closing Policy Notice */}
+      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-white/60 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="material-symbols-outlined text-[18px] text-white/40">gavel</span>
+          <span>
+            <strong className="text-white">PaperWorking Deal Flow:</strong> Underwriting models directly populate listed Deal cards and promotional broadcasts. Negotiation occurs in Messages; legal agreements and capital closing occur off-platform.
+          </span>
         </div>
       </div>
 

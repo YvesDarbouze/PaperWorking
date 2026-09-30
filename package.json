@@ -25,10 +25,12 @@
     "test:e2e": "npm run test:e2e --workspace=@paperworking/e2e",
     "check:gitignore": "node scripts/check-gitignore.mjs",
     "check:guardrails": "node scripts/check-ci-guardrails.mjs",
-    "verify": "npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
+    "verify": "npm run check:routes && npm run build && npm run typecheck --workspaces --if-present && npm run test --workspaces --if-present",
     "deploy:api": "bash scripts/deploy-api-cloud-run.sh",
     "firestore:wipe": "node scripts/firestore-wipe-all.mjs",
-    "firestore:bootstrap": "node scripts/firestore-bootstrap-v1.mjs"
+    "firestore:bootstrap": "node scripts/firestore-bootstrap-v1.mjs",
+    "check:routes": "node scripts/check-route-conflicts.mjs",
+    "smoke:prod": "node scripts/smoke-prod.mjs"
   },
   "engines": {
     "node": ">=20"

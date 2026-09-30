@@ -6,7 +6,7 @@ import type { UpdateDealInput } from '@paperworking/services';
 
 export const dynamic = 'force-dynamic';
 
-type RouteContext = { params: Promise<{ slug: string }> };
+type RouteContext = { params: Promise<{ id: string }> };
 
 function parseUpdateBody(body: unknown): UpdateDealInput {
   if (!body || typeof body !== 'object') return {};
@@ -38,17 +38,17 @@ function parseUpdateBody(body: unknown): UpdateDealInput {
   };
 }
 
-/** GET /api/deals/[slug] — authorized deal detail for owner/collaborators. */
+/** GET /api/deals/[id] — authorized deal detail for owner/collaborators. */
 export async function GET(request: Request, context: RouteContext) {
   const user = await resolveAuthUserFromRequest(request);
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { slug } = await context.params;
+  const { id } = await context.params;
 
   try {
-    const result = await buildDealsCommandService().getDealBySlug(user, slug);
+    const result = await buildDealsCommandService().getDealBySlug(user, id);
     return NextResponse.json(result);
   } catch (error) {
     const mapped = dealsErrorResponse(error);
@@ -58,14 +58,14 @@ export async function GET(request: Request, context: RouteContext) {
   }
 }
 
-/** PATCH /api/deals/[slug] — update deal baseline underwriting fields. */
+/** PATCH /api/deals/[id] — update deal baseline underwriting fields. */
 export async function PATCH(request: Request, context: RouteContext) {
   const user = await resolveAuthUserFromRequest(request);
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { slug } = await context.params;
+  const { id } = await context.params;
 
   let body: unknown = {};
   try {
@@ -75,7 +75,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   try {
-    const result = await buildDealsCommandService().updateDealBySlug(user, slug, parseUpdateBody(body));
+    const result = await buildDealsCommandService().updateDealBySlug(user, id, parseUpdateBody(body));
     return NextResponse.json(result);
   } catch (error) {
     const mapped = dealsErrorResponse(error);

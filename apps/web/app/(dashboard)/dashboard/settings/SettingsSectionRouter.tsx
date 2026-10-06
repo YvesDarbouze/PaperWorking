@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import GeneralSettingsPanel from '@/components/settings/GeneralSettingsPanel';
 import SecuritySettingsPanel from '@/components/settings/SecuritySettingsPanel';
 import BillingPreviewPanel from '@/components/dashboard/BillingPreviewPanel';
+import BankConnectionsPanel from '@/components/settings/BankConnectionsPanel';
 import DataPrivacyPanel from '@/components/settings/DataPrivacyPanel';
 import { isSettingsSectionRestricted } from '@/lib/auth/progressive-unlock';
 
@@ -56,6 +57,8 @@ export default function SettingsSectionRouter() {
       return <SecuritySettingsPanel />;
     case 'billing':
       return <BillingPreviewPanel />;
+    case 'banking':
+      return <BankConnectionsPanel />;
     case 'data-privacy':
     case 'data':
       return <DataPrivacyPanel />;

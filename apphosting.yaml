@@ -127,6 +127,17 @@ env:
     availability:
       - RUNTIME
 
+  # ─── Plaid banking (token vault master KEK) ────────────────────────────────
+  # 32-byte hex master key. Required in production by apps/web/lib/plaid/token-vault.ts.
+  - variable: PLAID_TOKEN_KEK
+    secret: PLAID_TOKEN_KEK
+    availability:
+      - RUNTIME
+  - variable: PLAID_ENV
+    value: "sandbox"
+    availability:
+      - RUNTIME
+
   # ─── Email (SendGrid) ──────────────────────────────────────────────────────
   - variable: SENDGRID_API_KEY
     secret: SENDGRID_API_KEY

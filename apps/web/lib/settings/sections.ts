@@ -35,6 +35,13 @@ export const SETTINGS_SECTIONS = [
     disabled: true,
   },
   {
+    id: 'banking',
+    title: 'Bank connections',
+    description: 'Connect bank accounts via Plaid for transactions and liabilities.',
+    href: '/dashboard/settings?section=banking',
+    disabled: false,
+  },
+  {
     id: 'billing',
     title: 'Billing',
     description: 'Plan, payment method, and invoices.',

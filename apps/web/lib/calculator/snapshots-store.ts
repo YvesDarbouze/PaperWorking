@@ -5,7 +5,7 @@ import {
   type UnderwritingCalculatorInputs,
   type ReconciledUnderwritingMetrics,
 } from '@paperworking/financial-engine';
-import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore } from '@/lib/firebase/admin';
 import {
   ImmutableSnapshotError,
   SnapshotIntegrityError,
@@ -19,8 +19,19 @@ const SNAPSHOTS_COLLECTION = 'calculator_snapshots';
 
 export type DataMode = 'firestore' | 'disk';
 
+function firestoreCredentialsAvailable(): boolean {
+  if (process.env.FIRESTORE_EMULATOR_HOST || process.env.FIRESTORE_EMULATOR_RUNNING === 'true') {
+    return true;
+  }
+  return Boolean(
+    (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) ||
+      process.env.GOOGLE_CLOUD_PROJECT ||
+      process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+  );
+}
+
 export function resolveDataMode(): DataMode {
-  return shouldAttemptFirestore() ? 'firestore' : 'disk';
+  return firestoreCredentialsAvailable() ? 'firestore' : 'disk';
 }
 
 export function assertProductionBootEnv(): void {
@@ -63,7 +74,7 @@ export interface StoredCalculatorSnapshot {
 }
 
 function useFirestore(): boolean {
-  return process.env.NODE_ENV === 'production' && shouldAttemptFirestore();
+  return process.env.NODE_ENV === 'production' && firestoreCredentialsAvailable();
 }
 
 function sanitizeForFirestore<T>(value: T): T {

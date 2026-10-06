@@ -102,7 +102,7 @@ env:
       - RUNTIME
 
   # ─── Session signing (server-side) ─────────────────────────────────────────
-  # HMAC key for __session cookie signing. Rotating it invalidates all sessions.
+  # HMAC key for __session cookie signing. Rotating invalidates all sessions (runtime SA needs secretmanager.viewer).
   - variable: SESSION_SECRET
     secret: SESSION_SECRET
     availability:

@@ -102,6 +102,7 @@ env:
       - RUNTIME
 
   # ─── Session signing (server-side) ─────────────────────────────────────────
+  # HMAC key for __session cookie signing. Rotating it invalidates all sessions.
   - variable: SESSION_SECRET
     secret: SESSION_SECRET
     availability:

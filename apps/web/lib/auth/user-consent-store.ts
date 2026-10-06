@@ -67,6 +67,8 @@ export async function recordUserConsent(input: UserConsentInput): Promise<UserCo
         error instanceof Error ? error.message : error,
       );
     }
+  } else {
+    console.warn('[user-consent-store] Firestore unavailable — consent recorded in memory only.');
   }
 
   memoryConsents.set(record.id, record);

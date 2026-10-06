@@ -180,11 +180,17 @@ export function shouldAttemptFirestore(): boolean {
   if (process.env.NODE_ENV === 'test' && !process.env.FIRESTORE_EMULATOR_RUNNING && !process.env.FIRESTORE_EMULATOR_HOST) {
     return false;
   }
+  const isHostedRuntime = Boolean(
+    process.env.FIREBASE_APP_HOSTING ||
+    process.env.K_SERVICE ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCLOUD_PROJECT
+  );
   return Boolean(
     process.env.FIRESTORE_EMULATOR_HOST ||
     isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
     process.env.FIRESTORE_EMULATOR_RUNNING === 'true' ||
-    (process.env.NODE_ENV === 'production' && process.env.GOOGLE_CLOUD_PROJECT)
+    (process.env.NODE_ENV === 'production' && isHostedRuntime)
   );
 }
 

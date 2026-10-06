@@ -5,6 +5,7 @@ import {
   type UnderwritingCalculatorInputs,
   type ReconciledUnderwritingMetrics,
 } from '@paperworking/financial-engine';
+import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
 import {
   ImmutableSnapshotError,
   SnapshotIntegrityError,
@@ -14,14 +15,16 @@ import {
   type AddressEnvelope,
 } from './snapshot-crypto';
 
-export type DataMode = 'disk';
+const SNAPSHOTS_COLLECTION = 'calculator_snapshots';
+
+export type DataMode = 'firestore' | 'disk';
 
 export function resolveDataMode(): DataMode {
-  return 'disk';
+  return shouldAttemptFirestore() ? 'firestore' : 'disk';
 }
 
 export function assertProductionBootEnv(): void {
-  // Firestore-only v0 port: calculator snapshots are persisted to the gated disk fallback.
+  // Production persists calculator snapshots to Firestore; disk is dev/test only.
 }
 
 export {
@@ -59,6 +62,32 @@ export interface StoredCalculatorSnapshot {
   createdAt: string;
 }
 
+function useFirestore(): boolean {
+  return process.env.NODE_ENV === 'production' && shouldAttemptFirestore();
+}
+
+function sanitizeForFirestore<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function normalizeRecord(id: string, raw: Record<string, unknown>): StoredCalculatorSnapshot {
+  const engineVersion = typeof raw.engineVersion === 'number' ? raw.engineVersion : 1;
+  const inputs = (raw.inputs ?? {}) as StoredCalculatorSnapshot['inputs'];
+  const displayAddress =
+    (raw.displayAddress as string | undefined) || (inputs as { address?: string }).address;
+  return {
+    ...(raw as unknown as StoredCalculatorSnapshot),
+    id,
+    engineVersion,
+    superseded: engineVersion < ENGINE_VERSION,
+    displayAddress,
+    inputs: {
+      ...inputs,
+      ...(displayAddress ? { address: displayAddress } : {}),
+    },
+  };
+}
+
 function getSnapshotsFilePath(): string {
   const override = process.env.CALCULATOR_SNAPSHOTS_FILE;
   if (override && override.trim()) {
@@ -86,7 +115,7 @@ function assertDiskFallbackAllowed(): void {
 
   if (nodeEnv === 'production' || dataMode === 'postgres') {
     throw new Error(
-      '[snapshots-store] Disk storage fallback is strictly prohibited in production and postgres mode. PostgreSQL connection (DATABASE_URL) is required.',
+      '[snapshots-store] Disk storage fallback is strictly prohibited in production. Firestore persistence is required.',
     );
   }
 
@@ -127,14 +156,6 @@ function writeDiskSnapshots(snapshots: StoredCalculatorSnapshot[]): void {
     }
     console.error('[snapshots-store] Failed to write snapshots to disk:', err);
   }
-}
-
-function hasDatabase(): boolean {
-  return false;
-}
-
-function getPrismaRepository(): any {
-  return null;
 }
 
 export function verifySnapshotIntegrity(snapshot: StoredCalculatorSnapshot): boolean {
@@ -192,102 +213,41 @@ export function assertSnapshotIntegrity(
   }
 }
 
-export async function saveCalculatorSnapshot(
+type SaveInput = Omit<
+  StoredCalculatorSnapshot,
+  'id' | 'createdAt' | 'userId' | 'version' | 'engineVersion' | 'superseded' | 'integrityHash'
+> & {
+  id?: string;
+  version?: number;
+  engineVersion?: number;
+  integrityHash?: string;
+  auditContext?: {
+    actorRole?: string;
+    isSuperseding?: boolean;
+    previousSnapshotId?: string;
+    ipAddress?: string;
+    userAgent?: string;
+  };
+};
+
+function buildSnapshot(
   userId: string,
-  data: Omit<StoredCalculatorSnapshot, 'id' | 'createdAt' | 'userId' | 'version' | 'engineVersion' | 'superseded' | 'integrityHash'> & {
-    id?: string;
-    version?: number;
-    engineVersion?: number;
-    integrityHash?: string;
-    auditContext?: {
-      actorRole?: string;
-      isSuperseding?: boolean;
-      previousSnapshotId?: string;
-      ipAddress?: string;
-      userAgent?: string;
-    };
-  },
-): Promise<StoredCalculatorSnapshot> {
-  const repo = getPrismaRepository();
+  data: SaveInput,
+  version: number,
+): StoredCalculatorSnapshot {
   const targetEngineVersion = data.engineVersion ?? ENGINE_VERSION;
   const rawAddress = String((data.inputs as any)?.address || '').trim();
-
-  if (repo) {
-    const { snapshot: created } = await repo.createWithTransactionalAudit(
-      {
-        id: data.id,
-        projectId: data.projectId ?? undefined,
-        dealId: data.dealId ?? undefined,
-        organizationId: data.organizationId ?? undefined,
-        version: data.version,
-        engineVersion: targetEngineVersion,
-        inputs: data.inputs as unknown as Record<string, unknown>,
-        outputs: data.outputs as unknown as Record<string, unknown>,
-        assumptions: data.assumptions as unknown as Record<string, unknown>,
-        calculatorVersion: data.calculatorVersion ?? '1.0.0',
-        source: data.source ?? 'deal_calculator',
-        createdByUid: userId,
-      },
-      {
-        actorUid: userId,
-        actorRole: data.auditContext?.actorRole,
-        organizationId: data.organizationId ?? undefined,
-        isSuperseding: data.auditContext?.isSuperseding,
-        previousSnapshotId: data.auditContext?.previousSnapshotId,
-        ipAddress: data.auditContext?.ipAddress,
-        userAgent: data.auditContext?.userAgent,
-        displayAddress: rawAddress,
-      },
-    );
-
-    const displayAddress = created.identityMapping?.displayAddress || rawAddress;
-    const inputs = {
-      ...created.inputs,
-      ...(displayAddress ? { address: displayAddress } : {}),
-    };
-
-    const snapshot: StoredCalculatorSnapshot = {
-      id: created.id,
-      version: created.version,
-      engineVersion: created.engineVersion,
-      superseded: created.superseded,
-      userId: created.createdByUid ?? userId,
-      organizationId: created.organizationId,
-      projectId: created.projectId,
-      dealId: created.dealId,
-      source: (created.source as any) ?? 'deal_calculator',
-      calculatorVersion: created.calculatorVersion,
-      inputs: inputs as any,
-      displayAddress,
-      outputs: created.outputs as any,
-      assumptions: (created.assumptions as any) ?? {},
-      integrityHash: created.integrityHash,
-      createdAt: created.createdAt.toISOString(),
-    };
-
-    return snapshot;
-  }
-
-  // Disk-backed persistence for local dev / testing (strictly gated)
-  assertDiskFallbackAllowed();
-  const diskSnapshots = readDiskSnapshots();
-  const userSnapshots = diskSnapshots.filter((s) => s.userId === userId);
-  const version = data.version ?? (userSnapshots.length + 1);
-  const snapshotId =
-    data.id || `snap-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
   const assumptions = data.assumptions ?? {};
   const superseded = targetEngineVersion < ENGINE_VERSION;
 
   let sealedInputs = { ...data.inputs };
-  let addressEnvelope: AddressEnvelope | undefined;
-
   if (targetEngineVersion >= 3 && rawAddress) {
     if (!(data.inputs as any).addressEnvelope) {
       const devDek = Buffer.from(
         '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
         'hex',
       );
-      addressEnvelope = encryptSnapshotAddress(rawAddress, devDek, DEFAULT_KEY_ID);
+      const addressEnvelope = encryptSnapshotAddress(rawAddress, devDek, DEFAULT_KEY_ID);
       sealedInputs = {
         ...data.inputs,
         addressEnvelope,
@@ -307,8 +267,8 @@ export async function saveCalculatorSnapshot(
       createdByUid: userId,
     });
 
-  const snapshot: StoredCalculatorSnapshot = {
-    id: snapshotId,
+  return {
+    id: data.id || `snap-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
     version,
     engineVersion: targetEngineVersion,
     superseded,
@@ -328,6 +288,57 @@ export async function saveCalculatorSnapshot(
     integrityHash,
     createdAt: new Date().toISOString(),
   };
+}
+
+async function saveToFirestore(userId: string, data: SaveInput): Promise<StoredCalculatorSnapshot> {
+  const db = getAdminFirestore();
+  const collection = db.collection(SNAPSHOTS_COLLECTION);
+  const existing = await collection.where('userId', '==', userId).get();
+  const version = data.version ?? existing.size + 1;
+  const snapshot = buildSnapshot(userId, data, version);
+  await collection.doc(snapshot.id).set(sanitizeForFirestore(snapshot));
+  return snapshot;
+}
+
+async function listFromFirestore(
+  userId: string,
+  organizationId?: string,
+  options?: { excludeSuperseded?: boolean },
+): Promise<StoredCalculatorSnapshot[]> {
+  const db = getAdminFirestore();
+  const docs = await db.collection(SNAPSHOTS_COLLECTION).where('userId', '==', userId).get();
+  const mapped = docs.docs.map((doc) => normalizeRecord(doc.id, doc.data()));
+
+  const filtered = mapped.filter((s) => {
+    if (organizationId && s.organizationId && s.organizationId !== organizationId) return false;
+    if (options?.excludeSuperseded && s.superseded) return false;
+    return true;
+  });
+
+  for (const snapshot of filtered) {
+    if (!verifySnapshotIntegrity(snapshot)) {
+      throw new SnapshotIntegrityError(snapshot.id);
+    }
+  }
+
+  return filtered.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+}
+
+export async function saveCalculatorSnapshot(
+  userId: string,
+  data: SaveInput,
+): Promise<StoredCalculatorSnapshot> {
+  if (useFirestore()) {
+    return saveToFirestore(userId, data);
+  }
+
+  assertDiskFallbackAllowed();
+  const diskSnapshots = readDiskSnapshots();
+  const userSnapshots = diskSnapshots.filter((s) => s.userId === userId);
+  const version = data.version ?? userSnapshots.length + 1;
+  const snapshot = buildSnapshot(userId, data, version);
 
   diskSnapshots.unshift(snapshot);
   writeDiskSnapshots(diskSnapshots);
@@ -339,43 +350,10 @@ export async function getCalculatorSnapshots(
   organizationId?: string,
   options?: { excludeSuperseded?: boolean },
 ): Promise<StoredCalculatorSnapshot[]> {
-  const repo = getPrismaRepository();
-
-  if (repo) {
-    const records = await repo.findMany({
-      createdByUid: userId,
-      organizationId: organizationId ?? undefined,
-      excludeSuperseded: options?.excludeSuperseded,
-    });
-
-    return records.map((r: any) => {
-      const displayAddress = r.identityMapping?.displayAddress || (r.inputs as any)?.address;
-      const inputs = {
-        ...r.inputs,
-        ...(displayAddress ? { address: displayAddress } : {}),
-      };
-      return {
-        id: r.id,
-        version: r.version,
-        engineVersion: r.engineVersion,
-        superseded: r.superseded,
-        userId: r.createdByUid ?? userId,
-        organizationId: r.organizationId,
-        projectId: r.projectId,
-        dealId: r.dealId,
-        source: (r.source as any) ?? 'deal_calculator',
-        calculatorVersion: r.calculatorVersion,
-        inputs: inputs as any,
-        displayAddress,
-        outputs: r.outputs as any,
-        assumptions: (r.assumptions as any) ?? {},
-        integrityHash: r.integrityHash,
-        createdAt: r.createdAt.toISOString(),
-      };
-    });
+  if (useFirestore()) {
+    return listFromFirestore(userId, organizationId, options);
   }
 
-  // Disk-backed retrieval (strictly gated)
   assertDiskFallbackAllowed();
   const diskSnapshots = readDiskSnapshots();
   const filtered = diskSnapshots.filter((s) => {
@@ -400,7 +378,6 @@ export async function getCalculatorSnapshots(
     };
   });
 
-  // Verify integrity of each retrieved record
   for (const s of mapped) {
     if (!verifySnapshotIntegrity(s)) {
       throw new SnapshotIntegrityError(s.id);
@@ -430,5 +407,7 @@ export async function updateCalculatorSnapshot(
 
 /** Reset disk store for test isolation */
 export function _resetSnapshotsStoreForTesting(): void {
-  writeDiskSnapshots([]);
+  if (!useFirestore()) {
+    writeDiskSnapshots([]);
+  }
 }

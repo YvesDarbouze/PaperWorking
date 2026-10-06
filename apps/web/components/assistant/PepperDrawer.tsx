@@ -75,12 +75,32 @@ export default function PepperDrawer({
   const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalActiveTab;
   const setActiveTab = controlledSetActiveTab !== undefined ? controlledSetActiveTab : setInternalActiveTab;
   
-  // Conversational Triage Mode
+  // Conversational Triage Mode & Step State
   const [conversationalFlow, setConversationalFlow] = useState<ConversationalFlow>('idle');
+  const [bugStep, setBugStep] = useState<1 | 2 | 3 | 4>(1);
+  const [featureStep, setFeatureStep] = useState<1 | 2 | 3 | 4>(1);
+
+  // Bug Flow Inputs
   const [selectedModule, setSelectedModule] = useState<string>('Deal Calculator');
+  const [bugCategory, setBugCategory] = useState<string>('Display issue');
+  const [bugWhatHappened, setBugWhatHappened] = useState<string>('');
+  const [bugWhatExpected, setBugWhatExpected] = useState<string>('');
+  const [bugSawErrorMessage, setBugSawErrorMessage] = useState<'yes' | 'no' | null>(null);
+  const [bugErrorMessageText, setBugErrorMessageText] = useState<string>('');
   const [bugDraft, setBugDraft] = useState<StructuredBugDraft | null>(null);
+
+  // Feature Flow Inputs
+  const [featureGoal, setFeatureGoal] = useState<string>('');
+  const [featureImportance, setFeatureImportance] = useState<'Nice-to-have' | 'Important' | 'Critical'>('Important');
   const [featureDraft, setFeatureDraft] = useState<StructuredFeatureDraft | null>(null);
-  const [submittedTicket, setSubmittedTicket] = useState<{ id: string; type: string; title: string } | null>(null);
+
+  const [submittedTicket, setSubmittedTicket] = useState<{
+    id: string;
+    type: string;
+    title: string;
+    reviewWindow: string;
+    trackingUrl: string;
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionFeedbackMsg, setSubmissionFeedbackMsg] = useState<string | null>(null);
 
@@ -382,6 +402,8 @@ export default function PepperDrawer({
         id: res.ticketId || bugDraft.ticketId,
         type: 'Bug Report',
         title: bugDraft.title,
+        reviewWindow: 'Our team usually reviews bugs within 24 hours.',
+        trackingUrl: '/support#status',
       });
       setBugDraft(null);
       setAttachedMedia(null);
@@ -419,6 +441,8 @@ export default function PepperDrawer({
         id: res.ticketId || featureDraft.ticketId,
         type: 'Feature Request',
         title: featureDraft.title,
+        reviewWindow: 'We review feature requests at the end of every month with our product council.',
+        trackingUrl: '/support#roadmap',
       });
       setFeatureDraft(null);
       setAttachedMedia(null);
@@ -628,8 +652,8 @@ export default function PepperDrawer({
             data-testid="messages-scroll-container"
             className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
           >
-            {/* Welcoming Mission Banner */}
-            <div className="rounded-2xl border border-[color:var(--color-primary)]/25 bg-[color:var(--color-primary)]/[0.04] p-4 text-xs leading-relaxed space-y-2">
+            {/* Welcoming Mission Banner - Clean, Crisp, No-Slop */}
+            <div className="rounded-2xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.03] p-4 text-xs leading-relaxed space-y-2">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[color:var(--color-primary)]">
                   Submit Request
@@ -645,55 +669,88 @@ export default function PepperDrawer({
               </p>
             </div>
 
-            {/* Success Submission Card */}
+            {/* The Closure & Expectations (The Last Message) */}
             {submittedTicket && (
-              <div className="rounded-2xl border border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 p-4 space-y-2 animate-in zoom-in-95 duration-200">
+              <div className="rounded-2xl border border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 p-4 space-y-3 animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-xs font-bold text-[color:var(--color-primary)]">
                     <span className="material-symbols-outlined text-sm">check_circle</span>
                     {submittedTicket.type} Confirmed
                   </span>
-                  <span className="font-mono text-[11px] font-bold text-white bg-black/40 px-2 py-0.5 rounded">
+                  <span className="font-mono text-[11px] font-bold text-white bg-black/60 px-2.5 py-1 rounded-md border border-white/10">
                     {submittedTicket.id}
                   </span>
                 </div>
-                <p className="text-xs text-white/90">
-                  Your ticket has been filed and routed to the engineering team. An email confirmation has been dispatched to the product desk and your inbox.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSubmittedTicket(null);
-                    setConversationalFlow('idle');
-                  }}
-                  className="mt-2 text-xs font-bold text-[color:var(--color-primary)] underline hover:text-white"
-                >
-                  Start another request →
-                </button>
+
+                <div className="space-y-1.5 text-xs text-white/90">
+                  <p className="font-medium text-white">{submittedTicket.title}</p>
+                  <p className="text-[11px] text-white/70 leading-relaxed">
+                    Your request didn&apos;t vanish into a black hole—it is routed directly into engineering review.
+                  </p>
+                </div>
+
+                {/* Timeframe Expectations */}
+                <div className="rounded-xl border border-white/10 bg-black/30 p-2.5 text-[11px] flex items-center gap-2 text-white/80">
+                  <span className="material-symbols-outlined text-sm text-[color:var(--color-primary)] shrink-0">
+                    schedule
+                  </span>
+                  <span>{submittedTicket.reviewWindow}</span>
+                </div>
+
+                {/* Tracking Link */}
+                <div className="pt-1 flex items-center justify-between">
+                  <Link
+                    href={submittedTicket.trackingUrl}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--color-primary)] hover:underline"
+                  >
+                    <span>Track Status & Public Roadmap</span>
+                    <span className="material-symbols-outlined text-xs">north_east</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSubmittedTicket(null);
+                      setConversationalFlow('idle');
+                      setBugStep(1);
+                      setFeatureStep(1);
+                    }}
+                    className="text-xs text-white/50 hover:text-white transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Starter Flow Choice Chips */}
+            {/* The Core Routing (The First Message) - Binary Choice Quick Replies */}
             {conversationalFlow === 'idle' && !submittedTicket && (
               <div className="space-y-3 pt-1" data-testid="intent-chips-container">
-                <p className="text-xs font-semibold text-white/80">
-                  How can we help your investment operations today?
-                </p>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-white/90">
+                  <p className="font-semibold text-white">How can we help your investment workflow today?</p>
+                  <p className="text-[11px] text-white/50 mt-0.5">Select an option below to get started immediately.</p>
+                </div>
+
+                {/* Primary Binary Quick-Reply Buttons */}
+                <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => {
                       setConversationalFlow('bug_report');
+                      setBugStep(1);
                       setDeflectionTip(null);
                     }}
-                    className="flex flex-col items-start gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/5 p-3.5 text-left transition-all hover:border-rose-500/60 hover:bg-rose-500/10 active:scale-[0.98]"
+                    className="flex flex-col items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-left transition-all hover:border-rose-500 hover:bg-rose-500/20 active:scale-[0.98] group"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-300">
-                      <span className="material-symbols-outlined text-base">bug_report</span>
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/25 text-rose-300 text-lg">
+                      🐛
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">Report a Bug</div>
-                      <div className="text-[10px] text-white/50 mt-0.5">Automated diagnostics</div>
+                      <div className="text-sm font-bold text-white group-hover:text-rose-200">
+                        Bug Report 🐛
+                      </div>
+                      <span className="sr-only">Report a Bug</span>
+                      <div className="text-[11px] text-rose-300/80 mt-0.5">Something went wrong</div>
                     </div>
                   </button>
 
@@ -701,163 +758,296 @@ export default function PepperDrawer({
                     type="button"
                     onClick={() => {
                       setConversationalFlow('feature_request');
+                      setFeatureStep(1);
                       setDeflectionTip(null);
                     }}
-                    className="flex flex-col items-start gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 text-left transition-all hover:border-amber-500/60 hover:bg-amber-500/10 active:scale-[0.98]"
+                    className="flex flex-col items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-left transition-all hover:border-amber-500 hover:bg-amber-500/20 active:scale-[0.98] group"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-300">
-                      <span className="material-symbols-outlined text-base">lightbulb</span>
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/25 text-amber-300 text-lg">
+                      💡
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">Feature Request</div>
-                      <div className="text-[10px] text-amber-200/80 mt-0.5">Dinner on us! 🍽️</div>
+                      <div className="text-sm font-bold text-white group-hover:text-amber-200">
+                        Feature Request 💡
+                      </div>
+                      <span className="sr-only">Feature Request</span>
+                      <div className="text-[11px] text-amber-300/80 mt-0.5">Dinner on us! 🍽️</div>
                     </div>
                   </button>
+                </div>
 
+                {/* Secondary Discreet Options */}
+                <div className="flex items-center justify-center gap-4 pt-2 border-t border-white/5">
                   <button
                     type="button"
                     onClick={() => setConversationalFlow('chat')}
-                    className="flex flex-col items-start gap-1.5 rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-left transition-all hover:border-[color:var(--color-primary)]/50 hover:bg-[#1c1922] active:scale-[0.98]"
+                    className="text-xs text-white/50 hover:text-white transition-colors flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-white/5"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--color-primary)]/15 text-[color:var(--color-primary)]">
-                      <span className="material-symbols-outlined text-base">help</span>
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">Ask a Question</div>
-                      <div className="text-[10px] text-white/50 mt-0.5">Metrics, REIL, tools</div>
-                    </div>
+                    <span className="material-symbols-outlined text-sm">help</span>
+                    <span>Ask a Question</span>
                   </button>
-
+                  <span className="text-white/20">•</span>
                   <button
                     type="button"
                     onClick={() => {
                       setActiveTab('escalation');
                       setConversationalFlow('escalation');
                     }}
-                    className="flex flex-col items-start gap-1.5 rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-left transition-all hover:border-white/30 hover:bg-[#1c1922] active:scale-[0.98]"
+                    className="text-xs text-white/50 hover:text-white transition-colors flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-white/5"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white/80">
-                      <span className="material-symbols-outlined text-base">phone_in_talk</span>
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">Talk to Support</div>
-                      <div className="text-[10px] text-white/50 mt-0.5">Request phone callback</div>
-                    </div>
+                    <span className="material-symbols-outlined text-sm">phone_in_talk</span>
+                    <span>Talk to Support</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* FLOW 1: BUG REPORTING ACTIVE */}
+            {/* FLOW 1: BUG REPORT FLOW 🐛 (4-Step Structured Flow) */}
             {conversationalFlow === 'bug_report' && (
               <div className="space-y-4 animate-in fade-in duration-200">
+                {/* Flow Header with Progress */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-base text-rose-400">bug_report</span>
+                    <span className="text-base">🐛</span>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-rose-300">
-                      Conversational Bug Triage
+                      Bug Report (Step {bugStep} of 4)
                     </h3>
                   </div>
                   <button
                     type="button"
                     onClick={() => {
-                      setConversationalFlow('idle');
-                      setBugDraft(null);
-                      setDeflectionTip(null);
+                      if (bugStep > 1) {
+                        setBugStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
+                      } else {
+                        setConversationalFlow('idle');
+                        setBugDraft(null);
+                        setDeflectionTip(null);
+                      }
                     }}
                     className="text-[11px] text-white/40 hover:text-white"
                   >
-                    ← Back
+                    {bugStep > 1 ? '← Back Step' : '← Cancel'}
                   </button>
                 </div>
 
-                {/* Natural opening question */}
-                <div className="rounded-2xl border border-white/10 bg-[#16141a] p-4 text-xs text-white/90 space-y-2">
-                  <p className="font-semibold text-white">
-                    &ldquo;What went wrong, and where did it happen?&rdquo;
-                  </p>
-                  <p className="text-[11px] text-white/60 leading-relaxed">
-                    Type a quick description below, paste a screenshot directly (Cmd+V), or click &ldquo;Record Screen&rdquo; to capture a 15-second clip. Our system automatically collects browser and error logs in the background.
-                  </p>
+                {/* Progress Indicators */}
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-1 flex-1 rounded-full transition-all ${
+                        bugStep >= step ? 'bg-rose-500' : 'bg-white/10'
+                      }`}
+                    />
+                  ))}
                 </div>
 
-                {/* Quick Module Selection Pills */}
-                <div>
-                  <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
-                    Affected Workspace / Module:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {['Deal Calculator', 'Document Vault', 'Holding Ledger', 'Marketplace', 'Billing / Account', 'Other'].map(
-                      (mod) => (
+                {/* STEP 1: Capture Goal ("What went wrong?") with category buttons */}
+                {bugStep === 1 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <p className="font-semibold text-white text-sm mb-1">What went wrong?</p>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        Choose the category that best matches where you encountered the issue.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { label: 'Login', icon: 'login', mod: 'Billing / Account' },
+                        { label: 'Payment', icon: 'credit_card', mod: 'Billing / Account' },
+                        { label: 'Display issue', icon: 'desktop_windows', mod: 'Deal Calculator' },
+                        { label: 'Deal Calculator', icon: 'calculate', mod: 'Deal Calculator' },
+                        { label: 'Document Vault', icon: 'folder', mod: 'Document Vault' },
+                        { label: 'Other', icon: 'help_center', mod: 'General' },
+                      ].map((cat) => (
                         <button
-                          key={mod}
+                          key={cat.label}
                           type="button"
                           onClick={() => {
-                            setSelectedModule(mod);
-                            if (bugDraft) setBugDraft({ ...bugDraft, module: mod });
+                            setBugCategory(cat.label);
+                            setSelectedModule(cat.mod);
+                            setBugStep(2);
                           }}
-                          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                            selectedModule === mod
-                              ? 'bg-[color:var(--color-primary)] text-black font-bold'
-                              : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                          className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all active:scale-[0.98] ${
+                            bugCategory === cat.label
+                              ? 'border-rose-500 bg-rose-500/20 text-white font-bold'
+                              : 'border-white/10 bg-[#16141a] text-white/80 hover:border-white/20 hover:bg-[#1f1c24]'
                           }`}
                         >
-                          {mod}
+                          <span className="material-symbols-outlined text-rose-400 text-lg">{cat.icon}</span>
+                          <span className="text-xs">{cat.label}</span>
                         </button>
-                      ),
-                    )}
-                  </div>
-                </div>
-
-                {/* Deflection Tip if applicable */}
-                {deflectionTip && (
-                  <div className="rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-xs text-sky-200 space-y-1.5 animate-in fade-in">
-                    <div className="flex items-center gap-1.5 font-bold text-sky-300">
-                      <span className="material-symbols-outlined text-sm">lightbulb</span>
-                      <span>{deflectionTip.title}</span>
+                      ))}
                     </div>
-                    <p className="text-[11px] leading-relaxed text-white/80">{deflectionTip.body}</p>
-                    {deflectionTip.link && (
-                      <Link
-                        href={deflectionTip.link}
-                        className="inline-block text-[11px] font-bold text-sky-300 underline hover:text-white mt-1"
-                      >
-                        Read Documentation →
-                      </Link>
-                    )}
                   </div>
                 )}
 
-                {/* Structured Bug Summary Card */}
-                {bugDraft && (
-                  <div className="rounded-2xl border border-rose-500/40 bg-black/40 p-4 space-y-3 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-rose-400">
-                        Structured Bug Ticket
-                      </span>
-                      <span className="font-mono text-[10px] text-white/60">{bugDraft.ticketId}</span>
-                    </div>
-
-                    <div>
-                      <div className="text-xs font-bold text-white">{bugDraft.title}</div>
-                      <div className="text-[11px] text-white/60 mt-1 whitespace-pre-wrap">
-                        {bugDraft.description}
+                {/* STEP 2: Progressive Disclosure Description */}
+                {bugStep === 2 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-white text-sm">Could you describe what happened?</span>
+                        <span className="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-300">
+                          {bugCategory}
+                        </span>
                       </div>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        Keep it brief—our team will review the context and logs attached.
+                      </p>
                     </div>
 
-                    {/* Interactive Severity Selector */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-white/70 mb-1">
+                          What went wrong?
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={bugWhatHappened}
+                          onChange={(e) => setBugWhatHappened(e.target.value)}
+                          placeholder="Example: The checkout button turns gray and stays unclickable..."
+                          className="w-full min-h-[72px] max-h-[180px] rounded-xl border border-white/10 bg-[#16141a] px-3.5 py-2.5 text-xs text-white placeholder:text-white/30 focus:border-rose-500 focus:outline-none resize-y"
+                        />
+                      </div>
+
+                      {/* Progressive Disclosure Question: Did you see an error message? */}
+                      {bugWhatHappened.trim().length > 0 && (
+                        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 space-y-2 animate-in fade-in duration-200">
+                          <span className="block text-[11px] font-semibold text-white">
+                            Did you see any error message?
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setBugSawErrorMessage('yes')}
+                              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-colors ${
+                                bugSawErrorMessage === 'yes'
+                                  ? 'bg-rose-500 text-white'
+                                  : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
+                              }`}
+                            >
+                              Yes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setBugSawErrorMessage('no');
+                                setBugErrorMessageText('');
+                              }}
+                              className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-colors ${
+                                bugSawErrorMessage === 'no'
+                                  ? 'bg-white/20 text-white font-bold'
+                                  : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/10'
+                              }`}
+                            >
+                              No
+                            </button>
+                          </div>
+
+                          {bugSawErrorMessage === 'yes' && (
+                            <div className="pt-1 animate-in fade-in">
+                              <label className="block text-[10px] text-white/60 mb-1">
+                                What did the message say? (Optional)
+                              </label>
+                              <input
+                                type="text"
+                                value={bugErrorMessageText}
+                                onChange={(e) => setBugErrorMessageText(e.target.value)}
+                                placeholder="e.g. 500 Internal Server Error or Failed to fetch"
+                                className="w-full rounded-lg border border-white/10 bg-[#16141a] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-rose-500 focus:outline-none"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        disabled={!bugWhatHappened.trim()}
+                        onClick={() => {
+                          const combined = `Category: ${bugCategory}\nWhat happened: ${bugWhatHappened}\nError message: ${
+                            bugSawErrorMessage === 'yes' ? bugErrorMessageText || 'Yes (unspecified)' : 'None'
+                          }`;
+                          triageBugInput(combined, selectedModule);
+                          setBugStep(3);
+                        }}
+                        className="w-full rounded-xl bg-rose-500 py-2.5 text-xs font-bold text-white shadow hover:bg-rose-600 transition-colors disabled:opacity-40"
+                      >
+                        Continue to Auto-Detected Context →
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 3: Technical Context (Auto-detected behind the scenes) */}
+                {bugStep === 3 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <div className="flex items-center gap-1.5 font-semibold text-white text-sm mb-1">
+                        <span className="material-symbols-outlined text-emerald-400 text-base">auto_fix_high</span>
+                        <span>Auto-Detected Behind the Scenes</span>
+                      </div>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        The best UX is what you don&apos;t have to type. We attached your account tier, screen route, device, and recent console logs automatically.
+                      </p>
+                    </div>
+
+                    {(() => {
+                      const diag = bugDraft?.diagnostics || getClientDiagnostics();
+                      return (
+                        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2 text-xs">
+                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                            <span className="text-white/50 text-[11px]">Account & Tier</span>
+                            <span className="font-mono text-white text-[11px] capitalize">
+                              {userName} ({accountType})
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                            <span className="text-white/50 text-[11px]">Current Screen / URL</span>
+                            <span className="font-mono text-[color:var(--color-primary)] text-[11px] truncate max-w-[200px]">
+                              {pathname}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                            <span className="text-white/50 text-[11px]">Browser & OS</span>
+                            <span className="font-mono text-white text-[11px] truncate max-w-[200px]">
+                              {diag.platform} • {diag.appVersion}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
+                            <span className="text-white/50 text-[11px]">Viewport Size</span>
+                            <span className="font-mono text-white text-[11px]">
+                              {diag.viewport.width} × {diag.viewport.height}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-white/50 text-[11px]">Recent Console Logs</span>
+                            <span className="font-mono text-emerald-400 text-[11px] flex items-center gap-1">
+                              <span className="material-symbols-outlined text-xs">check_circle</span>
+                              {diag.recentErrors?.length || 0} error logs captured
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Severity Selection */}
                     <div>
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">
-                        Severity Level:
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
+                        Urgency Level:
                       </span>
                       <div className="grid grid-cols-4 gap-1.5">
                         {(['low', 'medium', 'high', 'critical'] as const).map((s) => (
                           <button
                             key={s}
                             type="button"
-                            onClick={() => setBugDraft({ ...bugDraft, severity: s })}
-                            className={`rounded-lg py-1 text-[10px] font-bold uppercase transition-colors ${
-                              bugDraft.severity === s
+                            onClick={() => {
+                              if (bugDraft) setBugDraft({ ...bugDraft, severity: s });
+                            }}
+                            className={`rounded-lg py-1.5 text-[10px] font-bold uppercase transition-colors ${
+                              (bugDraft?.severity || 'medium') === s
                                 ? s === 'critical'
                                   ? 'bg-rose-600 text-white'
                                   : s === 'high'
@@ -872,35 +1062,94 @@ export default function PepperDrawer({
                       </div>
                     </div>
 
-                    {/* Diagnostics and Media badge */}
-                    <div className="rounded-lg border border-white/10 bg-white/[0.02] p-2.5 text-[11px] text-white/70 space-y-1">
-                      <div className="flex items-center justify-between text-[10px] text-white/40">
-                        <span>URL: {pathname}</span>
-                        <span>OS: {bugDraft.diagnostics.platform}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[color:var(--color-primary)] font-mono text-[10px]">
-                        <span className="material-symbols-outlined text-xs">done_all</span>
-                        <span>Diagnostics & Redacted Error Logs Attached</span>
-                      </div>
-                      {attachedMedia && (
-                        <div className="flex items-center gap-1.5 text-sky-300 font-mono text-[10px]">
-                          <span className="material-symbols-outlined text-xs">attachment</span>
-                          <span>Media: {attachedMedia.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => setBugStep(4)}
+                      className="w-full rounded-xl bg-rose-500 py-2.5 text-xs font-bold text-white shadow hover:bg-rose-600 transition-colors"
+                    >
+                      Continue to Evidence & Submission →
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 4: Evidence (Crucial: Drag & drop, screenshot upload, or 15s recording) */}
+                {bugStep === 4 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <p className="font-semibold text-white text-sm mb-1">Attach Evidence</p>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        Screenshots or a 15-second screen recording help us fix bugs 3x faster.
+                      </p>
+                    </div>
+
+                    {/* Drag-and-drop / upload target */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`cursor-pointer rounded-2xl border-2 border-dashed p-5 text-center transition-all ${
+                        attachedMedia
+                          ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
+                          : 'border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {attachedMedia ? (
+                        <div className="space-y-1">
+                          <span className="material-symbols-outlined text-2xl text-[color:var(--color-primary)]">
+                            {attachedMedia.type === 'video' ? 'videocam' : 'image'}
+                          </span>
+                          <div className="text-xs font-bold text-white truncate max-w-[260px] mx-auto">
+                            {attachedMedia.name}
+                          </div>
+                          <div className="text-[10px] text-white/50">Click or paste another to replace</div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <span className="material-symbols-outlined text-2xl text-white/40">
+                            cloud_upload
+                          </span>
+                          <div className="text-xs font-semibold text-white">
+                            Click to upload or drag & drop screenshot
+                          </div>
+                          <div className="text-[10px] text-white/40">
+                            PNG, JPG, or WebM (or paste directly with Cmd+V)
+                          </div>
                         </div>
                       )}
                     </div>
 
+                    {/* Screen Recording Option */}
+                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#16141a] p-3">
+                      <div className="text-xs">
+                        <div className="font-semibold text-white">Record Screen (15s)</div>
+                        <div className="text-[10px] text-white/50">Capture bug reproduction live</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRecordScreen}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                          isRecording
+                            ? 'bg-rose-600 text-white animate-pulse'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-sm">
+                          {isRecording ? 'stop_circle' : 'videocam'}
+                        </span>
+                        <span>{isRecording ? `${recordingSeconds}s` : 'Record'}</span>
+                      </button>
+                    </div>
+
+                    {/* Final Submission Button */}
                     <button
                       type="button"
                       onClick={handleConfirmBugSubmit}
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-500 py-2.5 text-xs font-bold text-white shadow hover:bg-rose-600 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-500 py-3 text-xs font-bold text-white shadow-lg hover:bg-rose-600 transition-colors disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <span>Submitting Ticket...</span>
                       ) : (
                         <>
-                          <span>Confirm & Submit Bug Report</span>
+                          <span>Submit Bug Report Ticket</span>
                           <span className="material-symbols-outlined text-sm">send</span>
                         </>
                       )}
@@ -910,58 +1159,73 @@ export default function PepperDrawer({
               </div>
             )}
 
-            {/* FLOW 2: FEATURE REQUEST ACTIVE */}
+            {/* FLOW 2: FEATURE REQUEST FLOW 💡 (4-Step Low Friction Flow) */}
             {conversationalFlow === 'feature_request' && (
               <div className="space-y-4 animate-in fade-in duration-200">
+                {/* Flow Header with Progress */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-base text-amber-400">lightbulb</span>
+                    <span className="text-base">💡</span>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                      Feature Request & Dinner Pledge
+                      Feature Request (Step {featureStep} of 4)
                     </h3>
                   </div>
                   <button
                     type="button"
                     onClick={() => {
-                      setConversationalFlow('idle');
-                      setFeatureDraft(null);
+                      if (featureStep > 1) {
+                        setFeatureStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
+                      } else {
+                        setConversationalFlow('idle');
+                        setFeatureDraft(null);
+                      }
                     }}
                     className="text-[11px] text-white/40 hover:text-white"
                   >
-                    ← Back
+                    {featureStep > 1 ? '← Back Step' : '← Cancel'}
                   </button>
                 </div>
 
-                {/* Opening question */}
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-white/90 space-y-2">
-                  <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-                    <span>🍽️ The PaperWorking Dinner Guarantee</span>
-                  </div>
-                  <p className="leading-relaxed">
-                    &ldquo;What feature or tool would save you time or supercharge your investment workflow? Tell us what you&apos;d love to see—if we build it, we will buy you dinner!&rdquo;
-                  </p>
+                {/* Progress Indicators */}
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-1 flex-1 rounded-full transition-all ${
+                        featureStep >= step ? 'bg-amber-400' : 'bg-white/10'
+                      }`}
+                    />
+                  ))}
                 </div>
 
-                {/* Structured Feature Summary Card */}
-                {featureDraft && (
-                  <div className="rounded-2xl border border-amber-500/40 bg-black/40 p-4 space-y-3 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                        Feature Proposal
-                      </span>
-                      <span className="font-mono text-[10px] text-white/60">{featureDraft.ticketId}</span>
-                    </div>
-
-                    <div>
-                      <div className="text-xs font-bold text-white">{featureDraft.title}</div>
-                      <div className="text-[11px] text-white/60 mt-1 whitespace-pre-wrap">
-                        {featureDraft.description}
+                {/* STEP 1: Capture Goal ("What would you like to see added or improved?") */}
+                {featureStep === 1 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-white/90 space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-amber-300 font-bold text-sm">
+                        <span>🍽️ The PaperWorking Dinner Guarantee</span>
                       </div>
+                      <p className="text-white/80 leading-relaxed text-[11px]">
+                        What would you like to see added or improved? If we develop your feature request, we will buy you dinner!
+                      </p>
                     </div>
 
-                    {/* REIL Phase Selector */}
                     <div>
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">
+                      <label className="block text-[11px] font-semibold text-white/70 mb-1">
+                        Feature Summary / Title
+                      </label>
+                      <input
+                        type="text"
+                        value={featureGoal}
+                        onChange={(e) => setFeatureGoal(e.target.value)}
+                        placeholder="e.g. HUD-1 settlement statement auto-import, automated IRR watermarks..."
+                        className="w-full rounded-xl border border-white/10 bg-[#16141a] px-3.5 py-2.5 text-xs text-white placeholder:text-white/30 focus:border-amber-400 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Quick REIL Phase Selector */}
+                    <div>
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
                         REIL Lifecycle Phase:
                       </span>
                       <div className="grid grid-cols-3 gap-1.5">
@@ -969,11 +1233,15 @@ export default function PepperDrawer({
                           <button
                             key={phase}
                             type="button"
-                            onClick={() => setFeatureDraft({ ...featureDraft, reilPhase: phase })}
-                            className={`rounded-lg py-1 text-[10px] font-bold transition-colors ${
-                              featureDraft.reilPhase === phase
+                            onClick={() => {
+                              if (featureDraft) {
+                                setFeatureDraft({ ...featureDraft, reilPhase: phase });
+                              }
+                            }}
+                            className={`rounded-lg py-1.5 text-[10px] font-bold transition-colors ${
+                              (featureDraft?.reilPhase || 'Acquisition') === phase
                                 ? 'bg-amber-400 text-black font-extrabold'
-                                : 'bg-white/5 text-white/50 hover:text-white border border-white/10'
+                                : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
                             }`}
                           >
                             {phase}
@@ -982,21 +1250,168 @@ export default function PepperDrawer({
                       </div>
                     </div>
 
-                    <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-[11px] text-amber-200">
-                      ★ Automatically flagged for dinner qualification upon implementation!
+                    <button
+                      type="button"
+                      disabled={!featureGoal.trim()}
+                      onClick={() => {
+                        triageFeatureInput(featureGoal);
+                        setFeatureStep(2);
+                      }}
+                      className="w-full rounded-xl bg-amber-400 py-2.5 text-xs font-bold text-black shadow hover:bg-amber-300 transition-colors disabled:opacity-40"
+                    >
+                      Continue to Description →
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 2: Description (Open text field for idea & problem it solves) */}
+                {featureStep === 2 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-white text-sm">Idea & Problem Solved</span>
+                        <span className="rounded bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                          {featureDraft?.reilPhase || 'Acquisition'}
+                        </span>
+                      </div>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        Describe how this tool or improvement would solve a specific problem in your deals.
+                      </p>
+                    </div>
+
+                    <div>
+                      <textarea
+                        rows={4}
+                        value={featureDraft?.description || ''}
+                        onChange={(e) => {
+                          const desc = e.target.value;
+                          if (featureDraft) {
+                            setFeatureDraft({ ...featureDraft, description: desc });
+                          } else {
+                            triageFeatureInput(desc);
+                          }
+                        }}
+                        placeholder="Example: I wish I could export this data as a CSV and auto-populate lender settlement statements..."
+                        className="w-full min-h-[96px] max-h-[220px] rounded-xl border border-white/10 bg-[#16141a] px-3.5 py-2.5 text-xs text-white placeholder:text-white/30 focus:border-amber-400 focus:outline-none resize-y"
+                      />
                     </div>
 
                     <button
                       type="button"
+                      disabled={!featureDraft?.description?.trim()}
+                      onClick={() => setFeatureStep(3)}
+                      className="w-full rounded-xl bg-amber-400 py-2.5 text-xs font-bold text-black shadow hover:bg-amber-300 transition-colors disabled:opacity-40"
+                    >
+                      Continue to Workflow Priority →
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 3: Technical Context (How important is this feature to your workflow?) */}
+                {featureStep === 3 && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <p className="font-semibold text-white text-sm mb-1">
+                        How important is this feature to your workflow?
+                      </p>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        This guides our roadmap prioritization and engineering schedule.
+                      </p>
+                    </div>
+
+                    {/* Scale Buttons: Nice-to-have / Important / Critical */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {(
+                        [
+                          { key: 'Nice-to-have', desc: 'Convenient polish' },
+                          { key: 'Important', desc: 'Regular time saver' },
+                          { key: 'Critical', desc: 'Deal / Workflow blocker' },
+                        ] as const
+                      ).map((item) => (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setFeatureImportance(item.key)}
+                          className={`flex flex-col items-center gap-1 rounded-xl border p-3 text-center transition-all ${
+                            featureImportance === item.key
+                              ? 'border-amber-400 bg-amber-400/20 text-white font-bold ring-1 ring-amber-400/50'
+                              : 'border-white/10 bg-[#16141a] text-white/70 hover:border-white/20 hover:text-white'
+                          }`}
+                        >
+                          <span className="text-xs font-bold">{item.key}</span>
+                          <span className="text-[10px] text-white/40">{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[11px] text-amber-200 leading-relaxed">
+                      ★ All feature proposals are logged directly into our sprint review queue with your account priority.
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setFeatureStep(4)}
+                      className="w-full rounded-xl bg-amber-400 py-2.5 text-xs font-bold text-black shadow hover:bg-amber-300 transition-colors"
+                    >
+                      Continue to Optional Sketch / Examples →
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 4: Evidence (Optional image upload for sketches or examples) */}
+                {featureStep === 4 && (
+                  <div className="space-y-3 animate-in fade-in">
+                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
+                      <p className="font-semibold text-white text-sm mb-1">Sketches or Examples (Optional)</p>
+                      <p className="text-white/60 leading-relaxed text-[11px]">
+                        Have a mockup, wireframe, or screenshot from another tool? Attach it here to show us your vision.
+                      </p>
+                    </div>
+
+                    {/* Upload Target */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`cursor-pointer rounded-2xl border-2 border-dashed p-5 text-center transition-all ${
+                        attachedMedia
+                          ? 'border-amber-400 bg-amber-400/10'
+                          : 'border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                      }`}
+                    >
+                      {attachedMedia ? (
+                        <div className="space-y-1">
+                          <span className="material-symbols-outlined text-2xl text-amber-400">
+                            image
+                          </span>
+                          <div className="text-xs font-bold text-white truncate max-w-[260px] mx-auto">
+                            {attachedMedia.name}
+                          </div>
+                          <div className="text-[10px] text-white/50">Click to change attachment</div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <span className="material-symbols-outlined text-2xl text-white/40">
+                            add_photo_alternate
+                          </span>
+                          <div className="text-xs font-semibold text-white">
+                            Upload sketch, mockup, or spreadsheet example
+                          </div>
+                          <div className="text-[10px] text-white/40">PNG, JPG, or PDF snapshot (optional)</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Final Submission Button */}
+                    <button
+                      type="button"
                       onClick={handleConfirmFeatureSubmit}
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-400 py-2.5 text-xs font-bold text-black shadow hover:bg-amber-300 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-400 py-3 text-xs font-bold text-black shadow-lg hover:bg-amber-300 transition-colors disabled:opacity-50"
                     >
                       {isSubmitting ? (
                         <span>Submitting Feature Request...</span>
                       ) : (
                         <>
-                          <span>Confirm & Submit Feature Request</span>
+                          <span>Submit Proposal & Claim Dinner Pledge 🍽️</span>
                           <span className="material-symbols-outlined text-sm">restaurant</span>
                         </>
                       )}
@@ -1160,20 +1575,28 @@ export default function PepperDrawer({
                 <span className="material-symbols-outlined text-lg">screen_record</span>
               </button>
 
-              {/* Text Input */}
-              <input
-                type="text"
+              {/* Smart Expandable Text Input */}
+              <textarea
+                rows={1}
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (inputVal.trim()) {
+                      handleSendText(e);
+                    }
+                  }
+                }}
                 placeholder={
                   conversationalFlow === 'bug_report'
-                    ? 'Describe what happened (or paste screenshot)...'
+                    ? 'Example: The checkout button turns gray and stays unclickable...'
                     : conversationalFlow === 'feature_request'
-                    ? 'What tool or feature would you like to see?'
-                    : 'Ask anything or describe your request...'
+                    ? 'Example: I wish I could export this data as a CSV...'
+                    : 'Ask anything or describe your request (Shift+Enter for new line)...'
                 }
                 data-testid="assistant-chat-input"
-                className="w-full rounded-xl border border-white/10 bg-[#1a1721] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)]"
+                className="w-full min-h-[40px] max-h-[140px] rounded-xl border border-white/10 bg-[#1a1721] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] resize-y leading-normal"
               />
 
               {/* Send Button */}
@@ -1182,7 +1605,7 @@ export default function PepperDrawer({
                 disabled={!inputVal.trim()}
                 data-testid="send-message-button"
                 aria-label="Send Message"
-                className="rounded-xl bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/30 p-2.5 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/25 disabled:opacity-30 transition-all shrink-0 flex items-center justify-center"
+                className="rounded-xl bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/30 p-2.5 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/25 disabled:opacity-30 transition-all shrink-0 flex items-center justify-center self-end mb-0.5"
               >
                 <span className="material-symbols-outlined text-lg">send</span>
               </button>

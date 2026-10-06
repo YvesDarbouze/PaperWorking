@@ -231,6 +231,10 @@ async function retrieveDomainContext(query: string) {
   };
 }
 
+import {
+  streamPepperResponse,
+} from '@/lib/assistant/firebase-ai-client';
+
 export async function POST(request: NextRequest) {
   try {
     // 1. Rate Limiting Check
@@ -317,41 +321,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 7. Generate Grounded Response from Firestore Live Store with Source Citations
-    let responseText = '';
-    const allFaqs = await getFaqEntries();
-
-    if (lower.includes('33') || (lower.includes('metric') && lower.includes('what'))) {
-      const faq = allFaqs.find((f) => f.id === 'faq-deal-calculator');
-      responseText = `PaperWorking tracks 33 institutional metrics across the Real Estate Investment Lifecycle (REIL).\n\n${faq?.answer ?? ''}\n\nKey metrics include ARV, Cap Rate, Cash-on-Cash Return, Levered & Unlevered IRR, NOI, and Debt Service Coverage Ratio (DSCR).\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "How does the Deal Calculator compute metrics across REIL?")*`;
-    } else if (lower.includes('trial') || lower.includes('free trial')) {
-      const faq = allFaqs.find((f) => f.id === 'faq-pricing-plans');
-      responseText =
-        (faq?.answer ??
-          `All PaperWorking accounts include an unrestricted 14-day free trial with full access to the Deal Calculator, REIL pipeline, and institutional analytics. Your card is not charged until day 15, and you can cancel anytime with one click.`) +
-        `\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "What is included in the 14-day free trial?")*`;
-    } else if (lower.includes('workspace') || lower.includes('set up') || lower.includes('project workspace')) {
-      const faq = allFaqs.find((f) => f.id === 'faq-projects');
-      responseText =
-        (faq?.answer ??
-          `Setting up your workspace in PaperWorking starts by creating a Project:\n\n1. Go to Projects and click "Create New Project".\n2. Enter your property address to auto-pull property tax data and automated comps.\n3. Enter your purchase price, loan terms, and rehabilitation budget.\n4. Set contract dates to auto-activate deadline tracking for inspection and earnest money.`) +
-        `\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "How do I create and manage projects in PaperWorking?")*`;
-    } else if (context.matchedFaqs.length > 0) {
-      const topFaq = context.matchedFaqs[0];
-      responseText = `${topFaq.answer}\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "${topFaq.question}")*`;
-      if (context.matchedTerms.length > 0) {
-        responseText += `\n\nRelated Definition: **${context.matchedTerms[0].term}** — ${context.matchedTerms[0].definition}\n\n*Source: PaperWorking Glossary ("${context.matchedTerms[0].term}")*`;
-      }
-    } else if (context.matchedTerms.length > 0) {
-      const topTerm = context.matchedTerms[0];
-      responseText = `**${topTerm.term}**: ${topTerm.definition}\n\n*Source: PaperWorking Glossary ("${topTerm.term}")*`;
-    } else if (context.matchedCopy.length > 0) {
-      responseText = context.matchedCopy.join('\n\n') + `\n\n*Source: PaperWorking Platform Documentation*`;
-    } else {
-      responseText = FALLBACK_MESSAGE;
-    }
-
-    const stream = createGuardedTextStream(responseText);
+    // 7. Generate Grounded AI Response via Firebase AI Logic / Gemini
+    const stream = await streamPepperResponse({
+      message: sanitizedInput,
+      retrievedContext: {
+        matchedFaqs: context.matchedFaqs,
+        matchedTerms: context.matchedTerms,
+        matchedCopy: context.matchedCopy,
+      },
+    });
 
     return new NextResponse(stream, {
       headers: {
@@ -370,19 +348,11 @@ export async function POST(request: NextRequest) {
  */
 function createGuardedTextStream(rawText: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
-  // Sanitize the complete text first to prevent cross-chunk boundary leakage
   const safeText = sanitizePepperOutput(rawText);
-  const words = safeText.split(' ');
 
   return new ReadableStream({
-    async start(controller) {
-      for (let i = 0; i < words.length; i++) {
-        const chunk = (i === 0 ? '' : ' ') + words[i];
-        controller.enqueue(encoder.encode(chunk));
-        if (process.env.NODE_ENV !== 'test') {
-          await new Promise((r) => setTimeout(r, 18));
-        }
-      }
+    start(controller) {
+      controller.enqueue(encoder.encode(safeText));
       controller.close();
     },
   });

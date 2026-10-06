@@ -21,8 +21,10 @@ import {
   DEFAULT_OUTRIGHT_SALE,
   DEFAULT_REFINANCE_RETAIN,
   DEFAULT_CONDO_SELLOFF,
+  DEFAULT_COOP_SELLOFF,
   DEFAULT_LEASE_OPTION,
   DEFAULT_EXCHANGE_1031,
+  DEFAULT_FUND_HANDOVER_BASELINE,
 } from '../../components/projects/exit/index.js';
 import type { ProjectWorkspace, ExitPhaseDetails, StateTransferTaxOverride } from '../../lib/projects/types.js';
 
@@ -122,7 +124,7 @@ const mockRecalculatedOutputs = {
 
 describe('REIL Phase 4: Exit & Disposition Complete Lifecycle', () => {
   describe('Task 1: Strategy Selection & Route Initialization', () => {
-    it('renders all 5 institutional exit routes with state override capability', () => {
+    it('renders all 6 institutional exit routes with state override capability', () => {
       const html = renderToString(
         <ExitStrategySelectorCard
           selectedRoute="outright_sale"
@@ -135,6 +137,7 @@ describe('REIL Phase 4: Exit & Disposition Complete Lifecycle', () => {
       expect(html).toContain('data-testid="exit-route-outright_sale"');
       expect(html).toContain('data-testid="exit-route-refinance_retain"');
       expect(html).toContain('data-testid="exit-route-condo_selloff"');
+      expect(html).toContain('data-testid="exit-route-coop_selloff"');
       expect(html).toContain('data-testid="exit-route-lease_option"');
       expect(html).toContain('data-testid="exit-route-1031_exchange"');
       expect(html).toContain('State Override Engine');
@@ -288,6 +291,60 @@ describe('REIL Phase 4: Exit & Disposition Complete Lifecycle', () => {
       expect(html).toContain('First American Exchange Company LLC');
       expect(html).toContain('4802 Barton Springs Rd');
     });
+
+    it('renders execution milestones for Developed Condo Sales with all 4 statutory tasks', () => {
+      const html = renderToString(
+        <ExitStrategyExecutionCard
+          selectedRoute="condo_selloff"
+          outrightSale={DEFAULT_OUTRIGHT_SALE}
+          refinanceRetain={DEFAULT_REFINANCE_RETAIN}
+          condoSellOff={DEFAULT_CONDO_SELLOFF}
+          coopSellOff={DEFAULT_COOP_SELLOFF}
+          leaseOption={DEFAULT_LEASE_OPTION}
+          exchange1031={DEFAULT_EXCHANGE_1031}
+          onUpdateOutrightSale={() => {}}
+          onUpdateRefinanceRetain={() => {}}
+          onUpdateCondoSellOff={() => {}}
+          onUpdateCoopSellOff={() => {}}
+          onUpdateLeaseOption={() => {}}
+          onUpdateExchange1031={() => {}}
+        />
+      );
+
+      expect(html).toContain('data-testid="route-c-condo-selloff-view"');
+      expect(html).toContain('Condominium Declaration &amp; Plat Filing');
+      expect(html).toContain('Launch HOA &amp; Initial Reserve Budget');
+      expect(html).toContain('Public Offering Statement (POS) Delivery');
+      expect(html).toContain('Phased Marketing &amp; Sales Closings');
+      expect(html).toContain('Release Price Paydown Schedule');
+    });
+
+    it('renders execution milestones for Developed Co-op Sales with all 4 corporate tasks', () => {
+      const html = renderToString(
+        <ExitStrategyExecutionCard
+          selectedRoute="coop_selloff"
+          outrightSale={DEFAULT_OUTRIGHT_SALE}
+          refinanceRetain={DEFAULT_REFINANCE_RETAIN}
+          condoSellOff={DEFAULT_CONDO_SELLOFF}
+          coopSellOff={DEFAULT_COOP_SELLOFF}
+          leaseOption={DEFAULT_LEASE_OPTION}
+          exchange1031={DEFAULT_EXCHANGE_1031}
+          onUpdateOutrightSale={() => {}}
+          onUpdateRefinanceRetain={() => {}}
+          onUpdateCondoSellOff={() => {}}
+          onUpdateCoopSellOff={() => {}}
+          onUpdateLeaseOption={() => {}}
+          onUpdateExchange1031={() => {}}
+        />
+      );
+
+      expect(html).toContain('data-testid="route-d-coop-selloff-view"');
+      expect(html).toContain('Form the Housing Corporation');
+      expect(html).toContain('Establish Board &amp; Buyer Acceptance Rules');
+      expect(html).toContain('Cooperative Offering Plan Clearance');
+      expect(html).toContain('Manage Share Allocations &amp; Board Packages');
+      expect(html).toContain('Proprietary Lease Disposition Ledger');
+    });
   });
 
   describe('Task 5: Accounting & Tax Basis Waterfall Distributions', () => {
@@ -357,6 +414,30 @@ describe('REIL Phase 4: Exit & Disposition Complete Lifecycle', () => {
       expect(html).toContain('data-testid="audited-moic"');
       expect(html).toContain('data-testid="preview-distribution-packet-btn"');
     });
+
+    it('honestly displays N/A and No capital invested when totalCapitalInvested is zero', () => {
+      const zeroCapitalExit = {
+        ...mockExitProject.exitPhase!,
+        fundHandoverCostBaseline: undefined,
+      };
+      const html = renderToString(
+        <ExitLifecycleClosureCard
+          project={mockExitProject}
+          exitPhase={zeroCapitalExit}
+          onUpdateExitPhase={() => {}}
+          purchasePrice={0}
+          rehabActual={0}
+          originalDebt={0}
+        />
+      );
+
+      // Must not display synthetic 1.0x MOIC
+      expect(html).not.toContain('1x');
+      expect(html).not.toContain('1.0x');
+      expect(html).not.toContain('1.00x');
+      expect(html).toContain('No capital invested');
+      expect(html).toContain('N/A');
+    });
   });
 
   describe('Dual-Mode Conversational Engine', () => {
@@ -372,6 +453,10 @@ describe('REIL Phase 4: Exit & Disposition Complete Lifecycle', () => {
 
       expect(html).toContain('data-testid="exit-conversational-engine"');
       expect(html).toContain('Exit Route Selection');
+      expect(html).toContain('Fund Phase Verified Baseline');
+      expect(html).toContain('What kind of closing or disposition are you executing?');
+      expect(html).toContain('data-testid="conversational-route-condo_selloff"');
+      expect(html).toContain('data-testid="conversational-route-coop_selloff"');
       expect(html).toContain('Why this matters for your returns');
       expect(html).toContain('Required Evidence:');
       expect(html).toContain('Save &amp; Continue');

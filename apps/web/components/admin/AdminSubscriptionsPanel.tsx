@@ -36,6 +36,30 @@ export default function AdminSubscriptionsPanel() {
   const { data, loading, error, reload } = useAdminOpsSection<SubsPayload>('subscriptions');
   const [tab, setTab] = useState<'overview' | 'dunning'>('overview');
   const [notice, setNotice] = useState<string | null>(null);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  const handleDunningAction = async (dunningId: string, customer: string, action: 'retry' | 'cancel') => {
+    setActionLoadingId(dunningId);
+    setNotice(null);
+    try {
+      const res = await fetch('/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dunningId, action }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || `Failed to ${action} subscription`);
+      }
+      setNotice(result.message);
+      await reload();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Operation failed';
+      setNotice(`Error: ${message}`);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   if (loading || error || !data) {
     return (
@@ -137,8 +161,7 @@ export default function AdminSubscriptionsPanel() {
       ) : (
         <>
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-            Dunning policy: retry failed invoices up to 3 times, then cancel. Actions are stubbed in
-            seed mode.
+            Dunning policy: retry failed invoices up to 3 times, then cancel delinquent accounts.
           </div>
           <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white">
             <table className="min-w-full text-left text-sm">
@@ -163,15 +186,19 @@ export default function AdminSubscriptionsPanel() {
                     <td className="space-x-2 px-4 py-3 text-right">
                       <button
                         type="button"
-                        onClick={() => setNotice(`Retry queued for ${row.customer} (stub).`)}
-                        className="text-xs font-semibold underline"
+                        disabled={actionLoadingId === row.id}
+                        onClick={() => handleDunningAction(row.id, row.customer, 'retry')}
+                        className="inline-flex min-h-[44px] items-center text-xs font-semibold underline disabled:opacity-50 touch-target"
+                        data-testid={`retry-btn-${row.id}`}
                       >
-                        Retry
+                        {actionLoadingId === row.id ? 'Processing…' : 'Retry'}
                       </button>
                       <button
                         type="button"
-                        onClick={() => setNotice(`Cancel requested for ${row.customer} (stub).`)}
-                        className="text-xs font-semibold text-rose-700 underline"
+                        disabled={actionLoadingId === row.id}
+                        onClick={() => handleDunningAction(row.id, row.customer, 'cancel')}
+                        className="inline-flex min-h-[44px] items-center text-xs font-semibold text-rose-700 underline disabled:opacity-50 touch-target"
+                        data-testid={`cancel-btn-${row.id}`}
                       >
                         Cancel
                       </button>

@@ -65,6 +65,33 @@ export function findAuthUserByEmail(email: string): AuthUser | null {
 export function clearAuthUsers(): void {
   memoryUsers.clear();
 }
+export function findAuthUserByUid(uid: string): AuthUser | null {
+  for (const user of memoryUsers.values()) {
+    if (user.uid === uid) return user;
+  }
+  const seedFile = resolveSeedFilePath();
+  if (seedFile) {
+    try {
+      const raw = fs.readFileSync(seedFile, 'utf8');
+      const users = JSON.parse(raw) as Record<string, AuthUser>;
+      for (const user of Object.values(users)) {
+        if (user.uid === uid) return user;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+  return null;
+}
+
+/**
+ * The API package keeps auth users in memory/seed fixtures; Firestore-backed
+ * persistence is handled by the web BFF session layer.
+ */
+export function shouldAttemptFirestore(): boolean {
+  return false;
+}
+
 
 /**
  * Creates a cryptographically signed session token.

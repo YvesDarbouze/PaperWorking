@@ -64,9 +64,16 @@ export default function ExitLifecycleClosureCard({
   }, [glChecks]);
 
   // Financial baseline calculations
-  const totalCapitalInvested = (purchasePrice - originalDebt) + rehabActual + 15000;
-  const holdMonths = exitPhase.holdAudit?.monthsInHold || 14;
-  const holdYears = Math.max(0.5, holdMonths / 12);
+  const baselineCost =
+    exitPhase.fundHandoverCostBaseline?.totalCashInvested ??
+    ((purchasePrice - originalDebt) + rehabActual + (exitPhase.fundHandoverCostBaseline?.lenderClosingCosts ?? 0));
+  const totalCapitalInvested = Math.max(0, baselineCost);
+  const holdMonths =
+    exitPhase.holdAudit?.monthsInHold ??
+    (exitPhase.fundHandoverCostBaseline?.daysInHold
+      ? Math.max(1, Math.round(exitPhase.fundHandoverCostBaseline.daysInHold / 30))
+      : 12);
+  const holdYears = Math.max(0.25, holdMonths / 12);
 
   // Net Sales Proceeds & Net Profit
   const netProceeds = exitPhase.netSalesProceeds || 0;
@@ -74,7 +81,7 @@ export default function ExitLifecycleClosureCard({
 
   // Life-of-Asset KPIs
   const equityMultiple = useMemo(() => {
-    if (totalCapitalInvested <= 0) return 1.0;
+    if (totalCapitalInvested <= 0) return 0;
     const moic = netProceeds / totalCapitalInvested;
     return Number(moic.toFixed(2));
   }, [netProceeds, totalCapitalInvested]);
@@ -87,8 +94,8 @@ export default function ExitLifecycleClosureCard({
   }, [equityMultiple, holdYears, totalCapitalInvested]);
 
   const cashOnCashYield = useMemo(() => {
-    const noi = exitPhase.holdAudit?.netOperatingIncomeHold || 38600;
-    const annualNoi = (noi / holdMonths) * 12;
+    const noi = exitPhase.holdAudit?.netOperatingIncomeHold ?? 0;
+    const annualNoi = holdMonths > 0 ? (noi / holdMonths) * 12 : 0;
     if (totalCapitalInvested <= 0) return 0;
     return Number(((annualNoi / totalCapitalInvested) * 100).toFixed(1));
   }, [exitPhase.holdAudit, holdMonths, totalCapitalInvested]);
@@ -180,8 +187,8 @@ export default function ExitLifecycleClosureCard({
 ---
 
 ## 3. AUDITED LIFE-OF-ASSET PERFORMANCE KPIS
-- **Terminal IRR (Internal Rate of Return)**: ${terminalIrr}%
-- **Equity Multiple (MOIC)**: ${equityMultiple}x
+- **Terminal IRR (Internal Rate of Return)**: ${totalCapitalInvested > 0 ? `${terminalIrr}%` : 'N/A (No capital invested)'}
+- **Equity Multiple (MOIC)**: ${totalCapitalInvested > 0 ? `${equityMultiple}x` : 'N/A (No capital invested)'}
 - **Cash-on-Cash Operating Yield**: ${cashOnCashYield}%
 - **Annualized Return on Equity (ROE)**: ${returnOnEquity}%
 
@@ -364,7 +371,7 @@ export default function ExitLifecycleClosureCard({
               data-testid="audited-terminal-irr"
               className="text-xl font-bold font-mono text-emerald-400"
             >
-              {terminalIrr}%
+              {totalCapitalInvested > 0 ? `${terminalIrr}%` : 'N/A'}
             </div>
             <div className="text-[11px] text-neutral-500">
               Annualized compound return
@@ -380,10 +387,10 @@ export default function ExitLifecycleClosureCard({
               data-testid="audited-moic"
               className="text-xl font-bold font-mono text-white"
             >
-              {equityMultiple}x
+              {totalCapitalInvested > 0 ? `${equityMultiple}x` : 'N/A'}
             </div>
             <div className="text-[11px] text-neutral-500">
-              {formatCurrency(netProceeds)} returned
+              {totalCapitalInvested > 0 ? `${formatCurrency(netProceeds)} returned` : 'No capital invested'}
             </div>
           </div>
 

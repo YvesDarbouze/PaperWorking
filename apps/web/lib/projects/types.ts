@@ -697,8 +697,25 @@ export type ExitStrategyRoute =
   | 'outright_sale'
   | 'refinance_retain'
   | 'condo_selloff'
+  | 'coop_selloff'
   | 'lease_option'
   | '1031_exchange';
+
+// Hand-off from Fund Phase: Baseline verified investment costs
+export interface FundHandoverCostBaseline {
+  closedDate?: string;
+  signedLeaseDate?: string;
+  ownershipTransferredDate?: string;
+  firstRevenueDate?: string;
+  revenueEventType: 'closing_date' | 'signed_lease' | 'first_tenant_rent' | 'ownership_transfer';
+  purchasePrice: number;
+  seniorLoanFacility: number;
+  lenderClosingCosts: number;
+  totalCashInvested: number;
+  daysInHold: number;
+  holdingCarryingCostsTotal: number;
+  isVerifiedFromFund: boolean;
+}
 
 // Task 2: Data Audit & Asset Stabilization Pre-Check
 export interface HoldAuditSummary {
@@ -802,6 +819,45 @@ export interface CondoSellOffExecutionState {
   hoaBoardTransitionThresholdMet: boolean;
 }
 
+export interface CoopShareAllocationItem {
+  unitNumber: string;
+  sharesAllocated: number;
+  proprietaryLeaseSigned: boolean;
+  buyerName: string;
+  boardPackageApproved: boolean;
+  interviewCompleted: boolean;
+  status: 'closed' | 'interview_scheduled' | 'in_review' | 'available';
+}
+
+export interface CoopSellOffExecutionState {
+  // Task 1: Form the Housing Corporation
+  housingCorpEntityName: string;
+  housingCorpIncorporated: boolean;
+  masterTitleRecordedToCorp: boolean;
+  stateFilingInstrumentNumber: string;
+
+  // Task 2: Establish the Board of Directors & Acceptance Rules
+  bylawsAdopted: boolean;
+  houseRulesPublished: boolean;
+  minimumBuyerDtiPct: number;
+  minimumLiquidReserveMonths: number;
+  boardAcceptanceStandardsFinalized: boolean;
+
+  // Task 3: Offering Plan Clearance
+  offeringPlanFiledWithAG: boolean;
+  agClearanceNumber: string;
+  offeringPlanEffectiveDate?: string;
+  stateAttorneyGeneralClearanceObtained: boolean;
+
+  // Task 4: Manage Share Allocation & Co-op Board Reviews
+  totalCorporateShares: number;
+  sharesSold: number;
+  averageSharePrice: number;
+  shareAllocations: CoopShareAllocationItem[];
+  stockCertificatesIssuedCount: number;
+  proprietaryLeasesExecutedCount: number;
+}
+
 export interface LeaseOptionExecutionState {
   optionContractExecuted: boolean;
   upfrontOptionFee: number;
@@ -859,6 +915,112 @@ export interface TaxAccountingReconciliation {
   waterfallDistributions: PartnerWaterfallDistribution[];
 }
 
+// 🏦 Plaid Bank Integration, Rent Roll & Holding Cost Types
+export interface ProjectPlaidConnection {
+  connectionId: string;
+  itemId: string;
+  institutionName: string;
+  institutionId: string;
+  accountName: string;
+  accountMask: string;
+  accountType: string;
+  accountSubtype?: string;
+  isSharedAcrossProjects: boolean;
+  associatedProjectCount: number;
+  lastSyncedAt: string | null;
+  syncStatus: 'healthy' | 'syncing' | 'stale_reconnect_required' | 'error';
+}
+
+export interface ProjectRentRollItem {
+  id: string;
+  unitNumber: string;
+  tenantName: string;
+  tenantEmail?: string;
+  tenantPhone?: string;
+  monthlyRent: number;
+  dueDay: number;
+  gracePeriodDays: number;
+  lateFeeAmount: number;
+  leaseStartDate: string;
+  leaseEndDate: string;
+  depositPaid: number;
+  status: 'current' | 'grace_period' | 'late' | 'delinquent' | 'vacant';
+  payerPatterns: string[];
+}
+
+export interface ProjectRentPaymentRecord {
+  id: string;
+  rentRollId: string;
+  unitNumber: string;
+  tenantName: string;
+  amount: number;
+  expectedAmount: number;
+  paymentDate: string;
+  dueDate: string;
+  daysLate: number;
+  paymentStatus: 'on_time' | 'grace_period' | 'late' | 'partial' | 'delinquent';
+  lateFeeAssessed: number;
+  lateFeePaid: boolean;
+  plaidTransactionId?: string;
+  bankAccountMask?: string;
+  rawPayerName?: string;
+  matchConfidence: number;
+  isVerified: boolean;
+  notes?: string;
+}
+
+export interface ProjectHoldingCostRecord {
+  id: string;
+  costCategory:
+    | 'property_tax'
+    | 'debt_service'
+    | 'insurance'
+    | 'hoa_dues'
+    | 'utilities'
+    | 'repairs_maintenance'
+    | 'other';
+  title: string;
+  amount: number;
+  paymentDate: string;
+  dueDate?: string;
+  payeeName: string;
+  isAnnual: boolean;
+  fiscalYear?: number;
+  plaidTransactionId?: string;
+  isVerified: boolean;
+  notes?: string;
+}
+
+export interface ProjectTransactionMatchRule {
+  id: string;
+  ruleName: string;
+  targetCategory:
+    | 'rent_payment'
+    | 'property_tax'
+    | 'debt_service'
+    | 'insurance'
+    | 'hoa_dues'
+    | 'utilities'
+    | 'maintenance';
+  unitNumber?: string;
+  matchPayerContains?: string;
+  matchMerchantContains?: string;
+  matchAmountMin?: number;
+  matchAmountMax?: number;
+  autoApprove: boolean;
+  timesMatched: number;
+}
+
+export interface ProjectPlaidLedgerState {
+  connectedAccounts: ProjectPlaidConnection[];
+  rentRoll: ProjectRentRollItem[];
+  paymentHistory: ProjectRentPaymentRecord[];
+  holdingCostLedger: ProjectHoldingCostRecord[];
+  matchingRules: ProjectTransactionMatchRule[];
+  lastDailySyncAt?: string;
+  unassignedTransactionCount: number;
+}
+
 // Task 6: Lifecycle Closure & Performance Record
 export interface ExitPhaseDetails {
   selectedRoute: ExitStrategyRoute;
@@ -868,6 +1030,9 @@ export interface ExitPhaseDetails {
   debtPayoffAmount: number;
   proratedTaxes: number;
   netSalesProceeds: number;
+
+  // Fund to Exit Handover Cost Baseline
+  fundHandoverCostBaseline?: FundHandoverCostBaseline;
 
   // Task 2
   holdAudit?: HoldAuditSummary;
@@ -882,11 +1047,15 @@ export interface ExitPhaseDetails {
   outrightSale?: OutrightSaleExecutionState;
   refinanceRetain?: RefinanceRetainExecutionState;
   condoSellOff?: CondoSellOffExecutionState;
+  coopSellOff?: CoopSellOffExecutionState;
   leaseOption?: LeaseOptionExecutionState;
   exchange1031?: Exchange1031ExecutionState;
 
   // Task 5
   taxAccounting?: TaxAccountingReconciliation;
+
+  // Plaid Real-Time Rent & Holding Cost Ledger
+  plaidLedger?: ProjectPlaidLedgerState;
 
   // Task 6: Life-of-Asset KPIs & Audit Lock
   terminalIrr: number;
@@ -925,6 +1094,8 @@ export interface ProjectWorkspace extends ProjectSummary {
   financials?: Record<string, unknown> | null;
   phaseAssignees?: Partial<Record<LegacyProjectPhase, AssigneeOption | null>>;
   holdPhase?: HoldPhaseDetails;
+  hold?: { transactions?: any[] } | any;
+  transactions?: any[];
   exitPhase?: ExitPhaseDetails;
   userTier?: string;
   propertyState?: string;

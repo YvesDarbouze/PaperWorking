@@ -38,7 +38,7 @@ export default function PrivateDealAccessGate({
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
           <div className="flex items-center gap-3">
             <Link
-              href="/marketplace"
+              href="/marketplaces"
               className="text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 min-h-[44px]"
             >
               <span className="material-symbols-outlined text-[16px]">arrow_back</span>

@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import HowItWorksLifecycleGraphic from '@/components/marketing/HowItWorksLifecycleGraphic';
+import HowItWorksHeaderGraphic from '@/components/marketing/HowItWorksHeaderGraphic';
 import {
   howItWorksHeader,
   howItWorksSubheadline,
+  howItWorksIntro,
   howItWorksBody,
   reilNarrativeLead,
   dealCalculatorSectionTitle,
@@ -15,20 +17,28 @@ import { REIL_NARRATIVE_STEPS } from '@/lib/marketing/how-it-works-data';
 import ReilPhaseModules from '@/components/marketing/ReilPhaseModules';
 import ReilLifecycleCards from '@/components/marketing/ReilLifecycleCards';
 
-/** Ported from PaperWorking `components/landing/HowItWorks.tsx`. */
 export default function HowItWorks() {
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-border pt-8 pb-12 sm:pt-10 sm:pb-14 md:pt-12 md:pb-16">
-
+      <section className="relative overflow-hidden border-b border-border pt-4 pb-12 sm:pt-5 sm:pb-14 md:pt-6 md:pb-16">
         <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 text-center">
-          <span className="mb-3 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[12px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          {/* Eyebrow */}
+          <p className="mb-3 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {howItWorksHeader}
-          </span>
+          </p>
 
+          {/* H1 Display Headline */}
           <h1 className="landing-display mx-auto mb-6 max-w-4xl font-semibold leading-[1.1] tracking-[-0.025em] text-foreground">
             {howItWorksSubheadline}
           </h1>
+
+          {/* Lead Intro Paragraph */}
+          <p className="mx-auto mb-8 sm:mb-10 max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
+            {howItWorksIntro}
+          </p>
+
+          {/* iPhone & Desktop Computer Screen Header Graphic */}
+          <HowItWorksHeaderGraphic />
 
           {/* Moved REIL 4-Phase Block directly under header above the fold */}
           <ReilLifecycleCards />
@@ -48,6 +58,16 @@ export default function HowItWorks() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Purpose-Built REIL Section Header */}
+          <div className="mx-auto mt-12 mb-10 max-w-3xl text-center">
+            <p className="mb-3 inline-block font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Purpose-Built for the Way Real Estate Actually Works
+            </p>
+            <p className="mx-auto max-w-2xl text-base leading-[1.65] text-muted-foreground sm:text-lg">
+              Real estate investments have their own unique lifecycle. We have created a project management methodology specific to the real estate industry called the REIL (Real Estate Investment Lifecycle).
+            </p>
           </div>
 
           <ReilPhaseModules />
@@ -110,7 +130,7 @@ export default function HowItWorks() {
 
           <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-sky-400">
-              PHASE 02 · CAPITAL & CONTINGENCIES
+              PHASE 02 · CAPITAL &amp; CONTINGENCIES
             </span>
             <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
               Phase 2: Fund
@@ -129,7 +149,7 @@ export default function HowItWorks() {
 
           <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-amber-400">
-              PHASE 03 · EXECUTE & OPTIMIZE
+              PHASE 03 · EXECUTE &amp; OPTIMIZE
             </span>
             <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
               Phase 3: Hold
@@ -148,7 +168,7 @@ export default function HowItWorks() {
 
           <div className="rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10">
             <span className="mb-3 block font-[family-name:var(--font-jetbrains-mono)] text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              PHASE 04 · REALIZE & PROVE
+              PHASE 04 · REALIZE &amp; PROVE
             </span>
             <h3 className="mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-card-foreground">
               Phase 4: Exit

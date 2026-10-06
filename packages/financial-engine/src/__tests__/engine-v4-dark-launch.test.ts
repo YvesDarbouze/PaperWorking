@@ -130,4 +130,17 @@ describe('W2-00: Engine Version 4 Dark Launch Preparation', () => {
     expect(recon1.capRateOnCost).toBe(6.4);
     expect(recon1.projectedIrrPct).toBe(3.8);
   });
+
+  it('honestly reports missing required inputs for uninitialized projects rather than falling back to canonicalSeedDeal', async () => {
+    const result = await deriveAllProjectMetrics('uninitialized-project-404', {});
+
+    // Must not return canonical seed deal numbers ($12,485 NOI, 4.5% cap rate)
+    expect(result.scorecard.noi.value).toBeNull();
+    expect(result.scorecard.capRate.value).toBeNull();
+    expect(result.scorecard.cashOnCash.value).toBeNull();
+
+    // Must surface explicit missing inputs per Honesty Rule
+    expect(result.scorecard.noi.missingInputs).toContain('purchase_price');
+    expect(result.scorecard.noi.missingInputs).toContain('gross_scheduled_rent');
+  });
 });

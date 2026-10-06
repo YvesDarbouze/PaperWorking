@@ -63,7 +63,7 @@ export default function MarketingHeader() {
         >
           {/* Left: Logo */}
           <div className="flex w-1/4 items-center">
-            <Logo href="/" tone="auth" size="h-8" theme="dark" />
+            <Logo href="/" tone="auth" size="h-6" theme="dark" className="flex items-center" />
           </div>
 
           {/* Center: Nav links */}
@@ -73,7 +73,7 @@ export default function MarketingHeader() {
                 key={link.href}
                 href={link.href}
                 className={`text-[13.5px] font-medium no-underline transition-colors hover:text-foreground ${
-                  pathname === link.href ? 'text-white font-semibold' : 'text-muted-foreground'
+                  pathname === link.href ? 'text-foreground font-semibold' : 'text-muted-foreground'
                 }`}
                 aria-current={pathname === link.href ? 'page' : undefined}
               >
@@ -154,7 +154,7 @@ export default function MarketingHeader() {
           <nav className="absolute bottom-0 right-0 top-0 flex w-4/5 max-w-[320px] flex-col border-l border-border bg-background shadow-2xl transition-transform duration-300">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <Logo href="/" tone="auth" size="h-8" theme="dark" />
+              <Logo href="/" tone="auth" size="h-6" theme="dark" className="flex items-center" />
               <button
                 type="button"
                 className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none text-foreground hover:bg-muted"

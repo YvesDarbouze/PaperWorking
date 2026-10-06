@@ -274,7 +274,7 @@ export default function FollowersModal({
                   <Button
                     size="sm"
                     variant="tertiary"
-                    href="/dashboard/explore"
+                    href="/dashboard/deals"
                     className="text-[11px]"
                   >
                     Deals

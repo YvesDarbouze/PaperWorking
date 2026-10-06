@@ -78,7 +78,7 @@ describe('PROMPT 4 — Top-Nav Deal Calculator Entry & Gated Lifecycle Suite', (
 
       // Active state on desktop & mobile
       expect(headerHtml).toContain('aria-current="page"');
-      expect(headerHtml).toContain('text-white font-semibold');
+      expect(headerHtml).toContain('text-foreground font-semibold');
 
       // "Get started" remains the sole green primary CTA pill
       expect(headerHtml).toContain('Get started');
@@ -98,17 +98,18 @@ describe('PROMPT 4 — Top-Nav Deal Calculator Entry & Gated Lifecycle Suite', (
       expect(html).toContain('role="dialog"');
       expect(html).toContain('data-testid="sign-in-gate-modal"');
 
-      // Exact client heading: "Sign in"
-      expect(html).toContain('Sign in');
-
-      // [NEW PLACEHOLDER MICROCOPY — requires client approval]: "Sign in to use the Deal Calculator."
-      expect(html).toContain('Sign in to use the Deal Calculator.');
+      // Exact client heading & ecosystem copy
+      expect(html).toContain('Sign in to Access the Deal Calculator');
+      expect(html).toContain('Marketplace is a real estate investment eco-system');
+      expect(html).toContain('serious Real Estate professionals and investors');
+      expect(html).toContain('You must be signed in to your account to access');
 
       // Path to Sign in preserving post-auth redirect to /deal-calculator
+      expect(html).toContain('Sign in to your account');
       expect(html).toContain('/login?next=%2Fdeal-calculator');
 
       // Path to existing 14-day trial signup flow preserving post-auth redirect
-      expect(html).toContain('Get started');
+      expect(html).toContain('Start a 14 day free trial to access the Deal Calculator');
       expect(html).toContain('/signup?next=%2Fdeal-calculator');
     });
   });

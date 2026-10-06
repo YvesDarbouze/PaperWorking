@@ -26,6 +26,7 @@ export default function DealCrowdfundModal({
   const [ppmAgreed, setPpmAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -38,8 +39,9 @@ export default function DealCrowdfundModal({
     if (!canSubmit) return;
 
     setSubmitting(true);
+    setSubmitError(null);
     try {
-      await fetch('/api/deals/reply', {
+      const res = await fetch('/api/deals/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -49,15 +51,18 @@ export default function DealCrowdfundModal({
           source: 'crowdfund_modal',
         }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to record commitment');
+      }
+
       setSubmittedSuccess(true);
       setTimeout(() => {
         onCommitSuccess(currentAmount);
       }, 1200);
-    } catch {
-      setSubmittedSuccess(true);
-      setTimeout(() => {
-        onCommitSuccess(currentAmount);
-      }, 1200);
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Unable to record commitment. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -213,6 +218,16 @@ export default function DealCrowdfundModal({
                 <strong className="text-white font-semibold">Off-Platform Closing:</strong> PaperWorking provides syndication indication recording and direct messaging. Formal subscription documents, KYC/AML accreditation verification, and capital funding occur directly between counterparties outside of PaperWorking.
               </p>
             </div>
+
+            {/* Error banner */}
+            {submitError && (
+              <div
+                role="alert"
+                className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 font-medium"
+              >
+                {submitError}
+              </div>
+            )}
 
             {/* Submit */}
             <div className="pt-1">

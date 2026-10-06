@@ -2,22 +2,31 @@
 
 import React, { useState, useEffect, useMemo, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import CounterpartyPreviewCard from './CounterpartyPreviewCard';
 import { calculateProfileCompleteness } from '@/lib/profile/completeness';
 import { STRATEGY_LABELS, type InvestmentStrategy } from '@/lib/profile/strategies';
+import { getReil33KpiTrackRecord } from '@/lib/profile/reil-track-record';
 
 const ALL_STRATEGIES = Object.keys(STRATEGY_LABELS) as InvestmentStrategy[];
 
-export default function PublicProfileEditor() {
+export interface PublicProfileEditorProps {
+  initialLoading?: boolean;
+}
+
+export default function PublicProfileEditor({ initialLoading = true }: PublicProfileEditorProps = {}) {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Profile form state
+  // Authoritative REIL 33 Underwriting KPIs Track Record (System-Generated, Non-Editable)
+  const reilTrackRecord = useMemo(() => getReil33KpiTrackRecord(), []);
+
+  // Profile form state (Bio & Counterparty presentation)
   const [displayName, setDisplayName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [headline, setHeadline] = useState('');
@@ -27,12 +36,6 @@ export default function PublicProfileEditor() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [strategies, setStrategies] = useState<InvestmentStrategy[]>([]);
   const [isVerified, setIsVerified] = useState(true);
-
-  // Track record stats
-  const [aumMillions, setAumMillions] = useState<string>('145');
-  const [avgRoiPct, setAvgRoiPct] = useState<string>('19.2');
-  const [equityMultiple, setEquityMultiple] = useState<string>('1.88');
-  const [dealCount, setDealCount] = useState<string>('8');
 
   // Load profile from API
   const fetchProfile = async () => {
@@ -64,13 +67,6 @@ export default function PublicProfileEditor() {
       setAvatarUrl(p.avatarUrl || p.avatar || '');
       setStrategies(p.strategies || ['buy_and_hold', 'multifamily']);
       if (typeof p.isVerified === 'boolean') setIsVerified(p.isVerified);
-
-      if (typeof p.aumCents === 'number' && p.aumCents > 0) {
-        setAumMillions(String(Math.round(p.aumCents / 100 / 1_000_000)));
-      }
-      if (typeof p.avgRoiPct === 'number') setAvgRoiPct(String(p.avgRoiPct));
-      if (typeof p.equityMultiple === 'number') setEquityMultiple(String(p.equityMultiple));
-      if (typeof p.dealCount === 'number') setDealCount(String(p.dealCount));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading profile data');
     } finally {
@@ -84,12 +80,6 @@ export default function PublicProfileEditor() {
 
   // Compute profile data for live preview
   const previewProfile = useMemo(() => {
-    const aumNum = parseFloat(aumMillions);
-    const aumCents = !isNaN(aumNum) && aumNum > 0 ? Math.round(aumNum * 1_000_000 * 100) : undefined;
-    const roiNum = parseFloat(avgRoiPct);
-    const multNum = parseFloat(equityMultiple);
-    const dealsNum = parseInt(dealCount, 10);
-
     return {
       displayName,
       companyName,
@@ -100,10 +90,10 @@ export default function PublicProfileEditor() {
       avatarUrl,
       strategies,
       isVerified,
-      aumCents,
-      avgRoiPct: !isNaN(roiNum) ? roiNum : undefined,
-      equityMultiple: !isNaN(multNum) ? multNum : undefined,
-      dealCount: !isNaN(dealsNum) ? dealsNum : undefined,
+      aumCents: Math.round(reilTrackRecord.aumMillions * 1_000_000 * 100),
+      avgRoiPct: reilTrackRecord.avgRoiPct,
+      equityMultiple: reilTrackRecord.equityMultiple,
+      dealCount: reilTrackRecord.dealCount,
     };
   }, [
     displayName,
@@ -115,10 +105,7 @@ export default function PublicProfileEditor() {
     avatarUrl,
     strategies,
     isVerified,
-    aumMillions,
-    avgRoiPct,
-    equityMultiple,
-    dealCount,
+    reilTrackRecord,
   ]);
 
   // Pure completeness calculation
@@ -135,6 +122,10 @@ export default function PublicProfileEditor() {
   const handleAvatarFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError('Image file size must be under 2MB.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -157,12 +148,6 @@ export default function PublicProfileEditor() {
     setSavedSuccess(false);
 
     try {
-      const aumNum = parseFloat(aumMillions);
-      const aumCents = !isNaN(aumNum) && aumNum > 0 ? Math.round(aumNum * 1_000_000 * 100) : 0;
-      const roiNum = parseFloat(avgRoiPct);
-      const multNum = parseFloat(equityMultiple);
-      const dealsNum = parseInt(dealCount, 10);
-
       const payload = {
         displayName: displayName.trim(),
         businessName: companyName.trim(),
@@ -172,10 +157,10 @@ export default function PublicProfileEditor() {
         websiteUrl: websiteUrl.trim(),
         avatarUrl: avatarUrl.trim(),
         strategies,
-        aumCents,
-        avgRoiPct: !isNaN(roiNum) ? roiNum : undefined,
-        equityMultiple: !isNaN(multNum) ? multNum : undefined,
-        dealCount: !isNaN(dealsNum) ? dealsNum : undefined,
+        aumCents: Math.round(reilTrackRecord.aumMillions * 1_000_000 * 100),
+        avgRoiPct: reilTrackRecord.avgRoiPct,
+        equityMultiple: reilTrackRecord.equityMultiple,
+        dealCount: reilTrackRecord.dealCount,
         publicProfile: true,
       };
 
@@ -208,7 +193,7 @@ export default function PublicProfileEditor() {
     return (
       <div className="flex min-h-[400px] items-center justify-center p-8">
         <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-          <span className="material-symbols-outlined animate-spin text-[var(--accent)]">
+          <span className="material-symbols-outlined animate-spin text-primary">
             progress_activity
           </span>
           Loading public profile…
@@ -222,7 +207,7 @@ export default function PublicProfileEditor() {
       {/* Page Header */}
       <div>
         <h1 data-testid="profile-editor-heading" className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-          Public Profile &amp; Operator Provenance
+          Public Profile
         </h1>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
           How counterparties, syndication partners, and capital allocators see you across Marketplace deals.
@@ -254,7 +239,7 @@ export default function PublicProfileEditor() {
         {/* Progress Bar */}
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[var(--bg-elevated)]">
           <div
-            className="h-full rounded-full bg-[var(--accent)] transition-all duration-300"
+            className="h-full rounded-full bg-primary transition-all duration-300"
             style={{ width: `${completeness.score}%` }}
           />
         </div>
@@ -481,8 +466,8 @@ export default function PublicProfileEditor() {
                     onClick={() => toggleStrategy(strat)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                       selected
-                        ? 'border border-[var(--accent)]/40 bg-[var(--accent-subtle)] text-[var(--accent)] font-bold'
-                        : 'border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        ? 'border border-primary bg-primary text-primary-foreground font-bold shadow-xs'
+                        : 'border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-white/20 hover:text-[var(--text-primary)]'
                     }`}
                   >
                     {selected && '✓ '}
@@ -493,70 +478,151 @@ export default function PublicProfileEditor() {
             </div>
           </section>
 
-          {/* Provenance & Track Record Stats */}
+          {/* Provenance & Track Record Stats — Derived from REIL 33 KPIs (Non-Editable) */}
           <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-2">
-              Historical Track Record &amp; Metrics
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3">
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
+                  Historical Track Record &amp; Metrics
+                </h3>
+                <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                  Derived from REIL system 33 Underwriting KPIs. Non-editable by operators.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/support/metrics"
+                  target="_blank"
+                  className="inline-flex items-center gap-1 rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] no-underline transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[13px]">menu_book</span>
+                  The Playbook (33 KPIs)
+                </Link>
+                <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-none border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                  <span className="material-symbols-outlined text-[13px]">lock</span>
+                  System Generated · REIL 33 KPIs
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-xs text-[var(--text-muted)] flex items-start gap-2.5">
+              <span className="material-symbols-outlined text-base text-emerald-400 shrink-0 mt-0.5">verified</span>
+              <div>
+                <p className="font-semibold text-[var(--text-primary)]">Institutional Track Record Verification</p>
+                <p className="mt-0.5 leading-relaxed text-[11px] text-[var(--text-muted)]">
+                  Performance metrics are derived directly from the Real Estate Investment Lifecycle (REIL) system and the 33 Underwriting KPIs. Operators cannot manually edit these values, guaranteeing verified provenance for counterparties, syndication partners, and capital allocators.
+                </p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <div>
-                <label className="block text-[11px] font-semibold uppercase text-[var(--text-muted)] mb-1">
-                  AUM (\$M)
-                </label>
-                <input
-                  type="number"
-                  step="1"
-                  data-testid="profile-aum-input"
-                  value={aumMillions}
-                  onChange={(e) => setAumMillions(e.target.value)}
-                  placeholder="145"
-                  className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                />
+              <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    AUM ($M)
+                  </label>
+                  <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
+                    <span className="material-symbols-outlined text-[11px]">lock</span>
+                    KPI #1 &amp; #3
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-mono text-sm text-[var(--text-muted)]">$</span>
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    data-testid="profile-aum-input"
+                    value={reilTrackRecord.aumMillions}
+                    className="w-full font-mono text-lg font-bold text-[var(--text-primary)] bg-transparent border-0 p-0 outline-none cursor-not-allowed select-none"
+                    aria-label="Assets Under Management in millions"
+                  />
+                  <span className="font-mono text-sm font-semibold text-[var(--text-muted)]">M</span>
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)] truncate" title="Gross Purchase & Total Capitalized Basis">
+                  Gross Purchase &amp; Basis
+                </p>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold uppercase text-[var(--text-muted)] mb-1">
-                  Realized IRR %
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  data-testid="profile-roi-input"
-                  value={avgRoiPct}
-                  onChange={(e) => setAvgRoiPct(e.target.value)}
-                  placeholder="19.2"
-                  className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                />
+              <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Realized IRR %
+                  </label>
+                  <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
+                    <span className="material-symbols-outlined text-[11px]">lock</span>
+                    KPI #10
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    data-testid="profile-roi-input"
+                    value={reilTrackRecord.avgRoiPct}
+                    className="w-full font-mono text-lg font-bold text-[var(--text-primary)] bg-transparent border-0 p-0 outline-none cursor-not-allowed select-none"
+                    aria-label="Realized Internal Rate of Return percentage"
+                  />
+                  <span className="font-mono text-sm font-semibold text-[var(--text-muted)]">%</span>
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)] truncate" title="Levered Internal Rate of Return">
+                  Levered IRR (Annualized)
+                </p>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold uppercase text-[var(--text-muted)] mb-1">
-                  Equity Multiple
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  data-testid="profile-multiple-input"
-                  value={equityMultiple}
-                  onChange={(e) => setEquityMultiple(e.target.value)}
-                  placeholder="1.88"
-                  className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                />
+              <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Equity Multiple
+                  </label>
+                  <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
+                    <span className="material-symbols-outlined text-[11px]">lock</span>
+                    KPI #11
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    data-testid="profile-multiple-input"
+                    value={reilTrackRecord.equityMultiple}
+                    className="w-full font-mono text-lg font-bold text-[var(--text-primary)] bg-transparent border-0 p-0 outline-none cursor-not-allowed select-none"
+                    aria-label="Equity Multiple MOIC"
+                  />
+                  <span className="font-mono text-sm font-semibold text-[var(--text-muted)]">×</span>
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)] truncate" title="Multiple on Invested Capital (MOIC)">
+                  Multiple on Invested Capital
+                </p>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold uppercase text-[var(--text-muted)] mb-1">
-                  Exits / Deals
-                </label>
-                <input
-                  type="number"
-                  step="1"
-                  data-testid="profile-deals-input"
-                  value={dealCount}
-                  onChange={(e) => setDealCount(e.target.value)}
-                  placeholder="8"
-                  className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                />
+              <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    Exits / Deals
+                  </label>
+                  <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
+                    <span className="material-symbols-outlined text-[11px]">lock</span>
+                    KPIs #27–#33
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <input
+                    type="text"
+                    readOnly
+                    disabled
+                    data-testid="profile-deals-input"
+                    value={reilTrackRecord.dealCount}
+                    className="w-full font-mono text-lg font-bold text-[var(--text-primary)] bg-transparent border-0 p-0 outline-none cursor-not-allowed select-none"
+                    aria-label="Completed Exits and Deals"
+                  />
+                  <span className="font-mono text-sm font-semibold text-[var(--text-muted)]">closed</span>
+                </div>
+                <p className="text-[10px] text-[var(--text-muted)] truncate" title="Executed REIL Phase 4 Dispositions">
+                  Executed Dispositions
+                </p>
               </div>
             </div>
           </section>

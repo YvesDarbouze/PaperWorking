@@ -1,10 +1,10 @@
 # PaperWorking Design System & Style Guide
 
 > **MANDATORY DESIGN SYSTEM SPECIFICATION**  
-> Single Source of Truth: **[https://ui.shadcn.com/create?preset=buFzlTs](https://ui.shadcn.com/create?preset=buFzlTs)**  
-> Preset Code: `buFzlTs`
+> Single Source of Truth: **[https://ui.shadcn.com/create?preset=buFywKm](https://ui.shadcn.com/create?preset=buFywKm)**  
+> Preset Code: `buFywKm` (Radix Lyra style, Neutral base/theme, Inter font, crisp precision radius)
 
-All user interface development, components, styling, tokens, and animations across PaperWorking must strictly adhere to the default styling of shadcn preset `buFzlTs`. Custom design interpretations, one-off component variants, and ad-hoc styling are strictly forbidden.
+All user interface development, components, styling, tokens, and animations across PaperWorking must strictly adhere to the default styling of shadcn preset `buFywKm` (`buFzlTs`). Custom design interpretations, one-off component variants, and ad-hoc styling are strictly forbidden.
 
 ---
 

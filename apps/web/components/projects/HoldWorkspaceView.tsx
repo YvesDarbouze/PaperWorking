@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { bffFetch } from '@/lib/api/bff-fetch';
 import type {
   ProjectWorkspace,
   RenovationTier,
@@ -84,7 +85,7 @@ export default function HoldWorkspaceView({
   );
 
   // Scope of Work (SOW) State
-  const initialSow: SowLineItem[] = [
+  const defaultSow: SowLineItem[] = [
     {
       id: 'sow-1',
       category: 'Demolition & Prep',
@@ -156,6 +157,9 @@ export default function HoldWorkspaceView({
       status: 'not_started',
     },
   ];
+  const initialSow: SowLineItem[] = project.holdPhase?.sowItems && project.holdPhase.sowItems.length > 0
+    ? project.holdPhase.sowItems
+    : defaultSow;
   const [sowItems, setSowItems] = useState<SowLineItem[]>(initialSow);
 
   // The 8 Core Holding Cost Pillars Ledger
@@ -319,7 +323,7 @@ export default function HoldWorkspaceView({
   const [daysInHold, setDaysInHold] = useState<number>(project.holdPhase?.daysInHold || 90);
 
   // Permits & Contractors state
-  const initialPermits: MunicipalPermit[] = [
+  const defaultPermits: MunicipalPermit[] = [
     {
       id: 'prm-1',
       permitNumber: 'BP-2026-08492',
@@ -357,10 +361,13 @@ export default function HoldWorkspaceView({
       status: 'approved',
     },
   ];
+  const initialPermits: MunicipalPermit[] = project.holdPhase?.permits && project.holdPhase.permits.length > 0
+    ? project.holdPhase.permits
+    : defaultPermits;
   const [permits, setPermits] = useState<MunicipalPermit[]>(initialPermits);
 
   // Draws state
-  const initialDraws: DrawRequest[] = [
+  const defaultDraws: DrawRequest[] = [
     {
       id: 'drw-1',
       drawNumber: 1,
@@ -394,6 +401,9 @@ export default function HoldWorkspaceView({
       requestedDate: '2026-03-15',
     },
   ];
+  const initialDraws: DrawRequest[] = project.holdPhase?.drawRequests && project.holdPhase.drawRequests.length > 0
+    ? project.holdPhase.drawRequests
+    : defaultDraws;
   const [draws, setDraws] = useState<DrawRequest[]>(initialDraws);
   const [showDrawModal, setShowDrawModal] = useState(false);
   const [newDrawAmount, setNewDrawAmount] = useState<number>(15000);
@@ -452,7 +462,9 @@ export default function HoldWorkspaceView({
   ];
   const [inspections, setInspections] = useState<QualityControlInspection[]>(initialInspections);
 
-  const initialGroundUp: GroundUpMilestone[] = project.holdPhase?.groundUpMilestones || [
+  const initialGroundUp: GroundUpMilestone[] = project.holdPhase?.groundUpMilestones && project.holdPhase.groundUpMilestones.length > 0
+    ? project.holdPhase.groundUpMilestones
+    : [
     {
       id: 'gum-1',
       milestone: 'grading_earthwork',
@@ -650,6 +662,100 @@ export default function HoldWorkspaceView({
     [draws]
   );
 
+  // Persistence engine & state
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingPayloadRef = useRef<HoldPhaseDetails | null>(null);
+
+  const executePersist = useCallback(
+    async (payload: HoldPhaseDetails) => {
+      setSaveStatus('saving');
+      setSaveError(null);
+      try {
+        const pId = project.id || project.project_id;
+        if (!pId) return;
+
+        const fetchFn = typeof bffFetch === 'function' ? bffFetch : fetch;
+        const res = await fetchFn(`/api/projects/${pId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ holdPhase: payload }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to save hold phase (${res.status})`);
+        }
+
+        setSaveStatus('saved');
+      } catch (err: unknown) {
+        console.error('[HoldWorkspaceView] Persistence error:', err);
+        setSaveStatus('error');
+        setSaveError(err instanceof Error ? err.message : 'Network error');
+      }
+    },
+    [project.id, project.project_id]
+  );
+
+  const schedulePersist = useCallback(
+    (payload: HoldPhaseDetails, immediate: boolean = false) => {
+      pendingPayloadRef.current = payload;
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+
+      if (immediate) {
+        void executePersist(payload);
+      } else {
+        setSaveStatus('saving');
+        debounceTimerRef.current = setTimeout(() => {
+          if (pendingPayloadRef.current) {
+            void executePersist(pendingPayloadRef.current);
+          }
+        }, 500);
+      }
+    },
+    [executePersist]
+  );
+
+  // Clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Synchronize local states if project.holdPhase updates externally
+  useEffect(() => {
+    if (!project.holdPhase) return;
+    if (project.holdPhase.renovationTier) setSelectedTier(project.holdPhase.renovationTier);
+    if (project.holdPhase.sowItems?.length) setSowItems(project.holdPhase.sowItems);
+    if (project.holdPhase.holdingCosts?.length) setHoldingCosts(project.holdPhase.holdingCosts);
+    if (project.holdPhase.listingAds?.length) setListingAds(project.holdPhase.listingAds);
+    if (typeof project.holdPhase.daysInHold === 'number') setDaysInHold(project.holdPhase.daysInHold);
+    if (project.holdPhase.permits?.length) setPermits(project.holdPhase.permits);
+    if (project.holdPhase.drawRequests?.length) setDraws(project.holdPhase.drawRequests);
+    if (project.holdPhase.contractors?.length) setContractors(project.holdPhase.contractors);
+    if (project.holdPhase.qualityControlInspections?.length) setInspections(project.holdPhase.qualityControlInspections);
+    if (project.holdPhase.groundUpMilestones?.length) setGroundUpMilestones(project.holdPhase.groundUpMilestones);
+    if (project.holdPhase.debtService) setDebtService(project.holdPhase.debtService);
+    if (project.holdPhase.propertyTax) setPropertyTax(project.holdPhase.propertyTax);
+    if (project.holdPhase.insurance) setInsurance(project.holdPhase.insurance);
+    if (project.holdPhase.utilities?.length) setUtilities(project.holdPhase.utilities);
+    if (project.holdPhase.hoa) setHoa(project.holdPhase.hoa);
+    if (project.holdPhase.capexItems?.length) setCapexItems(project.holdPhase.capexItems);
+    if (project.holdPhase.bookkeepingSummary) setBookkeepingSummary(project.holdPhase.bookkeepingSummary);
+    if (project.holdPhase.stabilization) setStabilization(project.holdPhase.stabilization);
+    if (project.holdPhase.propertyManagerDetails) setPropertyManager(project.holdPhase.propertyManagerDetails);
+    if (project.holdPhase.siteSecurity) setSiteSecurity(project.holdPhase.siteSecurity);
+    if (project.holdPhase.routineMaintenance?.length) setRoutineMaintenance(project.holdPhase.routineMaintenance);
+    if (typeof project.holdPhase.isSelfManaged === 'boolean') setIsSelfManaged(project.holdPhase.isSelfManaged);
+    if (typeof project.holdPhase.propertyManagementFeePct === 'number') setPropertyManagementFeePct(project.holdPhase.propertyManagementFeePct);
+  }, [project.holdPhase]);
+
   // Sync state helper
   const syncStateToProject = (
     updatedSow: SowLineItem[] = sowItems,
@@ -657,7 +763,8 @@ export default function HoldWorkspaceView({
     updatedAds: ListingAdRecord[] = listingAds,
     updatedTier: RenovationTier = selectedTier,
     updatedDays: number = daysInHold,
-    extraFields: Partial<HoldPhaseDetails> = {}
+    extraFields: Partial<HoldPhaseDetails> = {},
+    immediate: boolean = false
   ) => {
     const updatedHoldPhase: HoldPhaseDetails = {
       targetDisposition: dispositionStrategy,
@@ -675,22 +782,23 @@ export default function HoldWorkspaceView({
       propertyManagerName: isSelfManaged ? 'Self-Managed' : 'Pioneer Austin Management',
       targetMarketRent: project.underwriting?.rentRoll?.grossScheduledRent || 3800,
       targetSaleArv: 710000,
-      permits,
-      contractors,
-      qualityControlInspections: inspections,
-      drawRequests: draws,
-      groundUpMilestones,
-      debtService,
-      propertyTax,
-      insurance,
-      utilities,
-      hoa,
-      capexItems,
-      bookkeepingSummary,
-      stabilization,
-      propertyManagerDetails: propertyManager,
-      siteSecurity,
-      routineMaintenance,
+      sowItems: updatedSow,
+      permits: extraFields.permits || permits,
+      contractors: extraFields.contractors || contractors,
+      qualityControlInspections: extraFields.qualityControlInspections || inspections,
+      drawRequests: extraFields.drawRequests || draws,
+      groundUpMilestones: extraFields.groundUpMilestones || groundUpMilestones,
+      debtService: extraFields.debtService || debtService,
+      propertyTax: extraFields.propertyTax || propertyTax,
+      insurance: extraFields.insurance || insurance,
+      utilities: extraFields.utilities || utilities,
+      hoa: extraFields.hoa || hoa,
+      capexItems: extraFields.capexItems || capexItems,
+      bookkeepingSummary: extraFields.bookkeepingSummary || bookkeepingSummary,
+      stabilization: extraFields.stabilization || stabilization,
+      propertyManagerDetails: extraFields.propertyManagerDetails || propertyManager,
+      siteSecurity: extraFields.siteSecurity || siteSecurity,
+      routineMaintenance: extraFields.routineMaintenance || routineMaintenance,
       ...extraFields,
     };
 
@@ -698,6 +806,25 @@ export default function HoldWorkspaceView({
       ...project,
       holdPhase: updatedHoldPhase,
     });
+
+    schedulePersist(updatedHoldPhase, immediate);
+  };
+
+  const handleUpdateProjectWithPersist = (updated: ProjectWorkspace) => {
+    onUpdateProject(updated);
+    if (updated.holdPhase) {
+      schedulePersist(updated.holdPhase, true);
+    } else {
+      const pId = project.id || project.project_id;
+      if (pId) {
+        const fetchFn = typeof bffFetch === 'function' ? bffFetch : fetch;
+        fetchFn(`/api/projects/${pId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated),
+        }).catch((err) => console.error('[HoldWorkspaceView] updateProject persist error:', err));
+      }
+    }
   };
 
   const handleUpdateSowItems = (updated: SowLineItem[]) => {
@@ -717,7 +844,17 @@ export default function HoldWorkspaceView({
 
   const handleSelectTier = (tier: RenovationTier) => {
     setSelectedTier(tier);
-    syncStateToProject(undefined, undefined, undefined, tier);
+    syncStateToProject(undefined, undefined, undefined, tier, undefined, {}, true);
+  };
+
+  const handleToggleSelfManaged = (val: boolean) => {
+    setIsSelfManaged(val);
+    syncStateToProject(undefined, undefined, undefined, undefined, undefined, { isSelfManaged: val }, true);
+  };
+
+  const handleChangeManagementFeePct = (fee: number) => {
+    setPropertyManagementFeePct(fee);
+    syncStateToProject(undefined, undefined, undefined, undefined, undefined, { propertyManagementFeePct: fee });
   };
 
   const handleUpdateContractors = (updated: ContractorRecord[]) => {
@@ -737,7 +874,7 @@ export default function HoldWorkspaceView({
 
   const handleUpdateDraws = (updated: DrawRequest[]) => {
     setDraws(updated);
-    syncStateToProject(undefined, undefined, undefined, undefined, undefined, { drawRequests: updated });
+    syncStateToProject(undefined, undefined, undefined, undefined, undefined, { drawRequests: updated }, true);
   };
 
   const handleUpdateGroundUpMilestones = (updated: GroundUpMilestone[]) => {
@@ -793,7 +930,7 @@ export default function HoldWorkspaceView({
       propertyManagerDetails: updated,
       isSelfManaged: updated.isSelfManaged,
       propertyManagementFeePct: updated.feePct,
-    });
+    }, true);
   };
 
   const handleUpdateSiteSecurity = (updated: SiteSecurityHoldDetails) => {
@@ -820,8 +957,10 @@ export default function HoldWorkspaceView({
       status: 'submitted',
       requestedDate: new Date().toISOString().slice(0, 10),
     };
-    setDraws((prev) => [...prev, newDraw]);
+    const updatedDraws = [...draws, newDraw];
+    setDraws(updatedDraws);
     setShowDrawModal(false);
+    syncStateToProject(undefined, undefined, undefined, undefined, undefined, { drawRequests: updatedDraws }, true);
   };
 
   return (
@@ -865,7 +1004,7 @@ export default function HoldWorkspaceView({
       {viewMode === 'conversational' ? (
         <HoldConversationalEngine
           project={project}
-          onUpdateProject={onUpdateProject}
+          onUpdateProject={handleUpdateProjectWithPersist}
           onSwitchToExecutiveView={() => setViewMode('workspace')}
           activeRoster={(project.teamMembers || []) as AssigneeOption[]}
         />
@@ -892,6 +1031,21 @@ export default function HoldWorkspaceView({
                     <span className="border border-neutral-800 bg-neutral-900 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-400 font-semibold rounded-none">
                       Strategy: {dispositionStrategy}
                     </span>
+                    {saveStatus === 'saving' && (
+                      <span data-testid="hold-save-status" className="border border-amber-800/60 bg-amber-950/40 px-2 py-0.5 text-[10px] font-mono text-amber-400 rounded-none animate-pulse">
+                        Saving…
+                      </span>
+                    )}
+                    {saveStatus === 'saved' && (
+                      <span data-testid="hold-save-status" className="border border-emerald-800/60 bg-emerald-950/40 px-2 py-0.5 text-[10px] font-mono text-emerald-400 rounded-none">
+                        Saved to Cloud
+                      </span>
+                    )}
+                    {saveStatus === 'error' && (
+                      <span data-testid="hold-save-status" className="border border-red-800/60 bg-red-950/40 px-2 py-0.5 text-[10px] font-mono text-red-400 rounded-none" title={saveError || 'Save failed'}>
+                        Save Error
+                      </span>
+                    )}
                   </div>
                   <h1 className="text-lg font-bold text-white mt-1">
                     {project.address || project.propertyName}
@@ -1015,7 +1169,7 @@ export default function HoldWorkspaceView({
                 onSelectTier={handleSelectTier}
                 sowItems={sowItems}
                 onUpdateSowItems={handleUpdateSowItems}
-                onUpdateProject={onUpdateProject}
+                onUpdateProject={handleUpdateProjectWithPersist}
               />
 
               {/* Municipal Permits & Lender Draws Grid */}
@@ -1118,7 +1272,7 @@ export default function HoldWorkspaceView({
                 userTier={userTier}
                 propertyState={propertyState}
                 activeRoster={activeRoster}
-                onUpdateProject={onUpdateProject}
+                onUpdateProject={handleUpdateProjectWithPersist}
               />
             </div>
           )}
@@ -1132,9 +1286,9 @@ export default function HoldWorkspaceView({
                 holdingCosts={holdingCosts}
                 onUpdateHoldingCosts={handleUpdateHoldingCosts}
                 isSelfManaged={isSelfManaged}
-                onToggleSelfManaged={setIsSelfManaged}
+                onToggleSelfManaged={handleToggleSelfManaged}
                 propertyManagementFeePct={propertyManagementFeePct}
-                onChangeManagementFeePct={setPropertyManagementFeePct}
+                onChangeManagementFeePct={handleChangeManagementFeePct}
               />
 
               {/* Holding Drag & Daily Burn Calculator */}
@@ -1169,7 +1323,7 @@ export default function HoldWorkspaceView({
                 userTier={userTier}
                 propertyState={propertyState}
                 activeRoster={activeRoster}
-                onUpdateProject={onUpdateProject}
+                onUpdateProject={handleUpdateProjectWithPersist}
               />
             </div>
           )}
@@ -1203,7 +1357,7 @@ export default function HoldWorkspaceView({
                 userTier={userTier}
                 propertyState={propertyState}
                 activeRoster={activeRoster}
-                onUpdateProject={onUpdateProject}
+                onUpdateProject={handleUpdateProjectWithPersist}
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

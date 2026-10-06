@@ -31,7 +31,6 @@ export interface AssistantConfig {
   policies: {
     trialDays: number;
     billingStartDay: number;
-    annualMoneyBackDays: number;
     postCancellationReadOnlyDays: number;
     cancellationPath: string;
     annualMonthlySwitching: boolean;
@@ -106,7 +105,6 @@ export const PEPPER_CONFIG: AssistantConfig = {
   policies: {
     trialDays: 14,
     billingStartDay: 15,
-    annualMoneyBackDays: 30,
     postCancellationReadOnlyDays: 90,
     cancellationPath: 'Dashboard → Settings → Billing',
     annualMonthlySwitching: true,

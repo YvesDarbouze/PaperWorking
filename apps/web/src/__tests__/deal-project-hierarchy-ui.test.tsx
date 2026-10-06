@@ -47,7 +47,7 @@ jest.unstable_mockModule('@/context/SavedDealsContext', () => ({
 // Mock Property Image hook
 jest.unstable_mockModule('@/lib/maps/property-image', () => ({
   usePropertyImage: () => ({
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     handleImageError: jest.fn(),
     isLoading: false,
   }),

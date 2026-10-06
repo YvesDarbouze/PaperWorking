@@ -17,6 +17,7 @@ import {
 } from '@/components/reports/TaxReportViews';
 import { useOptionalAuth } from '@/context/AuthContext';
 import { SEED_PROJECTS } from '@/lib/projects/seed-data';
+import { bffFetch } from '@/lib/api/bff-fetch';
 import type { ReportId } from '@/lib/reports/report-catalog';
 import { exportStatementGridCsv } from '@/lib/export/statement-csv';
 import { generateScheduleEReport } from '@/lib/reports/schedule-e-mapper';
@@ -83,7 +84,31 @@ export default function PortfolioReportsPanel({
 }: {
   initialProjects?: typeof SEED_PROJECTS;
 }) {
-  const [projects] = useState(initialProjects);
+  const [projects, setProjects] = useState<any[]>(initialProjects);
+
+  // Fetch live workspace projects on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function loadWorkspaceProjects() {
+      try {
+        const res = await bffFetch('/api/projects', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          const items = Array.isArray(data) ? data : data?.projects || data?.items;
+          if (Array.isArray(items) && items.length > 0 && !cancelled) {
+            setProjects(items);
+          }
+        }
+      } catch {
+        // Retain initialProjects on error
+      }
+    }
+    void loadWorkspaceProjects();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const [selectedReportId, setSelectedReportId] = useState<ReportId>('PL');
   const [projectScope, setProjectScope] = useState<string>(ALL_PROJECTS);
   const [granularity, setGranularity] = useState<StatementGranularity>('monthly');
@@ -271,7 +296,7 @@ export default function PortfolioReportsPanel({
             variant="primary"
             size="lg"
             roleVariant="cta"
-            href="/project/new"
+            href="/projects/new"
             icon={<span className="material-symbols-outlined text-[18px]">add</span>}
             data-testid="empty-create-project-btn"
           >

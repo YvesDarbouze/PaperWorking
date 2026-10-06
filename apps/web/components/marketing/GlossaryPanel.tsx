@@ -52,7 +52,7 @@ export default function GlossaryPanel() {
 
   return (
     <div className="pb-16">
-      <section className="pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-12 md:pb-10">
+      <section className="pt-2 pb-8 sm:pt-2.5 sm:pb-10 md:pt-3 md:pb-10">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 text-center">
           <Link
             href="/support"

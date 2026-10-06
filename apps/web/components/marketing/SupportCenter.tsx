@@ -361,9 +361,9 @@ export default function SupportCenter({
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#fdfffc] pb-24">
+    <div className="min-h-screen bg-background text-foreground pb-24">
       {/* Page Header */}
-      <section className="relative overflow-hidden border-b border-border pt-8 pb-10 sm:pt-10 sm:pb-12 md:pt-12 md:pb-14">
+      <section className="relative overflow-hidden border-b border-border pt-2 pb-10 sm:pt-2.5 sm:pb-12 md:pt-3 md:pb-14">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 text-center">
           <span className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground/80">
             PAPERWORKING KNOWLEDGE &amp; ASSISTANCE

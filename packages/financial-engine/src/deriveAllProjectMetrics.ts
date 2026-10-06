@@ -98,8 +98,11 @@ export function deriveAllProjectMetrics(
     const asOfDate = options?.asOfDate || new Date();
     const isProjected = options?.includeProjected ?? true;
 
-    // Fetch project record (uses mock data, underwriting inputs, or canonical seed deal)
-    const projectData = options?.mockData || canonicalSeedDeal;
+    // Fetch project record (uses provided projectData/mockData, or canonical seed deal for known seed id)
+    const projectData =
+      options?.projectData ||
+      options?.mockData ||
+      (projectId === 'canonical-seed-deal-id' ? canonicalSeedDeal : { id: projectId });
     const uw = projectData.underwriting;
 
     // Stored cash-flow events: when present they are authoritative for IRR / equity multiple.

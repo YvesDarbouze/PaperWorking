@@ -32,7 +32,7 @@ export default function MetricsPlaybookPanel() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-8 pb-16 md:pt-12">
+    <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-2 pb-16 md:pt-3">
       <div className="mb-8">
         <Link
           href="/support"

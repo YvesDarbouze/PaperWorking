@@ -6,6 +6,7 @@ import type {
   OutrightSaleExecutionState,
   RefinanceRetainExecutionState,
   CondoSellOffExecutionState,
+  CoopSellOffExecutionState,
   LeaseOptionExecutionState,
   Exchange1031ExecutionState,
 } from '@/lib/projects/types';
@@ -22,6 +23,8 @@ import {
   ShieldCheck,
   CalendarCheck,
   FileLock,
+  FileCheck,
+  Users,
 } from '@/components/icons/PhosphorIcons';
 
 interface ExitStrategyExecutionCardProps {
@@ -29,11 +32,13 @@ interface ExitStrategyExecutionCardProps {
   outrightSale: OutrightSaleExecutionState;
   refinanceRetain: RefinanceRetainExecutionState;
   condoSellOff: CondoSellOffExecutionState;
+  coopSellOff?: CoopSellOffExecutionState;
   leaseOption: LeaseOptionExecutionState;
   exchange1031: Exchange1031ExecutionState;
   onUpdateOutrightSale: (updated: OutrightSaleExecutionState) => void;
   onUpdateRefinanceRetain: (updated: RefinanceRetainExecutionState) => void;
   onUpdateCondoSellOff: (updated: CondoSellOffExecutionState) => void;
+  onUpdateCoopSellOff?: (updated: CoopSellOffExecutionState) => void;
   onUpdateLeaseOption: (updated: LeaseOptionExecutionState) => void;
   onUpdateExchange1031: (updated: Exchange1031ExecutionState) => void;
   onHandBackToHold?: () => void;
@@ -44,11 +49,13 @@ export default function ExitStrategyExecutionCard({
   outrightSale,
   refinanceRetain,
   condoSellOff,
+  coopSellOff,
   leaseOption,
   exchange1031,
   onUpdateOutrightSale,
   onUpdateRefinanceRetain,
   onUpdateCondoSellOff,
+  onUpdateCoopSellOff,
   onUpdateLeaseOption,
   onUpdateExchange1031,
   onHandBackToHold,
@@ -305,26 +312,113 @@ export default function ExitStrategyExecutionCard({
       )}
 
       {/* ======================================================== */}
-      {/* ROUTE C: CONDO / CO-OP UNIT SELL-OFF                     */}
+      {/* ROUTE C: DEVELOPED CONDO SALES (TASKS 1-4)               */}
       {/* ======================================================== */}
       {selectedRoute === 'condo_selloff' && (
         <div data-testid="route-c-condo-selloff-view" className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
             <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
-              <span className="block text-[10px] uppercase text-muted-foreground">Total Units</span>
-              <span className="block text-base font-bold text-foreground mt-1">{condoSellOff.totalUnits} Units</span>
+              <span className="block text-[10px] uppercase text-muted-foreground">Total Fee-Simple Units</span>
+              <span className="block text-base font-bold text-foreground mt-1">{condoSellOff.totalUnits} Parcels</span>
             </div>
             <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
               <span className="block text-[10px] uppercase text-muted-foreground">Units Sold to Date</span>
               <span className="block text-base font-bold text-primary mt-1">{condoSellOff.unitsSold} / {condoSellOff.totalUnits} Sold</span>
             </div>
             <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
-              <span className="block text-[10px] uppercase text-muted-foreground">Average Price / Unit</span>
+              <span className="block text-[10px] uppercase text-muted-foreground">Average Price / Parcel</span>
               <span className="block text-base font-bold text-foreground mt-1">{formatCurrency(condoSellOff.averageUnitPrice)}</span>
             </div>
             <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
               <span className="block text-[10px] uppercase text-muted-foreground">Monthly HOA Dues</span>
               <span className="block text-base font-bold text-foreground mt-1">${condoSellOff.monthlyDuesPerUnit}/mo</span>
+            </div>
+          </div>
+
+          {/* 4 Dedicated Regulatory & Execution Tasks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {/* Task 1: Condominium Declaration & Plat Filing */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 01 · Legal Declaration
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Recorded
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Condominium Declaration &amp; Plat Filing</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Master deed, declaration covenants, and certified survey plats are legally recorded with the municipal registry to establish individual tax parcels.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Tax Parcels: <strong className="text-foreground">{condoSellOff.totalUnits} Recorded</strong></span>
+                <span className="text-emerald-400">Plat Approved</span>
+              </div>
+            </div>
+
+            {/* Task 2: Launch the HOA & Initial Budget */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 02 · Association Governance
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Active
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Launch HOA &amp; Initial Reserve Budget</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Homeowners Association incorporated, bylaws adopted, and initial reserve accounts funded to facilitate building management transfer.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>HOA: <strong className="text-foreground">{condoSellOff.hoaEntityName}</strong></span>
+                <span>Dues: <strong className="text-foreground">${condoSellOff.monthlyDuesPerUnit}/mo</strong></span>
+              </div>
+            </div>
+
+            {/* Task 3: Public Offering Statement (POS) Delivery */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 03 · Statutory Disclosures
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Delivered
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Public Offering Statement (POS) Delivery</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Legal disclosure booklets detailing construction warranties, association governance, operating budgets, and CC&amp;Rs delivered to all prospective buyers.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Compliance: <strong className="text-foreground">Fannie / FHA Ready</strong></span>
+                <span className="text-emerald-400">POS Certified</span>
+              </div>
+            </div>
+
+            {/* Task 4: Phased Marketing & Sales Closings */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 04 · Phased Debt Paydown
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-primary">
+                  <Clock size={13} />
+                  In Progress
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Phased Marketing &amp; Sales Closings</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Contracted sales gallery securing buyer deposits. Individual unit closings systematically pay down construction loan release prices.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Tranches: <strong className="text-foreground">{condoSellOff.unitsSold} Closed</strong></span>
+                <span>Paydown: <strong className="text-foreground">$180,000 Paid</strong></span>
+              </div>
             </div>
           </div>
 
@@ -377,6 +471,172 @@ export default function ExitStrategyExecutionCard({
       )}
 
       {/* ======================================================== */}
+      {/* ROUTE D: DEVELOPED CO-OP SALES (TASKS 1-4)                */}
+      {/* ======================================================== */}
+      {selectedRoute === 'coop_selloff' && (
+        <div data-testid="route-d-coop-selloff-view" className="space-y-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
+            <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
+              <span className="block text-[10px] uppercase text-muted-foreground">Total Corporate Shares</span>
+              <span className="block text-base font-bold text-foreground mt-1">
+                {(coopSellOff?.totalCorporateShares || 10000).toLocaleString()} Shares
+              </span>
+            </div>
+            <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
+              <span className="block text-[10px] uppercase text-muted-foreground">Shares Allocated &amp; Sold</span>
+              <span className="block text-base font-bold text-primary mt-1">
+                {(coopSellOff?.sharesSold || 4200).toLocaleString()} / {(coopSellOff?.totalCorporateShares || 10000).toLocaleString()}
+              </span>
+            </div>
+            <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
+              <span className="block text-[10px] uppercase text-muted-foreground">Average Price / Share</span>
+              <span className="block text-base font-bold text-foreground mt-1">
+                ${coopSellOff?.averageSharePrice || 85} / Share
+              </span>
+            </div>
+            <div className="rounded-none border border-border bg-muted/20 p-3 text-center">
+              <span className="block text-[10px] uppercase text-muted-foreground">Proprietary Leases</span>
+              <span className="block text-base font-bold text-foreground mt-1">
+                {coopSellOff?.proprietaryLeasesExecutedCount || 2} Executed
+              </span>
+            </div>
+          </div>
+
+          {/* 4 Dedicated Co-op Regulatory Tasks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {/* Task 1: Form the Housing Corporation */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 01 · Corporate Entity
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Incorporate
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Form the Housing Corporation</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Co-op corporation incorporated to hold the master title to the land and building. Proprietary leases issued against corporate stock shares.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Corp: <strong className="text-foreground">{coopSellOff?.housingCorpEntityName || 'The Elm Housing Corp'}</strong></span>
+                <span className="text-emerald-400">Master Title Held</span>
+              </div>
+            </div>
+
+            {/* Task 2: Establish the Board of Directors & Acceptance Rules */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 02 · Board Rules &amp; Standards
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Adopted
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Establish Board &amp; Buyer Acceptance Rules</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Corporate bylaws, house rules, and strict financial standards (max DTI, post-closing liquid reserve requirements) drafted and ratified.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Max DTI: <strong className="text-foreground">{coopSellOff?.minimumBuyerDtiPct || 28}%</strong></span>
+                <span>Reserves: <strong className="text-foreground">{coopSellOff?.minimumLiquidReserveMonths || 24} mos</strong></span>
+              </div>
+            </div>
+
+            {/* Task 3: Offering Plan Clearance */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 03 · State Regulatory Clearance
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  AG Cleared
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Cooperative Offering Plan Clearance</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Formal cooperative offering plan filed, reviewed, and declared effective with state regulatory authorities (State Attorney General Real Estate Finance Bureau).
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>AG File: <strong className="text-foreground">{coopSellOff?.agClearanceNumber || 'AG-REALTY-84920'}</strong></span>
+                <span className="text-emerald-400">Effective</span>
+              </div>
+            </div>
+
+            {/* Task 4: Manage Share Allocation & Co-op Board Reviews */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 04 · Board Review &amp; Issuance
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-primary">
+                  <Clock size={13} />
+                  Active Reviews
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Manage Share Allocations &amp; Board Packages</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Facilitate prospective buyer financial packages and board interviews. Issue stock certificates and proprietary leases upon closing.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Stock Certificates: <strong className="text-foreground">{coopSellOff?.stockCertificatesIssuedCount || 2} Issued</strong></span>
+                <span className="text-primary font-bold">2 Under Contract</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Share Allocation & Proprietary Lease Ledger */}
+          <div className="rounded-none border border-border bg-muted/10 p-4 space-y-3 text-xs">
+            <div className="flex items-center justify-between border-b border-border pb-2.5">
+              <h3 className="font-semibold text-foreground flex items-center gap-1.5">
+                <FileCheck size={16} className="text-primary" />
+                <span>Share Allocation &amp; Proprietary Lease Disposition Ledger</span>
+              </h3>
+              <span className="text-[11px] font-mono text-muted-foreground">
+                Corporate Stock + Proprietary Lease Structure
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {(coopSellOff?.shareAllocations || []).map((alloc) => (
+                <div
+                  key={alloc.unitNumber}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 border border-border bg-card rounded-none text-xs font-mono"
+                >
+                  <div>
+                    <span className="font-bold text-foreground">{alloc.unitNumber}</span>
+                    <span className="text-muted-foreground"> · {alloc.sharesAllocated.toLocaleString()} Shares ({alloc.buyerName || 'Unassigned'})</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground">
+                      Proprietary Lease: <strong className="text-foreground">{alloc.proprietaryLeaseSigned ? 'Signed' : 'Pending'}</strong>
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                        alloc.status === 'closed'
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                          : alloc.status === 'interview_scheduled'
+                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                          : alloc.status === 'in_review'
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                          : 'bg-muted text-muted-foreground border border-border'
+                      }`}
+                    >
+                      {alloc.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
       {/* ROUTE D: LEASE-OPTION CONVERSION                         */}
       {/* ======================================================== */}
       {selectedRoute === 'lease_option' && (
@@ -400,11 +660,98 @@ export default function ExitStrategyExecutionCard({
             </div>
           </div>
 
+          {/* 4 Dedicated Lease-Option Tasks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {/* Task 1: Draft the Lease-Option Agreement */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 01 · Legal Agreement
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Executed
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Draft Lease-Option Agreement</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Two distinct contracts executed: standard residential lease contract and bilateral option agreement specifying future purchase strike price and expiration date.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Strike Price: <strong className="text-foreground">{formatCurrency(leaseOption.strikePrice)}</strong></span>
+                <span>Term: <strong className="text-foreground">{leaseOption.leaseTermMonths} Months</strong></span>
+              </div>
+            </div>
+
+            {/* Task 2: Manage Option Premium Escrow */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 02 · Escrow &amp; Rent Credits
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Secured
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Manage Option Premium Escrow</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Upfront non-refundable option fee secured in escrow. Monthly rent credits tracked and credited towards tenant down payment upon purchase trigger.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Option Fee: <strong className="text-foreground">{formatCurrency(leaseOption.upfrontOptionFee)}</strong></span>
+                <span>Credits: <strong className="text-foreground">{formatCurrency(leaseOption.accumulatedOptionCredits)}</strong></span>
+              </div>
+            </div>
+
+            {/* Task 3: Routine Maintenance Covenants */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 03 · Operational Covenants
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Tenant Active
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Routine Maintenance Covenants</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Clear delineation of repair responsibilities: minor maintenance covenants transitioned to option tenant, minimizing landlord operating drag.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Repairs under $500: <strong className="text-foreground">Tenant Responsible</strong></span>
+                <span className="text-emerald-400">Covenant Signed</span>
+              </div>
+            </div>
+
+            {/* Task 4: Trigger the Purchase */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 04 · Purchase Conversion
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-primary">
+                  <Clock size={13} />
+                  Underwriting
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Trigger Purchase &amp; Underwriting</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Oversee tenant mortgage pre-qualification at option term expiration, credit accumulated deposits, and close title conveyance to buyer.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Credit Score: <strong className="text-foreground">{leaseOption.tenantCreditScoreTarget}+</strong></span>
+                <span className="text-primary font-bold">Pre-Qualified</span>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-none border border-border bg-muted/10 p-4 space-y-3 text-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-2.5">
               <h3 className="font-semibold text-foreground flex items-center gap-1.5">
                 <Key size={16} className="text-primary" />
-                <span>Option Agreement &amp; Tenant Buyer Credit Milestones</span>
+                <span>Option Agreement &amp; Tenant Buyer Conversion Controls</span>
               </h3>
               <span className="text-[11px] font-mono text-muted-foreground">
                 Expires: {leaseOption.optionExpiryDate}
@@ -457,10 +804,97 @@ export default function ExitStrategyExecutionCard({
       )}
 
       {/* ======================================================== */}
-      {/* ROUTE E: 1031 TAX-DEFERRED EXCHANGE                      */}
+      {/* ROUTE F: 1031 TAX-DEFERRED EXCHANGE / TRADITIONAL RENTAL */}
       {/* ======================================================== */}
       {selectedRoute === '1031_exchange' && (
         <div data-testid="route-e-1031-exchange-view" className="space-y-4">
+          {/* 4 Dedicated Traditional Rental Portfolio Exit Tasks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            {/* Task 1: Financial Stabilization & Audit */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 01 · Trailing Financials
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Audited
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Financial Stabilization &amp; T-12 Audit</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Profit and loss statements (P&amp;Ls), rent rolls, and trailing 12-month metrics reconciled to compute an accurate exit capitalization rate.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Exit Cap Rate: <strong className="text-foreground">6.25%</strong></span>
+                <span className="text-emerald-400">T-12 Verified</span>
+              </div>
+            </div>
+
+            {/* Task 2: Lease Auditing & Estoppel Certificates */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 02 · Tenant Estoppels
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Certified
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Lease Auditing &amp; Estoppel Certificates</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Tenant estoppel certificates signed verifying exact rent amounts, security deposits, and lease terms to eliminate buyer price retrades.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Estoppels: <strong className="text-foreground">100% Signed</strong></span>
+                <span className="text-emerald-400">Zero Disputes</span>
+              </div>
+            </div>
+
+            {/* Task 3: Tenant Notification & Security Deposit Transfer */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 03 · Tenant Escrow Transfer
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  Prepared
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Tenant Notice &amp; Deposit Escrow Transfer</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Formal ownership transfer notices dispatched to all occupants. Security deposits and prepaid rent transferred into buyer escrow accounts.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Deposits: <strong className="text-foreground">$7,600 in Escrow</strong></span>
+                <span className="text-emerald-400">Notices Queued</span>
+              </div>
+            </div>
+
+            {/* Task 4: Tax Deferral Execution */}
+            <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-bold text-muted-foreground">
+                  Task 04 · Section 1031 Rollover
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <CheckCircle size={13} weight="fill" />
+                  QI Retained
+                </span>
+              </div>
+              <h4 className="font-semibold text-foreground">Tax Deferral Execution (1031 Exchange)</h4>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Qualified Intermediary retained prior to closing. Funds held in segregated escrow to roll proceeds into replacement assets and defer capital gains taxes.
+              </p>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                <span>Deferred Tax: <strong className="text-foreground">{formatCurrency(exchange1031.taxDeferredAmount)}</strong></span>
+                <span className="text-emerald-400">{exchange1031.qiName}</span>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* 45-Day Identification Timer Card */}
             <div className="rounded-none border border-border bg-muted/10 p-4 space-y-2">

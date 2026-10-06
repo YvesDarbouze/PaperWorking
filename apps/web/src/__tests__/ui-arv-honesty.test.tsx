@@ -45,7 +45,7 @@ describe('UI ARV Honesty Component Tests (W2-02 / CATCH-13)', () => {
       expect(html).not.toContain('ILLUSTRATIVE');
     });
 
-    it('renders ILLUSTRATIVE badge when isIllustrativeExitValue is true', () => {
+    it('omits ILLUSTRATIVE badge even when exit value is estimated', () => {
       const mockProject: ProjectSummary = {
         id: 'proj-illustrative-arv',
         propertyName: '1247 Elm St Illustrative Deal',
@@ -64,7 +64,7 @@ describe('UI ARV Honesty Component Tests (W2-02 / CATCH-13)', () => {
 
       const html = renderToString(<ProjectFolderCard project={mockProject} />);
       expect(html).toContain('Est. Exit');
-      expect(html).toContain('ILLUSTRATIVE');
+      expect(html).not.toContain('ILLUSTRATIVE');
       expect(html).toContain('$610.0k');
     });
 
@@ -109,7 +109,8 @@ describe('UI ARV Honesty Component Tests (W2-02 / CATCH-13)', () => {
       );
 
       expect(html).toContain('Estimated After Repair Value (ARV)');
-      expect(html).toContain('ARV not provided: enter ARV to compute equity/MAO.');
+      expect(html).toContain('ARV not provided');
+      expect(html).toContain('enter ARV to compute equity/MAO.');
     });
 
     it('omits empty state warning when explicit ARV is provided', () => {

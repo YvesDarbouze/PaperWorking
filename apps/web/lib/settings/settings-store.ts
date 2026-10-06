@@ -6,6 +6,7 @@
 
 import { isTeamTierOverrideEmail } from '@paperworking/services';
 import { PROFILE_PREVIEW, BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
+import { isValidPrivateKey } from '@/lib/firebase/admin';
 
 export interface UserProfileData {
   uid: string;
@@ -188,9 +189,13 @@ function getInitialBilling(uid?: string): UserBillingData {
 }
 
 export function shouldAttemptFirestore(): boolean {
+  if (process.env.NODE_ENV === 'test' && !process.env.FIRESTORE_EMULATOR_RUNNING && !process.env.FIRESTORE_EMULATOR_HOST) {
+    return false;
+  }
   return Boolean(
     process.env.FIRESTORE_EMULATOR_HOST ||
-    process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
+    isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
+    process.env.FIRESTORE_EMULATOR_RUNNING === 'true' ||
     (process.env.NODE_ENV === 'production' && process.env.GOOGLE_CLOUD_PROJECT)
   );
 }
@@ -261,7 +266,10 @@ export async function updateUserProfile(
       await Promise.race([setPromise, timeoutPromise]);
     } catch (err: any) {
       console.error(`[settings-store] Firestore write failed for user ${uid}:`, err?.message || err);
-      throw new Error(`Database persistence failure: unable to write to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`Database persistence failure: unable to write to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      }
+      console.warn(`[settings-store] Local dev fallback: profile saved to memory cache because Firestore write failed (${err?.message || 'timeout'}).`);
     }
   }
 
@@ -346,7 +354,10 @@ export async function updateUserBilling(
       await Promise.race([setPromise, timeoutPromise]);
     } catch (err: any) {
       console.error(`[settings-store] Firestore billing write failed for user ${uid}:`, err?.message || err);
-      throw new Error(`Database persistence failure: unable to write billing records to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`Database persistence failure: unable to write billing records to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      }
+      console.warn(`[settings-store] Local dev fallback: billing saved to memory cache because Firestore write failed (${err?.message || 'timeout'}).`);
     }
   }
 
@@ -405,7 +416,10 @@ export async function updateUserSecurity(
       await Promise.race([setPromise, timeoutPromise]);
     } catch (err: any) {
       console.error(`[settings-store] Firestore security write failed for user ${uid}:`, err?.message || err);
-      throw new Error(`Database persistence failure: unable to write security settings to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`Database persistence failure: unable to write security settings to Firestore (${err?.message || 'timeout'}). Please retry.`);
+      }
+      console.warn(`[settings-store] Local dev fallback: security settings saved to memory cache because Firestore write failed (${err?.message || 'timeout'}).`);
     }
   }
 

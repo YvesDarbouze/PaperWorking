@@ -9,8 +9,11 @@ import {
   ROLE_PERMISSIONS,
   TEAM_MEMBERS,
   TEAM_SEATS,
+  WORKSPACE_ACCESS_LEVELS,
+  getDefaultAccessLevelForRole,
   type InternalRole,
   type TeamMember,
+  type WorkspaceAccessLevel,
 } from '@/lib/dashboard/shell-seed';
 
 function initials(name: string, email: string): string {
@@ -21,13 +24,35 @@ function initials(name: string, email: string): string {
 }
 
 function roleBadgeClass(role: string, isInternal: boolean): string {
+  if (role === 'Manager') {
+    return 'border-violet-500/30 bg-violet-500/15 text-violet-300';
+  }
+  if (role === 'Associate') {
+    return 'border-sky-500/30 bg-sky-500/15 text-sky-300';
+  }
+  if (role === 'Vendor') {
+    return 'border-amber-500/30 bg-amber-500/15 text-amber-300';
+  }
+  if (role === 'Intern') {
+    return 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300';
+  }
+  if (role === 'CEO' || role === 'President' || role === 'Admin') {
+    return 'border-purple-500/30 bg-purple-500/15 text-purple-300';
+  }
   if (!isInternal) {
     return 'border-white/10 bg-white/5 text-[#9E9DA0]';
   }
-  if (role === 'CEO' || role === 'President' || role === 'Admin') {
-    return 'border-violet-500/30 bg-violet-500/15 text-violet-300';
-  }
   return 'border-[#7A9EAA]/30 bg-[#7A9EAA]/15 text-[#7A9EAA]';
+}
+
+function accessBadgeClass(level: WorkspaceAccessLevel): string {
+  if (level === 'Full Edit') {
+    return 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300';
+  }
+  if (level === 'Scoped Edit') {
+    return 'border-sky-500/30 bg-sky-500/15 text-sky-300';
+  }
+  return 'border-amber-500/30 bg-amber-500/15 text-amber-300';
 }
 
 /**
@@ -38,17 +63,40 @@ export default function TeamDirectoryPanel() {
     TEAM_MEMBERS.map((m) => ({ ...m })),
   );
   const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>(TEAM_SEATS.tier);
+  const [seatLimit, setSeatLimit] = useState(TEAM_SEATS.limit);
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [bulkEmailInput, setBulkEmailInput] = useState('');
-  const [selectedRole, setSelectedRole] = useState<InternalRole>('Deal Lead');
+  const [selectedRole, setSelectedRole] = useState<InternalRole>('Manager');
+  const [selectedAccessLevel, setSelectedAccessLevel] = useState<WorkspaceAccessLevel>(
+    getDefaultAccessLevelForRole('Manager'),
+  );
   const [enableScopedInvite, setEnableScopedInvite] = useState(false);
   const [assignProject, setAssignProject] = useState('');
   const [assignTabOrTask, setAssignTabOrTask] = useState('');
   const [flash, setFlash] = useState<string | null>(null);
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null);
- 
+
+  const fetchTeam = async () => {
+    try {
+      const res = await bffFetch('/api/team', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.members)) {
+          setMembers(data.members);
+        }
+        if (data.seats) {
+          setAccountTier(data.seats.tier || 'Team');
+          setSeatLimit(data.seats.limit || 10);
+        }
+      }
+    } catch {
+      // Graceful fallback to initial seed state
+    }
+  };
+
   useEffect(() => {
+    void fetchTeam();
     void bffFetch('/api/projects', { cache: 'no-store' }).catch(() => {});
   }, []);
 
@@ -79,23 +127,156 @@ export default function TeamDirectoryPanel() {
     setTimeout(() => setFlash(null), 2500);
   }
 
-  function handleRoleChange(id: string, role: InternalRole) {
-    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, role } : m)));
-    showFlash(`Role updated to ${role}`);
+  async function handleRoleChange(id: string, role: InternalRole) {
+    const guessedAccess = getDefaultAccessLevelForRole(role);
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === id
+          ? {
+              ...m,
+              role,
+              accessLevel: guessedAccess,
+              type: role === 'Vendor' ? 'External' : 'Internal',
+            }
+          : m,
+      ),
+    );
+    showFlash(`Role changed to ${role} · Auto-assigned ${guessedAccess} access`);
+
+    try {
+      const res = await bffFetch(`/api/team/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role,
+          accessLevel: guessedAccess,
+          type: role === 'Vendor' ? 'External' : 'Internal',
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to save role: ${err.error || 'Server error'}`);
+        void fetchTeam();
+      }
+    } catch {
+      showFlash('Failed to save role. Please check network connection.');
+      void fetchTeam();
+    }
   }
 
-  function handleToggleSuspend(id: string, email: string, status: TeamMember['status']) {
+  async function handleAccessLevelChange(id: string, accessLevel: WorkspaceAccessLevel) {
+    setMembers((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, accessLevel } : m)),
+    );
+    showFlash(`Workspace edit access set to ${accessLevel}`);
+
+    try {
+      const res = await bffFetch(`/api/team/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessLevel }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to save access level: ${err.error || 'Server error'}`);
+        void fetchTeam();
+      }
+    } catch {
+      showFlash('Failed to save access level. Please check network connection.');
+      void fetchTeam();
+    }
+  }
+
+  async function handleToggleSuspend(id: string, email: string, status: TeamMember['status']) {
     const next = status === 'Suspended' ? 'Active' : 'Suspended';
     setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, status: next } : m)));
     showFlash(next === 'Suspended' ? `Suspended ${email}` : `Reactivated ${email}`);
+
+    try {
+      const res = await bffFetch(`/api/team/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: next }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to update status: ${err.error || 'Server error'}`);
+        void fetchTeam();
+      }
+    } catch {
+      showFlash('Failed to update status.');
+      void fetchTeam();
+    }
   }
 
-  function handleRevoke(id: string, email: string) {
+  async function handleRevoke(id: string, email: string) {
     setMembers((prev) => prev.filter((m) => m.id !== id));
     showFlash(`Revoked access for ${email}`);
+
+    try {
+      const res = await bffFetch(`/api/team/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to remove member: ${err.error || 'Server error'}`);
+        void fetchTeam();
+      }
+    } catch {
+      showFlash('Failed to remove member.');
+      void fetchTeam();
+    }
   }
 
-  function handleSendInvites(e: FormEvent) {
+  async function handleResendInvite(id: string, email: string) {
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, invitedAt: new Date().toISOString() } : m,
+      ),
+    );
+    showFlash(`Registration email resent to ${email}`);
+
+    try {
+      const res = await bffFetch(`/api/team/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resend: true }),
+      });
+      if (!res.ok) {
+        showFlash('Failed to resend invite.');
+        void fetchTeam();
+      }
+    } catch {
+      showFlash('Failed to resend invite.');
+      void fetchTeam();
+    }
+  }
+
+  async function handleTierChange(tier: 'Individual' | 'Team') {
+    try {
+      const res = await bffFetch('/api/team/tier', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAccountTier(tier);
+        if (data.seats?.limit) {
+          setSeatLimit(data.seats.limit);
+        }
+        showFlash(
+          tier === 'Team'
+            ? 'Upgraded workspace to Investment Team plan.'
+            : 'Downgraded workspace to Individual Investor plan.',
+        );
+      } else {
+        showFlash(data.error || 'Failed to update plan tier.');
+      }
+    } catch {
+      showFlash('Failed to update subscription tier.');
+    }
+  }
+
+  async function handleSendInvites(e: FormEvent) {
     e.preventDefault();
     const emails = bulkEmailInput
       .split(/[\s,;]+/)
@@ -110,9 +291,9 @@ export default function TeamDirectoryPanel() {
       showFlash('Select a project for scoped invite, or disable the restriction.');
       return;
     }
-    if (activeSeatsCount + emails.length > TEAM_SEATS.limit) {
+    if (activeSeatsCount + emails.length > seatLimit) {
       showFlash(
-        `Cannot invite ${emails.length}: only ${TEAM_SEATS.limit - activeSeatsCount} seats remaining.`,
+        `Cannot invite ${emails.length}: only ${seatLimit - activeSeatsCount} seats remaining.`,
       );
       return;
     }
@@ -120,29 +301,49 @@ export default function TeamDirectoryPanel() {
     const projectName =
       SEED_PROJECTS.find((p) => p.id === assignProject)?.propertyName ?? assignProject;
 
-    const newMembers: TeamMember[] = emails.map((email, i) => ({
-      id: `invite-${Date.now()}-${i}`,
-      name: email.split('@')[0] ?? email,
-      email,
-      role: selectedRole,
-      type: 'Internal',
-      status: 'Invited',
-      projects: enableScopedInvite ? 1 : 0,
-      lastActive: 'N/A',
-      invitedAt: new Date().toISOString(),
-    }));
+    try {
+      const res = await bffFetch('/api/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emails,
+          role: selectedRole,
+          accessLevel: selectedAccessLevel,
+          enableScopedInvite,
+          assignProject: enableScopedInvite ? assignProject : undefined,
+          assignTabOrTask: enableScopedInvite ? assignTabOrTask : undefined,
+        }),
+      });
 
-    setMembers((prev) => [...prev, ...newMembers]);
-    setBulkEmailInput('');
-    setEnableScopedInvite(false);
-    setAssignProject('');
-    setAssignTabOrTask('');
-    setInviteModalOpen(false);
-    showFlash(
-      enableScopedInvite
-        ? `Sent ${emails.length} scoped invite(s): restricted to “${projectName}”.`
-        : `Sent ${emails.length} invitation(s) (seed preview).`,
-    );
+      const data = await res.json();
+      if (!res.ok) {
+        showFlash(data.error || 'Failed to send invitations.');
+        return;
+      }
+
+      if (Array.isArray(data.invited)) {
+        setMembers((prev) => [...prev, ...data.invited]);
+      }
+      if (data.seats?.limit) {
+        setSeatLimit(data.seats.limit);
+      }
+
+      setBulkEmailInput('');
+      setEnableScopedInvite(false);
+      setAssignProject('');
+      setAssignTabOrTask('');
+      setSelectedRole('Manager');
+      setSelectedAccessLevel(getDefaultAccessLevelForRole('Manager'));
+      setInviteModalOpen(false);
+
+      showFlash(
+        enableScopedInvite
+          ? `Sent ${emails.length} scoped invite(s): restricted to “${projectName}”.`
+          : `Sent ${emails.length} invitation(s).`,
+      );
+    } catch {
+      showFlash('Failed to send invitations. Please try again.');
+    }
   }
 
   return (
@@ -217,23 +418,20 @@ export default function TeamDirectoryPanel() {
                 <div className="flex justify-between text-[11px] font-medium text-white/55">
                   <span>Workspace Seat Capacity</span>
                   <span className="font-mono">
-                    {activeSeatsCount} / {TEAM_SEATS.limit} Seats Used
+                    {activeSeatsCount} / {seatLimit} Seats Used
                   </span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-white/10">
                   <div
                     className="h-full rounded-full bg-emerald-500 transition-all duration-300"
                     style={{
-                      width: `${Math.min(100, (activeSeatsCount / TEAM_SEATS.limit) * 100)}%`,
+                      width: `${Math.min(100, (activeSeatsCount / seatLimit) * 100)}%`,
                     }}
                   />
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setAccountTier('Individual');
-                    showFlash('Downgrade queued (seed preview).');
-                  }}
+                  onClick={() => void handleTierChange('Individual')}
                   className="mt-2 block cursor-pointer text-left text-[11px] font-semibold text-red-400 hover:underline"
                 >
                   Downgrade to Individual Tier
@@ -242,10 +440,7 @@ export default function TeamDirectoryPanel() {
             ) : (
               <button
                 type="button"
-                onClick={() => {
-                  setAccountTier('Team');
-                  showFlash('Upgraded to Investment Team (seed preview).');
-                }}
+                onClick={() => void handleTierChange('Team')}
                 className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110"
               >
                 <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
@@ -320,6 +515,7 @@ export default function TeamDirectoryPanel() {
                 <tr className="border-b border-white/8 text-[10px] font-bold uppercase tracking-wider text-white/40">
                   <th className="px-4 py-3">Member</th>
                   <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Workspace Access</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Last Active</th>
                   <th className="px-4 py-3 text-right">Actions</th>
@@ -328,7 +524,7 @@ export default function TeamDirectoryPanel() {
               <tbody className="divide-y divide-white/8 text-[13px] text-white/70">
                 {activePersonnel.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-white/40">
+                    <td colSpan={6} className="py-12 text-center text-white/40">
                       <span className="material-symbols-outlined mb-2 block text-4xl opacity-30">
                         account_circle
                       </span>
@@ -339,10 +535,11 @@ export default function TeamDirectoryPanel() {
                   activePersonnel.map((member) => {
                     const isInternal = member.type === 'Internal';
                     const isSuspended = member.status === 'Suspended';
-                    const isEditableRole =
-                      isInternal &&
-                      !member.isYou &&
-                      INTERNAL_ROLES.includes(member.role as InternalRole);
+                    const isEditableRole = !member.isYou;
+                    const defaultAccess = getDefaultAccessLevelForRole(member.role);
+                    const currentAccess = member.accessLevel ?? defaultAccess;
+                    const isAccessOverridden =
+                      member.accessLevel !== undefined && member.accessLevel !== defaultAccess;
 
                     return (
                       <tr
@@ -378,18 +575,29 @@ export default function TeamDirectoryPanel() {
                             >
                               <select
                                 value={member.role}
+                                aria-label={`Role for ${member.name}`}
+                                data-testid={`role-select-${member.id}`}
                                 onChange={(e) =>
                                   handleRoleChange(member.id, e.target.value as InternalRole)
                                 }
-                                className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-0.5 pl-2 pr-6 text-[11px] font-semibold uppercase tracking-wider text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                                className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-1 pl-2.5 pr-7 text-[11px] font-semibold uppercase tracking-wider text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
                               >
-                                {INTERNAL_ROLES.map((role) => (
-                                  <option key={role} value={role} className="bg-slate-950">
-                                    {role}
-                                  </option>
-                                ))}
+                                <optgroup label="Standard Roles">
+                                  <option value="Manager" className="bg-slate-950">Manager</option>
+                                  <option value="Associate" className="bg-slate-950">Associate</option>
+                                  <option value="Vendor" className="bg-slate-950">Vendor</option>
+                                  <option value="Intern" className="bg-slate-950">Intern</option>
+                                </optgroup>
+                                <optgroup label="Executive & Pipeline Roles">
+                                  <option value="Deal Lead" className="bg-slate-950">Deal Lead</option>
+                                  <option value="Admin" className="bg-slate-950">Admin</option>
+                                  <option value="COO" className="bg-slate-950">COO</option>
+                                  <option value="CFO" className="bg-slate-950">CFO</option>
+                                  <option value="President" className="bg-slate-950">President</option>
+                                  <option value="CEO" className="bg-slate-950">CEO</option>
+                                </optgroup>
                               </select>
-                              <span className="material-symbols-outlined pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[12px] text-white/40">
+                              <span className="material-symbols-outlined pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[12px] text-white/40">
                                 expand_more
                               </span>
                               {hoveredRoleId === member.id ? (
@@ -397,7 +605,7 @@ export default function TeamDirectoryPanel() {
                                   <strong className="mb-0.5 block text-white">
                                     {member.role} Role Permissions:
                                   </strong>
-                                  {ROLE_PERMISSIONS[member.role as InternalRole]}
+                                  {ROLE_PERMISSIONS[member.role as InternalRole] ?? 'Workspace role'}
                                 </div>
                               ) : null}
                             </div>
@@ -408,6 +616,57 @@ export default function TeamDirectoryPanel() {
                               >
                                 {member.role}
                               </span>
+                            </div>
+                          )}
+                        </td>
+
+                        <td className="px-4 py-3.5">
+                          {member.isYou ? (
+                            <div className="space-y-0.5">
+                              <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                Full Edit (Owner)
+                              </span>
+                              <span className="block text-[10px] text-white/40">
+                                Workspace administrator
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              <div className="relative inline-block">
+                                <select
+                                  value={currentAccess}
+                                  aria-label={`Workspace access for ${member.name}`}
+                                  data-testid={`access-level-select-${member.id}`}
+                                  onChange={(e) =>
+                                    handleAccessLevelChange(
+                                      member.id,
+                                      e.target.value as WorkspaceAccessLevel,
+                                    )
+                                  }
+                                  className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-1 pl-2.5 pr-7 text-[11px] font-semibold tracking-wide text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                                >
+                                  {WORKSPACE_ACCESS_LEVELS.map((al) => (
+                                    <option key={al.level} value={al.level} className="bg-slate-950">
+                                      {al.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                <span className="material-symbols-outlined pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[12px] text-white/40">
+                                  expand_more
+                                </span>
+                              </div>
+                              <div>
+                                {isAccessOverridden ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-400">
+                                    <span className="material-symbols-outlined text-[11px]">tune</span>
+                                    Custom override
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] text-white/40">
+                                    Guessed from {member.role}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           )}
                         </td>
@@ -491,8 +750,11 @@ export default function TeamDirectoryPanel() {
                     <div className="min-w-0 space-y-0.5">
                       <p className="truncate text-xs font-semibold text-white">{invite.email}</p>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="rounded bg-white/5 px-1 font-mono text-[9px] text-white/50">
+                        <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${roleBadgeClass(invite.role, invite.type === 'Internal')}`}>
                           {invite.role}
+                        </span>
+                        <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${accessBadgeClass(invite.accessLevel ?? getDefaultAccessLevelForRole(invite.role))}`}>
+                          {invite.accessLevel ?? getDefaultAccessLevelForRole(invite.role)}
                         </span>
                         {invite.invitedAt ? (
                           <span className="text-[9px] font-medium text-white/40">
@@ -506,16 +768,7 @@ export default function TeamDirectoryPanel() {
                       <button
                         type="button"
                         title="Resend Invite"
-                        onClick={() => {
-                          setMembers((prev) =>
-                            prev.map((m) =>
-                              m.id === invite.id
-                                ? { ...m, invitedAt: new Date().toISOString() }
-                                : m,
-                            ),
-                          );
-                          showFlash(`Registration email resent to ${invite.email}`);
-                        }}
+                        onClick={() => void handleResendInvite(invite.id, invite.email)}
                         className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-white/10 hover:text-white"
                       >
                         <span className="material-symbols-outlined text-[16px]">refresh</span>
@@ -573,7 +826,7 @@ export default function TeamDirectoryPanel() {
             </h3>
             <p className="mb-4 text-[11px] leading-normal text-white/40">
               Enter email addresses to provision workspace credentials. Seats invited count towards
-              your {TEAM_SEATS.limit}-operator cap.
+              your {seatLimit}-operator cap.
             </p>
 
             <form onSubmit={handleSendInvites} className="space-y-4">
@@ -596,16 +849,57 @@ export default function TeamDirectoryPanel() {
                 </label>
                 <select
                   value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value as InternalRole)}
+                  data-testid="modal-role-select"
+                  onChange={(e) => {
+                    const nextRole = e.target.value as InternalRole;
+                    setSelectedRole(nextRole);
+                    setSelectedAccessLevel(getDefaultAccessLevelForRole(nextRole));
+                  }}
                   className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
                 >
-                  <option value="Deal Lead">Deal Lead (Analyst/Underwriter)</option>
-                  <option value="COO">COO (Operations & Task Manager)</option>
-                  <option value="CFO">CFO (Financials & Underwriting Approver)</option>
-                  <option value="Admin">Admin (Access Configurator)</option>
-                  <option value="President">President (Platform Executive)</option>
-                  <option value="CEO">CEO (Primary Operator)</option>
+                  <optgroup label="Standard Roles">
+                    <option value="Manager">Manager (Full Workspace Management)</option>
+                    <option value="Associate">Associate (Deal Execution & Underwriting)</option>
+                    <option value="Vendor">Vendor (Bids & Subcontractor Tasks)</option>
+                    <option value="Intern">Intern (Supervised / View-Only Access)</option>
+                  </optgroup>
+                  <optgroup label="Executive & Pipeline Roles">
+                    <option value="Deal Lead">Deal Lead (Analyst/Underwriter)</option>
+                    <option value="COO">COO (Operations & Task Manager)</option>
+                    <option value="CFO">CFO (Financials & Underwriting Approver)</option>
+                    <option value="Admin">Admin (Access Configurator)</option>
+                    <option value="President">President (Platform Executive)</option>
+                    <option value="CEO">CEO (Primary Operator)</option>
+                  </optgroup>
                 </select>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                    Workspace Edit Access
+                  </label>
+                  <span className="text-[10px] font-medium text-emerald-400">
+                    Auto-guessed for {selectedRole}
+                  </span>
+                </div>
+                <select
+                  value={selectedAccessLevel}
+                  data-testid="modal-access-level-select"
+                  onChange={(e) =>
+                    setSelectedAccessLevel(e.target.value as WorkspaceAccessLevel)
+                  }
+                  className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                >
+                  {WORKSPACE_ACCESS_LEVELS.map((al) => (
+                    <option key={al.level} value={al.level}>
+                      {al.label} — {al.description}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] leading-relaxed text-white/40">
+                  Role default: <span className="font-semibold text-white/70">{getDefaultAccessLevelForRole(selectedRole)}</span>. You can adjust this operator&apos;s workspace edit level as needed.
+                </p>
               </div>
 
               <div className="space-y-3 border-t border-white/8 pt-3">

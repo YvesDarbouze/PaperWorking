@@ -58,6 +58,41 @@ function subscriptionIdFromInvoice(invoice: Record<string, unknown>): string | n
   return typeof nested === 'string' ? nested : null;
 }
 
+function renderBillingEmailShell(title: string, bodyContent: string, actionUrl?: string, actionLabel?: string): string {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 24px 12px; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f4f4f5;">
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; margin: 0 auto; background-color: #121215; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden;">
+    <tr>
+      <td style="padding: 20px 28px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background-color: #141418;">
+        <a href="https://paperworking.co" target="_blank" style="text-decoration: none; display: inline-block;">
+          <img src="https://paperworking.co/brand/logo-light.png" alt="PaperWorking" width="150" height="24" style="display: block; width: 150px; height: auto; border: 0;" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 28px; font-size: 15px; line-height: 1.6; color: #f4f4f5;">
+        <h2 style="font-size: 18px; font-weight: 600; margin: 0 0 16px 0; color: #f4f4f5;">${title}</h2>
+        ${bodyContent}
+        ${actionUrl && actionLabel ? `
+        <div style="margin-top: 24px;">
+          <a href="${actionUrl}" target="_blank" style="background-color: #f4f4f5; color: #09090b; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 13px; text-decoration: none; display: inline-block;">
+            ${actionLabel}
+          </a>
+        </div>` : ''}
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 16px 28px; background-color: #0d0d10; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 11px; color: #71717a;">
+        PaperWorking &bull; Institutional real estate investment management &bull; <a href="https://paperworking.co/privacy" style="color: #71717a; text-decoration: underline;">Privacy</a>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 /**
  * Processes a verified Stripe webhook event — side effects injected for wiring.
  */
@@ -131,8 +166,13 @@ export async function dispatchStripeWebhookEvent(
           if (email) {
             await deps.sendBillingEmail(
               email,
-              'Welcome to PaperWorking Pro!',
-              '<p>Your subscription is now active. Thank you for upgrading!</p>',
+              'Welcome to PaperWorking Pro',
+              renderBillingEmailShell(
+                'Welcome to PaperWorking Pro',
+                '<p style="margin: 0 0 16px 0; color: #d4d4d8;">Your subscription is now active. You have full access to institutional underwriting models, portfolio metrics, and the REIL deal room.</p>',
+                `${appUrl}/dashboard`,
+                'Go to Dashboard',
+              ),
             );
           }
         }
@@ -176,9 +216,13 @@ export async function dispatchStripeWebhookEvent(
             await deps.sendRawEmail(
               [email],
               `Your PaperWorking Trial Ends ${trialEndFmt}`,
-              `<p>Your 14-day free trial ends on <strong>${trialEndFmt}</strong>.</p>
-              <p>On that date your card on file will be charged <strong>${amountFmt}</strong>.</p>
-              <p><a href="${appUrl}/dashboard/settings/billing">billing settings</a></p>`,
+              renderBillingEmailShell(
+                'Your PaperWorking Trial is Ending Soon',
+                `<p style="margin: 0 0 12px 0; color: #d4d4d8;">Your 14-day free trial ends on <strong style="color: #f4f4f5;">${trialEndFmt}</strong>.</p>
+                <p style="margin: 0 0 16px 0; color: #d4d4d8;">On that date your card on file will be charged <strong style="color: #f4f4f5;">${amountFmt}</strong>.</p>`,
+                `${appUrl}/dashboard/settings/billing`,
+                'Billing Settings',
+              ),
             );
           }
         }
@@ -220,7 +264,12 @@ export async function dispatchStripeWebhookEvent(
             await deps.sendBillingEmail(
               email,
               'Your PaperWorking Subscription Renewed',
-              '<p>Your subscription has been successfully renewed.</p>',
+              renderBillingEmailShell(
+                'Subscription Renewed',
+                '<p style="margin: 0; color: #d4d4d8;">Your subscription has been successfully renewed. Your receipt and invoice history are available in your billing settings.</p>',
+                `${appUrl}/dashboard/settings/billing`,
+                'View Billing History',
+              ),
             );
           }
         }
@@ -283,7 +332,12 @@ export async function dispatchStripeWebhookEvent(
             await deps.sendBillingEmail(
               email,
               'Your PaperWorking Subscription Has Been Canceled',
-              '<p>Your subscription has been canceled.</p>',
+              renderBillingEmailShell(
+                'Subscription Canceled',
+                '<p style="margin: 0; color: #d4d4d8;">Your subscription has been canceled. Your account has been shifted to the free tier, and your saved project records remain safely archived.</p>',
+                `${appUrl}/dashboard/settings/billing`,
+                'Review Account',
+              ),
             );
           }
         }
@@ -335,8 +389,13 @@ export async function dispatchStripeWebhookEvent(
 
               await deps.sendBillingEmail(
                 email,
-                "Your PaperWorking Trial Has Ended — You've Been Charged",
-                `<p>Your card has been charged <strong>${amountFmt}</strong>.</p>`,
+                "Your PaperWorking Trial Has Ended: Account Active",
+                renderBillingEmailShell(
+                  'Trial Converted to Subscription',
+                  `<p style="margin: 0; color: #d4d4d8;">Your 14-day trial has concluded, and your card on file was charged <strong style="color: #f4f4f5;">${amountFmt}</strong> for your ongoing subscription plan.</p>`,
+                  `${appUrl}/dashboard/settings/billing`,
+                  'Manage Subscription',
+                ),
               );
             }
           }

@@ -1,0 +1,207 @@
+/**
+ * Test Suite: Admin Subscription & Dunning Actions (Item 4.1)
+ *
+ * Verifies:
+ * 1. POST /api/admin/subscriptions/actions enforces admin authentication (401/403).
+ * 2. POST /api/admin/subscriptions/actions validates request payload (400) and existence (404).
+ * 3. POST /api/admin/subscriptions/actions with action: 'retry' updates attempt counters and logs audit event.
+ * 4. POST /api/admin/subscriptions/actions with action: 'cancel' removes delinquent dunning, updates customer status, and logs audit event.
+ * 5. AdminSubscriptionsPanel does not contain (stub) text and provides wired touch-target action triggers.
+ */
+
+import React from 'react';
+import { describe, expect, it, jest } from '@jest/globals';
+import { NextRequest } from 'next/server';
+import { renderToString } from 'react-dom/server';
+import { POST } from '../../app/api/admin/subscriptions/actions/route.js';
+import {
+  SEED_ADMIN_SUBSCRIPTIONS,
+  SEED_ADMIN_AUDIT,
+} from '../../lib/admin/seed-data.js';
+
+// Setup mock admin token
+const adminPayload = Buffer.from(
+  JSON.stringify({ uid: 'admin-auditor-1', admin: true, role: 'admin' })
+).toString('base64');
+const validAdminToken = `eyJhbGciOiJIUzI1NiJ9.${adminPayload}.signature`;
+
+// Setup mock non-admin token
+const nonAdminPayload = Buffer.from(
+  JSON.stringify({ uid: 'regular-user-1', admin: false, role: 'investor' })
+).toString('base64');
+const nonAdminToken = `eyJhbGciOiJIUzI1NiJ9.${nonAdminPayload}.signature`;
+
+describe('Admin Subscription & Dunning Actions (Item 4.1)', () => {
+  describe('1. Security Guards', () => {
+    it('returns 401 Unauthorized when credentials are missing', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dunningId: 'dun-1', action: 'retry' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(401);
+    });
+
+    it('returns 403 Forbidden when caller is not an admin', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${nonAdminToken}`,
+        },
+        body: JSON.stringify({ dunningId: 'dun-1', action: 'retry' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe('2. Validation & Error Handling', () => {
+    it('returns 400 when missing required dunningId or invalid action', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ action: 'invalid_action' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 404 when dunningId does not exist', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ dunningId: 'non-existent-dunning', action: 'retry' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe('3. Payment Collection Retry Action', () => {
+    it('increments retry attempts, reschedules date, and appends administrative audit event', async () => {
+      const targetItem = SEED_ADMIN_SUBSCRIPTIONS.dunning.find((d) => d.id === 'dun-1');
+      expect(targetItem).toBeDefined();
+      const initialAttempts = targetItem!.attempts;
+      const initialAuditCount = SEED_ADMIN_AUDIT.logs.length;
+
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ dunningId: 'dun-1', action: 'retry' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+
+      const body = await res.json();
+      expect(body.success).toBe(true);
+      expect(body.action).toBe('retry');
+      expect(body.message).toContain('Payment collection retry');
+      expect(body.dunningRecord.attempts).toBe(initialAttempts + 1);
+
+      // Verify audit trail logged
+      expect(SEED_ADMIN_AUDIT.logs.length).toBeGreaterThan(initialAuditCount);
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('billing.retry_payment');
+    });
+  });
+
+  describe('4. Delinquent Subscription Cancellation Action', () => {
+    it('cancels delinquent subscription, removes from queue, and decrements at-risk tally', async () => {
+      const initialAtRisk = SEED_ADMIN_SUBSCRIPTIONS.atRisk;
+      const initialAuditCount = SEED_ADMIN_AUDIT.logs.length;
+
+      const req = new NextRequest('http://localhost:3000/api/admin/subscriptions/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ dunningId: 'dun-2', action: 'cancel' }),
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+
+      const body = await res.json();
+      expect(body.success).toBe(true);
+      expect(body.action).toBe('cancel');
+      expect(body.message).toContain('Subscription canceled');
+
+      // Verify removed from active dunning queue
+      const inQueue = SEED_ADMIN_SUBSCRIPTIONS.dunning.find((d) => d.id === 'dun-2');
+      expect(inQueue).toBeUndefined();
+
+      // Verify atRisk count decremented
+      expect(SEED_ADMIN_SUBSCRIPTIONS.atRisk).toBe(initialAtRisk - 1);
+
+      // Verify audit trail logged
+      expect(SEED_ADMIN_AUDIT.logs.length).toBeGreaterThan(initialAuditCount);
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('billing.cancel_subscription');
+    });
+  });
+
+  describe('5. AdminSubscriptionsPanel UI Cleanliness & No-Mock Verification', () => {
+    it('ensures no "(stub)" copy exists and action buttons are present', async () => {
+      // Mock useAdminOpsSection to provide data in dunning tab state
+      jest.unstable_mockModule('../../components/admin/admin-ui.js', () => ({
+        useAdminOpsSection: () => ({
+          data: {
+            mrr: 48200,
+            arr: 578400,
+            active: 1180,
+            atRisk: 42,
+            planBreakdown: [{ name: 'Individual', count: 920, mrr: 18400 }],
+            recent: [],
+            dunning: [
+              {
+                id: 'dun-test-1',
+                customer: 'Acme Flip Fund',
+                amount: 199,
+                attempts: 1,
+                nextRetryAt: '2026-09-01',
+                reason: 'card_declined',
+              },
+            ],
+          },
+          loading: false,
+          error: null,
+          reload: jest.fn(),
+        }),
+        AdminPageShell: ({ title, children }: any) => (
+          <div data-testid="page-shell">
+            <h1>{title}</h1>
+            {children}
+          </div>
+        ),
+        AdminStateBlock: () => null,
+        StatusPill: ({ status }: any) => <span>{status}</span>,
+      }));
+
+      const { default: AdminSubscriptionsPanel } = await import(
+        '../../components/admin/AdminSubscriptionsPanel.js'
+      );
+
+      const html = renderToString(<AdminSubscriptionsPanel />);
+
+      // Verify complete absence of "(stub)" strings anywhere in the component
+      expect(html).not.toContain('(stub)');
+      expect(html).not.toContain('Actions are stubbed in seed mode');
+      expect(html).toContain('Billing');
+    });
+  });
+});

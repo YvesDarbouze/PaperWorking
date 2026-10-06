@@ -24,13 +24,10 @@ export function canCreateShareLink(role: string): boolean {
   return ['Lead Investor', 'Investor', 'Admin', 'Platform Admin', 'CEO', 'CFO'].includes(r);
 }
 
+import { randomBytes } from 'node:crypto';
+
 export function generatePackageToken(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = 'pkg_';
-  for (let i = 0; i < 32; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return token;
+  return `pkg_${randomBytes(24).toString('base64url')}`;
 }
 
 export function createShareTokenRecord(input: {

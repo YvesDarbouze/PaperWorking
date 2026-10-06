@@ -26,8 +26,10 @@ export function validateClaimBindTokenBody(body: {
   return { ok: true, token };
 }
 
+import { randomInt } from 'node:crypto';
+
 export function generateVerificationCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 export function validateIdentityAppealBody(body: Record<string, unknown>): { ok: true } | { ok: false; error: string; status: number } {

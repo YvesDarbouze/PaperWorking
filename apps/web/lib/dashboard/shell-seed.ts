@@ -160,12 +160,61 @@ export const INBOX_THREADS: InboxThread[] = [
 export type TeamMemberStatus = 'Active' | 'Invited' | 'Suspended' | 'Removed';
 export type TeamMemberType = 'Internal' | 'External';
 export type InternalRole =
-  | 'CEO'
-  | 'President'
-  | 'CFO'
-  | 'COO'
+  | 'Manager'
+  | 'Associate'
+  | 'Vendor'
+  | 'Intern'
+  | 'Deal Lead'
   | 'Admin'
-  | 'Deal Lead';
+  | 'COO'
+  | 'CFO'
+  | 'President'
+  | 'CEO';
+
+export type WorkspaceAccessLevel = 'Full Edit' | 'Scoped Edit' | 'View Only';
+
+export const WORKSPACE_ACCESS_LEVELS: {
+  level: WorkspaceAccessLevel;
+  label: string;
+  description: string;
+}[] = [
+  {
+    level: 'Full Edit',
+    label: 'Full Edit',
+    description: 'Can create, edit, approve, and manage all projects, budgets, and team allocations.',
+  },
+  {
+    level: 'Scoped Edit',
+    label: 'Scoped Edit',
+    description: 'Can edit assigned deals, update task checklists, submit bids, and upload documents.',
+  },
+  {
+    level: 'View Only',
+    label: 'View Only',
+    description: 'Read-only visibility across deals, milestones, and reports; cannot modify models or approve draws.',
+  },
+];
+
+export function getDefaultAccessLevelForRole(role: string): WorkspaceAccessLevel {
+  switch (role) {
+    case 'Manager':
+    case 'CEO':
+    case 'President':
+    case 'Admin':
+      return 'Full Edit';
+    case 'Associate':
+    case 'Deal Lead':
+    case 'COO':
+    case 'CFO':
+      return 'Scoped Edit';
+    case 'Vendor':
+      return 'Scoped Edit';
+    case 'Intern':
+      return 'View Only';
+    default:
+      return 'Scoped Edit';
+  }
+}
 
 export interface TeamMember {
   id: string;
@@ -178,25 +227,38 @@ export interface TeamMember {
   lastActive: string;
   invitedAt?: string;
   isYou?: boolean;
+  accessLevel?: WorkspaceAccessLevel;
 }
 
 export const ROLE_PERMISSIONS: Record<InternalRole, string> = {
-  CEO: 'Full control over organization properties, financials, billing, and team seats allocation.',
-  President: 'Full system access, deal pipelines configuration, and team member provisioning.',
-  CFO: 'Access to financial worksheets, underwriting inputs, cash flow targets, and closing distributions.',
-  COO: 'Access to project timelines, milestones checklist, general contractor tasks assignment, and operations.',
-  Admin: 'Manage user access levels, configure dashboard preferences, and edit settings.',
+  Manager:
+    'Full workspace management: create and edit projects, assign tasks, oversee budgets and underwriting, and invite team members.',
+  Associate:
+    'Underwriting and deal execution: edit assigned deals, update task checklists, upload due diligence documents, and log expenses.',
+  Vendor:
+    'Restricted external access: submit estimates and bids, view assigned project tasks, and upload receipts and invoices.',
+  Intern:
+    'Supervised / View-only access: inspect deal models, review property documents, and prepare draft notes under operator review.',
   'Deal Lead':
     'Underwrite individual properties, assign project-level action items, and manage deal pipeline.',
+  Admin: 'Manage user access levels, configure dashboard preferences, and edit settings.',
+  COO: 'Access to project timelines, milestones checklist, general contractor tasks assignment, and operations.',
+  CFO: 'Access to financial worksheets, underwriting inputs, cash flow targets, and closing distributions.',
+  President: 'Full system access, deal pipelines configuration, and team member provisioning.',
+  CEO: 'Full control over organization properties, financials, billing, and team seats allocation.',
 };
 
 export const INTERNAL_ROLES: InternalRole[] = [
-  'CEO',
-  'President',
-  'CFO',
-  'COO',
-  'Admin',
+  'Manager',
+  'Associate',
+  'Vendor',
+  'Intern',
   'Deal Lead',
+  'Admin',
+  'COO',
+  'CFO',
+  'President',
+  'CEO',
 ];
 
 /** Seed roster — mirrors PaperWorking Team Directory. */
@@ -208,6 +270,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     role: 'CEO',
     type: 'Internal',
     status: 'Active',
+    accessLevel: 'Full Edit',
     projects: 3,
     lastActive: 'Active 2h ago',
     isYou: true,
@@ -216,9 +279,10 @@ export const TEAM_MEMBERS: TeamMember[] = [
     id: 'member-2',
     name: 'Jordan Lee',
     email: 'jordan@paperworking.test',
-    role: 'Deal Lead',
+    role: 'Manager',
     type: 'Internal',
     status: 'Active',
+    accessLevel: 'Full Edit',
     projects: 3,
     lastActive: 'Active yesterday',
   },
@@ -226,30 +290,54 @@ export const TEAM_MEMBERS: TeamMember[] = [
     id: 'member-3',
     name: 'Sam Rivera',
     email: 'sam@paperworking.test',
-    role: 'Vendor liaison',
-    type: 'External',
-    status: 'Invited',
-    projects: 1,
-    lastActive: '—',
-    invitedAt: '2026-08-20T14:00:00Z',
+    role: 'Associate',
+    type: 'Internal',
+    status: 'Active',
+    accessLevel: 'Scoped Edit',
+    projects: 2,
+    lastActive: 'Active 3h ago',
   },
   {
     id: 'member-4',
+    name: 'Apex Mechanical & Roofing',
+    email: 'bids@apexmechanical.test',
+    role: 'Vendor',
+    type: 'External',
+    status: 'Active',
+    accessLevel: 'Scoped Edit',
+    projects: 1,
+    lastActive: 'Active 1d ago',
+  },
+  {
+    id: 'member-5',
+    name: 'Taylor Brooks',
+    email: 'taylor@paperworking.test',
+    role: 'Intern',
+    type: 'Internal',
+    status: 'Active',
+    accessLevel: 'View Only',
+    projects: 1,
+    lastActive: 'Active 4h ago',
+  },
+  {
+    id: 'member-6',
     name: 'Casey Nguyen',
     email: 'casey@paperworking.test',
     role: 'CFO',
     type: 'Internal',
     status: 'Active',
+    accessLevel: 'Full Edit',
     projects: 2,
     lastActive: 'Active 3d ago',
   },
   {
-    id: 'member-5',
+    id: 'member-7',
     name: 'Riley Park',
     email: 'riley@paperworking.test',
     role: 'COO',
     type: 'Internal',
     status: 'Invited',
+    accessLevel: 'Scoped Edit',
     projects: 0,
     lastActive: '—',
     invitedAt: '2026-08-21T09:30:00Z',
@@ -375,14 +463,49 @@ export const REPORT_NARRATIVE =
 
 export function addInboxThread(thread: InboxThread): InboxThread {
   const existingIdx = INBOX_THREADS.findIndex((t) => t.id === thread.id);
+  let updated: InboxThread = thread;
   if (existingIdx >= 0) {
     INBOX_THREADS[existingIdx] = { ...INBOX_THREADS[existingIdx], ...thread };
-    return INBOX_THREADS[existingIdx];
+    updated = INBOX_THREADS[existingIdx];
+  } else {
+    INBOX_THREADS.unshift(thread);
   }
-  INBOX_THREADS.unshift(thread);
-  return thread;
+
+  const cache = (globalThis as any).__pw_inbox_cache;
+  if (cache) {
+    const existing = cache.get(thread.id);
+    cache.set(thread.id, {
+      ...existing,
+      ...updated,
+    });
+  }
+
+  return updated;
 }
 
 export function getInboxThreads(): InboxThread[] {
+  const cache = (globalThis as any).__pw_inbox_cache;
+  if (cache && cache.size > 0) {
+    return Array.from(cache.values())
+      .filter((t: any) => !t.archived)
+      .sort((a: any, b: any) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime()) as InboxThread[];
+  }
   return INBOX_THREADS;
 }
+
+export function getTeamMembers(): TeamMember[] {
+  const cache = (globalThis as any).__pw_team_cache;
+  if (cache && cache.size > 0) {
+    return Array.from(cache.values()) as TeamMember[];
+  }
+  return TEAM_MEMBERS;
+}
+
+export function addTeamMember(member: TeamMember): void {
+  TEAM_MEMBERS.push(member);
+  const cache = (globalThis as any).__pw_team_cache;
+  if (cache) {
+    cache.set(member.id, { ...member });
+  }
+}
+

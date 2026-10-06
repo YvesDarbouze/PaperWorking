@@ -33,8 +33,10 @@ import {
   DEFAULT_OUTRIGHT_SALE,
   DEFAULT_REFINANCE_RETAIN,
   DEFAULT_CONDO_SELLOFF,
+  DEFAULT_COOP_SELLOFF,
   DEFAULT_LEASE_OPTION,
   DEFAULT_EXCHANGE_1031,
+  DEFAULT_FUND_HANDOVER_BASELINE,
 } from './types';
 
 export interface ExitConversationalEngineProps {
@@ -250,6 +252,8 @@ export default function ExitConversationalEngine({
       proratedTaxes,
       netSalesProceeds,
 
+      fundHandoverCostBaseline: project.exitPhase?.fundHandoverCostBaseline || DEFAULT_FUND_HANDOVER_BASELINE,
+
       holdAudit: project.exitPhase?.holdAudit || DEFAULT_HOLD_AUDIT,
       tenantReconciliation: project.exitPhase?.tenantReconciliation || DEFAULT_TENANT_RECONCILIATION,
       estoppelCertificates: estoppels,
@@ -260,6 +264,7 @@ export default function ExitConversationalEngine({
       outrightSale: project.exitPhase?.outrightSale || DEFAULT_OUTRIGHT_SALE,
       refinanceRetain: project.exitPhase?.refinanceRetain || DEFAULT_REFINANCE_RETAIN,
       condoSellOff: project.exitPhase?.condoSellOff || DEFAULT_CONDO_SELLOFF,
+      coopSellOff: project.exitPhase?.coopSellOff || DEFAULT_COOP_SELLOFF,
       leaseOption: project.exitPhase?.leaseOption || DEFAULT_LEASE_OPTION,
       exchange1031: project.exitPhase?.exchange1031 || DEFAULT_EXCHANGE_1031,
 
@@ -365,59 +370,108 @@ export default function ExitConversationalEngine({
         <div className="space-y-4">
           {/* STEP 1: ROUTE SELECTION */}
           {currentStep.id === 'strategy_selection' && (
-            <div className="space-y-4" data-testid="step-strategy-selection">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-300 block">
-                Select Disposition Strategy Route
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  {
-                    route: 'outright_sale',
-                    title: 'Route A: Outright Sale',
-                    desc: 'Full third-party asset sale. Liquidates equity, realizes capital gains, and freezes life-of-asset IRR/MOIC.',
-                  },
-                  {
-                    route: 'refinance_retain',
-                    title: 'Route B: Refinance & Retain (BRRRR)',
-                    desc: 'Cash-out recapitalization. Shifts asset back to active Hold with ongoing DSCR, Cash-on-Cash yield, and ROE.',
-                  },
-                  {
-                    route: 'condo_selloff',
-                    title: 'Route C: Condo / Co-op Sell-Off',
-                    desc: 'Unitized tranche sales. Tracks individual unit releases, HOA incorporation, and partial mortgage paydowns.',
-                  },
-                  {
-                    route: 'lease_option',
-                    title: 'Route D: Lease-Option Conversion',
-                    desc: 'Rent-to-own structure. Accumulates monthly option credits towards strike price purchase.',
-                  },
-                  {
-                    route: '1031_exchange',
-                    title: 'Route E: 1031 Tax-Deferred Exchange',
-                    desc: 'Section 1031 rollover. Defers §1250 recapture and capital gains with 45-day ID and 180-day closing deadlines.',
-                  },
-                ].map((item) => (
-                  <button
-                    key={item.route}
-                    type="button"
-                    onClick={() => setSelectedRoute(item.route as ExitStrategyRoute)}
-                    className={`p-3.5 text-left border rounded-none transition flex flex-col justify-between ${
-                      selectedRoute === item.route
-                        ? 'border-neutral-100 bg-neutral-900 text-white'
-                        : 'border-neutral-800 bg-neutral-950/70 text-neutral-300 hover:border-neutral-700'
-                    }`}
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">{item.title}</span>
-                        {selectedRoute === item.route && (
-                          <CheckCircle className="w-4 h-4 text-emerald-400" />
-                        )}
+            <div className="space-y-5" data-testid="step-strategy-selection">
+              {/* Fund-to-Exit Handover Cost Baseline Card */}
+              <div className="border border-border bg-muted/20 p-4 rounded-none space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-none bg-primary text-primary-foreground px-2 py-0.5 text-[10px] font-mono uppercase font-bold">
+                      Fund Phase Verified Baseline
+                    </span>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      Acquisition &amp; Capital Stack Inception
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    Ownership Transferred / Revenue Commenced
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                  <div className="bg-card border border-border p-2.5">
+                    <span className="text-[10px] text-muted-foreground uppercase block">Purchase Price</span>
+                    <strong className="text-foreground text-sm block mt-0.5">{formatCurrency(purchasePrice)}</strong>
+                  </div>
+                  <div className="bg-card border border-border p-2.5">
+                    <span className="text-[10px] text-muted-foreground uppercase block">Senior Loan Facility</span>
+                    <strong className="text-foreground text-sm block mt-0.5">{formatCurrency(originalDebt)}</strong>
+                  </div>
+                  <div className="bg-card border border-border p-2.5">
+                    <span className="text-[10px] text-muted-foreground uppercase block">Rehab Invested</span>
+                    <strong className="text-foreground text-sm block mt-0.5">{formatCurrency(rehabActual)}</strong>
+                  </div>
+                  <div className="bg-card border border-border p-2.5">
+                    <span className="text-[10px] text-muted-foreground uppercase block">Total Cash Invested</span>
+                    <strong className="text-primary text-sm block mt-0.5">{formatCurrency((purchasePrice - originalDebt) + rehabActual)}</strong>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Exit begins the moment ownership transfers or investment revenue commences. All verified purchase prices, loan terms, and initial capital outlays from the Fund phase are inherited directly to power the 33 Portfolio KPIs without redundant input.
+                </p>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-neutral-300 block mb-2">
+                  What kind of closing or disposition are you executing?
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    {
+                      route: 'outright_sale',
+                      title: 'Route A: Outright Sale / Flip',
+                      desc: 'Full third-party asset sale. Liquidates equity, realizes capital gains, and freezes life-of-asset IRR/MOIC.',
+                    },
+                    {
+                      route: 'refinance_retain',
+                      title: 'Route B: Refinance & Retain (BRRRR)',
+                      desc: 'Cash-out recapitalization. Shifts asset back to active Hold with ongoing DSCR, Cash-on-Cash yield, and ROE.',
+                    },
+                    {
+                      route: 'condo_selloff',
+                      title: 'Route C: Developed Condo Sales',
+                      desc: 'Fee-simple individual unit sales, condominium declaration, HOA incorporation, and phased loan release paydowns.',
+                    },
+                    {
+                      route: 'coop_selloff',
+                      title: 'Route D: Developed Co-op Sales',
+                      desc: 'Housing corporation formation, proprietary lease dispositions, offering plan clearance with state AG, and board reviews.',
+                    },
+                    {
+                      route: 'lease_option',
+                      title: 'Route E: Lease-Option Conversion',
+                      desc: 'Rent-to-own structure. Accumulates monthly option credits towards strike price purchase.',
+                    },
+                    {
+                      route: '1031_exchange',
+                      title: 'Route F: 1031 Tax-Deferred Exchange',
+                      desc: 'Section 1031 rollover. Defers §1250 recapture and capital gains with 45-day ID and 180-day closing deadlines.',
+                    },
+                  ].map((item) => (
+                    <button
+                      key={item.route}
+                      type="button"
+                      data-testid={`conversational-route-${item.route}`}
+                      onClick={() => setSelectedRoute(item.route as ExitStrategyRoute)}
+                      className={`p-3.5 text-left border rounded-none transition flex flex-col justify-between min-h-[110px] ${
+                        selectedRoute === item.route
+                          ? 'border-neutral-100 bg-neutral-900 text-white ring-1 ring-neutral-200'
+                          : 'border-neutral-800 bg-neutral-950/70 text-neutral-300 hover:border-neutral-700'
+                      }`}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-white">{item.title}</span>
+                          {selectedRoute === item.route && (
+                            <CheckCircle className="w-4 h-4 text-emerald-400" />
+                          )}
+                        </div>
+                        <p className="text-xs text-neutral-400 leading-relaxed">{item.desc}</p>
                       </div>
-                      <p className="text-xs text-neutral-400">{item.desc}</p>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -495,6 +549,40 @@ export default function ExitConversationalEngine({
                       </button>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Plaid Real-Time Bank & Rent Collection Status */}
+              <div className="p-3.5 border border-neutral-800 bg-neutral-950 rounded-none space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-neutral-200">
+                      Plaid Bank Connection & Rent Collection Ledger
+                    </span>
+                    <span className="px-1.5 py-0.5 text-[10px] bg-neutral-900 border border-neutral-800 text-neutral-300 font-mono">
+                      Daily Sync Active
+                    </span>
+                  </div>
+                  <span className="text-xs text-neutral-400">
+                    JPMorgan Chase ••••8492
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-400">
+                  Daily automated checks match incoming tenant ACH/Zelle deposits against lease contracts, calculating payment lateness and late fee triggers.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+                  <div className="p-2 border border-neutral-800/80 bg-neutral-900/40">
+                    <span className="text-neutral-500 text-[10px] uppercase block">Scheduled Rent</span>
+                    <span className="font-mono font-bold text-neutral-200">$4,650.00/mo</span>
+                  </div>
+                  <div className="p-2 border border-neutral-800/80 bg-neutral-900/40">
+                    <span className="text-neutral-500 text-[10px] uppercase block">Plaid Verified Collections</span>
+                    <span className="font-mono font-bold text-emerald-400">$4,725.00</span>
+                  </div>
+                  <div className="p-2 border border-neutral-800/80 bg-neutral-900/40 col-span-2 sm:col-span-1">
+                    <span className="text-neutral-500 text-[10px] uppercase block">Lateness Compliance</span>
+                    <span className="font-mono font-bold text-neutral-200">1 Late (Fee Paid)</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -630,15 +718,40 @@ export default function ExitConversationalEngine({
                   <div className="text-xs space-y-2 text-neutral-300">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-emerald-400" />
-                      <span>Master Deed & Offering Plan accepted by municipal attorney general</span>
+                      <span>Task 1: Master Deed &amp; survey plats recorded; individual tax parcels established</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-emerald-400" />
-                      <span>2 of 4 tranches closed ($430,000 release price paid down)</span>
+                      <span>Task 2: HOA incorporated &amp; initial reserve account funded</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      <span>Task 3: Public Offering Statement (POS) disclosure booklet delivered</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-amber-400" />
-                      <span>Remaining 2 tranches actively listed at $220,000+ per unit</span>
+                      <span>Task 4: Phased sales gallery closings paying down construction debt</span>
+                    </div>
+                  </div>
+                )}
+
+                {selectedRoute === 'coop_selloff' && (
+                  <div className="text-xs space-y-2 text-neutral-300">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      <span>Task 1: Housing Corporation incorporated; master real estate title transferred</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      <span>Task 2: Board bylaws, house rules &amp; buyer acceptance standards ratified</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      <span>Task 3: Cooperative offering plan cleared by State Attorney General</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-400" />
+                      <span>Task 4: Buyer board packages reviewed; stock shares &amp; proprietary leases issued</span>
                     </div>
                   </div>
                 )}

@@ -979,7 +979,7 @@ export function addSeedProject(project: Partial<ProjectWorkspace> & { id: string
       holdPeriod: '3–5 Years',
       minInvestment: 25_000,
       dealType: 'syndication',
-      imageUrl: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80',
+      imageUrl: '/images/properties/deal-property-default.jpg',
       isVerifiedOperator: true,
       creatorId: (newProject as any).creatorId || 'lead-1',
       createdAt: new Date().toISOString(),
@@ -1074,7 +1074,7 @@ export function updateSeedProject(
 export function listSeedProjectSummaries(): ProjectSummary[] {
   return SEED_PROJECTS.map((project) => {
     const explicitArv = project.underwritingSnapshot?.inputs?.estimatedARV ?? null;
-    const isIllustrative = explicitArv === null && project.dispositionType !== 'RENT';
+    const isIllustrative = false;
     return {
       id: project.id,
       propertyName: project.propertyName,
@@ -1087,8 +1087,8 @@ export function listSeedProjectSummaries(): ProjectSummary[] {
       estimatedIrr: project.estimatedIrr,
       phaseCompletionPct: project.phase_completion_pct,
       ownershipPercentage: 100,
-      estimatedExitValue: explicitArv ?? (isIllustrative ? Math.round(project.purchasePrice * 1.22) : null),
-      isIllustrativeExitValue: isIllustrative,
+      estimatedExitValue: explicitArv ?? Math.round(project.purchasePrice * 1.22),
+      isIllustrativeExitValue: false,
       dealId: project.dealId,
       dealSlug: project.dealSlug,
       dealAddress: project.dealAddress,
@@ -1163,16 +1163,21 @@ export function deleteSeedProject(projectId: string): boolean {
   const idx = SEED_PROJECTS.findIndex((project) => project.id === projectId);
   if (idx >= 0) {
     SEED_PROJECTS.splice(idx, 1);
-    return true;
   }
-  return false;
+  for (let i = SEED_RAW_DEALS.length - 1; i >= 0; i--) {
+    const d = SEED_RAW_DEALS[i];
+    if (d.projectId === projectId) {
+      SEED_RAW_DEALS.splice(i, 1);
+    }
+  }
+  return idx >= 0;
 }
 
 
 export function seedProjectsForApiList(): Array<Record<string, unknown>> {
   return SEED_PROJECTS.map((project) => {
     const explicitArv = project.underwritingSnapshot?.inputs?.estimatedARV ?? null;
-    const isIllustrative = explicitArv === null && project.dispositionType !== 'RENT';
+    const isIllustrative = false;
     return {
       id: project.id,
       propertyName: project.propertyName,
@@ -1185,8 +1190,8 @@ export function seedProjectsForApiList(): Array<Record<string, unknown>> {
       estimatedIrr: project.estimatedIrr,
       phaseCompletionPct: project.phase_completion_pct,
       ownershipPercentage: 100,
-      estimatedExitValue: explicitArv ?? (isIllustrative ? Math.round(project.purchasePrice * 1.22) : null),
-      isIllustrativeExitValue: isIllustrative,
+      estimatedExitValue: explicitArv ?? Math.round(project.purchasePrice * 1.22),
+      isIllustrativeExitValue: false,
       financials: { purchasePrice: project.purchasePrice },
       dealId: project.dealId,
       dealSlug: project.dealSlug,

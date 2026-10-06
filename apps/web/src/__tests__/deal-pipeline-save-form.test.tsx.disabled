@@ -1,0 +1,128 @@
+import React from 'react';
+import { describe, expect, it, jest, beforeAll, afterAll } from '@jest/globals';
+import { renderToString } from 'react-dom/server';
+
+const mockPush = jest.fn();
+const mockReplace = jest.fn();
+
+jest.unstable_mockModule('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush, replace: mockReplace }),
+  useParams: () => ({ slug: '1247elmst' }),
+  useSearchParams: () => new URLSearchParams('collisionWarning=false'),
+  redirect: (url) => { throw new Error('NEXT_REDIRECT:' + url); },
+}));
+
+const { default: DealCreationPage } = await import('../../app/(deals)/deals/[slug]/page');
+const { POST: postDealsRoute } = await import('../../app/api/deals/route');
+const { getDealFromStore } = await import('../../lib/deals/deal-store');
+
+describe('Task 1: Deal Pipeline Save Form (deals/[slug]/page.tsx)', () => {
+  const originalEnv = process.env.TEST_AUTH_UID;
+
+  beforeAll(() => {
+    process.env.TEST_AUTH_UID = 'dev-user-1';
+  });
+
+  afterAll(() => {
+    process.env.TEST_AUTH_UID = originalEnv;
+  });
+
+  it('renders all underwriting parameters in the pipeline intake form and links to /marketplace', () => {
+    const html = renderToString(<DealCreationPage />);
+
+    expect(html).toContain('DEAL PIPELINE INTAKE');
+    expect(html).toContain('Target Purchase Price ($)');
+    expect(html).toContain('Rehab Estimate ($)');
+    expect(html).toContain('After Repair Value / ARV ($)');
+    expect(html).toContain('Projected Monthly Rent ($)');
+    expect(html).toContain('Planned Hold Period');
+    expect(html).toContain('Exit / Disposition Strategy');
+    expect(html).toContain('Deal Visibility');
+
+    // Hold period options
+    expect(html).toContain('6–12 Months (Short-term / Flip)');
+    expect(html).toContain('3–5 Years (Standard Value-Add)');
+    expect(html).toContain('7–10 Years (Long-term Wealth / Legacy)');
+
+    // Disposition options
+    expect(html).toContain('Outright Sale (Fix &amp; Flip / Capital Gain)');
+    expect(html).toContain('Hold as Rental (Cash Flow / Section 8)');
+    expect(html).toContain('BRRRR (Refinance Capital Return)');
+
+    // Back link must direct to /marketplace
+    expect(html).toContain('href="/marketplace"');
+    expect(html).toContain('Back to Deals Marketplace');
+
+    // Submit button
+    expect(html).toContain('Save to Pipeline as Baseline');
+  });
+
+  it('connects to real POST /api/deals endpoint and persists all underwriting parameters', async () => {
+    const uniqueSlug = `test-pipeline-${Date.now()}`;
+    const payload = {
+      slug: uniqueSlug,
+      name: '1247 Elm Street',
+      title: '1247 Elm Street',
+      address: '1247 Elm Street, Austin, TX 78702',
+      purchasePrice: 550000,
+      rehabCost: 75000,
+      arv: 720000,
+      holdingCosts: 11000,
+      holdPeriod: '5–7 Years',
+      strategy: 'VALUE_ADD',
+      disposition: 'RENT',
+      visibility: 'marketplace' as const,
+      status: 'published',
+      dealType: 'syndication' as const,
+      calculatorResults: {
+        purchasePrice: 550000,
+        rehabBudget: 75000,
+        arv: 720000,
+        grossMonthlyRent: 4500,
+        holdPeriod: '5–7 Years',
+        strategy: 'VALUE_ADD',
+      },
+    };
+
+    const req = new Request('http://localhost:3000/api/deals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const res = await postDealsRoute(req);
+    expect(res.status).toBe(201);
+
+    const body = await res.json();
+    expect(body.deal.id).toBeDefined();
+
+    // Verify stored deal in authoritative store
+    const stored = await getDealFromStore(uniqueSlug);
+    expect(stored).not.toBeNull();
+    expect(stored?.purchasePrice).toBe(550000);
+    expect(stored?.rehabCost).toBe(75000);
+    expect(stored?.arv).toBe(720000);
+    expect(stored?.holdPeriod).toBe('5–7 Years');
+    expect(stored?.visibility).toBe('marketplace');
+    expect(stored?.calculatorResults?.grossMonthlyRent).toBe(4500);
+  });
+
+  it('rejects invalid payloads with 400 error for proper client error alert surfacing', async () => {
+    const invalidPayload = {
+      address: '',
+      purchasePrice: -5000,
+    };
+
+    const req = new Request('http://localhost:3000/api/deals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(invalidPayload),
+    });
+
+    const res = await postDealsRoute(req);
+    expect(res.status).toBe(400);
+
+    const body = await res.json();
+    expect(body.error).toBeDefined();
+  });
+});

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { verifySessionTokenEdge } from '@/lib/auth/session-edge';
+
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminPortalShell from '@/components/admin/AdminPortalShell';
-import { isAuthorizedAdmin, resolveServerAuthUser } from '@/lib/api/server-session';
-
-export const dynamic = 'force-dynamic';
+import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -11,14 +12,21 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const authUser = await resolveServerAuthUser();
+  const cookieStore = await cookies();
+  const session = cookieStore.get(SESSION_COOKIE)?.value;
+  const accountType = cookieStore.get(ACCT_COOKIE)?.value ?? 'investor';
 
-  if (!authUser) {
+  
+  const secret = process.env.SESSION_SECRET || 'paperworking_session_secure_key_2026_prod';
+  const isSessionValid = session ? await verifySessionTokenEdge(session, secret) : false;
+
+  if (!isSessionValid) {
+
     redirect('/login?accountType=admin&redirectTo=/admin');
   }
 
   // Investor/vendor sessions must re-auth as admin: don't silently dump to dashboard.
-  if (authUser.accountType !== 'admin') {
+  if (accountType !== 'admin') {
     redirect('/login?accountType=admin&redirectTo=/admin');
   }
 

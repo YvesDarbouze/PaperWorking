@@ -23,7 +23,7 @@ const mockDeal: DealCardData = {
   investorCount: 14,
   creatorName: 'Apex Capital Management',
   isVerifiedOperator: true,
-  imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+  imageUrl: '/images/properties/deal-property-default.jpg',
 };
 
 describe('DealCard Component (Underwriting Anatomy)', () => {

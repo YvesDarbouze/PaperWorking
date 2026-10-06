@@ -27,9 +27,27 @@ export default function ForgotPasswordPanel() {
       return;
     }
 
-    setSubmittedEmail(email);
-    setSuccess(true);
-    setSubmitting(false);
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setErrors({ email: data.error || 'Failed to send password reset link.' });
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmittedEmail(email);
+      setSuccess(true);
+    } catch {
+      setErrors({ email: 'Network error occurred. Please try again.' });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (success) {
@@ -38,8 +56,8 @@ export default function ForgotPasswordPanel() {
         <div className="text-center">
           <h1 className="mb-2 text-2xl font-semibold">Check your inbox</h1>
           <p className="mb-6 text-sm leading-relaxed text-[rgba(253,255,252,0.65)]">
-            A reset link was sent to <span className="font-medium text-[#fdfffc]">{submittedEmail}</span>.
-            Reset email delivery connects when SendGrid + Firebase auth are live in production.
+            A password reset link was dispatched to <span className="font-medium text-[#fdfffc]">{submittedEmail}</span>.
+            Please check your inbox and follow the direct link to choose a new password.
           </p>
           <AuthNotice>We never confirm whether an email exists in the system to prevent account enumeration.</AuthNotice>
           <div className="mt-6 space-y-3">

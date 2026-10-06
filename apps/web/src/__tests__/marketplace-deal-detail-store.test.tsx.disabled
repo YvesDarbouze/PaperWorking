@@ -1,0 +1,90 @@
+import React from 'react';
+import { describe, expect, it, jest } from '@jest/globals';
+import { renderToString } from 'react-dom/server';
+
+const mockNotFound = jest.fn(() => {
+  throw new Error('NEXT_NOT_FOUND');
+});
+
+jest.unstable_mockModule('next/navigation', () => ({
+  notFound: mockNotFound,
+  useRouter: () => ({ push: jest.fn(), back: jest.fn(), replace: jest.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => '/marketplace/test-deal',
+}));
+
+const { default: MarketplaceDealDetailPage } = await import('../../app/marketplace/[dealId]/page.js');
+const { createDealInStore, getDealFromStore, listDealsFromStore } = await import('../../lib/deals/deal-store.js');
+
+describe('Task 6: Connect Marketplace Deal Detail to Authoritative Store (marketplace/[dealId]/page.tsx)', () => {
+  it('loads newly created deal from store and verifies access with { deal: rawDeal }', async () => {
+    const customDealId = `deal-custom-${Date.now()}`;
+    const customDeal = await createDealInStore({
+      id: customDealId,
+      slug: `slug-${customDealId}`,
+      address: '742 Evergreen Terrace, Springfield, OR',
+      projects: [{ id: 'p1', name: 'Evergreen Garden Estates' }],
+      purchasePrice: 1850000,
+      rehabCost: 220000,
+      visibility: 'marketplace',
+      status: 'published',
+      holdPeriod: '5–7 Years',
+      minInvestment: 50000,
+      projectedRoi: 21.5,
+      targetIrr: 21.5,
+      equityMultiple: 2.15,
+    });
+
+    expect(customDeal.id).toBe(customDealId);
+
+    const jsx = await MarketplaceDealDetailPage({
+      params: Promise.resolve({ dealId: customDealId }),
+      searchParams: Promise.resolve({}),
+    });
+
+    const html = renderToString(jsx);
+    expect(html).toContain('742 Evergreen Terrace');
+    expect(html).toContain('Evergreen Garden Estates');
+    expect(html).toContain('21.5%');
+    expect(html).toContain('2.15x');
+  });
+
+  it('retrieves deals via slug using getDealFromStore', async () => {
+    const slug = '1247elmst';
+    const storeDeal = await getDealFromStore(slug);
+    expect(storeDeal).not.toBeNull();
+    expect(storeDeal?.slug).toBe('1247elmst');
+
+    const jsx = await MarketplaceDealDetailPage({
+      params: Promise.resolve({ dealId: slug }),
+      searchParams: Promise.resolve({}),
+    });
+
+    const html = renderToString(jsx);
+    expect(html).toContain('1247 Elm Street');
+  });
+
+  it('fetches all listings via listDealsFromStore and passes to DealDetailPageView', async () => {
+    const allStoreDeals = await listDealsFromStore();
+    expect(allStoreDeals.length).toBeGreaterThanOrEqual(1);
+
+    const jsx = await MarketplaceDealDetailPage({
+      params: Promise.resolve({ dealId: allStoreDeals[0].id }),
+      searchParams: Promise.resolve({}),
+    });
+
+    const html = renderToString(jsx);
+    expect(html).toContain(allStoreDeals[0].address.split(',')[0]);
+  });
+
+  it('invokes notFound() when getDealFromStore returns null', async () => {
+    await expect(
+      MarketplaceDealDetailPage({
+        params: Promise.resolve({ dealId: 'non-existent-deal-999999' }),
+        searchParams: Promise.resolve({}),
+      }),
+    ).rejects.toThrow('NEXT_NOT_FOUND');
+
+    expect(mockNotFound).toHaveBeenCalled();
+  });
+});

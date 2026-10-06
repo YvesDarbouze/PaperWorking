@@ -5,5 +5,9 @@ export { default as ExitStrategyExecutionCard } from './ExitStrategyExecutionCar
 export { default as ExitTaxAccountingWaterfallCard } from './ExitTaxAccountingWaterfallCard';
 export { default as ExitLifecycleClosureCard } from './ExitLifecycleClosureCard';
 export { default as ExitConversationalEngine } from './ExitConversationalEngine';
+export { ProjectPlaidIntegrationCard } from './ProjectPlaidIntegrationCard';
+export { ProjectRentRollTrackerCard } from './ProjectRentRollTrackerCard';
+export { ProjectHoldingCostTrackerCard } from './ProjectHoldingCostTrackerCard';
+export { ProjectTransactionLedgerCard } from './ProjectTransactionLedgerCard';
 
 export * from './types';

@@ -14,13 +14,6 @@ export default function ReilPhaseModules() {
           className="group/card flex flex-col justify-between rounded-none border border-border bg-card p-6 shadow-sm ring-1 ring-foreground/10 text-card-foreground transition-colors hover:border-foreground/25"
         >
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {module.phaseNumber}
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
-            </div>
-
             <h3 className="mb-4 text-lg font-bold tracking-tight text-foreground">
               {module.title}
             </h3>

@@ -42,6 +42,8 @@ export const vendorMarketplaceDescription =
 export const howItWorksHeader =
   'Project Management software made specifically for real estate investor.';
 export const howItWorksSubheadline = 'How the Real Estate Investment Lifecycle Works.';
+export const howItWorksIntro =
+  "PaperWorking transforms raw property data into actionable portfolio intelligence. Streamline operations, eliminate manual tracking, and gain real-time visibility across your entire real estate portfolio's investment lifecycle.";
 export const howItWorksBody =
   'Real estate investments follow a distinct lifecycle unlike standard work-related projects, moving through phases unique to the property industry. PaperWorking streamlines these stages into a unified ecosystem, driving operational efficiency and practical solutions for investors. By ingesting your project data points, PaperWorking generates 33 visualized KPIs (Key Performance Indicators) that provide the critical insights needed for smarter decision-making. We built PaperWorking to equip serious real estate investors with the intelligence required to measure and maximize investment performance.';
 
@@ -80,7 +82,7 @@ export const pricingSubheadline =
 export const pricingBody =
   'Being off by even a fraction of a percent can cost thousands of dollars to poor planning, surprise expenses, and avoidable mistakes. PaperWorking gives real estate investors the clarity and the network to make smart, profitable decisions.';
 
-export const twoMarketplacesTitle = 'Come for the Execution Tools. Stay for the Network.';
+export const twoMarketplacesTitle = 'Come for the Tools. Stay for the Network.';
 export const twoMarketplacesBody =
   'PaperWorking subscribers get exclusive access to an active network engineered for serious real estate operators, capital partners, and specialized vendors.';
 

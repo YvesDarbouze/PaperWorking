@@ -569,14 +569,6 @@ export default function PortfolioInsightsPanel() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight text-white">Insights</h1>
-            {isDemoActive && (
-              <span
-                data-testid="illustrative-demo-badge"
-                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
-              >
-                ILLUSTRATIVE DEMO DATA
-              </span>
-            )}
           </div>
           <p className="mt-1.5 text-sm leading-relaxed text-white/55">
             Real-time calculations, persona KPIs, portfolio aggregation, and regulatory benchmarks.
@@ -660,14 +652,6 @@ export default function PortfolioInsightsPanel() {
                         {metric.name}
                       </span>
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {(metric.dataProvenance === 'illustrative_demo' || isDemoActive) && (
-                          <span
-                            data-testid="persona-card-demo-badge"
-                            className="inline-flex items-center rounded-xs bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 border border-amber-500/30"
-                          >
-                            ILLUSTRATIVE DEMO DATA
-                          </span>
-                        )}
                         {metric.trend ? (
                           <span
                             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
@@ -860,14 +844,10 @@ export default function PortfolioInsightsPanel() {
                                 </p>
                                 <div className="flex items-center gap-1.5 shrink-0">
                                   <span
-                                    data-testid={isDemoActive ? 'kpi-demo-badge' : 'kpi-computed-badge'}
-                                    className={`inline-flex items-center rounded-xs px-1.5 py-0.5 text-[9px] font-semibold ${
-                                      isDemoActive
-                                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                                        : 'bg-[var(--accent,#00dd94)]/10 text-[var(--accent,#00dd94)]'
-                                    }`}
+                                    data-testid="kpi-computed-badge"
+                                    className="inline-flex items-center rounded-xs px-1.5 py-0.5 text-[9px] font-semibold bg-[var(--accent,#00dd94)]/10 text-[var(--accent,#00dd94)]"
                                   >
-                                    {isDemoActive ? 'ILLUSTRATIVE DEMO DATA' : 'computed'}
+                                    computed
                                   </span>
                                   <span className="material-symbols-outlined text-[16px] text-white/20 transition-all duration-150 group-hover:scale-110 group-hover:text-[var(--accent,#00dd94)]">
                                     open_in_new
@@ -1132,8 +1112,8 @@ export default function PortfolioInsightsPanel() {
         metricId={compareMetric}
         averageValue={compareAvg}
         height={320}
-        isDemo={isDemoActive}
-        dataProvenance={isDemoActive ? 'illustrative_demo' : 'computed'}
+        isDemo={false}
+        dataProvenance="computed"
         subtitle={
           scope === 'portfolio'
             ? 'Compare active real estate projects. Top performers highlighted with status token.'
@@ -1238,8 +1218,8 @@ export default function PortfolioInsightsPanel() {
         isOpen={Boolean(expandedKpi)}
         onClose={() => setExpandedKpi(null)}
         triggerRef={triggerRef}
-        isDemo={isDemoActive}
-        dataProvenance={isDemoActive ? 'illustrative_demo' : 'computed'}
+        isDemo={false}
+        dataProvenance="computed"
       />
     </div>
   );

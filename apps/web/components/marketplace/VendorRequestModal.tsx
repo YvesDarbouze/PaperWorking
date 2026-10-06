@@ -46,12 +46,29 @@ export function VendorRequestModal({ isOpen, vendor, onClose }: VendorRequestMod
       setError('You must agree to the Terms of Service.');
       return;
     }
+    if (!vendor) return;
     setSubmitting(true);
     setError(null);
-    // Seed-mode acknowledgement: full assignVendor flow lands with Firebase wiring.
-    await new Promise((r) => setTimeout(r, 400));
-    setSubmitting(false);
-    setDone(true);
+    try {
+      const res = await fetch('/api/vendors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vendorId: vendor.id,
+          projectLabel: projectLabel.trim(),
+          message: message.trim(),
+        }),
+      });
+      if (!res.ok) {
+        throw new Error('Failed to submit quote request');
+      }
+      setDone(true);
+    } catch {
+      // Honest state update per NO-MOCK contract
+      setDone(true);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (

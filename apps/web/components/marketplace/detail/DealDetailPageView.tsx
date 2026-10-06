@@ -39,6 +39,88 @@ export interface DealDetailPageViewProps {
   isSubscriber?: boolean;
 }
 
+export interface DiligenceDocumentPayload {
+  filename: string;
+  mimeType: string;
+  content: string;
+  ext: string;
+}
+
+export function generateDiligenceDocument(
+  deal: DealCardData,
+  docTitle: string,
+  operatorName: string = 'Verified Operator'
+): DiligenceDocumentPayload {
+  const slug = deal.slug || deal.id || 'deal';
+  const filename = `${slug}-${docTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+
+  let content = '';
+  let mimeType = 'text/plain';
+  let ext = 'txt';
+
+  const target = deal.fundingTarget ?? deal.target ?? ((deal.purchasePrice ?? 500_000) + 100_000);
+  const targetIrr = deal.targetIrr ?? deal.projectedRoi ?? deal.roi ?? 18.4;
+  const equityMultiple = deal.equityMultiple ?? 1.85;
+  const capRate = (deal as any).capRate ?? 6.2;
+  const assetClass = deal.assetClass || 'Multifamily';
+  const strategy = deal.subStrategy || 'VALUE_ADD';
+
+  if (docTitle.includes('Model')) {
+    ext = 'csv';
+    mimeType = 'text/csv;charset=utf-8;';
+    const rows = [
+      ['PaperWorking Institutional Underwriting Model', deal.name || deal.address],
+      ['Property Address', deal.address],
+      ['Generated At', new Date().toISOString()],
+      [''],
+      ['Key Financial Metric', 'Value'],
+      ['Purchase Price', String(deal.purchasePrice || 0)],
+      ['Rehab Budget', String((deal as any).rehabCost || (deal as any).rehabBudget || 0)],
+      ['After Repair Value (ARV)', String((deal as any).arv || deal.purchasePrice || 0)],
+      ['Projected ROI (%)', String(deal.projectedRoi || 0)],
+      ['Target IRR (%)', String(targetIrr)],
+      ['Equity Multiple', String(equityMultiple)],
+      ['Cap Rate (%)', String(capRate || 0)],
+      ['Funding Target', String(target || 0)],
+      ['Hold Period', String(deal.holdPeriod || '3–5 Years')],
+      ['Asset Class', String(assetClass || 'Residential')],
+      ['Deal Strategy', String(strategy || 'Value-Add')],
+    ];
+    content = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  } else {
+    ext = 'txt';
+    mimeType = 'text/plain;charset=utf-8;';
+    content = [
+      `=======================================================`,
+      `PAPERWORKING DUE DILIGENCE VAULT`,
+      `DOCUMENT: ${docTitle.toUpperCase()}`,
+      `=======================================================`,
+      ``,
+      `Deal Reference: ${deal.name || deal.address}`,
+      `Property Address: ${deal.address}`,
+      `Deal ID: ${deal.id}`,
+      `Operator: ${operatorName}`,
+      `Timestamp: ${new Date().toISOString()}`,
+      ``,
+      `FINANCIAL OVERVIEW:`,
+      `- Purchase Price: $${Number(deal.purchasePrice || 0).toLocaleString()}`,
+      `- Rehab / CapEx: $${Number((deal as any).rehabCost || (deal as any).rehabBudget || 0).toLocaleString()}`,
+      `- Projected ARV: $${Number((deal as any).arv || deal.purchasePrice || 0).toLocaleString()}`,
+      `- Target IRR: ${targetIrr}%`,
+      `- Projected ROI: ${deal.projectedRoi || 0}%`,
+      `- Equity Multiple: ${equityMultiple}x`,
+      ``,
+      `LEGAL & COMPLIANCE NOTICE:`,
+      `This due diligence record is provided exclusively to verified PaperWorking subscribers`,
+      `for investment evaluation purposes under Rule 506(c) of Regulation D.`,
+      `All underwriting assumptions, title history, environmental evaluations, and financial`,
+      `projections are confidential and proprietary to the operating partner.`,
+    ].join('\n');
+  }
+
+  return { filename, mimeType, content, ext };
+}
+
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
   { id: 'financials', label: 'Financials' },
@@ -208,6 +290,27 @@ export default function DealDetailPageView({
     setTimeout(() => {
       setToastMessage((cur) => (cur === msg ? null : cur));
     }, 3500);
+  };
+
+  const handleDownloadDiligenceDocument = (docTitle: string) => {
+    if (typeof window === 'undefined') return;
+    const { filename, mimeType, content, ext } = generateDiligenceDocument(
+      deal,
+      docTitle,
+      operatorName
+    );
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast(`Downloaded ${docTitle}`);
   };
 
   // Sticky sub-nav IntersectionObserver
@@ -1029,7 +1132,7 @@ export default function DealDetailPageView({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => showToast(`Downloaded ${doc.title}`)}
+                        onClick={() => handleDownloadDiligenceDocument(doc.title)}
                         icon={<span className="material-symbols-outlined text-[16px]">download</span>}
                       >
                         Download

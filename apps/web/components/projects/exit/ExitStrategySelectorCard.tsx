@@ -65,15 +65,24 @@ export default function ExitStrategySelectorCard({
     {
       id: 'condo_selloff',
       title: 'Route C',
-      label: 'Condo / Co-op Unit Sell-Off',
+      label: 'Developed Condo Sales',
       icon: <Buildings size={20} className="text-foreground" />,
-      summary: 'Fractional unitized sales, HOA incorporation, and phased release price paydowns.',
-      kpiShiftNote: 'Unitized Tranche Mode: Converts single-asset valuation to unitized tranche sales with phased distribution timelines.',
+      summary: 'Fee-simple individual parcel sales, master deed declaration, HOA setup, and phased debt paydown.',
+      kpiShiftNote: 'Unitized Parcel Mode: Master deed and plats establish individual tax parcels sold to pay off construction debt.',
+      isTerminal: true,
+    },
+    {
+      id: 'coop_selloff',
+      title: 'Route D',
+      label: 'Developed Co-op Sales',
+      icon: <Buildings size={20} className="text-foreground" />,
+      summary: 'Housing corporation formation, proprietary lease dispositions, offering plan clearance, and board reviews.',
+      kpiShiftNote: 'Corporate Share Disposition: Sales of shares tied to proprietary leases vetted by co-op board.',
       isTerminal: true,
     },
     {
       id: 'lease_option',
-      title: 'Route D',
+      title: 'Route E',
       label: 'Lease-Option Conversion',
       icon: <Key size={20} className="text-foreground" />,
       summary: 'Tenant option consideration, monthly rent credit accumulation, and strike price realization.',
@@ -82,7 +91,7 @@ export default function ExitStrategySelectorCard({
     },
     {
       id: '1031_exchange',
-      title: 'Route E',
+      title: 'Route F',
       label: '1031 Tax-Deferred Exchange',
       icon: <ArrowsLeftRight size={20} className="text-foreground" />,
       summary: 'Section 1031 like-kind rollover, Qualified Intermediary escrow, and 45/180-day timers.',
@@ -121,8 +130,8 @@ export default function ExitStrategySelectorCard({
         </div>
       </div>
 
-      {/* 5-Route Selector Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {/* 6-Route Selector Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
         {routes.map((route) => {
           const isSelected = selectedRoute === route.id;
           return (

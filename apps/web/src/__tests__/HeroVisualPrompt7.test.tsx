@@ -91,7 +91,7 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
 
   describe('5. Visual Hierarchy, Sizing & Performance', () => {
     it('maintains clear headline dominance with supporting visual container', () => {
-      expect(heroHtml).toContain('<h1 class="text-4xl font-medium tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.05]">');
+      expect(heroHtml).toMatch(/<h1 class="text-4xl font-medium tracking-tight (text-white|text-foreground) sm:text-5xl md:text-6xl leading-\[1.05\]">/);
       expect(heroHtml).toContain('max-w-[620px]');
     });
 
@@ -101,7 +101,7 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
     });
 
     it('applies dark-theme styling with subtle emerald accent', () => {
-      expect(heroHtml).toContain('bg-[#0a0a0f]');
+      expect(heroHtml).toMatch(/(bg-\[#0a0a0f\]|bg-background)/);
       expect(carouselHtml).toContain('bg-[#0f111a]');
       expect(carouselHtml).toContain('bg-[#141624]');
       expect(carouselHtml).toContain('var(--color-primary)');

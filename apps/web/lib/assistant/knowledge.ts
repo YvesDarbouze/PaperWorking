@@ -72,7 +72,7 @@ export const AVA_KNOWLEDGE_BASE: KnowledgeTopic[] = [
           'You control visibility. Projects can be kept private to your syndicate, shared with approved partners, or broadcast to verified Marketplace investors.',
       },
     ],
-    links: [{ label: 'Deal Marketplace', href: '/marketplace' }],
+    links: [{ label: 'Deal Marketplace', href: '/marketplaces' }],
   },
   {
     id: 'fund-phase-vault',
@@ -304,7 +304,6 @@ export const AVA_KNOWLEDGE_BASE: KnowledgeTopic[] = [
       '14-day free trial on all plans; card is not charged until day 15.',
       'Switch between annual and monthly billing at any time.',
       'Self-serve cancellation anytime at Dashboard → Settings → Billing.',
-      '30-day money-back guarantee on annual plans.',
       '90-day read-only data access post-cancellation so you can export records without losing historical context.',
     ],
     keyOutcome:

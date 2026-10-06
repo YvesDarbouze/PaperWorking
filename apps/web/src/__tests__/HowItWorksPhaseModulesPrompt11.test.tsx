@@ -54,7 +54,7 @@ describe('PROMPT 11 — Four REIL Phase Modules with Bulleted Activities', () =>
 
     it('renders the modules in correct reading order in HowItWorks page component', () => {
       const narrativeIndex = decodedHowItWorks.indexOf(
-        'how the investor exited: a complete sale'
+        'Real estate investments have their own unique lifecycle.'
       );
       const acqIndex = decodedHowItWorks.indexOf('Acquisition</h3>');
       const fundIndex = decodedHowItWorks.indexOf('Fund</h3>');

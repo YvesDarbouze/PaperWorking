@@ -35,7 +35,7 @@ export default function MarketplacesClient() {
 
   return (
     <div className="w-full bg-background" id={activeTab === 'vendors' ? 'vendors' : 'deals'}>
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-8 pb-14 sm:pt-10 sm:pb-16 md:pt-12 md:pb-20">
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8 pt-2 pb-14 sm:pt-2.5 sm:pb-16 md:pt-3 md:pb-20">
         <section className="mx-auto max-w-3xl space-y-6 text-center w-full">
           <div>
             <span className="inline-block font-mono text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -91,6 +91,40 @@ export default function MarketplacesClient() {
               >
                 Vendor Marketplace
               </button>
+            </div>
+          </div>
+
+          {/* Interactive Screen Preview Container */}
+          <div className="relative mx-auto mt-6 mb-4 w-full max-w-4xl overflow-hidden rounded-none border border-border bg-card shadow-lg ring-1 ring-foreground/10 text-left">
+            <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2 text-xs font-mono text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-none bg-primary" />
+                <span className="font-semibold text-foreground">
+                  {activeTab === 'deals' ? 'Deal Marketplace — Live Syndications' : 'Vendor Portal & Role Allocations'}
+                </span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {activeTab === 'deals' ? 'Active Offerings' : 'Verified Directory'}
+              </span>
+            </div>
+            <div className="relative aspect-[16/10] w-full overflow-hidden bg-background">
+              <img
+                src={
+                  activeTab === 'deals'
+                    ? '/images/mockups/marketplace-deals-desktop.png'
+                    : '/images/mockups/team-desktop.png'
+                }
+                alt={
+                  activeTab === 'deals'
+                    ? 'PaperWorking Deal Marketplace authentic interface showing live deals and crowdfunding underwriting'
+                    : 'PaperWorking Vendor and Team Management interface with permission scoping'
+                }
+                width={1440}
+                height={900}
+                loading="eager"
+                decoding="async"
+                className="h-full w-full object-cover object-top"
+              />
             </div>
           </div>
 

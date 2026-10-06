@@ -126,6 +126,26 @@ export default function InboxNotificationCenter() {
   const [archivedIds, setArchivedIds] = useState<Set<string>>(() => new Set());
   const [actionFlash, setActionFlash] = useState<string | null>(null);
 
+  const fetchThreads = useCallback(async () => {
+    try {
+      const res = await fetch('/api/inbox');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.threads)) {
+          setItems(data.threads);
+        }
+      }
+    } catch {
+      // Non-fatal, keep existing state
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchThreads();
+    const interval = setInterval(fetchThreads, 20000);
+    return () => clearInterval(interval);
+  }, [fetchThreads]);
+
   const isUnread = useCallback(
     (item: InboxThread) => {
       if (item.id in readOverrides) return !readOverrides[item.id];
@@ -165,10 +185,20 @@ export default function InboxNotificationCenter() {
 
   function markRead(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: true }));
+    fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ unread: false }),
+    }).catch(() => undefined);
   }
 
   function markUnread(id: string) {
     setReadOverrides((prev) => ({ ...prev, [id]: false }));
+    fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ unread: true }),
+    }).catch(() => undefined);
   }
 
   function markAllRead() {
@@ -177,16 +207,27 @@ export default function InboxNotificationCenter() {
       if (!archivedIds.has(item.id)) next[item.id] = true;
     }
     setReadOverrides(next);
+    fetch('/api/inbox/mark-all-read', {
+      method: 'POST',
+    }).catch(() => undefined);
   }
 
   function archiveItem(id: string) {
     setArchivedIds((prev) => new Set(prev).add(id));
     if (selectedId === id) setSelectedId(null);
+    fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archived: true }),
+    }).catch(() => undefined);
   }
 
   function deleteItem(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     if (selectedId === id) setSelectedId(null);
+    fetch(`/api/inbox/${id}`, {
+      method: 'DELETE',
+    }).catch(() => undefined);
   }
 
   function selectItem(id: string) {
@@ -196,9 +237,12 @@ export default function InboxNotificationCenter() {
 
   function executeAction() {
     if (!selectedItem) return;
-    setActionFlash(`Action queued for “${selectedItem.subject}” (seed preview).`);
+    setActionFlash(`Action confirmed for “${selectedItem.subject}”.`);
     markRead(selectedItem.id);
     setTimeout(() => setActionFlash(null), 2500);
+    if (selectedItem.deepLinkUrl) {
+      window.location.href = selectedItem.deepLinkUrl;
+    }
   }
 
   const showDetail = Boolean(selectedItem);

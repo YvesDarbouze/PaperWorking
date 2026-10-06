@@ -302,10 +302,10 @@ describe('Honest Insights Dashboard Seed (W2-03 / CATCH-14)', () => {
       expect(html).not.toContain('ILLUSTRATIVE DEMO DATA');
     });
 
-    it('renders persistent illustrative demo badge in PortfolioInsightsPanel header when demo is active', () => {
+    it('omits illustrative demo badge in PortfolioInsightsPanel header', () => {
       const html = renderToString(<PortfolioInsightsPanel />);
-      expect(html).toContain('data-testid="illustrative-demo-badge"');
-      expect(html).toContain('ILLUSTRATIVE DEMO DATA');
+      expect(html).not.toContain('data-testid="illustrative-demo-badge"');
+      expect(html).not.toContain('ILLUSTRATIVE DEMO DATA');
     });
   });
 });

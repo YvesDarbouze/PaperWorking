@@ -125,7 +125,7 @@ describe('Mission Verification — Deal Calculator Top Nav, Auth Gate & Project 
       const html = renderToString(<DealCalculatorView />);
 
       expect(html).toContain('data-testid="sign-in-gate-modal"');
-      expect(html).toContain('Sign in to use the Deal Calculator.');
+      expect(html).toContain('The Marketplace is a real estate investment eco-system');
       expect(html).toContain('Purchase Price');
       expect(html).toContain('After Repair Value (ARV)');
       expect(html).toContain('Cap Rate');

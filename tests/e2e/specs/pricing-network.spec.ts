@@ -38,8 +38,8 @@ test.describe('Pricing & Network & Permissions E2E tests', () => {
     await expect(page.locator(`text=${legalText}`)).toBeVisible();
   });
 
-  test('should render Come for the Execution Tools section', async ({ page }) => {
-    const heading = page.locator('h2', { hasText: 'Come for the Execution Tools. Stay for the Network.' });
+  test('should render Come for the Tools section', async ({ page }) => {
+    const heading = page.locator('h2', { hasText: 'Come for the Tools. Stay for the Network.' });
     await expect(heading).toBeVisible();
     
     // Assert presence of Deal Marketplace and Vendor Marketplace content

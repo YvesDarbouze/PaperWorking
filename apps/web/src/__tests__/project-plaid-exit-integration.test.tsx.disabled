@@ -1,0 +1,215 @@
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import fs from 'node:fs';
+import path from 'node:path';
+import { jest } from '@jest/globals';
+import {
+  ProjectPlaidIntegrationCard,
+  ProjectRentRollTrackerCard,
+  ProjectHoldingCostTrackerCard,
+  ProjectTransactionLedgerCard,
+  DEFAULT_PROJECT_PLAID_LEDGER,
+  calculateRentLateness,
+} from '../../components/projects/exit/index.js';
+import ExitWorkspaceView from '../../components/projects/ExitWorkspaceView.js';
+import type { ProjectWorkspace } from '../../lib/projects/types.js';
+
+const mockProject: ProjectWorkspace = {
+  id: 'proj-plaid-test-1',
+  project_id: 'proj-plaid-test-1',
+  propertyName: 'Barton Springs Duplex',
+  property_address: '4804 Barton Springs Rd, Austin, TX',
+  address: '4804 Barton Springs Rd, Austin, TX',
+  city: 'Austin',
+  currentPhase: 'exit',
+  status: 'In Progress',
+  dispositionType: 'SALE',
+  phase: 'exit',
+  phase_completion_pct: 75,
+  purchase_price: 485000,
+  purchasePrice: 485000,
+  rehab_costs: 65000,
+  exit_strategy: 'outright_sale',
+  entity_type: 'LLC',
+  propertyState: 'TX',
+  storage_used_bytes: 0,
+  storageQuotaBytes: 1073741824,
+  todos: [],
+  documents: [],
+  exitPhase: {
+    selectedRoute: 'outright_sale',
+    targetGrossPrice: 685000,
+    brokerCommissionPct: 5.0,
+    sellerClosingCostPct: 1.5,
+    debtPayoffAmount: 363750,
+    proratedTaxes: 3400,
+    netSalesProceeds: 283575,
+    terminalIrr: 22.4,
+    equityMultiple: 1.84,
+    cashOnCashReturnPct: 12.8,
+    returnOnEquityPct: 18.5,
+    netProfit: 147325,
+    glAccountsClosed: false,
+    isLifecycleLocked: false,
+    plaidLedger: DEFAULT_PROJECT_PLAID_LEDGER,
+  },
+};
+
+describe('Project-Level Plaid API Integration & Rent/Holding Cost Tracker', () => {
+  describe('1. Lateness & Late Fee Calculation Engine', () => {
+    it('accurately identifies on-time rent payment (0 days late)', () => {
+      const res = calculateRentLateness('2026-10-01', '2026-10-01', 5, 75, 2400, 2400);
+      expect(res.daysLate).toBe(0);
+      expect(res.paymentStatus).toBe('on_time');
+      expect(res.lateFeeAssessed).toBe(0);
+      expect(res.isLate).toBe(false);
+    });
+
+    it('accurately identifies grace period payment (2 days late with 5-day grace)', () => {
+      const res = calculateRentLateness('2026-10-03', '2026-10-01', 5, 75, 2400, 2400);
+      expect(res.daysLate).toBe(2);
+      expect(res.paymentStatus).toBe('grace_period');
+      expect(res.lateFeeAssessed).toBe(0);
+      expect(res.isGracePeriod).toBe(true);
+      expect(res.isLate).toBe(false);
+    });
+
+    it('accurately identifies late payment and assesses statutory late fee (7 days late)', () => {
+      const res = calculateRentLateness('2026-10-08', '2026-10-01', 5, 75, 2325, 2250);
+      expect(res.daysLate).toBe(7);
+      expect(res.paymentStatus).toBe('late');
+      expect(res.lateFeeAssessed).toBe(75);
+      expect(res.isLate).toBe(true);
+    });
+
+    it('detects partial rent payment liability', () => {
+      const res = calculateRentLateness('2026-10-01', '2026-10-01', 5, 75, 1200, 2400);
+      expect(res.paymentStatus).toBe('partial');
+    });
+  });
+
+  describe('2. ProjectPlaidIntegrationCard', () => {
+    it('renders connected bank accounts, multi-project isolation status, and routing selectors', () => {
+      const handleUpdate = jest.fn();
+      const html = renderToString(
+        <ProjectPlaidIntegrationCard
+          projectId={mockProject.project_id}
+          projectName={mockProject.property_address}
+          ledger={DEFAULT_PROJECT_PLAID_LEDGER}
+          onUpdateLedger={handleUpdate}
+        />
+      );
+
+      expect(html).toContain('Plaid Bank Connection &amp; Account Routing');
+      expect(html).toContain('JPMorgan Chase Bank');
+      expect(html).toContain('Shared across');
+      expect(html).toContain('projects (Isolated)');
+      expect(html).toContain('Sync Bank Now');
+      expect(html).toContain('Connect Bank Account');
+      expect(html).toContain('Business Complete Checking');
+    });
+  });
+
+  describe('3. ProjectRentRollTrackerCard', () => {
+    it('renders active rent roll units, payer patterns, and ingested payment receipts', () => {
+      const handleUpdate = jest.fn();
+      const html = renderToString(
+        <ProjectRentRollTrackerCard
+          ledger={DEFAULT_PROJECT_PLAID_LEDGER}
+          onUpdateLedger={handleUpdate}
+        />
+      );
+
+      expect(html).toContain('Real-Time Rent Roll &amp; Plaid Collection Tracker');
+      expect(html).toContain('Sarah Jenkins');
+      expect(html).toContain('Marcus Vance');
+      expect(html).toContain('ZELLE PYMT FROM SARAH JENKINS');
+      expect(html).toContain('ACH TRANSFER MARCUS VANCE');
+      expect(html).toContain('days late');
+      expect(html).toContain('$4,650'); // Total scheduled rent
+    });
+  });
+
+  describe('4. ProjectHoldingCostTrackerCard', () => {
+    it('renders annual property tax disbursements and debt service payments', () => {
+      const handleUpdate = jest.fn();
+      const html = renderToString(
+        <ProjectHoldingCostTrackerCard
+          ledger={DEFAULT_PROJECT_PLAID_LEDGER}
+          onUpdateLedger={handleUpdate}
+        />
+      );
+
+      expect(html).toContain('Holding Costs &amp; Annual Tax Payment Ledger');
+      expect(html).toContain('Travis County Annual Property Tax');
+      expect(html).toContain('CoreVest Senior Mortgage Loan Payment');
+      expect(html).toContain('Travelers Landlord DP-3 Annual Policy');
+      expect(html).toContain('$6,850');
+    });
+  });
+
+  describe('5. ProjectTransactionLedgerCard & Multi-Project Isolation Guard', () => {
+    it('distinguishes between transactions claimed by this project, other properties, and unclaimed inbox', () => {
+      const handleUpdate = jest.fn();
+      const html = renderToString(
+        <ProjectTransactionLedgerCard
+          projectId={mockProject.project_id}
+          projectName={mockProject.property_address}
+          ledger={DEFAULT_PROJECT_PLAID_LEDGER}
+          onUpdateLedger={handleUpdate}
+        />
+      );
+
+      expect(html).toContain('Plaid Transaction Feed &amp; Attribution Isolation Guard');
+      expect(html).toContain('Claimed by');
+      expect(html).toContain('4804 Barton Springs Rd, Austin, TX');
+      expect(html).toContain('Attributed to');
+      expect(html).toContain('142 Elm St Fourplex');
+      expect(html).toContain('Unclaimed Transaction');
+      expect(html).toContain('Claim as Rent');
+      expect(html).toContain('Auto-Match Rules');
+    });
+  });
+
+  describe('6. Integrated ExitWorkspaceView Plaid Tab', () => {
+    it('renders Plaid Bank & Rent Ledger tab in Executive Workspace', () => {
+      const handleUpdate = jest.fn();
+      const html = renderToString(
+        <ExitWorkspaceView
+          project={mockProject}
+          onUpdateProject={handleUpdate}
+        />
+      );
+
+      expect(html).toContain('Plaid Bank &amp; Rent Ledger');
+      expect(html).toContain('Plaid Bank Connection &amp; Account Routing');
+      expect(html).toContain('Real-Time Rent Roll &amp; Plaid Collection Tracker');
+      expect(html).toContain('Holding Costs &amp; Annual Tax Payment Ledger');
+      expect(html).toContain('Plaid Transaction Feed &amp; Attribution Isolation Guard');
+    });
+  });
+
+  describe('7. Anti-Slop & Design Directives Compliance', () => {
+    it('verifies zero em-dashes and zero neon green in all new Plaid components', () => {
+      const filesToCheck = [
+        'ProjectPlaidIntegrationCard.tsx',
+        'ProjectRentRollTrackerCard.tsx',
+        'ProjectHoldingCostTrackerCard.tsx',
+        'ProjectTransactionLedgerCard.tsx',
+        'types.ts',
+      ];
+
+      for (const fileName of filesToCheck) {
+        const fullPath = path.resolve(process.cwd(), 'apps/web/components/projects/exit', fileName);
+        if (fs.existsSync(fullPath)) {
+          const content = fs.readFileSync(fullPath, 'utf-8');
+          expect(content).not.toContain('—'); // Strict no em-dash rule
+          expect(content).not.toContain('#00DD94'); // Strict no neon green rule
+          expect(content.toLowerCase()).not.toContain('seamless');
+          expect(content.toLowerCase()).not.toContain('supercharge');
+          expect(content.toLowerCase()).not.toContain('effortless');
+        }
+      }
+    });
+  });
+});

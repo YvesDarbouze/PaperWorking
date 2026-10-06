@@ -1,32 +1,97 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
-import { TEAM_MEMBERS, TEAM_SEATS } from '@/lib/dashboard/shell-seed';
+import { TEAM_MEMBERS, TEAM_SEATS, type TeamMember } from '@/lib/dashboard/shell-seed';
 import { UserPlus } from '@/components/icons/PhosphorIcons';
+import { bffFetch } from '@/lib/api/bff-fetch';
 
 export default function TeamPreviewPanel() {
+  const [teamList, setTeamList] = useState<TeamMember[]>(TEAM_MEMBERS);
+  const [seats, setSeats] = useState(TEAM_SEATS);
   const [query, setQuery] = useState('');
   const [showInvite, setShowInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  const fetchTeam = async () => {
+    try {
+      const res = await bffFetch('/api/team', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.members)) {
+          setTeamList(data.members);
+        }
+        if (data.seats) {
+          setSeats({
+            used: data.seats.used,
+            limit: data.seats.limit,
+            tier: data.seats.tier,
+            tierLabel: data.seats.tierLabel,
+          });
+        }
+      }
+    } catch {
+      // Fallback to initial seed state
+    }
+  };
+
+  useEffect(() => {
+    void fetchTeam();
+  }, []);
 
   const members = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return TEAM_MEMBERS;
-    return TEAM_MEMBERS.filter(
+    if (!q) return teamList;
+    return teamList.filter(
       (member) =>
         member.name.toLowerCase().includes(q) ||
         member.email.toLowerCase().includes(q) ||
         member.role.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [teamList, query]);
+
+  const handleSendInvite = async () => {
+    const trimmed = inviteEmail.trim().toLowerCase();
+    if (!trimmed || !trimmed.includes('@')) {
+      setStatusMsg('Please enter a valid email address.');
+      return;
+    }
+    setIsSubmitting(true);
+    setStatusMsg(null);
+    try {
+      const res = await bffFetch('/api/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emails: [trimmed],
+          role: 'Associate',
+          accessLevel: 'Scoped Edit',
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setInviteEmail('');
+        setShowInvite(false);
+        await fetchTeam();
+      } else {
+        setStatusMsg(data.error || 'Failed to send invite.');
+      }
+    } catch {
+      setStatusMsg('Network error sending invite.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
       <DashboardPageHeader
         title="Team"
-        subtitle={`${TEAM_SEATS.used}/${TEAM_SEATS.limit} seats · ${TEAM_SEATS.tierLabel}`}
+        subtitle={`${seats.used}/${seats.limit} seats · ${seats.tierLabel}`}
         actions={
           <button
             type="button"
@@ -47,7 +112,7 @@ export default function TeamPreviewPanel() {
           className="w-full min-h-[44px] rounded-none border border-border bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:max-w-md sm:text-xs"
         />
         <span className="inline-flex items-center rounded-none border border-border bg-muted/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          {TEAM_SEATS.used} of {TEAM_SEATS.limit} seats used
+          {seats.used} of {seats.limit} seats used
         </span>
       </div>
 
@@ -59,12 +124,18 @@ export default function TeamPreviewPanel() {
                 Invite teammate
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Seed preview: live team invitations wire with org handlers post-cutover.
+                Send an invitation to collaborate within your workspace under the {seats.tierLabel} plan.
               </p>
+              {statusMsg ? (
+                <p className="mt-1 text-xs text-red-400">{statusMsg}</p>
+              ) : null}
             </div>
             <button
               type="button"
-              onClick={() => setShowInvite(false)}
+              onClick={() => {
+                setShowInvite(false);
+                setStatusMsg(null);
+              }}
               className="text-xs font-semibold text-muted-foreground hover:text-foreground"
             >
               Close
@@ -72,6 +143,8 @@ export default function TeamPreviewPanel() {
           </div>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <input
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="colleague@firm.com"
               className="flex-1 min-h-[44px] rounded-none border border-border bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:text-xs"
             />
@@ -79,9 +152,10 @@ export default function TeamPreviewPanel() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => setShowInvite(false)}
+              disabled={isSubmitting}
+              onClick={handleSendInvite}
             >
-              Send invite
+              {isSubmitting ? 'Sending...' : 'Send invite'}
             </Button>
           </div>
         </div>
@@ -93,6 +167,7 @@ export default function TeamPreviewPanel() {
             <tr>
               <th className="px-5 py-3 font-medium">Name</th>
               <th className="px-5 py-3 font-medium">Role</th>
+              <th className="px-5 py-3 font-medium">Workspace Access</th>
               <th className="px-5 py-3 font-medium">Type</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Projects</th>
@@ -106,7 +181,12 @@ export default function TeamPreviewPanel() {
                   <p className="font-medium text-foreground">{member.name}</p>
                   <p className="text-xs text-muted-foreground">{member.email}</p>
                 </td>
-                <td className="px-5 py-4 text-foreground/80">{member.role}</td>
+                <td className="px-5 py-4 text-foreground/80 font-medium">{member.role}</td>
+                <td className="px-5 py-4">
+                  <span className="inline-flex items-center rounded-none border border-border bg-muted/30 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-foreground/90">
+                    {member.accessLevel ?? 'Scoped Edit'}
+                  </span>
+                </td>
                 <td className="px-5 py-4 text-foreground/80">{member.type}</td>
                 <td className="px-5 py-4">
                   <span

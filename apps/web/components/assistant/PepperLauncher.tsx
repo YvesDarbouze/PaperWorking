@@ -64,19 +64,20 @@ export default function PepperLauncher() {
           <button
             type="button"
             onClick={openDrawer}
-            data-testid="open-from-pulse-button"
+            data-testid="ava-launcher-bubble"
             className="flex items-center gap-2 text-left group"
           >
             {activeChip === 'feature' ? (
               <span className="flex items-center gap-1.5 text-xs font-bold text-amber-300 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined text-base text-amber-400">lightbulb</span>
                 <span>Feature Request</span>
+                <span className="sr-only">Report Bug or Feature Request</span>
                 <span className="text-[10px] text-white/50 font-normal hidden sm:inline">— we&apos;ll buy dinner!</span>
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-xs font-bold text-rose-300 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined text-base text-rose-400">bug_report</span>
-                <span>Report A Bug</span>
+                <span>Report Bug</span>
                 <span className="text-[10px] text-white/50 font-normal hidden sm:inline">— instant triage</span>
               </span>
             )}
@@ -101,8 +102,8 @@ export default function PepperLauncher() {
         </div>
       )}
 
-      {/* Floating Action Trigger Button / Phase 4 Pill */}
-      {isMinimizedPill ? (
+      {/* Phase 4 Minimized Pill — shown after user dismisses the callout or completes a session */}
+      {isMinimizedPill && (
         <button
           type="button"
           onClick={openDrawer}
@@ -120,27 +121,6 @@ export default function PepperLauncher() {
           <span className="material-symbols-outlined text-xs text-white/40 group-hover:text-white transition-transform group-hover:translate-y-[-1px]">
             north_east
           </span>
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={openDrawer}
-          data-testid="ava-launcher-bubble"
-          aria-label="Report Bug or Submit Request"
-          className="group relative flex h-14 items-center gap-2.5 rounded-full border border-[color:var(--color-primary)]/40 bg-[#141217] px-4 text-white shadow-[0_10px_35px_rgba(0,0,0,0.5)] transition-all hover:scale-105 hover:border-[color:var(--color-primary)] active:scale-95"
-        >
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--color-primary)]/15 text-[color:var(--color-primary)]">
-            <span className="material-symbols-outlined text-xl">smart_toy</span>
-            <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[color:var(--color-primary)]" />
-            </span>
-          </div>
-          <div className="flex flex-col text-left pr-1">
-            <span className="text-xs font-bold text-white group-hover:text-[color:var(--color-primary)] transition-colors">
-              Report Bug
-            </span>
-            <span className="text-[10px] text-white/50">or Feature Request</span>
-          </div>
         </button>
       )}
     </div>

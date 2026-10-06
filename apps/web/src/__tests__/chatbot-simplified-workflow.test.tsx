@@ -179,13 +179,18 @@ describe('Simplified Conversational Chatbot Workflow & Triage', () => {
       expect(html).toContain('data-testid="send-message-button"');
     });
 
-    it('provides starter choice chips for Report a Bug and Feature Request', () => {
+    it('provides starter choice chips for Report a Bug and Feature Request with crisp binary buttons', () => {
       const html = renderToString(
         <AssistantProvider>
           <PepperDrawer isOpen={true} activeTab="chat" />
         </AssistantProvider>,
       );
 
+      // Verify the new binary quick-reply buttons
+      expect(html).toContain('Bug Report 🐛');
+      expect(html).toContain('Feature Request 💡');
+
+      // Verify secondary support actions
       expect(html).toContain('Report a Bug');
       expect(html).toContain('Feature Request');
       expect(html).toContain('Ask a Question');

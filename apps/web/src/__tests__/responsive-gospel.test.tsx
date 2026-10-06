@@ -134,8 +134,8 @@ describe('The PaperWorking Responsive Design Gospel (Core Best Practices)', () =
       const html = renderToString(<MarketplacesClient />);
       expect(html).toContain('max-w-[1200px]');
       expect(html).toContain('px-4 sm:px-6 md:px-8');
-      expect(html).toContain('pt-8');
-      expect(html).toContain('md:pt-12');
+      expect(html).toContain('pt-2');
+      expect(html).toContain('md:pt-3');
       // Must not contain excessive vertical push that shoves content below the fold
       expect(html).not.toContain('min-h-[60vh]');
       expect(html).not.toContain('justify-center px-4 py-6 md:py-10');
@@ -145,8 +145,8 @@ describe('The PaperWorking Responsive Design Gospel (Core Best Practices)', () =
       const html = renderToString(<HowItWorks />);
       expect(html).toContain('max-w-[1200px]');
       expect(html).toContain('px-4 sm:px-6 md:px-8');
-      expect(html).toContain('pt-8');
-      expect(html).toContain('md:pt-12');
+      expect(html).toContain('pt-4');
+      expect(html).toContain('md:pt-6');
       expect(html).not.toContain('py-14 md:py-20');
     });
 
@@ -154,8 +154,8 @@ describe('The PaperWorking Responsive Design Gospel (Core Best Practices)', () =
       const html = renderToString(<LandingHero />);
       expect(html).toContain('max-w-[1200px]');
       expect(html).toContain('px-4 sm:px-6 md:px-8');
-      expect(html).toContain('pt-8');
-      expect(html).toContain('md:pt-12');
+      expect(html).toContain('pt-2');
+      expect(html).toContain('md:pt-3');
       expect(html).not.toContain('py-14 md:py-20');
     });
   });

@@ -405,9 +405,9 @@ export const SUPPORT_FAQS: SupportFAQ[] = [
   },
   {
     id: 'faq-7',
-    question: "How do I cancel my subscription, and is there a refund window?",
+    question: "How do I cancel my subscription?",
     answer:
-      "You can cancel your subscription at any time directly from Dashboard → Settings → Billing with zero phone calls required. Annual plans include a 30-day money-back refund window. Upon cancellation, your data remains accessible in read-only mode for 90 days so you can export all your records.",
+      "You can cancel your subscription at any time directly from Dashboard → Settings → Billing with zero phone calls required. Upon cancellation, your data remains accessible in read-only mode for 90 days so you can export all your records.",
     categoryId: 'billing',
   },
   {

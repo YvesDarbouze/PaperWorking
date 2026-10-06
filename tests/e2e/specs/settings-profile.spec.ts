@@ -57,7 +57,7 @@ test.describe('Settings Unification: Public Profile + Private Configuration (Pro
     await page.waitForLoadState('networkidle');
 
     // Verify Header
-    await expect(page.getByTestId('profile-editor-heading')).toContainText('Public Profile & Operator Provenance');
+    await expect(page.getByTestId('profile-editor-heading')).toContainText('Public Profile');
 
     // Verify Live Preview Card exists
     const previewCard = page.getByTestId('counterparty-preview-card');
@@ -248,10 +248,23 @@ test.describe('Settings Unification: Public Profile + Private Configuration (Pro
     await page.getByTestId('profile-display-name-input').fill('Jordan Bell, GP');
     await page.getByTestId('profile-company-input').fill('Highline Capital');
     await page.getByTestId('profile-headline-input').fill('Managing Partner at Highline Capital');
-    await page.getByTestId('profile-aum-input').fill('250');
-    await page.getByTestId('profile-roi-input').fill('21.5');
-    await page.getByTestId('profile-multiple-input').fill('2.1');
-    await page.getByTestId('profile-deals-input').fill('14');
+
+    // Historical Track Record & Metrics cannot be edited — wired directly to REIL 33 KPIs
+    await expect(page.getByTestId('profile-aum-input')).toBeDisabled();
+    await expect(page.getByTestId('profile-aum-input')).toHaveAttribute('readonly', '');
+    await expect(page.getByTestId('profile-aum-input')).toHaveValue('145');
+
+    await expect(page.getByTestId('profile-roi-input')).toBeDisabled();
+    await expect(page.getByTestId('profile-roi-input')).toHaveAttribute('readonly', '');
+    await expect(page.getByTestId('profile-roi-input')).toHaveValue('19.2');
+
+    await expect(page.getByTestId('profile-multiple-input')).toBeDisabled();
+    await expect(page.getByTestId('profile-multiple-input')).toHaveAttribute('readonly', '');
+    await expect(page.getByTestId('profile-multiple-input')).toHaveValue('1.88');
+
+    await expect(page.getByTestId('profile-deals-input')).toBeDisabled();
+    await expect(page.getByTestId('profile-deals-input')).toHaveAttribute('readonly', '');
+    await expect(page.getByTestId('profile-deals-input')).toHaveValue('8');
 
     await page.getByTestId('profile-save-button').click();
     await expect(page.getByTestId('profile-success-banner')).toBeVisible({ timeout: 10_000 });

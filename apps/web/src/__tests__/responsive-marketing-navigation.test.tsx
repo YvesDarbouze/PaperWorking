@@ -85,7 +85,7 @@ describe('Responsive Marketing Architecture & Navigation Verification', () => {
       const heroHtml = renderToString(<LandingHero />);
       expect(heroHtml).toContain('max-w-[1200px]');
       expect(heroHtml).toContain('mx-auto');
-      expect(heroHtml).toContain('pt-8 pb-12 sm:pt-10 sm:pb-14 md:pt-12 md:pb-16');
+      expect(heroHtml).toContain('pt-2 pb-12 sm:pt-2.5 sm:pb-14 md:pt-3 md:pb-16');
       expect(heroHtml).toContain('px-4 sm:px-6 md:px-8');
     });
 
@@ -130,7 +130,7 @@ describe('Responsive Marketing Architecture & Navigation Verification', () => {
     it('constrains dedicated /how-it-works page inside max-w-[1200px] with symmetric padding', () => {
       const howItWorksHtml = renderToString(<HowItWorks />);
       expect(howItWorksHtml).toContain('max-w-[1200px]');
-      expect(howItWorksHtml).toContain('pt-8 pb-12 sm:pt-10 sm:pb-14 md:pt-12 md:pb-16');
+      expect(howItWorksHtml).toContain('pt-4 pb-12 sm:pt-5 sm:pb-14 md:pt-6 md:pb-16');
       expect(howItWorksHtml).not.toContain('max-w-[1280px]');
     });
 

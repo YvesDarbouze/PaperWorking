@@ -85,16 +85,20 @@ export default function BroadcastDealModal({
         const data = await res.json().catch(() => ({}));
         if (data.requiresCredentials) {
           setError('Email Broadcast Provider requires API credentials in production.');
-          setLoading(false);
-          return;
+        } else {
+          setError(data.error || 'Failed to dispatch deal broadcast. Please try again.');
         }
+        return;
       }
 
       onSuccess(emailList.length);
       onClose();
-    } catch {
-      onSuccess(emailList.length);
-      onClose();
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Network error dispatching broadcast. Please check your connection.',
+      );
     } finally {
       setLoading(false);
     }

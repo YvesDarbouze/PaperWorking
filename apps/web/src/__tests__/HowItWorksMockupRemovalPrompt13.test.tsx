@@ -85,7 +85,10 @@ describe('PROMPT 13 — Remove the Mocked Browser Graphic from How It Works', ()
       );
       expect(pageHtml).toContain('How the Real Estate Investment Lifecycle Works.');
       expect(pageHtml).toContain(
-        'The Real Estate Investment Lifecycle (REIL) is a system'
+        'Purpose-Built for the Way Real Estate Actually Works'
+      );
+      expect(pageHtml).toContain(
+        'Real estate investments have their own unique lifecycle.'
       );
     });
 

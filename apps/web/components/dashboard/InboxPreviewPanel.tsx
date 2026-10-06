@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DashboardPageHeader, {
   DashboardPrimaryButton,
 } from '@/components/dashboard/DashboardPageHeader';
@@ -9,21 +9,41 @@ import {
   INBOX_TABS,
   INBOX_THREADS,
   type InboxTabId,
+  type InboxThread,
 } from '@/lib/dashboard/shell-seed';
 
 export default function InboxPreviewPanel() {
+  const [items, setItems] = useState<InboxThread[]>(() => [...INBOX_THREADS]);
   const [tab, setTab] = useState<InboxTabId>('all');
   const [selectedId, setSelectedId] = useState<string | null>(INBOX_THREADS[0]?.id ?? null);
   const [readIds, setReadIds] = useState<Set<string>>(() => new Set());
 
+  const fetchThreads = useCallback(async () => {
+    try {
+      const res = await fetch('/api/inbox');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.threads)) {
+          setItems(data.threads);
+        }
+      }
+    } catch {
+      // Non-fatal, use initial state
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchThreads();
+  }, [fetchThreads]);
+
   const threads = useMemo(() => {
-    return INBOX_THREADS.filter((thread) => (tab === 'all' ? true : thread.tab === tab));
-  }, [tab]);
+    return items.filter((thread) => (tab === 'all' ? true : thread.tab === tab));
+  }, [items, tab]);
 
   const selected = threads.find((thread) => thread.id === selectedId) ?? threads[0] ?? null;
 
   const unreadFor = (id: InboxTabId) =>
-    INBOX_THREADS.filter(
+    items.filter(
       (thread) =>
         (id === 'all' || thread.tab === id) && thread.unread && !readIds.has(thread.id),
     ).length;
@@ -31,6 +51,11 @@ export default function InboxPreviewPanel() {
   function openThread(id: string) {
     setSelectedId(id);
     setReadIds((prev) => new Set(prev).add(id));
+    fetch(`/api/inbox/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ unread: false }),
+    }).catch(() => undefined);
   }
 
   return (

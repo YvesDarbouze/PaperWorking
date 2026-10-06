@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/deal-calculator',
     '/how-it-works',
     '/pricing',
-    '/marketplace',
+    '/marketplaces',
     '/support',
     '/support/glossary',
     '/support/metrics',

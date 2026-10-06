@@ -13,8 +13,11 @@ import type {
   OutrightSaleExecutionState,
   RefinanceRetainExecutionState,
   CondoSellOffExecutionState,
+  CoopSellOffExecutionState,
   LeaseOptionExecutionState,
   Exchange1031ExecutionState,
+  FundHandoverCostBaseline,
+  ProjectPlaidLedgerState,
 } from '@/lib/projects/types';
 import { formatCurrency, formatPercent } from '@/lib/projects/phase-utils';
 import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
@@ -28,6 +31,10 @@ import {
   ExitTaxAccountingWaterfallCard,
   ExitLifecycleClosureCard,
   ExitConversationalEngine,
+  ProjectPlaidIntegrationCard,
+  ProjectRentRollTrackerCard,
+  ProjectHoldingCostTrackerCard,
+  ProjectTransactionLedgerCard,
   resolveStateTransferTax,
   DEFAULT_HOLD_AUDIT,
   DEFAULT_TENANT_RECONCILIATION,
@@ -36,8 +43,11 @@ import {
   DEFAULT_OUTRIGHT_SALE,
   DEFAULT_REFINANCE_RETAIN,
   DEFAULT_CONDO_SELLOFF,
+  DEFAULT_COOP_SELLOFF,
   DEFAULT_LEASE_OPTION,
   DEFAULT_EXCHANGE_1031,
+  DEFAULT_FUND_HANDOVER_BASELINE,
+  DEFAULT_PROJECT_PLAID_LEDGER,
 } from './exit';
 import {
   Sliders,
@@ -64,6 +74,7 @@ export interface ExitWorkspaceViewProps {
 
 export type ExitExecutiveTab =
   | 'overview'
+  | 'plaid_ledger'
   | 'strategy'
   | 'audit'
   | 'valuation'
@@ -151,11 +162,19 @@ export default function ExitWorkspaceView({
   const [condoSellOff, setCondoSellOff] = useState<CondoSellOffExecutionState>(
     project.exitPhase?.condoSellOff || DEFAULT_CONDO_SELLOFF
   );
+  const [coopSellOff, setCoopSellOff] = useState<CoopSellOffExecutionState>(
+    project.exitPhase?.coopSellOff || DEFAULT_COOP_SELLOFF
+  );
   const [leaseOption, setLeaseOption] = useState<LeaseOptionExecutionState>(
     project.exitPhase?.leaseOption || DEFAULT_LEASE_OPTION
   );
   const [exchange1031, setExchange1031] = useState<Exchange1031ExecutionState>(
     project.exitPhase?.exchange1031 || DEFAULT_EXCHANGE_1031
+  );
+
+  // Plaid Bank & Rent Ledger State
+  const [plaidLedger, setPlaidLedger] = useState<ProjectPlaidLedgerState>(
+    project.exitPhase?.plaidLedger || DEFAULT_PROJECT_PLAID_LEDGER
   );
 
   // Lifecycle closure and lock state
@@ -246,6 +265,8 @@ export default function ExitWorkspaceView({
       proratedTaxes: updates.proratedTaxes ?? proratedTaxes,
       netSalesProceeds: updates.netSalesProceeds ?? recalculatedOutputs.netCashToInvestor,
 
+      fundHandoverCostBaseline: updates.fundHandoverCostBaseline || project.exitPhase?.fundHandoverCostBaseline || DEFAULT_FUND_HANDOVER_BASELINE,
+
       holdAudit: updates.holdAudit || holdAudit,
       tenantReconciliation: updates.tenantReconciliation || tenantRecon,
       estoppelCertificates: updates.estoppelCertificates || estoppels,
@@ -256,6 +277,7 @@ export default function ExitWorkspaceView({
       outrightSale: updates.outrightSale || outrightSale,
       refinanceRetain: updates.refinanceRetain || refinanceRetain,
       condoSellOff: updates.condoSellOff || condoSellOff,
+      coopSellOff: updates.coopSellOff || coopSellOff,
       leaseOption: updates.leaseOption || leaseOption,
       exchange1031: updates.exchange1031 || exchange1031,
 
@@ -646,6 +668,7 @@ export default function ExitWorkspaceView({
           <div className="flex items-center gap-1 overflow-x-auto border-b border-neutral-800 pb-2">
             {[
               { id: 'overview', label: 'All Lifecycle Sections' },
+              { id: 'plaid_ledger', label: 'Plaid Bank & Rent Ledger' },
               { id: 'strategy', label: '1. Strategy Route' },
               { id: 'audit', label: '2. Audit & Pre-Check' },
               { id: 'valuation', label: '3. Valuation & Taxes' },
@@ -667,6 +690,47 @@ export default function ExitWorkspaceView({
               </button>
             ))}
           </div>
+
+          {/* Plaid Real-Time Bank, Rent Collection & Holding Cost Ledger */}
+          {(activeTab === 'overview' || activeTab === 'plaid_ledger') && (
+            <div className="space-y-6">
+              <ProjectPlaidIntegrationCard
+                projectId={project.project_id || project.id}
+                projectName={project.property_address || project.address || 'Target Property'}
+                ledger={plaidLedger}
+                onUpdateLedger={(updated) => {
+                  setPlaidLedger(updated);
+                  syncExitPhase({ plaidLedger: updated });
+                }}
+              />
+
+              <ProjectRentRollTrackerCard
+                ledger={plaidLedger}
+                onUpdateLedger={(updated) => {
+                  setPlaidLedger(updated);
+                  syncExitPhase({ plaidLedger: updated });
+                }}
+              />
+
+              <ProjectHoldingCostTrackerCard
+                ledger={plaidLedger}
+                onUpdateLedger={(updated) => {
+                  setPlaidLedger(updated);
+                  syncExitPhase({ plaidLedger: updated });
+                }}
+              />
+
+              <ProjectTransactionLedgerCard
+                projectId={project.project_id || project.id}
+                projectName={project.property_address || project.address || 'Target Property'}
+                ledger={plaidLedger}
+                onUpdateLedger={(updated) => {
+                  setPlaidLedger(updated);
+                  syncExitPhase({ plaidLedger: updated });
+                }}
+              />
+            </div>
+          )}
 
           {/* Tab 1: Strategy Route Selection (Always rendered on overview or strategy) */}
           {(activeTab === 'overview' || activeTab === 'strategy') && (
@@ -822,6 +886,7 @@ export default function ExitWorkspaceView({
               outrightSale={outrightSale}
               refinanceRetain={refinanceRetain}
               condoSellOff={condoSellOff}
+              coopSellOff={coopSellOff}
               leaseOption={leaseOption}
               exchange1031={exchange1031}
               onUpdateOutrightSale={(updated) => {
@@ -835,6 +900,10 @@ export default function ExitWorkspaceView({
               onUpdateCondoSellOff={(updated) => {
                 setCondoSellOff(updated);
                 syncExitPhase({ condoSellOff: updated });
+              }}
+              onUpdateCoopSellOff={(updated) => {
+                setCoopSellOff(updated);
+                syncExitPhase({ coopSellOff: updated });
               }}
               onUpdateLeaseOption={(updated) => {
                 setLeaseOption(updated);

@@ -62,6 +62,9 @@ export interface MockCheckoutInput {
  * the success page can render trial details without a real Stripe lookup.
  */
 export function createMockCheckoutSession({ planId, interval, email }: MockCheckoutInput): { id: string } {
+  if (process.env.NODE_ENV === 'production' && !process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe is not configured. Cannot use mock checkout in production.');
+  }
   const plan = getCanonicalPlanName(planId);
   const trialDays = PLAN_CATALOG[planId]?.trialDays ?? 0;
   const trialEnd = trialDays > 0

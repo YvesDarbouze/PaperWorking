@@ -1,6 +1,7 @@
 import { type NextRequest } from 'next/server';
 import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
 
+import { verifySessionTokenEdge } from '@/lib/auth/session-edge';
 export interface AdminAuthSuccess {
   ok: true;
   user: {
@@ -63,7 +64,11 @@ export async function verifySupportAdminAuth(
     }
 
     // Fast-path test stubs for reproducible CI & unit tests
+    
     if (token === 'mock-admin-token' || token === 'valid-admin-token') {
+      if (process.env.NODE_ENV === 'production') {
+        return { ok: false, status: 401, error: 'Unauthorized: Mock tokens not allowed in production' };
+      }
       return {
         ok: true,
         user: {
@@ -113,8 +118,13 @@ export async function verifySupportAdminAuth(
       }
     }
 
+    
+    if (process.env.NODE_ENV === 'production') {
+      return { ok: false, status: 401, error: 'Unauthorized: Strict verifier required in production' };
+    }
     // Standard JWT verification
     const payload = decodeJwtPayload(token);
+
     if (!payload) {
       return { ok: false, status: 401, error: 'Unauthorized: Invalid Firebase ID token' };
     }
@@ -147,8 +157,16 @@ export async function verifySupportAdminAuth(
   const sessionCookie = request.cookies.get(SESSION_COOKIE)?.value;
   const acctCookie = request.cookies.get(ACCT_COOKIE)?.value;
 
+  
   if (sessionCookie) {
+    const secret = process.env.SESSION_SECRET || 'paperworking_session_secure_key_2026_prod';
+    const isSessionValid = await verifySessionTokenEdge(sessionCookie, secret);
+    if (!isSessionValid) {
+      return { ok: false, status: 401, error: 'Unauthorized: Invalid session' };
+    }
+
     if (acctCookie === 'admin') {
+
       return {
         ok: true,
         user: {

@@ -8,10 +8,18 @@ import type {
   OutrightSaleExecutionState,
   RefinanceRetainExecutionState,
   CondoSellOffExecutionState,
+  CoopSellOffExecutionState,
   LeaseOptionExecutionState,
   Exchange1031ExecutionState,
   PartnerWaterfallDistribution,
   TaxAccountingReconciliation,
+  FundHandoverCostBaseline,
+  ProjectPlaidConnection,
+  ProjectRentRollItem,
+  ProjectRentPaymentRecord,
+  ProjectHoldingCostRecord,
+  ProjectTransactionMatchRule,
+  ProjectPlaidLedgerState,
 } from '@/lib/projects/types';
 
 export interface StateTransferTaxBenchmark {
@@ -218,6 +226,65 @@ export const DEFAULT_CONDO_SELLOFF: CondoSellOffExecutionState = {
   hoaBoardTransitionThresholdMet: false,
 };
 
+export const DEFAULT_COOP_SELLOFF: CoopSellOffExecutionState = {
+  housingCorpEntityName: 'The Elm Housing Corporation Inc.',
+  housingCorpIncorporated: true,
+  masterTitleRecordedToCorp: true,
+  stateFilingInstrumentNumber: 'NY-COOP-2026-99410',
+  bylawsAdopted: true,
+  houseRulesPublished: true,
+  minimumBuyerDtiPct: 28.0,
+  minimumLiquidReserveMonths: 24,
+  boardAcceptanceStandardsFinalized: true,
+  offeringPlanFiledWithAG: true,
+  agClearanceNumber: 'AG-REALTY-84920',
+  offeringPlanEffectiveDate: '2026-09-15',
+  stateAttorneyGeneralClearanceObtained: true,
+  totalCorporateShares: 10000,
+  sharesSold: 4200,
+  averageSharePrice: 85,
+  shareAllocations: [
+    {
+      unitNumber: 'Apartment 1A',
+      sharesAllocated: 2400,
+      proprietaryLeaseSigned: true,
+      buyerName: 'Arthur & Miriam Sterling',
+      boardPackageApproved: true,
+      interviewCompleted: true,
+      status: 'closed',
+    },
+    {
+      unitNumber: 'Apartment 1B',
+      sharesAllocated: 1800,
+      proprietaryLeaseSigned: true,
+      buyerName: 'Jonathan Kessler',
+      boardPackageApproved: true,
+      interviewCompleted: true,
+      status: 'closed',
+    },
+    {
+      unitNumber: 'Apartment 2A',
+      sharesAllocated: 3000,
+      proprietaryLeaseSigned: false,
+      buyerName: 'Dr. Gregory Vance',
+      boardPackageApproved: true,
+      interviewCompleted: true,
+      status: 'interview_scheduled',
+    },
+    {
+      unitNumber: 'Apartment 2B',
+      sharesAllocated: 2800,
+      proprietaryLeaseSigned: false,
+      buyerName: '',
+      boardPackageApproved: false,
+      interviewCompleted: false,
+      status: 'available',
+    },
+  ],
+  stockCertificatesIssuedCount: 2,
+  proprietaryLeasesExecutedCount: 2,
+};
+
 export const DEFAULT_LEASE_OPTION: LeaseOptionExecutionState = {
   optionContractExecuted: true,
   upfrontOptionFee: 25000,
@@ -247,3 +314,326 @@ export const DEFAULT_EXCHANGE_1031: Exchange1031ExecutionState = {
   taxDeferredAmount: 48600,
   passedForwardToNewAcquisition: false,
 };
+
+export const DEFAULT_FUND_HANDOVER_BASELINE: FundHandoverCostBaseline = {
+  closedDate: '2025-08-15',
+  signedLeaseDate: '2025-09-01',
+  ownershipTransferredDate: '2025-08-15',
+  firstRevenueDate: '2025-09-01',
+  revenueEventType: 'closing_date',
+  purchasePrice: 485000,
+  seniorLoanFacility: 363750,
+  lenderClosingCosts: 12500,
+  totalCashInvested: 136250,
+  daysInHold: 412,
+  holdingCarryingCostsTotal: 34300,
+  isVerifiedFromFund: true,
+};
+
+export const DEFAULT_PROJECT_PLAID_LEDGER: ProjectPlaidLedgerState = {
+  connectedAccounts: [
+    {
+      connectionId: 'plaid-conn-1',
+      itemId: 'item-chase-op-8492',
+      institutionName: 'JPMorgan Chase Bank',
+      institutionId: 'ins_3',
+      accountName: 'Business Complete Checking',
+      accountMask: '8492',
+      accountType: 'depository',
+      accountSubtype: 'checking',
+      isSharedAcrossProjects: true,
+      associatedProjectCount: 3,
+      lastSyncedAt: new Date().toISOString(),
+      syncStatus: 'healthy',
+    },
+    {
+      connectionId: 'plaid-conn-2',
+      itemId: 'item-wells-escrow-1102',
+      institutionName: 'Wells Fargo Commercial',
+      institutionId: 'ins_4',
+      accountName: 'Security Deposit Escrow Account',
+      accountMask: '1102',
+      accountType: 'depository',
+      accountSubtype: 'savings',
+      isSharedAcrossProjects: false,
+      associatedProjectCount: 1,
+      lastSyncedAt: new Date().toISOString(),
+      syncStatus: 'healthy',
+    },
+  ],
+  rentRoll: [
+    {
+      id: 'rr-unit-a',
+      unitNumber: 'Unit A (Upper)',
+      tenantName: 'Sarah Jenkins',
+      tenantEmail: 's.jenkins@example.com',
+      tenantPhone: '(512) 555-0144',
+      monthlyRent: 2400,
+      dueDay: 1,
+      gracePeriodDays: 5,
+      lateFeeAmount: 75,
+      leaseStartDate: '2025-09-01',
+      leaseEndDate: '2027-08-31',
+      depositPaid: 2400,
+      status: 'current',
+      payerPatterns: ['Sarah Jenkins', 'Jenkins, Sarah', 'S JENKINS', 'Zelle from Sarah J'],
+    },
+    {
+      id: 'rr-unit-b',
+      unitNumber: 'Unit B (Garden)',
+      tenantName: 'Marcus Vance',
+      tenantEmail: 'm.vance@example.com',
+      tenantPhone: '(512) 555-0189',
+      monthlyRent: 2250,
+      dueDay: 1,
+      gracePeriodDays: 5,
+      lateFeeAmount: 75,
+      leaseStartDate: '2025-10-01',
+      leaseEndDate: '2026-09-30',
+      depositPaid: 2250,
+      status: 'late',
+      payerPatterns: ['Marcus Vance', 'Elena Vance', 'M&E Vance', 'Vance M'],
+    },
+  ],
+  paymentHistory: [
+    {
+      id: 'pay-oct-unit-a',
+      rentRollId: 'rr-unit-a',
+      unitNumber: 'Unit A (Upper)',
+      tenantName: 'Sarah Jenkins',
+      amount: 2400,
+      expectedAmount: 2400,
+      paymentDate: '2026-10-01',
+      dueDate: '2026-10-01',
+      daysLate: 0,
+      paymentStatus: 'on_time',
+      lateFeeAssessed: 0,
+      lateFeePaid: false,
+      plaidTransactionId: 'plaid-txn-oct-01',
+      bankAccountMask: '8492',
+      rawPayerName: 'ZELLE PYMT FROM SARAH JENKINS',
+      matchConfidence: 0.99,
+      isVerified: true,
+      notes: 'Automated match via Plaid /transactions/sync',
+    },
+    {
+      id: 'pay-oct-unit-b',
+      rentRollId: 'rr-unit-b',
+      unitNumber: 'Unit B (Garden)',
+      tenantName: 'Marcus Vance',
+      amount: 2325,
+      expectedAmount: 2250,
+      paymentDate: '2026-10-08',
+      dueDate: '2026-10-01',
+      daysLate: 7,
+      paymentStatus: 'late',
+      lateFeeAssessed: 75,
+      lateFeePaid: true,
+      plaidTransactionId: 'plaid-txn-oct-08',
+      bankAccountMask: '8492',
+      rawPayerName: 'ACH TRANSFER MARCUS VANCE',
+      matchConfidence: 0.96,
+      isVerified: true,
+      notes: 'Paid 7 days late. Included $75 late fee.',
+    },
+    {
+      id: 'pay-sep-unit-a',
+      rentRollId: 'rr-unit-a',
+      unitNumber: 'Unit A (Upper)',
+      tenantName: 'Sarah Jenkins',
+      amount: 2400,
+      expectedAmount: 2400,
+      paymentDate: '2026-09-03',
+      dueDate: '2026-09-01',
+      daysLate: 2,
+      paymentStatus: 'grace_period',
+      lateFeeAssessed: 0,
+      lateFeePaid: false,
+      plaidTransactionId: 'plaid-txn-sep-03',
+      bankAccountMask: '8492',
+      rawPayerName: 'ZELLE PYMT FROM SARAH JENKINS',
+      matchConfidence: 0.99,
+      isVerified: true,
+    },
+    {
+      id: 'pay-sep-unit-b',
+      rentRollId: 'rr-unit-b',
+      unitNumber: 'Unit B (Garden)',
+      tenantName: 'Marcus Vance',
+      amount: 2250,
+      expectedAmount: 2250,
+      paymentDate: '2026-09-01',
+      dueDate: '2026-09-01',
+      daysLate: 0,
+      paymentStatus: 'on_time',
+      lateFeeAssessed: 0,
+      lateFeePaid: false,
+      plaidTransactionId: 'plaid-txn-sep-01',
+      bankAccountMask: '8492',
+      rawPayerName: 'ACH TRANSFER MARCUS VANCE',
+      matchConfidence: 0.98,
+      isVerified: true,
+    },
+  ],
+  holdingCostLedger: [
+    {
+      id: 'hold-tax-2026',
+      costCategory: 'property_tax',
+      title: 'Travis County Annual Property Tax',
+      amount: 6850.0,
+      paymentDate: '2026-01-15',
+      dueDate: '2026-01-31',
+      payeeName: 'Travis County Tax Collector',
+      isAnnual: true,
+      fiscalYear: 2026,
+      plaidTransactionId: 'plaid-txn-tax-01',
+      isVerified: true,
+      notes: 'Annual ad valorem real property tax payment',
+    },
+    {
+      id: 'hold-debt-oct-2026',
+      costCategory: 'debt_service',
+      title: 'CoreVest Senior Mortgage Loan Payment',
+      amount: 2145.3,
+      paymentDate: '2026-10-01',
+      dueDate: '2026-10-01',
+      payeeName: 'CoreVest American Finance ACH',
+      isAnnual: false,
+      plaidTransactionId: 'plaid-txn-debt-10',
+      isVerified: true,
+    },
+    {
+      id: 'hold-ins-2026',
+      costCategory: 'insurance',
+      title: 'Travelers Landlord DP-3 Annual Policy',
+      amount: 2400.0,
+      paymentDate: '2026-03-10',
+      dueDate: '2026-03-15',
+      payeeName: 'Travelers Indemnity Company',
+      isAnnual: true,
+      fiscalYear: 2026,
+      plaidTransactionId: 'plaid-txn-ins-01',
+      isVerified: true,
+    },
+    {
+      id: 'hold-util-sep-2026',
+      costCategory: 'utilities',
+      title: 'Austin Energy City Utilities (Turnover)',
+      amount: 245.8,
+      paymentDate: '2026-09-18',
+      payeeName: 'City of Austin Utilities',
+      isAnnual: false,
+      plaidTransactionId: 'plaid-txn-util-09',
+      isVerified: true,
+    },
+    {
+      id: 'hold-maint-aug-2026',
+      costCategory: 'repairs_maintenance',
+      title: 'Austin Pro Plumbing - Valve Replacement',
+      amount: 320.0,
+      paymentDate: '2026-08-22',
+      payeeName: 'Austin Pro Plumbing LLC',
+      isAnnual: false,
+      plaidTransactionId: 'plaid-txn-maint-08',
+      isVerified: true,
+    },
+  ],
+  matchingRules: [
+    {
+      id: 'rule-rent-unit-a',
+      ruleName: 'Auto-Match Unit A Rent (Sarah Jenkins)',
+      targetCategory: 'rent_payment',
+      unitNumber: 'Unit A (Upper)',
+      matchPayerContains: 'Jenkins',
+      matchAmountMin: 2350,
+      matchAmountMax: 2450,
+      autoApprove: true,
+      timesMatched: 14,
+    },
+    {
+      id: 'rule-rent-unit-b',
+      ruleName: 'Auto-Match Unit B Rent (Marcus Vance)',
+      targetCategory: 'rent_payment',
+      unitNumber: 'Unit B (Garden)',
+      matchPayerContains: 'Vance',
+      matchAmountMin: 2200,
+      matchAmountMax: 2350,
+      autoApprove: true,
+      timesMatched: 12,
+    },
+    {
+      id: 'rule-cost-debt',
+      ruleName: 'Auto-Match CoreVest Senior Debt',
+      targetCategory: 'debt_service',
+      matchMerchantContains: 'CoreVest',
+      matchAmountMin: 2100,
+      matchAmountMax: 2200,
+      autoApprove: true,
+      timesMatched: 14,
+    },
+    {
+      id: 'rule-cost-tax',
+      ruleName: 'Auto-Match Travis County Annual Property Tax',
+      targetCategory: 'property_tax',
+      matchMerchantContains: 'Travis County',
+      matchAmountMin: 5000,
+      matchAmountMax: 8500,
+      autoApprove: true,
+      timesMatched: 2,
+    },
+  ],
+  lastDailySyncAt: new Date().toISOString(),
+  unassignedTransactionCount: 3,
+};
+
+export interface LatenessCalculationResult {
+  daysLate: number;
+  paymentStatus: 'on_time' | 'grace_period' | 'late' | 'partial' | 'delinquent';
+  lateFeeAssessed: number;
+  isGracePeriod: boolean;
+  isLate: boolean;
+  dueDate: string;
+}
+
+export function calculateRentLateness(
+  paymentDateStr: string,
+  dueDateStr: string,
+  gracePeriodDays: number = 5,
+  lateFeeAmount: number = 75,
+  amountPaid?: number,
+  expectedRent?: number
+): LatenessCalculationResult {
+  const payDate = new Date(paymentDateStr);
+  const dueDate = new Date(dueDateStr);
+
+  const diffTime = payDate.getTime() - dueDate.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const daysLate = Math.max(0, diffDays);
+
+  let paymentStatus: 'on_time' | 'grace_period' | 'late' | 'partial' | 'delinquent';
+  let lateFeeAssessed = 0;
+
+  if (amountPaid !== undefined && expectedRent !== undefined && amountPaid < expectedRent) {
+    paymentStatus = 'partial';
+  } else if (daysLate === 0) {
+    paymentStatus = 'on_time';
+  } else if (daysLate <= gracePeriodDays) {
+    paymentStatus = 'grace_period';
+  } else if (daysLate > 30) {
+    paymentStatus = 'delinquent';
+    lateFeeAssessed = lateFeeAmount;
+  } else {
+    paymentStatus = 'late';
+    lateFeeAssessed = lateFeeAmount;
+  }
+
+  return {
+    daysLate,
+    paymentStatus,
+    lateFeeAssessed,
+    isGracePeriod: paymentStatus === 'grace_period',
+    isLate: paymentStatus === 'late' || paymentStatus === 'delinquent',
+    dueDate: dueDateStr,
+  };
+}
+

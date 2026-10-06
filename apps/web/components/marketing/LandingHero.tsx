@@ -11,19 +11,19 @@ import HeroProductShowcase from './HeroProductShowcase';
 
 export default function LandingHero() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#0a0a0f] bg-background pt-8 pb-12 sm:pt-10 sm:pb-14 md:pt-12 md:pb-16" aria-label="Hero">
+    <section className="relative w-full overflow-hidden bg-background pt-2 pb-12 sm:pt-2.5 sm:pb-14 md:pt-3 md:pb-16" aria-label="Hero">
       <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 md:px-8">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
           
           {/* Left Text Column */}
           <div className="flex flex-col items-start text-left space-y-6 max-w-[620px]">
             {/* Kicker bar */}
-            <span className="inline-block text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="inline-block text-xs font-[family-name:var(--font-jetbrains-mono)] font-medium uppercase tracking-wider text-muted-foreground">
               {heroKicker}
             </span>
 
             {/* Headline */}
-            <h1 className="text-4xl font-medium tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.05]">
+            <h1 className="text-4xl font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl leading-[1.05]">
               {heroHeadline}
             </h1>
 

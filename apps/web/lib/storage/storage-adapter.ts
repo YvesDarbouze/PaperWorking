@@ -1,4 +1,4 @@
-import { getAdminStorage } from '../firebase/admin';
+import { getAdminStorage, isValidPrivateKey } from '../firebase/admin';
 
 export interface StorageUploadResult {
   docId: string;
@@ -178,7 +178,12 @@ export class CloudStorageAdapter implements IStorageAdapter {
 
   get isConfigured(): boolean {
     const bucketName = process.env.FIREBASE_STORAGE_BUCKET || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-    return Boolean(bucketName && (process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.GOOGLE_CLOUD_PROJECT));
+    return Boolean(
+      bucketName &&
+        (isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
+          process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+          process.env.GOOGLE_CLOUD_PROJECT),
+    );
   }
 
   async upload(
@@ -371,7 +376,9 @@ export function getStorageAdapter(): IStorageAdapter {
     process.env.STORAGE_DRIVER === 'local' ||
     process.env.NODE_ENV === 'test';
 
-  if (forceMemory) {
+  if (process.env.NODE_ENV === 'production') {
+    globalStorage.__PW_STORAGE_ADAPTER = new CloudStorageAdapter();
+  } else if (forceMemory) {
     globalStorage.__PW_STORAGE_ADAPTER = new MemoryStorageAdapter();
   } else {
     // Return CloudStorageAdapter (which checks credentials and reports isConfigured: false if missing)

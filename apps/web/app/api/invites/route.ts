@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { isDevAuthFailure, requireDevSessionAuth } from '@/lib/projects/dev-session-auth';
 import { getSeedProjectById, updateSeedProject } from '@/lib/projects/seed-data';
 import { sendGridService, SendGridError } from '@/lib/email/sendgrid-service';
+import { resolveAppBaseUrl } from '@/lib/utils/url';
 import type { AssigneeOption, LegacyProjectPhase } from '@/lib/projects/types';
 
 export async function GET() {
@@ -134,9 +135,12 @@ export async function POST(request: Request) {
   let emailText = '';
   let emailHtml = '';
 
+  const baseUrl = resolveAppBaseUrl(request);
+
   if (assignType === 'phase') {
+    const inviteUrl = `${baseUrl}/projects/${projectId}?phase=${phaseKey}`;
     emailSubject = `Project Invitation: Assigned to lead ${resolvedPhaseTitle} on ${projectName}`;
-    emailText = `Hello ${memberName},\n\nYou have been invited to join the project team for "${projectName}" and assigned to lead the ${resolvedPhaseTitle} phase.\n\nAccess the project workspace here: https://paperworking.com/projects/${projectId}?phase=${phaseKey}\n\nPaperWorking Team`;
+    emailText = `Hello ${memberName},\n\nYou have been invited to join the project team for "${projectName}" and assigned to lead the ${resolvedPhaseTitle} phase.\n\nAccess the project workspace here: ${inviteUrl}\n\nPaperWorking Team`;
     emailHtml = `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #0c0c0c; color: #f4f4f5; border: 1px solid #27272a;">
   <div style="border-bottom: 1px solid #27272a; padding-bottom: 16px; margin-bottom: 20px;">
     <span style="font-size: 18px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em;">PaperWorking</span>
@@ -152,7 +156,7 @@ export async function POST(request: Request) {
     <p style="margin: 4px 0 0 0; font-size: 13px; color: #a1a1aa;">Project: ${projectName}</p>
   </div>
   <div style="margin: 24px 0;">
-    <a href="https://paperworking.com/projects/${projectId}?phase=${phaseKey}" style="display: inline-block; padding: 12px 24px; background: #ffffff; color: #09090b; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: -0.01em;">Open Phase Workspace</a>
+    <a href="${inviteUrl}" style="display: inline-block; padding: 12px 24px; background: #ffffff; color: #09090b; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: -0.01em;">Open Phase Workspace</a>
   </div>
   <hr style="border: none; border-top: 1px solid #27272a; margin: 24px 0;" />
   <p style="font-size: 11px; color: #71717a; margin: 0;">
@@ -160,10 +164,11 @@ export async function POST(request: Request) {
   </p>
 </div>`;
   } else {
+    const inviteUrl = `${baseUrl}/projects/${projectId || ''}`;
     emailSubject = taskTitle
       ? `Project Invitation: Assigned to step "${taskTitle}" on ${projectName}`
       : `Project Invitation: ${projectName}`;
-    emailText = `Hello ${memberName},\n\nYou have been invited to join the project team for "${projectName}" as ${memberRole}.\n${taskTitle ? `Assigned Step: ${taskTitle}\n\n` : ''}Access the project workspace here: https://paperworking.com/projects/${projectId || ''}\n\nPaperWorking Team`;
+    emailText = `Hello ${memberName},\n\nYou have been invited to join the project team for "${projectName}" as ${memberRole}.\n${taskTitle ? `Assigned Step: ${taskTitle}\n\n` : ''}Access the project workspace here: ${inviteUrl}\n\nPaperWorking Team`;
     emailHtml = `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #0c0c0c; color: #f4f4f5; border: 1px solid #27272a;">
   <div style="border-bottom: 1px solid #27272a; padding-bottom: 16px; margin-bottom: 20px;">
     <span style="font-size: 18px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em;">PaperWorking</span>
@@ -178,7 +183,7 @@ export async function POST(request: Request) {
     <p style="margin: 0; font-size: 14px; font-weight: 600; color: #ffffff;">${taskTitle}</p>
   </div>` : ''}
   <div style="margin: 24px 0;">
-    <a href="https://paperworking.com/projects/${projectId || ''}" style="display: inline-block; padding: 12px 24px; background: #ffffff; color: #09090b; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: -0.01em;">Open Project Workspace</a>
+    <a href="${inviteUrl}" style="display: inline-block; padding: 12px 24px; background: #ffffff; color: #09090b; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: -0.01em;">Open Project Workspace</a>
   </div>
   <hr style="border: none; border-top: 1px solid #27272a; margin: 24px 0;" />
   <p style="font-size: 11px; color: #71717a; margin: 0;">

@@ -32,16 +32,35 @@ export default function MarketplaceSection() {
                 <Buildings size={20} />
               </div>
               <h3 className="mb-3 text-xl font-semibold text-foreground">Deal Marketplace</h3>
-              <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+              <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
                 {dealMarketplaceDescription}
               </p>
+
+              {/* Authentic Screen Capture of the Deal Marketplace */}
+              <div className="mb-6 overflow-hidden rounded-none border border-border bg-background shadow-inner">
+                <div className="flex items-center justify-between border-b border-border bg-muted/30 px-3 py-1.5 text-[10px] font-mono text-muted-foreground">
+                  <span>Deals Marketplace · Live Syndications</span>
+                  <span className="uppercase tracking-widest text-[9px] text-primary">Verified Deals</span>
+                </div>
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted/10">
+                  <img
+                    src="/images/mockups/marketplace-deals-desktop.png"
+                    alt="PaperWorking Deal Marketplace interface displaying active multifamily, industrial, and residential investment rounds"
+                    width={1440}
+                    height={900}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover object-top transition-transform duration-300 group-hover/card:scale-[1.02]"
+                  />
+                </div>
+              </div>
             </div>
             <div>
               <Button
                 asChild
                 variant="outline"
                 size="sm"
-                className="h-8 px-4 text-xs font-medium gap-1.5"
+                className="min-h-[44px] sm:min-h-0 h-8 px-4 text-xs font-medium gap-1.5"
               >
                 <Link href="/marketplaces#deals">
                   Browse deals
@@ -58,16 +77,35 @@ export default function MarketplaceSection() {
                 <Handshake size={20} />
               </div>
               <h3 className="mb-3 text-xl font-semibold text-foreground">Vendor Marketplace</h3>
-              <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+              <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
                 {vendorMarketplaceDescription}
               </p>
+
+              {/* Authentic Screen Capture of Team & Vendor Portal */}
+              <div className="mb-6 overflow-hidden rounded-none border border-border bg-background shadow-inner">
+                <div className="flex items-center justify-between border-b border-border bg-muted/30 px-3 py-1.5 text-[10px] font-mono text-muted-foreground">
+                  <span>Team &amp; Vendor Management</span>
+                  <span className="uppercase tracking-widest text-[9px] text-primary">Scoped Roles</span>
+                </div>
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted/10">
+                  <img
+                    src="/images/mockups/team-desktop.png"
+                    alt="PaperWorking Team & Vendor management portal with role allocations and scoped permissions"
+                    width={1440}
+                    height={900}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover object-top transition-transform duration-300 group-hover/card:scale-[1.02]"
+                  />
+                </div>
+              </div>
             </div>
             <div>
               <Button
                 asChild
                 variant="outline"
                 size="sm"
-                className="h-8 px-4 text-xs font-medium gap-1.5"
+                className="min-h-[44px] sm:min-h-0 h-8 px-4 text-xs font-medium gap-1.5"
               >
                 <Link href="/marketplaces#vendors">
                   List services

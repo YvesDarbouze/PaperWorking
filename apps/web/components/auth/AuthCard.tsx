@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Logo from '@/components/marketing/Logo';
 
 interface AuthCardProps {
   children: React.ReactNode;

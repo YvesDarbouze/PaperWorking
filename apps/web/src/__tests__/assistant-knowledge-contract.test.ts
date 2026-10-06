@@ -28,7 +28,6 @@ describe('Pepper Knowledge Domain Truth & Terminology Invariant (§3.1, §4, §5
     it('quotes exact customer policies from versioned configuration', () => {
       expect(AVA_CONFIG.policies.trialDays).toBe(14);
       expect(AVA_CONFIG.policies.billingStartDay).toBe(15);
-      expect(AVA_CONFIG.policies.annualMoneyBackDays).toBe(30);
       expect(AVA_CONFIG.policies.postCancellationReadOnlyDays).toBe(90);
       expect(AVA_CONFIG.policies.cancellationPath).toBe('Dashboard → Settings → Billing');
       expect(AVA_CONFIG.policies.annualMonthlySwitching).toBe(true);

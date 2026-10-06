@@ -8,9 +8,12 @@ export interface UnsubscribePostBody {
 export type RevokeGlobalUnsubscribeFn = (email: string) => Promise<void>;
 export type RevokeProjectEmailConsentFn = (email: string, projectId: string) => Promise<void>;
 
+export type SendSadToSeeYouGoEmailFn = (email: string) => Promise<void>;
+
 export interface UnsubscribePostDeps {
   revokeGlobal?: RevokeGlobalUnsubscribeFn;
   revokeProjectConsent?: RevokeProjectEmailConsentFn;
+  sendUnsubscribeEmail?: SendSadToSeeYouGoEmailFn;
   log?: (message: string, meta: Record<string, unknown>) => void;
 }
 
@@ -40,6 +43,16 @@ export async function handleUnsubscribePost(
 
     if (projectId && deps.revokeProjectConsent) {
       await deps.revokeProjectConsent(emailLower, projectId);
+    }
+
+    if (deps.sendUnsubscribeEmail) {
+      try {
+        await deps.sendUnsubscribeEmail(emailLower);
+      } catch (emailError) {
+        deps.log?.('[Unsubscribe] Failed to send sad to see you go email', {
+          error: emailError instanceof Error ? emailError.message : String(emailError),
+        });
+      }
     }
 
     deps.log?.('[Unsubscribe] Revoked email consent globally', {

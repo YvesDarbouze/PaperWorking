@@ -41,25 +41,28 @@ export async function handleEsignCreatePost(
   }
 
   try {
-    const allowed = deps.verifyProjectMembership
-      ? await deps.verifyProjectMembership({
-          projectId: validated.value.projectId,
-          uid: auth.uid,
-        })
-      : true;
+    if (!deps.verifyProjectMembership) {
+      return jsonResponse(500, { success: false, error: 'Project membership validator not configured' });
+    }
+
+    const allowed = await deps.verifyProjectMembership({
+      projectId: validated.value.projectId,
+      uid: auth.uid,
+    });
 
     if (!allowed) {
       return jsonResponse(403, { success: false, error: 'Forbidden' });
     }
 
-    const result = deps.createEnvelope
-      ? await deps.createEnvelope({ uid: auth.uid, envelope: validated.value })
-      : {
-          envelopeId: `env_${Date.now()}`,
-          status: 'sent',
-          signingUrl: null,
-          provider: 'mock',
-        };
+    if (!deps.createEnvelope) {
+      return jsonResponse(503, {
+        success: false,
+        error: 'REQUIRES CREDENTIALS: E-Sign provider unconfigured',
+        requiresCredentials: true,
+      });
+    }
+
+    const result = await deps.createEnvelope({ uid: auth.uid, envelope: validated.value });
 
     return jsonResponse(200, {
       success: true,

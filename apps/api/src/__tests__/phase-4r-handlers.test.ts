@@ -88,6 +88,36 @@ describe('Phase 4r route handlers', () => {
     );
     expect(email.status).toBe(200);
 
+    const emailUnconfigured = await handleEmailsSendPost(
+      {
+        idToken: 'tok',
+        projectId: 'p1',
+        to: ['a@test.com'],
+        subject: 'Update',
+        html: '<p>Hi</p>',
+      },
+      {
+        verifyIdToken: async () => ({ uid: 'user-1' }),
+        verifyProjectAccess: async () => ({ ok: true }),
+      },
+    );
+    expect(emailUnconfigured.status).toBe(503);
+    expect((emailUnconfigured.body as any).requiresCredentials).toBe(true);
+
+    const emailNoAuth = await handleEmailsSendPost(
+      {
+        idToken: 'tok',
+        projectId: 'p1',
+        to: ['a@test.com'],
+        subject: 'Update',
+        html: '<p>Hi</p>',
+      },
+      {
+        sendCustomEmail: async () => ({ success: true }),
+      },
+    );
+    expect(emailNoAuth.status).toBe(500);
+
     const create = await handleEsignCreatePost(
       {
         projectId: 'p1',
@@ -104,11 +134,74 @@ describe('Phase 4r route handlers', () => {
         createEnvelope: async () => ({
           envelopeId: 'env-1',
           status: 'sent',
-          provider: 'mock',
+          provider: 'docusign',
         }),
       },
     );
     expect(create.status).toBe(200);
+    expect((create.body as any).provider).toBe('docusign');
+
+    const esignUnconfigured = await handleEsignCreatePost(
+      {
+        projectId: 'p1',
+        documentId: 'd1',
+        documentName: 'Sub Agreement',
+        signerRole: 'Investor',
+        signerEmail: 'inv@test.com',
+        signerName: 'Investor',
+        documentUrl: 'https://files/sub.pdf',
+      },
+      {
+        requireAuth: async () => adminAuth,
+        verifyProjectMembership: async () => true,
+      },
+    );
+    expect(esignUnconfigured.status).toBe(503);
+    expect((esignUnconfigured.body as any).error).toBe('REQUIRES CREDENTIALS: E-Sign provider unconfigured');
+    expect((esignUnconfigured.body as any).requiresCredentials).toBe(true);
+
+    const esignForbidden = await handleEsignCreatePost(
+      {
+        projectId: 'p1',
+        documentId: 'd1',
+        documentName: 'Sub Agreement',
+        signerRole: 'Investor',
+        signerEmail: 'inv@test.com',
+        signerName: 'Investor',
+        documentUrl: 'https://files/sub.pdf',
+      },
+      {
+        requireAuth: async () => adminAuth,
+        verifyProjectMembership: async () => false,
+        createEnvelope: async () => ({
+          envelopeId: 'env-1',
+          status: 'sent',
+          provider: 'docusign',
+        }),
+      },
+    );
+    expect(esignForbidden.status).toBe(403);
+
+    const esignNoMembershipValidator = await handleEsignCreatePost(
+      {
+        projectId: 'p1',
+        documentId: 'd1',
+        documentName: 'Sub Agreement',
+        signerRole: 'Investor',
+        signerEmail: 'inv@test.com',
+        signerName: 'Investor',
+        documentUrl: 'https://files/sub.pdf',
+      },
+      {
+        requireAuth: async () => adminAuth,
+        createEnvelope: async () => ({
+          envelopeId: 'env-1',
+          status: 'sent',
+          provider: 'docusign',
+        }),
+      },
+    );
+    expect(esignNoMembershipValidator.status).toBe(500);
 
     const status = await handleEsignStatusGet('env-1', {
       requireAuth: async () => adminAuth,

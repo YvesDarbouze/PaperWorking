@@ -129,7 +129,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '2–3 Years',
     minInvestment: 25_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-1',
     createdAt: '2026-07-01T00:00:00.000Z',
@@ -172,7 +172,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3-5 Years',
     minInvestment: 50_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-duplex.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-2',
     createdAt: '2026-06-15T00:00:00.000Z',
@@ -220,7 +220,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '5–7 Years',
     minInvestment: 20_000,
     dealType: 'crowdfunding',
-    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: false,
     creatorId: 'creator-private-3',
     createdAt: '2026-08-10T00:00:00.000Z',
@@ -265,7 +265,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '2–3 Years',
     minInvestment: 25_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-1',
     createdAt: '2026-08-01T00:00:00.000Z',
@@ -291,7 +291,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '2–3 Years',
     minInvestment: 25_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-1',
     createdAt: '2026-08-05T00:00:00.000Z',
@@ -318,7 +318,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     minInvestment: 25_000,
     fundingTarget: 146_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-1',
     createdAt: '2026-08-10T00:00:00.000Z',
@@ -344,7 +344,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 30_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/multifamily-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-3',
     createdAt: '2026-07-25T00:00:00.000Z',
@@ -370,7 +370,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 50_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/multifamily-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-miami-5',
     createdAt: '2026-08-01T00:00:00.000Z',
@@ -399,7 +399,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '5–7 Years',
     minInvestment: 25_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/industrial-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-dallas-6',
     createdAt: '2026-07-15T00:00:00.000Z',
@@ -425,7 +425,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 50_000,
     dealType: 'crowdfunding',
-    imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/commercial-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-phx-7',
     createdAt: '2026-08-05T00:00:00.000Z',
@@ -451,7 +451,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '5–7 Years',
     minInvestment: 35_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/commercial-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-atl-8',
     createdAt: '2026-07-20T00:00:00.000Z',
@@ -477,7 +477,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 20_000,
     dealType: 'crowdfunding',
-    imageUrl: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/commercial-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-denver-9',
     createdAt: '2026-08-08T00:00:00.000Z',
@@ -503,7 +503,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 25_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/commercial-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-atx-10',
     createdAt: '2026-07-28T00:00:00.000Z',
@@ -529,7 +529,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '7+ Years',
     minInvestment: 100_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/deal-property-default.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-tampa-11',
     createdAt: '2026-08-02T00:00:00.000Z',
@@ -555,7 +555,7 @@ export const SEED_RAW_DEALS: RawDeal[] = [
     holdPeriod: '3–5 Years',
     minInvestment: 50_000,
     dealType: 'syndication',
-    imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/properties/multifamily-modern.jpg',
     isVerifiedOperator: true,
     creatorId: 'creator-sm-12',
     createdAt: '2026-05-10T00:00:00.000Z',
@@ -1197,6 +1197,7 @@ export interface DealAccessVerification {
 
 export interface VerifyDealAccessOptions {
   requireSubscriberForFullDeal?: boolean;
+  deal?: RawDeal;
 }
 
 export function verifyDealAccess(
@@ -1211,7 +1212,7 @@ export function verifyDealAccess(
   token?: string | null,
   options?: VerifyDealAccessOptions
 ): DealAccessVerification {
-  const deal = findSeedDeal(dealIdOrSlug);
+  const deal = options?.deal || findSeedDeal(dealIdOrSlug);
   if (!deal) {
     return { allowed: false, isPrivate: false, reason: 'not_found' };
   }
@@ -1306,7 +1307,7 @@ export function updateSeedDealVisibility(
   if (!deal) return null;
   deal.visibility = visibility;
   if (visibility === 'private' && !deal.shareToken) {
-    deal.shareToken = `token_${deal.slug || deal.id}_${Math.random().toString(36).substring(2, 9)}`;
+    deal.shareToken = `token_${deal.slug || deal.id}_${Date.now().toString(36)}_${Math.sin(deal.id.length).toString(36).substring(2, 8)}`;
   }
   return deal;
 }
@@ -1325,7 +1326,7 @@ export function shareSeedDealWith(
     deal.sharedWith.push(cleanRecipient);
   }
   if (!deal.shareToken) {
-    deal.shareToken = `token_${deal.slug || deal.id}_${Math.random().toString(36).substring(2, 9)}`;
+    deal.shareToken = `token_${deal.slug || deal.id}_${Date.now().toString(36)}_${Math.sin(deal.id.length).toString(36).substring(2, 8)}`;
   }
   return {
     success: true,

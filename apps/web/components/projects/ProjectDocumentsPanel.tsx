@@ -885,13 +885,6 @@ export default function ProjectDocumentsPanel({ projectId }: { projectId: string
                             >
                               Upload Document
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => handleSimulateUpload(req)}
-                              className="min-h-[44px] px-3 py-1.5 text-xs font-medium text-neutral-400 border border-neutral-800 hover:border-neutral-700 hover:text-neutral-200 transition-colors rounded-none touch-target"
-                            >
-                              Simulate Upload
-                            </button>
                           </>
                         )}
                       </div>

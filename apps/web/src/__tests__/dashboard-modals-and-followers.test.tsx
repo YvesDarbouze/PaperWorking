@@ -74,9 +74,10 @@ describe('Dashboard Modals & Followers Interaction Suite', () => {
       expect(html).toContain('data-testid="tab-followers"');
       expect(html).toContain('data-testid="tab-following"');
       expect(html).toContain('Alex Morgan');
-      expect(html).toContain('Jordan Lee');
       expect(html).toContain('Message');
       expect(html).toContain('Deals');
+      expect(html).toContain('href="/dashboard/deals"');
+      expect(html).not.toContain('href="/dashboard/explore"');
     });
 
     it('returns null when isOpen is false', () => {

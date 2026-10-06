@@ -13,6 +13,25 @@ let adminAuthInstance: Auth | null = null;
 let adminFirestoreInstance: Firestore | null = null;
 let adminStorageInstance: Storage | null = null;
 
+export function formatPrivateKey(rawKey: string): string {
+  return rawKey
+    .trim()
+    .replace(/^['"]/, '')
+    .replace(/['"],?\s*$/, '')
+    .replace(/\\n/g, '\n');
+}
+
+export function isValidPrivateKey(rawKey: string | undefined): boolean {
+  if (!rawKey || typeof rawKey !== 'string') return false;
+  const cleaned = formatPrivateKey(rawKey);
+  // Detect placeholder/dummy text or truncated keys from .env templates
+  if (cleaned.includes('...') || cleaned.length < 500) return false;
+  return (
+    cleaned.includes('-----BEGIN PRIVATE KEY-----') ||
+    cleaned.includes('-----BEGIN RSA PRIVATE KEY-----')
+  );
+}
+
 function initializeAdminApp(): App {
   const existingApps = getApps();
   if (existingApps.length > 0 && existingApps[0]) {
@@ -31,6 +50,8 @@ function initializeAdminApp(): App {
     process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true'
   );
 
+  const isDemoProject = projectId.startsWith('demo-');
+
   // Guard: automated tests must hit emulators only
   if (process.env.NODE_ENV === 'test' && !process.env.FIRESTORE_EMULATOR_HOST && !isEmulatorActive) {
     throw new Error(
@@ -39,33 +60,64 @@ function initializeAdminApp(): App {
     );
   }
 
-  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  const rawPrivateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+  const storageBucket =
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`;
 
-  if (clientEmail && rawPrivateKey) {
-    const privateKey = rawPrivateKey
-      .trim()
-      .replace(/^['"]/, '')
-      .replace(/['"],?\s*$/, '')
-      .replace(/\\n/g, '\n');
-
+  // Local emulator suite or demo project: Never parse or require service account credentials.
+  // Firebase Admin SDK automatically speaks to emulator ports without credentials.
+  if (isEmulatorActive || isDemoProject) {
     return initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
       projectId,
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
+      storageBucket,
     });
   }
 
-  // Fallback for emulator environments or Google Cloud Application Default Credentials
-  return initializeApp({
-    credential: applicationDefault(),
-    projectId,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
-  });
+  // 1. Firebase App Hosting / Cloud Run Managed Runtime:
+  // On App Hosting, the runtime automatically injects and authorizes Application Default Credentials (ADC)
+  // and project configuration. initializeApp() with no arguments is the official, recommended standard.
+  const isAppHosting = Boolean(
+    process.env.FIREBASE_APP_HOSTING ||
+    process.env.K_SERVICE ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCLOUD_PROJECT
+  );
+
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+  const rawPrivateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+
+  // If explicit service account credentials are provided, use cert()
+  if (clientEmail && rawPrivateKey && isValidPrivateKey(rawPrivateKey)) {
+    const privateKey = formatPrivateKey(rawPrivateKey);
+    try {
+      return initializeApp({
+        credential: cert({
+          projectId,
+          clientEmail,
+          privateKey,
+        }),
+        projectId,
+        storageBucket,
+      });
+    } catch (certError: any) {
+      console.warn(
+        '[firebase/admin] Failed to initialize with cert credentials, falling back to auto-authorized App Hosting / ADC:',
+        certError?.message || certError,
+      );
+    }
+  }
+
+  // 2. Automatically authorized on Firebase App Hosting / Cloud Run in production!
+  // Calling initializeApp() with no args automatically discovers credentials & project from the environment.
+  try {
+    return initializeApp();
+  } catch (autoInitError: any) {
+    // Fallback with explicit project/bucket options if auto-discovery needed hints
+    return initializeApp({
+      credential: applicationDefault(),
+      projectId,
+      storageBucket,
+    });
+  }
 }
 
 /**
@@ -130,7 +182,7 @@ export function shouldAttemptFirestore(): boolean {
   }
   return Boolean(
     process.env.FIRESTORE_EMULATOR_HOST ||
-    process.env.FIREBASE_ADMIN_PRIVATE_KEY ||
+    isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
     process.env.FIRESTORE_EMULATOR_RUNNING === 'true' ||
     (process.env.NODE_ENV === 'production' && process.env.GOOGLE_CLOUD_PROJECT)
   );

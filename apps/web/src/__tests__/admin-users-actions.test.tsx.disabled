@@ -1,0 +1,215 @@
+/**
+ * Test Suite: Admin User Operations & Account Actions
+ *
+ * Verifies:
+ * 1. POST /api/admin/users/actions enforces dev admin authentication (401/403).
+ * 2. POST /api/admin/users/actions validates request payload (400) and existence (404).
+ * 3. POST /api/admin/users/actions with action: 'suspend' and 'reactivate' updates status and audit log.
+ * 4. POST /api/admin/users/actions with 'send_verification' and 'reset_password' respects honest credentials.
+ * 5. AdminUsersPanel replaces stub disclaimers with wired 44px min-h touch-target controls.
+ */
+
+import React from 'react';
+import { describe, expect, it } from '@jest/globals';
+import { NextRequest } from 'next/server';
+import { renderToString } from 'react-dom/server';
+import { POST } from '../../app/api/admin/users/actions/route.js';
+import {
+  SEED_ADMIN_USERS,
+  SEED_ADMIN_USER_STATS,
+  SEED_ADMIN_AUDIT,
+} from '../../lib/admin/seed-data.js';
+import AdminUsersPanel from '../../components/admin/AdminUsersPanel.js';
+
+// Setup mock admin token
+const adminPayload = Buffer.from(
+  JSON.stringify({ uid: 'admin-auditor-1', admin: true, role: 'admin' })
+).toString('base64');
+const validAdminToken = `eyJhbGciOiJIUzI1NiJ9.${adminPayload}.signature`;
+
+// Setup mock non-admin token
+const nonAdminPayload = Buffer.from(
+  JSON.stringify({ uid: 'regular-user-1', admin: false, role: 'investor' })
+).toString('base64');
+const nonAdminToken = `eyJhbGciOiJIUzI1NiJ9.${nonAdminPayload}.signature`;
+
+describe('Admin User Operations & Account Actions', () => {
+  describe('1. Security Authentication & Authorization Guards', () => {
+    it('returns 401 Unauthorized when admin credentials are missing', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: 'u-1', action: 'suspend' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(401);
+    });
+
+    it('returns 403 Forbidden when caller is not an admin', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${nonAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-1', action: 'suspend' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe('2. Request Validation', () => {
+    it('returns 400 when userId is missing or invalid', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ action: 'suspend' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toContain('userId is required');
+    });
+
+    it('returns 400 when action is invalid', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-1', action: 'invalid_action' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toContain('Invalid action');
+    });
+
+    it('returns 404 when user is not found', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'non-existent-user-id', action: 'suspend' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(404);
+      const json = await res.json();
+      expect(json.error).toContain('User not found');
+    });
+  });
+
+  describe('3. Operational User Mutations & Audit Trails', () => {
+    it('suspends an active user and logs audit trail', async () => {
+      const initialLogsCount = SEED_ADMIN_AUDIT.logs.length;
+
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-1', action: 'suspend' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.action).toBe('suspend');
+      expect(json.user.subscriptionStatus).toBe('suspended');
+
+      // Verify in-memory state updated
+      const updatedUser = SEED_ADMIN_USERS.find((u) => u.id === 'u-1');
+      expect(updatedUser?.subscriptionStatus).toBe('suspended');
+
+      // Verify audit log entry created
+      expect(SEED_ADMIN_AUDIT.logs.length).toBe(initialLogsCount + 1);
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('admin.user_suspend');
+      expect(SEED_ADMIN_AUDIT.logs[0].target).toBe('u-1');
+    });
+
+    it('reactivates a suspended user and logs audit trail', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-1', action: 'reactivate' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.action).toBe('reactivate');
+      expect(json.user.subscriptionStatus).toBe('active');
+
+      const updatedUser = SEED_ADMIN_USERS.find((u) => u.id === 'u-1');
+      expect(updatedUser?.subscriptionStatus).toBe('active');
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('admin.user_reactivate');
+    });
+
+    it('handles verification email dispatch and reports honest credential state', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-2', action: 'send_verification' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.action).toBe('send_verification');
+      expect(typeof json.requiresCredentials).toBe('boolean');
+      expect(json.message).toContain('Verification email');
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('admin.send_verification');
+    });
+
+    it('handles password reset dispatch and logs audit trail', async () => {
+      const req = new NextRequest('http://localhost:3000/api/admin/users/actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${validAdminToken}`,
+        },
+        body: JSON.stringify({ userId: 'u-2', action: 'reset_password' }),
+      });
+
+      const res = (await POST(req))!;
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(json.action).toBe('reset_password');
+      expect(json.message).toContain('Password reset');
+      expect(SEED_ADMIN_AUDIT.logs[0].action).toBe('admin.password_reset');
+    });
+  });
+
+  describe('4. AdminUsersPanel UI & NO-MOCK Contract Verification', () => {
+    it('does not contain stub disclaimer text in component markup', () => {
+      const html = renderToString(<AdminUsersPanel />);
+
+      // Verify that the legacy stub disclaimer is gone
+      expect(html).not.toContain('Sensitive actions (disable, impersonate, verification OTP) remain stubbed');
+      expect(html).not.toContain('remain stubbed in migration preview');
+    });
+  });
+});

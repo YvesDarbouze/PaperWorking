@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { findSeedDealBySlug, SEED_RAW_DEALS, verifyDealAccess, isUserSubscribed } from '@/lib/marketplace/seed-data';
+import { verifyDealAccess, isUserSubscribed } from '@/lib/marketplace/seed-data';
+import { getDealFromStore, listDealsFromStore } from '@/lib/deals/deal-store';
 import { mapRawDealsToPayloads, mapRawDealToPayload } from '@paperworking/api';
 import DealDetailPageView from '@/components/marketplace/detail/DealDetailPageView';
 import PrivateDealAccessGate from '@/components/marketplace/PrivateDealAccessGate';
@@ -18,7 +19,7 @@ export default async function MarketplaceDealDetailPage({
   const { dealId } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const token = resolvedSearchParams.token;
-  const rawDeal = findSeedDealBySlug(dealId);
+  const rawDeal = await getDealFromStore(dealId);
 
   if (!rawDeal) {
     notFound();
@@ -40,6 +41,7 @@ export default async function MarketplaceDealDetailPage({
         }
       : null,
     token,
+    { deal: rawDeal },
   );
 
   if (!verification.allowed) {
@@ -65,7 +67,8 @@ export default async function MarketplaceDealDetailPage({
     : false;
 
   const deal = mapRawDealToPayload(rawDeal) as any;
-  const allDeals = mapRawDealsToPayloads(SEED_RAW_DEALS) as any[];
+  const allRawDeals = await listDealsFromStore();
+  const allDeals = mapRawDealsToPayloads(allRawDeals) as any[];
   const operatorUid = session?.uid || deal.creatorId || 'dev-user-1';
   let operatorProfile: CounterpartyProfileData | undefined;
 

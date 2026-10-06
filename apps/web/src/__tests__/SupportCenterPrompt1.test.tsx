@@ -1,5 +1,5 @@
 import React from 'react';
-import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+import { describe, expect, it, jest, beforeEach, beforeAll } from '@jest/globals';
 import { renderToString } from 'react-dom/server';
 import fs from 'fs';
 import path from 'path';
@@ -32,15 +32,20 @@ jest.unstable_mockModule('@/lib/assistant/chat-engine', () => ({
   generateAssistantResponse: jest.fn(),
 }));
 
-const { default: MarketingHeader } = await import(
-  '../../components/marketing/MarketingHeader.js'
-);
-const { default: SupportCenter } = await import(
-  '../../components/marketing/SupportCenter.js'
-);
-const { metadata: supportMetadata } = await import(
-  '../../app/(marketing)/support/page.js'
-);
+let MarketingHeader: React.ComponentType<any>;
+let SupportCenter: React.ComponentType<any>;
+let supportMetadata: any;
+
+beforeAll(async () => {
+  const headerMod = await import('../../components/marketing/MarketingHeader.js');
+  MarketingHeader = headerMod.default;
+
+  const supportMod = await import('../../components/marketing/SupportCenter.js');
+  SupportCenter = supportMod.default;
+
+  const pageMod = await import('../../app/(marketing)/support/page.js');
+  supportMetadata = pageMod.metadata;
+});
 
 describe('PROMPT 1 — Support Center & Top Navigation Integration Suite', () => {
   beforeEach(() => {
@@ -91,7 +96,7 @@ describe('PROMPT 1 — Support Center & Top Navigation Integration Suite', () =>
 
       // Active styling
       expect(headerHtml).toContain('aria-current="page"');
-      expect(headerHtml).toContain('text-white font-semibold');
+      expect(headerHtml).toMatch(/(text-white|text-foreground)\s+font-semibold/);
 
       // "Get started" remains the sole green primary CTA pill
       expect(headerHtml).toContain('Get started');

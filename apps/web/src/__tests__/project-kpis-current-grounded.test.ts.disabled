@@ -1,0 +1,95 @@
+import { describe, expect, it, beforeAll, afterAll } from '@jest/globals';
+import { GET as getProjectKpisCurrentRoute } from '../../app/api/projects/[id]/kpis/current/route';
+import { createProjectInStore, getProjectFromStore, updateProjectInStore } from '../../lib/projects/project-store';
+
+describe('Task 8: Ground Hold Phase Ledger Transactions (projects/[id]/kpis/current/route.ts)', () => {
+  const originalEnv = process.env.TEST_AUTH_UID;
+
+  beforeAll(() => {
+    process.env.TEST_AUTH_UID = 'dev-user-1';
+  });
+
+  afterAll(() => {
+    process.env.TEST_AUTH_UID = originalEnv;
+  });
+
+  it('returns empty array [] for recentActivity when project has zero transactions', async () => {
+    const projectId = `proj-empty-ledger-${Date.now()}`;
+    await createProjectInStore({
+      id: projectId,
+      propertyName: 'Empty Ledger Property',
+      property_address: '100 Empty St, Austin, TX',
+      organizationId: 'org-1',
+      phase: 'hold',
+      status: 'Active',
+      purchasePrice: 500000,
+    });
+
+    const request = new Request(`https://paperworking.test/api/projects/${projectId}/kpis/current`);
+    const response = await getProjectKpisCurrentRoute(request, {
+      params: Promise.resolve({ id: projectId }),
+    });
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.success).toBe(true);
+    expect(data.id).toBe(projectId);
+    expect(Array.isArray(data.recentActivity)).toBe(true);
+    expect(data.recentActivity).toHaveLength(0);
+    // Explicitly verify NO hardcoded rent or management transactions exist
+    expect(JSON.stringify(data.recentActivity)).not.toContain('Property Manager');
+    expect(JSON.stringify(data.recentActivity)).not.toContain('Tenant - Unit A');
+  });
+
+  it('reads and maps real project hold ledger transactions from project-store', async () => {
+    const projectId = `proj-with-tx-${Date.now()}`;
+    const realTransactions = [
+      {
+        id: 'tx-roof-101',
+        payee: 'Apex Roofing & Waterproofing LLC',
+        category: 'CAPEX',
+        amount: 8500,
+        transactionDate: '2026-09-15',
+      },
+      {
+        id: 'tx-insurance-102',
+        payee: 'Travelers Landlord Insurance',
+        category: 'INSURANCE',
+        amount: 1450,
+        transactionDate: '2026-09-18',
+      },
+    ];
+
+    await createProjectInStore({
+      id: projectId,
+      propertyName: 'Active Renovation Project',
+      property_address: '200 Renovation Way, Austin, TX',
+      organizationId: 'org-1',
+      phase: 'hold',
+      status: 'Active',
+      purchasePrice: 650000,
+      hold: {
+        transactions: realTransactions,
+      } as any,
+    });
+
+    const request = new Request(`https://paperworking.test/api/projects/${projectId}/kpis/current`);
+    const response = await getProjectKpisCurrentRoute(request, {
+      params: Promise.resolve({ id: projectId }),
+    });
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.success).toBe(true);
+    expect(data.recentActivity).toHaveLength(2);
+
+    expect(data.recentActivity[0].id).toBe('tx-roof-101');
+    expect(data.recentActivity[0].payee).toBe('Apex Roofing & Waterproofing LLC');
+    expect(data.recentActivity[0].category).toBe('CAPEX');
+    expect(data.recentActivity[0].amount).toBe(8500);
+
+    expect(data.recentActivity[1].id).toBe('tx-insurance-102');
+    expect(data.recentActivity[1].payee).toBe('Travelers Landlord Insurance');
+    expect(data.recentActivity[1].amount).toBe(1450);
+  });
+});

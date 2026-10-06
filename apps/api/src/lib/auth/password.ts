@@ -1,3 +1,32 @@
+/**
+ * Derives a secure password hash using scrypt key derivation.
+ * Output format: `<salt_hex>:<derived_key_hex>`
+ */
+export function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString('hex');
+  const derivedKey = scryptSync(password, salt, 64);
+  return `${salt}:${derivedKey.toString('hex')}`;
+}
+
+/**
+ * Verifies a plaintext password against a stored scrypt hash in constant time.
+ */
+export function verifyPasswordHash(password: string, storedHash: string): boolean {
+  try {
+    const parts = storedHash.split(':');
+    if (parts.length !== 2) return false;
+    const [salt, key] = parts;
+    if (!salt || !key) return false;
+    const keyBuffer = Buffer.from(key, 'hex');
+    const derivedKey = scryptSync(password, salt, 64);
+    if (keyBuffer.length !== derivedKey.length) return false;
+    return timingSafeEqual(keyBuffer, derivedKey);
+  } catch {
+    return false;
+  }
+}
+
+import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
 import { isValidWaitlistEmail } from '../public/forms.js';
 
 export function validatePasswordChangeInput(body: {

@@ -1,0 +1,126 @@
+/**
+ * Test Suite: Deal Broadcast Dynamic Sender Identity (Item 4.2)
+ *
+ * Verifies:
+ * 1. POST /api/deals/broadcast resolves senderName, senderEmail, and businessCard from the authenticated user's profile.
+ * 2. Deal broadcast does NOT hardcode "Sarah Jenkins" or "sarah@leadinvestor.com".
+ * 3. Explicit senderName and senderEmail overrides in request body are respected.
+ * 4. Unauthenticated requests are rejected with 401.
+ */
+
+import { describe, expect, it, beforeEach } from '@jest/globals';
+import { POST as postBroadcastRoute } from '../../app/api/deals/broadcast/route';
+import { updateUserProfile } from '../../lib/settings/settings-store';
+import { decodeBroadcastToken } from '../../lib/deals/token';
+
+describe('Deal Broadcast Dynamic Sender Identity (Item 4.2)', () => {
+  const testUid = 'user-broadcaster-1';
+
+  beforeEach(async () => {
+    process.env.TEST_AUTH_UID = testUid;
+    await updateUserProfile(testUid, {
+      uid: testUid,
+      displayName: 'Marcus Sterling',
+      email: 'marcus.sterling@sterlinginvestments.com',
+      companyName: 'Sterling Capital Assets',
+      phone: '+1 (512) 555-8822',
+      headline: 'Opportunistic multifamily and commercial syndicator',
+      strategies: ['multifamily', 'commercial_value_add'],
+    });
+  });
+
+  it('1. Rejects unauthenticated broadcast requests with 401', async () => {
+    process.env.TEST_AUTH_UID = 'unauthenticated';
+
+    const req = new Request('http://localhost:3000/api/deals/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dealId: 'deal-mp-1',
+        recipientEmails: ['investor1@acme.com'],
+      }),
+    });
+
+    const res = await postBroadcastRoute(req);
+    expect(res.status).toBe(401);
+  });
+
+  it('2. Dynamically resolves sender identity from authenticated user profile', async () => {
+    const req = new Request('http://localhost:3000/api/deals/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dealId: 'deal-mp-1',
+        recipientEmails: ['acquisitions@venturelp.com', 'capital@familyoffice.com'],
+        subject: 'Off-Market Multifamily Opportunity in Austin',
+        message: 'Underwriting indicates an 18.4% projected ROI with a conservative value-add schedule.',
+        includeBusinessCard: true,
+      }),
+    });
+
+    const res = await postBroadcastRoute(req);
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.sent).toBe(2);
+
+    // Verify broadcast record sender fields are resolved dynamically from Marcus Sterling's profile
+    expect(data.broadcast.senderName).toBe('Marcus Sterling');
+    expect(data.broadcast.senderId).toBe(testUid);
+
+    // Verify it is NOT hardcoded to Sarah Jenkins
+    expect(data.broadcast.senderName).not.toBe('Sarah Jenkins');
+
+    // Decode JWT token to verify sender payload inside the secure link
+    expect(data.tokens).toHaveLength(2);
+    const decodedToken = decodeBroadcastToken(data.tokens[0].token);
+    expect(decodedToken).not.toBeNull();
+    expect(decodedToken?.senderName).toBe('Marcus Sterling');
+    expect(decodedToken?.senderEmail).toBe('marcus.sterling@sterlinginvestments.com');
+    expect(decodedToken?.senderId).toBe(testUid);
+
+    // Verify businessCard inside the token carries authenticated user's profile details
+    expect(decodedToken?.businessCard).toBeDefined();
+    expect(decodedToken?.businessCard?.name).toBe('Marcus Sterling');
+    expect(decodedToken?.businessCard?.email).toBe('marcus.sterling@sterlinginvestments.com');
+    expect(decodedToken?.businessCard?.company).toBe('Sterling Capital Assets');
+    expect(decodedToken?.businessCard?.phone).toBe('+1 (512) 555-8822');
+    expect(decodedToken?.businessCard?.investmentCriteria).toBe('Opportunistic multifamily and commercial syndicator');
+  });
+
+  it('3. Honors explicit sender overrides when supplied in request body', async () => {
+    const req = new Request('http://localhost:3000/api/deals/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        dealId: 'deal-mp-1',
+        recipientEmails: ['syndicate@privateequity.com'],
+        senderName: 'Elena Rostova',
+        senderEmail: 'elena.rostova@rostovacapital.com',
+        businessCard: {
+          name: 'Elena Rostova',
+          email: 'elena.rostova@rostovacapital.com',
+          company: 'Rostova Global Capital',
+          phone: '+1 (512) 555-9900',
+          investmentCriteria: 'Core-plus and opportunistic residential',
+        },
+      }),
+    });
+
+    const res = await postBroadcastRoute(req);
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.broadcast.senderName).toBe('Elena Rostova');
+
+    const decodedToken = decodeBroadcastToken(data.tokens[0].token);
+    expect(decodedToken?.senderName).toBe('Elena Rostova');
+    expect(decodedToken?.senderEmail).toBe('elena.rostova@rostovacapital.com');
+    expect(decodedToken?.businessCard?.company).toBe('Rostova Global Capital');
+    expect(decodedToken?.businessCard?.phone).toBe('+1 (512) 555-9900');
+    expect(decodedToken?.businessCard?.investmentCriteria).toBe('Core-plus and opportunistic residential');
+  });
+});
+

@@ -18,7 +18,6 @@ export type SendCustomEmailFn = (input: {
 }) => Promise<{
   success: boolean;
   messageId?: string;
-  mock?: boolean;
   recipientCount?: number;
   error?: string;
 }>;
@@ -42,10 +41,12 @@ export async function handleEmailsSendPost(
       return jsonResponse(400, { error: validated.error });
     }
 
+    if (!deps.verifyIdToken) {
+      return jsonResponse(500, { error: 'Auth token verifier not configured' });
+    }
+
     const idToken = String(body.idToken);
-    const decoded = deps.verifyIdToken
-      ? await deps.verifyIdToken(idToken)
-      : { uid: 'user-demo' };
+    const decoded = await deps.verifyIdToken(idToken);
 
     if (deps.verifyProjectAccess) {
       const access = await deps.verifyProjectAccess({
@@ -57,12 +58,18 @@ export async function handleEmailsSendPost(
       }
     }
 
-    const result = deps.sendCustomEmail
-      ? await deps.sendCustomEmail({
-          senderUid: decoded.uid,
-          ...validated.value,
-        })
-      : { success: true, messageId: 'msg_mock', mock: true, recipientCount: validated.value.to.length };
+    if (!deps.sendCustomEmail) {
+      return jsonResponse(503, {
+        success: false,
+        error: 'REQUIRES CREDENTIALS: Email provider unconfigured. Set SENDGRID_API_KEY for live delivery.',
+        requiresCredentials: true,
+      });
+    }
+
+    const result = await deps.sendCustomEmail({
+      senderUid: decoded.uid,
+      ...validated.value,
+    });
 
     if (!result.success) {
       const errorMessage = 'error' in result ? result.error : undefined;
@@ -72,11 +79,7 @@ export async function handleEmailsSendPost(
     return jsonResponse(200, {
       success: true,
       messageId: result.messageId,
-      mock: result.mock,
       recipientCount: result.recipientCount,
-      ...(result.mock && {
-        message: 'Email mocked — set RESEND_API_KEY to enable live delivery.',
-      }),
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';

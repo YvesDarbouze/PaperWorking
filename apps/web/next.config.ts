@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
       { source: '/deal-analyzer', destination: '/deal-calculator', permanent: true },
       { source: '/dashboard/deal-analyzer', destination: '/deal-calculator', permanent: true },
       { source: '/dashboard/deal-calculator', destination: '/deal-calculator', permanent: true },
+      { source: '/dashboard/settings/profile', destination: '/dashboard/profile', permanent: true },
+      { source: '/dashboard/settings/billing', destination: '/dashboard/settings?section=billing', permanent: false },
+      { source: '/marketplace', destination: '/marketplaces', permanent: true },
+      { source: '/project/new', destination: '/projects/new', permanent: true },
+      { source: '/dashboard/explore', destination: '/dashboard/deals', permanent: true },
     ];
   },
 };

@@ -272,7 +272,7 @@ class TicketStore {
         : kind === 'idea'
         ? 'PW-IDEA'
         : 'PW-SUP';
-    const rand = Math.floor(10000 + Math.random() * 90000);
+    const rand = Math.floor(100000 + Math.random() * 900000);
     return `${prefix}-${rand}`;
   }
 

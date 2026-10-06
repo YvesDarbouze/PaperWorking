@@ -792,28 +792,28 @@ export default function DealCalculatorView({
       : null;
 
   return (
-    <div className="min-h-[calc(100vh-144px)] bg-[#0a0a0f] text-[#fdfffc] px-4 sm:px-6 md:px-8 pt-6 pb-12 sm:pt-8 sm:pb-14 md:pt-10 md:pb-16">
+    <div className="min-h-[calc(100vh-144px)] bg-background text-foreground px-4 sm:px-6 md:px-8 pt-1.5 pb-12 sm:pt-2 sm:pb-14 md:pt-2.5 md:pb-16">
       <div className="mx-auto max-w-[1200px]">
         {/* Overarching Project Context Banner */}
         {queryProjectId && (
           <div
             data-testid="calc-overarching-project-badge"
-            className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-neutral-700 bg-neutral-900/90 p-4 backdrop-blur-md shadow-lg"
+            className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-none border border-border bg-card p-4 shadow-sm ring-1 ring-foreground/10"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-neutral-700 bg-neutral-800 text-neutral-300">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-muted-foreground">
                 <span className="material-symbols-outlined text-[20px]">folder_open</span>
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Overarching Project Workspace
                   </span>
-                  <span className="rounded bg-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-300 border border-neutral-700">
+                  <span className="rounded-none bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground border border-border">
                     Phase 01 Underwriting
                   </span>
                 </div>
-                <h2 className="text-sm font-bold text-white truncate mt-0.5">
+                <h2 className="text-sm font-bold text-foreground truncate mt-0.5">
                   Underwriting Deal Component for Overarching Project: {overarchingProjectName || queryProjectId}
                 </h2>
               </div>
@@ -821,7 +821,7 @@ export default function DealCalculatorView({
 
             <Link
               href={`/project/${queryProjectId}`}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-neutral-700 bg-neutral-800 px-3.5 py-2 text-xs font-semibold text-neutral-200 hover:bg-neutral-700 hover:text-white transition shrink-0 min-h-[44px]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-muted px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 transition shrink-0 min-h-[44px]"
             >
               <span className="material-symbols-outlined text-[16px]">arrow_back</span>
               <span>Back to Project Workspace</span>
@@ -836,21 +836,21 @@ export default function DealCalculatorView({
               <span className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-primary)]">
                 ACQUISITION PHASE 01
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/10 px-2 py-0.5 text-[10px] font-semibold text-[color:var(--color-primary)]">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[color:var(--color-primary)]" />
+              <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                 CANONICAL ENGINE
               </span>
               {persistedSnapshotId && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
+                <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
                   <span className="material-symbols-outlined text-[12px]">bookmark</span>
                   {persistedSnapshotId}
                 </span>
               )}
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               Deal Calculator
             </h1>
-            <p className="mt-1 text-sm text-white/60">
+            <p className="mt-1 text-sm text-muted-foreground">
               Analyze deals with institutional precision. Stress-test acquisition metrics before committing capital.
             </p>
           </div>
@@ -922,7 +922,7 @@ export default function DealCalculatorView({
               </span>
             </div>
             <Link
-              href="/marketplace"
+              href="/marketplaces"
               className="font-bold underline text-emerald-300 hover:text-white"
             >
               View in Marketplace
@@ -2906,41 +2906,45 @@ export default function DealCalculatorView({
           aria-modal="true"
           aria-labelledby="sign-in-gate-title"
           data-testid="sign-in-gate-modal"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
         >
-          <div className="relative mx-auto w-full max-w-[460px] rounded-2xl border border-white/15 bg-[#0a0a0f] p-6 text-center shadow-2xl md:p-8">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
+          <div className="relative mx-auto w-full max-w-[500px] rounded-none border border-border bg-card p-6 text-center shadow-2xl md:p-8">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-border bg-muted/50 text-foreground">
               <span className="material-symbols-outlined text-[24px]">lock</span>
             </div>
 
-            <h2 id="sign-in-gate-title" className="text-2xl font-bold tracking-tight text-white">
-              Sign in
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-none border border-border/80 bg-muted/30 px-2.5 py-0.5 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
+              Marketplace Eco-System
+            </div>
+
+            <h2 id="sign-in-gate-title" className="text-xl font-bold tracking-tight text-foreground md:text-2xl">
+              Sign in to Access the Deal Calculator
             </h2>
 
-            <p className="mt-2 text-sm text-white/65">
-              Sign in to use the Deal Calculator. Your in-progress calculations will be preserved.
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              The Marketplace is a real estate investment eco-system designed for serious Real Estate professionals and investors. You must be signed in to your account to access the Deal Calculator and live deal analysis.
             </p>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-6 flex flex-col gap-3">
               <Link
-                href={`/login?next=${encodeURIComponent('/deal-calculator')}`}
-                className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 no-underline shadow-sm min-h-[44px]"
+                href={`/signup?next=${encodeURIComponent('/deal-calculator')}`}
+                className="flex w-full min-h-[44px] items-center justify-center rounded-none bg-[color:var(--color-primary)] px-4 py-3 text-sm font-semibold text-black transition hover:opacity-90 no-underline shadow-sm"
               >
-                Sign in
+                Start a 14 day free trial to access the Deal Calculator
               </Link>
 
               <Link
-                href={`/signup?next=${encodeURIComponent('/deal-calculator')}`}
-                className="flex w-full items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 no-underline"
+                href={`/login?next=${encodeURIComponent('/deal-calculator')}`}
+                className="flex w-full min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-secondary no-underline"
               >
-                Get started
+                Sign in to your account
               </Link>
             </div>
 
             <div className="mt-4">
               <Link
                 href="/"
-                className="text-xs text-white/40 hover:text-white transition no-underline"
+                className="text-xs text-muted-foreground hover:text-foreground transition no-underline"
               >
                 Back to overview
               </Link>

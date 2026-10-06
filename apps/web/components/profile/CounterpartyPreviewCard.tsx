@@ -82,19 +82,19 @@ export default function CounterpartyPreviewCard({
             corporate_fare
           </span>
           <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
-            Operator Provenance &amp; Track Record
+            Public Profile &amp; Track Record
           </h3>
         </div>
         {isLivePreview ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Live Counterparty View
           </span>
         ) : (
           profile.isVerified !== false && (
             <span
               data-testid="verified-operator-badge"
-              className="inline-flex items-center gap-1 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2.5 py-0.5 text-[11px] font-bold text-[var(--accent)]"
+              className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400"
             >
               <span className="material-symbols-outlined text-[13px]">verified</span>
               Verified Operator
@@ -131,7 +131,7 @@ export default function CounterpartyPreviewCard({
             {isLivePreview && profile.isVerified !== false && (
               <span
                 data-testid="verified-operator-badge"
-                className="inline-flex items-center gap-1 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2 py-0.5 text-[10px] font-bold text-[var(--accent)]"
+                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400"
               >
                 <span className="material-symbols-outlined text-[12px]">verified</span>
                 Verified Operator
@@ -160,7 +160,7 @@ export default function CounterpartyPreviewCard({
             </p>
           </div>
           <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-center">
-            <p className="font-mono text-sm font-bold text-[var(--accent)]">{irr}</p>
+            <p className="font-mono text-sm font-bold text-[var(--text-primary)]">{irr}</p>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Realized IRR
             </p>

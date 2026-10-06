@@ -586,7 +586,7 @@ describe('Feature 4 Verification Suite: REIL Conversational Wizard, Team Assignm
       expect(recipientEmail).toBe('caroline.capital@investments.com');
       expect(email.subject).toContain('Project Invitation: Assigned to lead Fund on');
       expect(email.text).toContain('assigned to lead the Fund phase');
-      expect(email.text).toContain('https://paperworking.com/projects/deal-lifecycle?phase=purchase');
+      expect(email.text).toContain('http://localhost/projects/deal-lifecycle?phase=purchase');
       expect(email.html).toContain('Phase Lead Assignment');
       expect(email.html).toContain('Caroline Capital');
     });

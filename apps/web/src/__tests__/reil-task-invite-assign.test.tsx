@@ -244,7 +244,7 @@ describe('REIL Task Team Assignment and Email Invitation Suite', () => {
     const lastEmail = sentEmailsForTesting[sentEmailsForTesting.length - 1];
     expect(lastEmail.subject).toContain('Project Invitation: Assigned to lead Acquisition on');
     expect(lastEmail.text).toContain('assigned to lead the Acquisition phase');
-    expect(lastEmail.text).toContain('https://paperworking.com/projects/deal-lifecycle?phase=acquisition');
+    expect(lastEmail.text).toContain('http://localhost/projects/deal-lifecycle?phase=acquisition');
   });
 
   it('handles step assignment invitation and transactional email dispatch via SendGrid', async () => {

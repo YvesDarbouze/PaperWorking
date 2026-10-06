@@ -1,9 +1,38 @@
-export type ExitStrategy = 'Sell' | 'Refinance' | 'Hold';
+export type ExitStrategy =
+  | 'Sell'
+  | 'Refinance'
+  | 'Hold'
+  | 'Condo'
+  | 'Coop'
+  | 'LeaseOption'
+  | '1031Exchange'
+  | 'outright_sale'
+  | 'refinance_retain'
+  | 'condo_selloff'
+  | 'coop_selloff'
+  | 'lease_option'
+  | '1031_exchange';
 
 export interface ExitCompleteBody {
   projectId?: unknown;
   strategy?: unknown;
 }
+
+const VALID_EXIT_STRATEGIES: readonly ExitStrategy[] = [
+  'Sell',
+  'Refinance',
+  'Hold',
+  'Condo',
+  'Coop',
+  'LeaseOption',
+  '1031Exchange',
+  'outright_sale',
+  'refinance_retain',
+  'condo_selloff',
+  'coop_selloff',
+  'lease_option',
+  '1031_exchange',
+];
 
 export function parseExitCompleteBody(
   body: ExitCompleteBody,
@@ -14,11 +43,11 @@ export function parseExitCompleteBody(
   }
 
   const strategyRaw = typeof body.strategy === 'string' ? body.strategy : 'Sell';
-  if (strategyRaw !== 'Sell' && strategyRaw !== 'Refinance' && strategyRaw !== 'Hold') {
+  if (!VALID_EXIT_STRATEGIES.includes(strategyRaw as ExitStrategy)) {
     return { ok: false, error: 'Invalid exit strategy' };
   }
 
-  return { ok: true, projectId, strategy: strategyRaw };
+  return { ok: true, projectId, strategy: strategyRaw as ExitStrategy };
 }
 
 export function computeExitWaterfall(financials: Record<string, unknown> = {}): {

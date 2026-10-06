@@ -55,22 +55,27 @@ export default function Logo({
   let resolvedHeight = 24;
   if (typeof size === 'number') resolvedHeight = size;
   else if (size && size in heightMap) resolvedHeight = heightMap[size];
-  else resolvedHeight = targetVariant === 'icon' ? 24 : 28;
+  else resolvedHeight = targetVariant === 'icon' ? 18 : 21;
+
+  // Uniform sizing for the full logotype logo (5% larger than previous reduction)
+  const fullScale = 0.7875;
+  const fullHeight = Math.round(resolvedHeight * fullScale);
+  const fullWidth = Math.round(fullHeight * ASPECT_RATIOS.full);
 
   const resolvedWidth = Math.round(resolvedHeight * ASPECT_RATIOS[targetVariant]);
   const Svg = targetVariant === 'full' ? PaperWorkingLogotype : PaperWorkingIcon;
 
-  // Sizing utilities: responsive when size is not provided, clamping to max-width 50%
+  // Sizing: when no explicit size, use responsive widths clamped to optimal logo dimensions (max 197×75 horizontal)
   let widthClass = '';
   let svgClassName = 'select-none max-w-none';
 
   if (!size) {
     widthClass = variant === 'hero-landing'
-      ? 'w-1/2 max-w-[50%]'
-      : 'w-[25%] md:w-[20%] lg:w-[18%] max-w-[50%]';
+      ? 'w-auto max-w-[197px]'
+      : 'w-auto max-w-[158px]';
     svgClassName = 'w-full h-auto select-none';
   } else {
-    widthClass = 'max-w-[50%]';
+    widthClass = '';
   }
 
   const mark = (
@@ -78,8 +83,8 @@ export default function Logo({
       {targetVariant === 'full' ? (
         <>
           <PaperWorkingLogotype
-            width={!size ? '100%' : resolvedWidth}
-            height={!size ? '100%' : resolvedHeight}
+            width={!size ? '100%' : fullWidth}
+            height={!size ? '100%' : fullHeight}
             role="img"
             aria-label="PaperWorking"
             style={{ color, flexShrink: 0 }}
@@ -111,7 +116,7 @@ export default function Logo({
     return (
       <Link
         href={href}
-        className={`inline-flex shrink-0 transition-opacity duration-150 hover:opacity-75 focus-visible:opacity-75 focus-visible:outline-none ${widthClass} ${className}`}
+        className={`inline-flex items-center shrink-0 transition-opacity duration-150 hover:opacity-75 focus-visible:opacity-75 focus-visible:outline-none ${widthClass} ${className}`}
         aria-label="PaperWorking: Return to homepage"
       >
         {mark}

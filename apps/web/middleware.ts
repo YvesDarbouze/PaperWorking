@@ -22,8 +22,23 @@ function isStaticAsset(pathname: string): boolean {
  * Server-side auth gate (V1) plus the v0 production launch gate for Wave-2
  * reserved routes that are not Nest-backed.
  */
+const DEV_ONLY_PATHS = ['/dashboard-test', '/design-system', '/api/dev'];
+
+function isDevOnlySurface(pathname: string): boolean {
+  return DEV_ONLY_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+
+  // Dev-only surfaces (test dashboards, design-system gallery, dev probe APIs)
+  // must never be reachable in production.
+  if (process.env.NODE_ENV === 'production' && isDevOnlySurface(pathname)) {
+    return new NextResponse('Not Found', {
+      status: 404,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
 
   // Production launch gate: block Wave-2 reserved routes that are not Nest-backed.
   if (shouldBlockWave2Path(pathname, process.env.NODE_ENV)) {
@@ -110,6 +125,9 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/dashboard',
+    '/dashboard-test',
+    '/design-system',
+    '/design-system/:path*',
     '/projects/:path*',
     '/projects',
     '/project/:path*',

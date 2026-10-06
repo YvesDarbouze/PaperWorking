@@ -101,6 +101,13 @@ env:
       - BUILD
       - RUNTIME
 
+  # ─── Session signing (server-side) ─────────────────────────────────────────
+  - variable: SESSION_SECRET
+    secret: SESSION_SECRET
+    availability:
+      - BUILD
+      - RUNTIME
+
   # ─── Firebase Admin SDK (server-side) ──────────────────────────────────────
   - variable: FIREBASE_PROJECT_ID
     value: "paperworking-97055"

@@ -115,6 +115,18 @@ env:
     availability:
       - RUNTIME
 
+  # ─── Property data (RentCast live comps/valuation) ─────────────────────────
+  - variable: RENTCAST_API_KEY
+    secret: RENTCAST_API_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Deal communication (external reply/broadcast token signing) ───────────
+  - variable: BROADCAST_TOKEN_SECRET
+    secret: BROADCAST_TOKEN_SECRET
+    availability:
+      - RUNTIME
+
   # ─── Email (SendGrid) ──────────────────────────────────────────────────────
   - variable: SENDGRID_API_KEY
     secret: SENDGRID_API_KEY

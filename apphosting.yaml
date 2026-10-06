@@ -76,6 +76,13 @@ env:
       - BUILD
       - RUNTIME
 
+  # Public Maps JS key (domain-restricted in Google Cloud Console).
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    value: "AIzaSyAcZMhgcLmjbT7-7xrs1QQxF_SSuwgk5y8"
+    availability:
+      - BUILD
+      - RUNTIME
+
   - variable: NEXT_PUBLIC_APP_URL
     value: "https://paperworking.co"
     availability:
@@ -105,6 +112,12 @@ env:
   # HMAC key for __session cookie signing. Rotating invalidates all sessions (runtime SA needs secretmanager.viewer).
   - variable: SESSION_SECRET
     secret: SESSION_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Email (SendGrid) ──────────────────────────────────────────────────────
+  - variable: SENDGRID_API_KEY
+    secret: SENDGRID_API_KEY
     availability:
       - RUNTIME
 

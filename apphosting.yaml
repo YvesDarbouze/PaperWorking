@@ -105,7 +105,6 @@ env:
   - variable: SESSION_SECRET
     secret: SESSION_SECRET
     availability:
-      - BUILD
       - RUNTIME
 
   # ─── Firebase Admin SDK (server-side) ──────────────────────────────────────

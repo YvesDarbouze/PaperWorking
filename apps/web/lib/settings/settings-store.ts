@@ -6,7 +6,7 @@
 
 import { isTeamTierOverrideEmail } from '@paperworking/services';
 import { PROFILE_PREVIEW, BILLING_PREVIEW } from '@/lib/dashboard/shell-seed';
-import { isValidPrivateKey } from '@/lib/firebase/admin';
+import { shouldAttemptFirestore } from '@/lib/firebase/admin';
 
 export interface UserProfileData {
   uid: string;
@@ -188,17 +188,8 @@ function getInitialBilling(uid?: string): UserBillingData {
   };
 }
 
-export function shouldAttemptFirestore(): boolean {
-  if (process.env.NODE_ENV === 'test' && !process.env.FIRESTORE_EMULATOR_RUNNING && !process.env.FIRESTORE_EMULATOR_HOST) {
-    return false;
-  }
-  return Boolean(
-    process.env.FIRESTORE_EMULATOR_HOST ||
-    isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
-    process.env.FIRESTORE_EMULATOR_RUNNING === 'true' ||
-    (process.env.NODE_ENV === 'production' && process.env.GOOGLE_CLOUD_PROJECT)
-  );
-}
+// Canonical implementation lives in @/lib/firebase/admin (managed-runtime aware).
+export { shouldAttemptFirestore };
 
 /**
  * Loads user profile data.

@@ -43,6 +43,31 @@ const nextConfig: NextConfig = {
       { source: '/marketplace', destination: '/marketplaces', permanent: true },
       { source: '/project/new', destination: '/projects/new', permanent: true },
       { source: '/dashboard/explore', destination: '/dashboard/deals', permanent: true },
+      // Fallback redirect for deal detail paths under dashboard
+      { source: '/dashboard/deals/:id', destination: '/marketplace/:id', permanent: false },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self' https: http: data: blob:",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http: blob:",
+              "style-src 'self' 'unsafe-inline' https: http:",
+              "img-src 'self' data: blob: https: http:",
+              "font-src 'self' data: https: http:",
+              "connect-src 'self' https: http: wss: ws:",
+              "frame-src 'self' https: http:",
+              "object-src 'none'",
+              "base-uri 'self'",
+            ].join('; '),
+          },
+        ],
+      },
     ];
   },
 };

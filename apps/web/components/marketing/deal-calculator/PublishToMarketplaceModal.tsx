@@ -151,11 +151,12 @@ export default function PublishToMarketplaceModal({
           )}
 
           <div>
-            <label className="block text-[11px] font-medium text-muted-foreground mb-1 flex items-center justify-between">
+            <label htmlFor="publish-deal-title-input" className="block text-[11px] font-medium text-muted-foreground mb-1 flex items-center justify-between">
               <span>Deal Name · Serial Number (Full Project Address) *</span>
               <span className="text-[10px] text-muted-foreground/60 font-mono">Unique Serial ID</span>
             </label>
             <input
+              id="publish-deal-title-input"
               type="text"
               required
               value={title}
@@ -169,10 +170,11 @@ export default function PublishToMarketplaceModal({
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-muted-foreground mb-1">
+            <label htmlFor="publish-deal-pitch-input" className="block text-[11px] font-medium text-muted-foreground mb-1">
               Investment Thesis &amp; Strategy Pitch *
             </label>
             <textarea
+              id="publish-deal-pitch-input"
               required
               rows={3}
               value={pitch}
@@ -183,10 +185,11 @@ export default function PublishToMarketplaceModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium text-muted-foreground mb-1">
+              <label htmlFor="publish-deal-target-raise" className="block text-[11px] font-medium text-muted-foreground mb-1">
                 Target Capital Raise ($) *
               </label>
               <input
+                id="publish-deal-target-raise"
                 type="number"
                 required
                 min={1000}
@@ -196,10 +199,11 @@ export default function PublishToMarketplaceModal({
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-muted-foreground mb-1">
+              <label htmlFor="publish-deal-min-ticket" className="block text-[11px] font-medium text-muted-foreground mb-1">
                 Minimum Investment Ticket ($) *
               </label>
               <input
+                id="publish-deal-min-ticket"
                 type="number"
                 required
                 min={1000}
@@ -239,10 +243,10 @@ export default function PublishToMarketplaceModal({
 
           {/* Placement & Visibility Mode */}
           <div>
-            <label className="block text-[11px] font-medium text-muted-foreground mb-1">
+            <span className="block text-[11px] font-medium text-muted-foreground mb-1">
               Deal Placement &amp; Visibility *
-            </label>
-            <div className="grid grid-cols-2 gap-2">
+            </span>
+            <div className="grid grid-cols-2 gap-2" role="group" aria-label="Deal Placement & Visibility">
               <button
                 type="button"
                 onClick={() => setVisibility('marketplace')}

@@ -9,6 +9,10 @@ export const dynamic = 'force-dynamic';
 function parseCreateBody(body: unknown): CreateDealInput {
   if (!body || typeof body !== 'object') return { address: '' };
   const record = body as Record<string, unknown>;
+  const status =
+    typeof record.status === 'string' ? record.status.trim().toLowerCase() : undefined;
+  const visibility =
+    typeof record.visibility === 'string' ? record.visibility.trim().toLowerCase() : undefined;
   return {
     address: typeof record.address === 'string' ? record.address : '',
     slug: typeof record.slug === 'string' ? record.slug : undefined,
@@ -25,18 +29,18 @@ function parseCreateBody(body: unknown): CreateDealInput {
         ? record.projectedMonthlyRent
         : undefined,
     status:
-      record.status === 'draft' ||
-      record.status === 'published' ||
-      record.status === 'funding' ||
-      record.status === 'closed' ||
-      record.status === 'archived'
-        ? record.status
+      status === 'draft' ||
+      status === 'published' ||
+      status === 'funding' ||
+      status === 'closed' ||
+      status === 'archived'
+        ? status
         : undefined,
     visibility:
-      record.visibility === 'marketplace' ||
-      record.visibility === 'invitation_only' ||
-      record.visibility === 'private'
-        ? record.visibility
+      visibility === 'marketplace' ||
+      visibility === 'invitation_only' ||
+      visibility === 'private'
+        ? visibility
         : undefined,
     projectId: typeof record.projectId === 'string' ? record.projectId : undefined,
     id: typeof record.id === 'string' ? record.id : undefined,

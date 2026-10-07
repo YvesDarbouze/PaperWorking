@@ -96,10 +96,10 @@ export default function DealStructuringCard({
 
       {/* 1. Financing Modality */}
       <div className="space-y-2">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
           Financing Modality (How is the property purchased?)
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        </span>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2" role="group" aria-label="Financing Modality">
           {[
             { id: 'conventional', label: 'Conventional', icon: 'account_balance', desc: 'Bank / agency debt' },
             { id: 'cash', label: 'All Cash', icon: 'payments', desc: '100% equity, no debt' },
@@ -135,10 +135,11 @@ export default function DealStructuringCard({
       {financingModality === 'hard_money' && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/20 text-xs">
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="hard-money-points" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Origination Points (%)
             </label>
             <input
+              id="hard-money-points"
               type="number"
               step="0.5"
               value={hardMoneyPoints}
@@ -147,10 +148,11 @@ export default function DealStructuringCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="hard-money-rate" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Annual Interest Rate (%)
             </label>
             <input
+              id="hard-money-rate"
               type="number"
               step="0.25"
               value={hardMoneyInterestRatePct}
@@ -159,10 +161,11 @@ export default function DealStructuringCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="hard-money-term" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Loan Term (Months)
             </label>
             <input
+              id="hard-money-term"
               type="number"
               value={hardMoneyTermMonths}
               onChange={(e) => onChangeHardMoneyTerm(Number(e.target.value))}
@@ -175,10 +178,11 @@ export default function DealStructuringCard({
       {financingModality === 'balloon' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/20 text-xs">
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="balloon-term-months" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Balloon Payoff Term (Months)
             </label>
             <input
+              id="balloon-term-months"
               type="number"
               value={balloonTermMonths}
               onChange={(e) => onChangeBalloonTerm(Number(e.target.value))}
@@ -193,10 +197,10 @@ export default function DealStructuringCard({
 
       {/* 2. Capital Seeking Intent */}
       <div className="space-y-2">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+        <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
           Capital Intent (Are you looking for partners or investors?)
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+        </span>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2" role="group" aria-label="Capital Intent">
           {[
             {
               id: 'solo',
@@ -260,6 +264,7 @@ export default function DealStructuringCard({
           </div>
           <input
             type="range"
+            aria-label="Equity and cash flow split percentage"
             min="0"
             max="100"
             step="5"
@@ -280,10 +285,11 @@ export default function DealStructuringCard({
         <div className="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+              <label htmlFor="crowdfund-target-raise" className="block text-[10.5px] font-medium text-white/50 mb-1">
                 Target Capital Raise ($)
               </label>
               <input
+                id="crowdfund-target-raise"
                 type="number"
                 value={targetCapitalRaise || totalCashRequired}
                 onChange={(e) => onChangeTargetCapitalRaise(Number(e.target.value))}
@@ -291,10 +297,11 @@ export default function DealStructuringCard({
               />
             </div>
             <div>
-              <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+              <label htmlFor="crowdfund-min-ticket" className="block text-[10.5px] font-medium text-white/50 mb-1">
                 Min Investment Ticket ($)
               </label>
               <input
+                id="crowdfund-min-ticket"
                 type="number"
                 value={minimumInvestmentTicket}
                 onChange={(e) => onChangeMinimumTicket(Number(e.target.value))}
@@ -302,10 +309,11 @@ export default function DealStructuringCard({
               />
             </div>
             <div>
-              <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+              <label htmlFor="crowdfund-preferred-return" className="block text-[10.5px] font-medium text-white/50 mb-1">
                 Preferred Return (Pref %)
               </label>
               <input
+                id="crowdfund-preferred-return"
                 type="number"
                 step="0.5"
                 value={preferredReturnPct}

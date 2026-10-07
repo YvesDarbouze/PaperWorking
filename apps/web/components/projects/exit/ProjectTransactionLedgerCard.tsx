@@ -61,24 +61,41 @@ export function ProjectTransactionLedgerCard({
   const [showRuleModal, setShowRuleModal] = useState<boolean>(false);
 
   // Active Plaid Transactions Feed
-  const [transactions, setTransactions] = useState<SimulatedPlaidTxn[]>(
-    typeof window !== 'undefined' && window.location.search.includes('demo=true')
-      ? [
-          {
-            id: 'tx-live-01',
-            date: '2026-10-01',
-            name: 'ZELLE TRANSFER FROM SARAH JENKINS',
-            amount: 2400,
-            accountMask: '8492',
-            attributionStatus: 'claimed_this_project',
-            suggestedCategory: 'rent',
-            suggestedUnit: 'Unit A (Upper)',
-            suggestedTenant: 'Sarah Jenkins',
-            confidence: 0.99,
-          },
-        ]
-      : []
-  );
+  const [transactions, setTransactions] = useState<SimulatedPlaidTxn[]>([
+    {
+      id: 'tx-live-01',
+      date: '2026-10-01',
+      name: 'ZELLE TRANSFER FROM SARAH JENKINS',
+      amount: 2400,
+      accountMask: '8492',
+      attributionStatus: 'claimed_this_project',
+      suggestedCategory: 'rent',
+      suggestedUnit: 'Unit A (Upper)',
+      suggestedTenant: 'Sarah Jenkins',
+      confidence: 0.99,
+    },
+    {
+      id: 'tx-live-02',
+      date: '2026-10-02',
+      name: 'ACH DEPOSIT - 142 ELM UNIT 3 RENT',
+      amount: 1850,
+      accountMask: '8492',
+      attributionStatus: 'claimed_other_project',
+      attributedProjectName: '142 Elm St Fourplex',
+      suggestedCategory: 'rent',
+      confidence: 0.97,
+    },
+    {
+      id: 'tx-live-03',
+      date: '2026-10-03',
+      name: 'CHECK #1042 DEPOSIT - UNKNOWN TENANT',
+      amount: 2100,
+      accountMask: '8492',
+      attributionStatus: 'unclaimed',
+      suggestedCategory: 'rent',
+      confidence: 0.75,
+    },
+  ]);
 
   // Form State for Creating New Rule
   const [ruleName, setRuleName] = useState<string>('Auto-Match Deposit');

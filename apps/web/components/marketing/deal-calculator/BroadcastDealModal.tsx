@@ -146,10 +146,11 @@ export default function BroadcastDealModal({
           )}
 
           <div>
-            <label className="block text-[11px] font-medium text-white/60 mb-1">
+            <label htmlFor="broadcast-emails" className="block text-[11px] font-medium text-white/60 mb-1">
               Investor / Partner Email List (comma-delineated: e.g. partner1@fund.com, investor2@syndicate.io) *
             </label>
             <textarea
+              id="broadcast-emails"
               required
               rows={3}
               value={emails}
@@ -160,10 +161,11 @@ export default function BroadcastDealModal({
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-white/60 mb-1">
+            <label htmlFor="broadcast-subject" className="block text-[11px] font-medium text-white/60 mb-1">
               Email Subject Line *
             </label>
             <input
+              id="broadcast-subject"
               type="text"
               required
               value={subject}
@@ -173,10 +175,11 @@ export default function BroadcastDealModal({
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-white/60 mb-1">
+            <label htmlFor="broadcast-message" className="block text-[11px] font-medium text-white/60 mb-1">
               Executive Deal Pitch &amp; Memo *
             </label>
             <textarea
+              id="broadcast-message"
               required
               rows={4}
               value={message}

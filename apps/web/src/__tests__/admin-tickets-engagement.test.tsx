@@ -68,7 +68,7 @@ describe('Unified Ticket Management & Admin Engagement Tracking', () => {
         attachmentName: 'screenshot-mobile.png',
       });
 
-      expect(ticket.id).toMatch(/^PW-BUG-\d+/);
+      expect(ticket.id).toMatch(/^PW-BUG-[A-Z0-9]+/);
       expect(ticket.status).toBe('open');
       expect(ticket.priority).toBe('high');
       expect(ticket.engagementHistory.length).toBe(1);
@@ -160,7 +160,7 @@ describe('Unified Ticket Management & Admin Engagement Tracking', () => {
 
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.ticketId).toMatch(/^PW-BUG-\d+/);
+      expect(data.ticketId).toMatch(/^PW-BUG-[A-Z0-9]+/);
 
       // Verify stored in ticketStore
       const ticket = await ticketStore.getTicketById(data.ticketId);
@@ -195,7 +195,7 @@ describe('Unified Ticket Management & Admin Engagement Tracking', () => {
       if (data.upsell) {
         expect(data.message).toContain('Feature requests directly shape PaperWorking development');
       } else {
-        expect(data.ticketId).toMatch(/^PW-FEAT-\d+/);
+        expect(data.ticketId).toMatch(/^PW-FEAT-[A-Z0-9]+/);
       }
 
       // Verify feature request created in ticketStore always has dinnerPledge: true
@@ -207,7 +207,7 @@ describe('Unified Ticket Management & Admin Engagement Tracking', () => {
         requesterEmail: 'subscriber@paperworking.co',
         reilPhase: 'Exit',
       });
-      expect(featTicket.id).toMatch(/^PW-FEAT-\d+/);
+      expect(featTicket.id).toMatch(/^PW-FEAT-[A-Z0-9]+/);
       expect(featTicket.dinnerPledge).toBe(true);
       expect(featTicket.tags).toContain('dinner-pledge');
     });
@@ -234,7 +234,7 @@ describe('Unified Ticket Management & Admin Engagement Tracking', () => {
 
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.ticketId).toMatch(/^PW-CALL-\d+/);
+      expect(data.ticketId).toMatch(/^PW-CALL-[A-Z0-9]+/);
 
       const ticket = await ticketStore.getTicketById(data.ticketId);
       expect(ticket).not.toBeNull();

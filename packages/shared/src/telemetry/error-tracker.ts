@@ -75,13 +75,8 @@ export function logErrorTrackerStartup(tracker: ErrorTracker): void {
   hasLoggedStartupWarning = true;
 
   if (!tracker.isConfigured) {
-    logger.warn(
-      '⚠️ [OBSERVABILITY WARNING] SENTRY_DSN is absent. Error capture is disabled (error_capture: unconfigured). Set SENTRY_DSN in production to enable centralized error capture.',
-      {
-        error_capture: 'unconfigured',
-        requiresCredentials: true,
-      },
-    );
+    // Silenced the SENTRY_DSN absent warning from the console to reduce noise
+    // logger.debug('SENTRY_DSN is absent. Error capture is disabled.');
   } else {
     logger.info(
       `[OBSERVABILITY] Centralized error capture active (release: ${tracker.getRelease()})`,

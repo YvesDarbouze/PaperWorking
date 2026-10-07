@@ -451,29 +451,6 @@ export default function PortfolioReportsPanel({
         </div>
       </div>
 
-      {/* Bank connect banner (preserved per prompt) */}
-      <div
-        className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border-subtle bg-surface p-5"
-        data-testid="empty-no-plaid"
-      >
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="material-symbols-outlined mt-0.5 shrink-0 text-[20px] text-text-muted">
-            account_balance
-          </span>
-          <p className="text-sm text-text-secondary">
-            <span className="font-semibold text-text-primary">Link your bank account</span> to
-            auto-categorize transactions for tax reporting and actuals tracking.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/settings/billing"
-          data-testid="connect-bank-cta"
-          className="inline-flex h-9 shrink-0 items-center rounded-lg border border-border-subtle px-4 text-xs font-semibold text-text-primary no-underline hover:bg-elevated transition"
-        >
-          Connect Bank Account
-        </Link>
-      </div>
-
       {/* Summary Chart: Net Operating Income vs Cash Flow Before Tax (Viz Constitution) */}
       {statementMatrix && (
         <ReportsSummaryChart
@@ -539,9 +516,9 @@ export default function PortfolioReportsPanel({
             <ReportRequiresDataState
               reportTitle="Form 1099 & Vendor Payments"
               missingDataType="Vendor Payment Records"
-              description="No vendor transactions or 1099 payee records were found in the database. Link your bank account or upload vendor payment records to track the $600 IRS reporting threshold."
-              actionLabel="Connect Bank Account"
-              actionHref="/dashboard/settings/billing"
+              description="No vendor transactions or 1099 payee records were found in the database. Add vendor payment records to track the $600 IRS reporting threshold."
+              actionLabel="Add Vendor Record"
+              actionHref="/dashboard/transactions"
               testId="1099-requires-data"
             />
           ) : (

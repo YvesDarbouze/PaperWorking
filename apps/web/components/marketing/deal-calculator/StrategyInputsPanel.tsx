@@ -75,10 +75,11 @@ export default function StrategyInputsPanel({
       {strategy === 'short_term_rental_airbnb' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs">
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-average-daily-rate" className="block text-[11px] font-medium text-white/50 mb-1">
               Average Daily Rate (ADR) ($) *
             </label>
             <input
+              id="str-average-daily-rate"
               type="number"
               value={inputs.averageDailyRate}
               onChange={(e) => onInputChange('averageDailyRate', Number(e.target.value))}
@@ -86,10 +87,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-occupancy-rate-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Occupancy Rate (%) *
             </label>
             <input
+              id="str-occupancy-rate-pct"
               type="number"
               value={inputs.occupancyRatePct}
               onChange={(e) => onInputChange('occupancyRatePct', Number(e.target.value))}
@@ -97,10 +99,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-furnishing-capex" className="block text-[11px] font-medium text-white/50 mb-1">
               Furnishing Capex ($)
             </label>
             <input
+              id="str-furnishing-capex"
               type="number"
               value={inputs.strFurnishingCapex}
               onChange={(e) => onInputChange('strFurnishingCapex', Number(e.target.value))}
@@ -108,10 +111,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-cleaning-fee-per-stay" className="block text-[11px] font-medium text-white/50 mb-1">
               Cleaning Fee to Guest ($)
             </label>
             <input
+              id="str-cleaning-fee-per-stay"
               type="number"
               value={inputs.cleaningFeePerStay}
               onChange={(e) => onInputChange('cleaningFeePerStay', Number(e.target.value))}
@@ -119,10 +123,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-cleaning-cost-per-stay" className="block text-[11px] font-medium text-white/50 mb-1">
               Cleaning Cost to Cleaner ($)
             </label>
             <input
+              id="str-cleaning-cost-per-stay"
               type="number"
               value={inputs.cleaningCostPerStay}
               onChange={(e) => onInputChange('cleaningCostPerStay', Number(e.target.value))}
@@ -130,10 +135,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="str-average-stay-nights" className="block text-[11px] font-medium text-white/50 mb-1">
               Avg Stay Length (Nights)
             </label>
             <input
+              id="str-average-stay-nights"
               type="number"
               step="0.5"
               value={inputs.averageStayNights}
@@ -148,10 +154,11 @@ export default function StrategyInputsPanel({
       {strategy === 'flip' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs">
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="flip-hold-duration-months" className="block text-[11px] font-medium text-white/50 mb-1">
               Projected Hold Duration (Months) *
             </label>
             <input
+              id="flip-hold-duration-months"
               type="number"
               value={Math.round(inputs.holdPeriodYears * 12)}
               onChange={(e) => onInputChange('holdPeriodYears', Number(e.target.value) / 12)}
@@ -159,10 +166,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="flip-selling-costs-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Selling Costs at Exit (%) *
             </label>
             <input
+              id="flip-selling-costs-pct"
               type="number"
               step="0.5"
               value={inputs.sellingCostsPct}
@@ -177,10 +185,11 @@ export default function StrategyInputsPanel({
       {strategy === 'brrrr' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs">
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-refi-timeline-months" className="block text-[11px] font-medium text-white/50 mb-1">
               Refi Timeline (Months After Close) *
             </label>
             <input
+              id="brrrr-refi-timeline-months"
               type="number"
               value={inputs.refinanceMonthsAfterClose}
               onChange={(e) => onInputChange('refinanceMonthsAfterClose', Number(e.target.value))}
@@ -188,10 +197,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-refi-ltv-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Refinance LTV (%) *
             </label>
             <input
+              id="brrrr-refi-ltv-pct"
               type="number"
               value={inputs.refinanceLtvPct}
               onChange={(e) => onInputChange('refinanceLtvPct', Number(e.target.value))}
@@ -199,10 +209,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-refi-interest-rate-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Refinance Interest Rate (%) *
             </label>
             <input
+              id="brrrr-refi-interest-rate-pct"
               type="number"
               step="0.125"
               value={inputs.refinanceInterestRatePct}
@@ -211,10 +222,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-refi-amortization-years" className="block text-[11px] font-medium text-white/50 mb-1">
               Refi Amortization (Years)
             </label>
             <input
+              id="brrrr-refi-amortization-years"
               type="number"
               value={inputs.refinanceAmortizationYears}
               onChange={(e) => onInputChange('refinanceAmortizationYears', Number(e.target.value))}
@@ -222,10 +234,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-refi-closing-costs-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Refi Closing Costs (%)
             </label>
             <input
+              id="brrrr-refi-closing-costs-pct"
               type="number"
               step="0.5"
               value={inputs.refinanceClosingCostsPct}
@@ -234,10 +247,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="brrrr-post-refi-gross-rent" className="block text-[11px] font-medium text-white/50 mb-1">
               Post-Refi Gross Rent ($)
             </label>
             <input
+              id="brrrr-post-refi-gross-rent"
               type="number"
               value={inputs.postRefiGrossMonthlyRent ?? ''}
               placeholder="Leave empty to use base rent"
@@ -252,10 +266,11 @@ export default function StrategyInputsPanel({
       {strategy === 'commercial_value_add' && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs">
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="commercial-units-count" className="block text-[11px] font-medium text-white/50 mb-1">
               Total Units Count *
             </label>
             <input
+              id="commercial-units-count"
               type="number"
               min="1"
               value={inputs.unitsCount ?? 1}
@@ -264,10 +279,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="commercial-sqft" className="block text-[11px] font-medium text-white/50 mb-1">
               Rentable Commercial SqFt *
             </label>
             <input
+              id="commercial-sqft"
               type="number"
               value={inputs.commercialSqft}
               onChange={(e) => onInputChange('commercialSqft', Number(e.target.value))}
@@ -275,10 +291,11 @@ export default function StrategyInputsPanel({
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/50 mb-1">
+            <label htmlFor="commercial-market-cap-rate-pct" className="block text-[11px] font-medium text-white/50 mb-1">
               Market Cap Rate (%) *
             </label>
             <input
+              id="commercial-market-cap-rate-pct"
               type="number"
               step="0.25"
               value={inputs.marketCapRatePct}
@@ -294,10 +311,11 @@ export default function StrategyInputsPanel({
         <div className="space-y-3 text-xs">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-[11px] font-medium text-white/50 mb-1">
+              <label htmlFor="wholesale-contract-purchase-price" className="block text-[11px] font-medium text-white/50 mb-1">
                 Contract Purchase Price ($) *
               </label>
               <input
+                id="wholesale-contract-purchase-price"
                 type="number"
                 value={inputs.contractPurchasePrice}
                 onChange={(e) => onInputChange('contractPurchasePrice', Number(e.target.value))}
@@ -305,10 +323,11 @@ export default function StrategyInputsPanel({
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-white/50 mb-1">
+              <label htmlFor="wholesale-target-assignment-fee" className="block text-[11px] font-medium text-white/50 mb-1">
                 Target Assignment Fee ($) *
               </label>
               <input
+                id="wholesale-target-assignment-fee"
                 type="number"
                 value={inputs.targetAssignmentFee}
                 onChange={(e) => onInputChange('targetAssignmentFee', Number(e.target.value))}
@@ -318,8 +337,9 @@ export default function StrategyInputsPanel({
           </div>
 
           <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label htmlFor="wholesale-is-double-closing" className="flex items-center gap-2 cursor-pointer">
               <input
+                id="wholesale-is-double-closing"
                 type="checkbox"
                 checked={inputs.isDoubleClosing}
                 onChange={(e) => onInputChange('isDoubleClosing', e.target.checked)}
@@ -332,8 +352,9 @@ export default function StrategyInputsPanel({
 
             {inputs.isDoubleClosing && (
               <div className="flex items-center gap-2">
-                <span className="text-[11px] text-white/50">Escrow/Title Fees:</span>
+                <label htmlFor="wholesale-double-closing-fees" className="text-[11px] text-white/50">Escrow/Title Fees:</label>
                 <input
+                  id="wholesale-double-closing-fees"
                   type="number"
                   value={inputs.doubleClosingEscrowFees}
                   onChange={(e) => onInputChange('doubleClosingEscrowFees', Number(e.target.value))}

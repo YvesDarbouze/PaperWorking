@@ -8,6 +8,7 @@ import { loadGoogleMaps } from '@/lib/maps/loader';
 import { PlacesSessionManager } from '@/lib/maps/session-token';
 
 export interface AddressSearchProps {
+  id?: string;
   placeholder?: string;
   className?: string;
   autoFocus?: boolean;
@@ -40,6 +41,7 @@ export const PLACES_DETAILS_FIELD_MASK = [
 ] as const;
 
 export default function AddressSearch({
+  id,
   placeholder = 'Search any street address or deal name…',
   className = '',
   autoFocus = false,
@@ -83,8 +85,6 @@ export default function AddressSearch({
   // Google Maps Places references
   const sessionManagerRef = useRef<PlacesSessionManager>(new PlacesSessionManager());
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
-  const autocompleteServiceRef = useRef<google.maps.places.AutocompleteService | null>(null);
-  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
 
   // Initialize Places Autocomplete Service
   useEffect(() => {
@@ -92,13 +92,7 @@ export default function AddressSearch({
     loadGoogleMaps()
       .then((googleInstance) => {
         if (!active || !googleInstance?.places) return;
-        try {
-          autocompleteServiceRef.current = new googleInstance.places.AutocompleteService();
-          const dummyDiv = document.createElement('div');
-          placesServiceRef.current = new googleInstance.places.PlacesService(dummyDiv);
-        } catch {
-          // Graceful degradation if Places library isn't available
-        }
+        // Warm up the library
       })
       .catch(() => {
         // Silent degradation
@@ -148,32 +142,32 @@ export default function AddressSearch({
     // Ensure session token exists for this address-entry gesture
     const { googleToken, tokenId } = ensureSessionToken();
 
-    if (autocompleteServiceRef.current && window.google?.maps?.places) {
+    if (window.google?.maps?.places?.AutocompleteSuggestion) {
       try {
-        autocompleteServiceRef.current.getPlacePredictions(
-          {
-            input: trimmed,
-            sessionToken: googleToken || undefined,
-            componentRestrictions: { country: 'us' },
-            types: ['address'],
-          },
-          (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-              setPredictions(
-                results.slice(0, 5).map((r) => ({
-                  placeId: r.place_id,
-                  description: r.description,
-                  mainText: r.structured_formatting?.main_text,
-                  secondaryText: r.structured_formatting?.secondary_text,
-                })),
-              );
-              setIsOpen(true);
-            } else {
-              setPredictions([]);
-              setIsOpen(false);
-            }
-          },
-        );
+        const { suggestions } = await window.google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: trimmed,
+          sessionToken: googleToken || undefined,
+          includedRegionCodes: ['US'],
+          includedPrimaryTypes: ['address'],
+        });
+
+        if (suggestions && suggestions.length > 0) {
+          setPredictions(
+            suggestions.slice(0, 5).map((r) => {
+              const p = r.placePrediction;
+              return {
+                placeId: p?.placeId || '',
+                description: p?.text?.toString() || '',
+                mainText: p?.mainText?.toString() || '',
+                secondaryText: p?.secondaryText?.toString() || '',
+              };
+            })
+          );
+          setIsOpen(true);
+        } else {
+          setPredictions([]);
+          setIsOpen(false);
+        }
         return;
       } catch {
         // Fall through to backend proxy
@@ -289,24 +283,19 @@ export default function AddressSearch({
     }
   }
 
-  function handleSelectSuggestion(suggestion: AutocompleteSuggestion) {
+  async function handleSelectSuggestion(suggestion: AutocompleteSuggestion) {
     setQuery(suggestion.description);
 
-    // If PlacesService is loaded, fetch details with strict minimal field mask to restrict billing
-    if (placesServiceRef.current && suggestion.placeId) {
+    // If Place is loaded, fetch details with strict minimal field mask to restrict billing
+    if (window.google?.maps?.places?.Place && suggestion.placeId) {
       try {
-        placesServiceRef.current.getDetails(
-          {
-            placeId: suggestion.placeId,
-            sessionToken: sessionTokenRef.current || undefined,
-            fields: [...PLACES_DETAILS_FIELD_MASK],
-          },
-          () => {
-            // Session token consumed on getDetails per Google billing rules
-            sessionTokenRef.current = null;
-            sessionManagerRef.current.resetToken();
-          },
-        );
+        const place = new window.google.maps.places.Place({ id: suggestion.placeId });
+        await place.fetchFields({
+          fields: [...PLACES_DETAILS_FIELD_MASK],
+        });
+        // Session token consumed on fetchFields per Google billing rules
+        sessionTokenRef.current = null;
+        sessionManagerRef.current.resetToken();
       } catch {
         // Silent degradation
       }
@@ -353,6 +342,7 @@ export default function AddressSearch({
           search
         </span>
         <input
+          id={id}
           ref={inputRef}
           type="text"
           role="combobox"

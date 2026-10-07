@@ -1547,14 +1547,14 @@ export default function DealCalculatorView({
               {/* Loan Terms Quick-Selector */}
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-[11px] font-medium text-white/50">
+                  <span className="block text-[11px] font-medium text-white/50">
                     Loan Term / Amortization Schedule
-                  </label>
+                  </span>
                   <span className="text-[10px] font-mono text-emerald-400">
                     {inputs.amortizationYears} Years
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-2" role="group" aria-label="Loan Term / Amortization Schedule">
                   {[30, 20, 15, 10].map((term) => (
                     <button
                       key={term}
@@ -1576,14 +1576,14 @@ export default function DealCalculatorView({
               {/* Terminal Valuation Method Discipline (W2-06) */}
               <div className="pt-3 border-t border-white/5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
                     Terminal Valuation Method *
-                  </label>
+                  </span>
                   <span className="text-[10px] font-medium text-white/40">
                     Required — no silent fallback
                   </span>
                 </div>
-                <div data-testid="terminal-value-method-group" className="grid grid-cols-3 gap-2">
+                <div data-testid="terminal-value-method-group" className="grid grid-cols-3 gap-2" role="group" aria-label="Terminal Valuation Method">
                   <button
                     type="button"
                     data-testid="terminal-method-appreciation"
@@ -1626,14 +1626,14 @@ export default function DealCalculatorView({
                   <div className="pt-1 space-y-2">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-medium text-white/50">
+                        <span className="text-[11px] font-medium text-white/50">
                           Appreciation Base
-                        </label>
+                        </span>
                         <span className="text-[9px] font-mono text-white/40">
                           {inputs.appreciationBase === 'arv' ? 'ARV Base' : 'Price Base (Default)'}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Appreciation Base">
                         <button
                           type="button"
                           data-testid="appreciation-base-purchase-price"
@@ -1661,10 +1661,11 @@ export default function DealCalculatorView({
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-annual-appreciation-pct" className="block text-[11px] font-medium text-white/50 mb-1">
                         Annual Appreciation (%)
                       </label>
                       <input
+                        id="deal-calc-annual-appreciation-pct"
                         type="number"
                         step="0.1"
                         value={inputs.annualAppreciationPct}
@@ -1676,10 +1677,11 @@ export default function DealCalculatorView({
                 )}
                 {inputs.terminalValueMethod === 'exit_cap' && (
                   <div className="pt-1">
-                    <label className="block text-[11px] font-medium text-white/50 mb-1">
+                    <label htmlFor="deal-calc-exit-cap-rate-pct" className="block text-[11px] font-medium text-white/50 mb-1">
                       Exit Cap Rate (%)
                     </label>
                     <input
+                      id="deal-calc-exit-cap-rate-pct"
                       type="number"
                       step="0.1"
                       value={inputs.exitCapRatePct}
@@ -1691,10 +1693,11 @@ export default function DealCalculatorView({
                 {inputs.terminalValueMethod === 'per_unit' && (
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div>
-                      <label className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-units-count" className="block text-[11px] font-medium text-white/50 mb-1">
                         Units Count
                       </label>
                       <input
+                        id="deal-calc-units-count"
                         type="number"
                         value={inputs.unitsCount}
                         onChange={(e) => handleInputChange('unitsCount', Number(e.target.value))}
@@ -1702,10 +1705,11 @@ export default function DealCalculatorView({
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-per-unit-exit" className="block text-[11px] font-medium text-white/50 mb-1">
                         Per Unit Exit ($)
                       </label>
                       <input
+                        id="deal-calc-per-unit-exit"
                         type="number"
                         value={inputs.perUnitExitValue}
                         onChange={(e) => handleInputChange('perUnitExitValue', Number(e.target.value))}
@@ -1719,9 +1723,9 @@ export default function DealCalculatorView({
               {/* Growth & Escalation Assumptions (W2-09) */}
               <div data-testid="growth-escalation-section" className="pt-3 border-t border-white/5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
                     Growth &amp; Escalation Assumptions
-                  </label>
+                  </span>
                   <span className="text-[10px] font-medium text-white/40">
                     Honest 0.0% defaults — source: default
                   </span>
@@ -1729,7 +1733,7 @@ export default function DealCalculatorView({
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-rent-pct" className="text-[11px] font-medium text-white/50">
                         Rent Growth (%/yr)
                       </label>
                       {(!inputs.rentGrowthPct || inputs.rentGrowthPct === 0) && (
@@ -1738,6 +1742,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="growth-rent-pct"
                         type="number"
                         step="0.1"
                         min="0"
@@ -1754,7 +1759,7 @@ export default function DealCalculatorView({
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-expense-pct" className="text-[11px] font-medium text-white/50">
                         Expense Growth (%/yr)
                       </label>
                       {(!inputs.expenseGrowthPct || inputs.expenseGrowthPct === 0) && (
@@ -1763,6 +1768,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="growth-expense-pct"
                         type="number"
                         step="0.1"
                         min="0"
@@ -1779,7 +1785,7 @@ export default function DealCalculatorView({
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-appreciation-pct" className="text-[11px] font-medium text-white/50">
                         Appreciation (%/yr)
                       </label>
                       {inputs.annualAppreciationPct === 3.0 && (
@@ -1788,6 +1794,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="growth-appreciation-pct"
                         type="number"
                         step="0.1"
                         min="0"
@@ -1808,14 +1815,14 @@ export default function DealCalculatorView({
               {/* Loan Structure & Terms (W2-10) */}
               <div data-testid="loan-structure-section" className="pt-3 border-t border-white/5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
                     Loan Structure &amp; Terms
-                  </label>
+                  </span>
                   <span className="text-[10px] font-mono text-emerald-400/80">
                     {inputs.loanType === 'amortizing' ? '30-yr amortizing' : inputs.loanType === 'interest_only' ? `${inputs.ioPeriodYears}-yr IO` : `${inputs.armFixedPeriodYears}/1 ARM`}
                   </span>
                 </div>
-                <div data-testid="loan-type-group" className="grid grid-cols-3 gap-2">
+                <div data-testid="loan-type-group" className="grid grid-cols-3 gap-2" role="group" aria-label="Loan Structure & Terms">
                   <button
                     type="button"
                     data-testid="loan-type-amortizing"
@@ -1857,7 +1864,7 @@ export default function DealCalculatorView({
                 {inputs.loanType === 'interest_only' && (
                   <div className="pt-2">
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="loan-io-years" className="text-[11px] font-medium text-white/50">
                         Interest-Only Period (Years)
                       </label>
                       <span className="text-[10px] font-mono text-white/40">
@@ -1866,6 +1873,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="loan-io-years"
                         type="number"
                         min="1"
                         max="30"
@@ -1885,13 +1893,14 @@ export default function DealCalculatorView({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="loan-arm-fixed-years" className="text-[11px] font-medium text-white/50">
                           ARM Fixed Period (Years)
                         </label>
                         <span className="text-[9px] font-mono text-emerald-400/80">e.g. 5/1 ARM</span>
                       </div>
                       <div className="relative">
                         <input
+                          id="loan-arm-fixed-years"
                           type="number"
                           min="1"
                           max="30"
@@ -1907,13 +1916,14 @@ export default function DealCalculatorView({
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="loan-arm-adjustment-pct" className="text-[11px] font-medium text-white/50">
                           Assumed Rate Adjustment (%)
                         </label>
                         <span className="text-[9px] font-mono text-amber-300/80">assumption</span>
                       </div>
                       <div className="relative">
                         <input
+                          id="loan-arm-adjustment-pct"
                           type="number"
                           step="0.1"
                           data-testid="loan-arm-adjustment-pct"
@@ -1933,9 +1943,9 @@ export default function DealCalculatorView({
               {/* Lease-Up & Stabilization Assumptions (W2-11) */}
               <div data-testid="leaseup-section" className="pt-3 border-t border-white/5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
                     Lease-Up &amp; Stabilization
-                  </label>
+                  </span>
                   <span className="text-[10px] font-mono text-emerald-400/80">
                     {!inputs.stabilizationMonths || inputs.stabilizationMonths === 0
                       ? 'Stabilized (0 mo)'
@@ -1946,7 +1956,7 @@ export default function DealCalculatorView({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="leaseup-stabilization-months" className="text-[11px] font-medium text-white/50">
                         Stabilization (Months)
                       </label>
                       {(!inputs.stabilizationMonths || inputs.stabilizationMonths === 0) && (
@@ -1955,6 +1965,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="leaseup-stabilization-months"
                         type="number"
                         min="0"
                         max="36"
@@ -1971,7 +1982,7 @@ export default function DealCalculatorView({
 
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="leaseup-ramp-pct" className="text-[11px] font-medium text-white/50">
                         Rent Ramp (% during ramp)
                       </label>
                       {(inputs.leaseUpRentRampPct === 100 || inputs.leaseUpRentRampPct === undefined) && (
@@ -1980,6 +1991,7 @@ export default function DealCalculatorView({
                     </div>
                     <div className="relative">
                       <input
+                        id="leaseup-ramp-pct"
                         type="number"
                         min="0"
                         max="100"
@@ -1999,13 +2011,14 @@ export default function DealCalculatorView({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 animate-in fade-in duration-200">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="leaseup-vacant-months" className="text-[11px] font-medium text-white/50">
                           Months Vacant at Close
                         </label>
                         <span className="text-[9px] font-mono text-white/40">0% rent period</span>
                       </div>
                       <div className="relative">
                         <input
+                          id="leaseup-vacant-months"
                           type="number"
                           min="0"
                           max="24"
@@ -2022,13 +2035,14 @@ export default function DealCalculatorView({
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="leaseup-concessions-months" className="text-[11px] font-medium text-white/50">
                           Concessions (Months Free)
                         </label>
                         <span className="text-[9px] font-mono text-white/40">free rent</span>
                       </div>
                       <div className="relative">
                         <input
+                          id="leaseup-concessions-months"
                           type="number"
                           min="0"
                           max="12"
@@ -2049,10 +2063,11 @@ export default function DealCalculatorView({
               {showAssumptions && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pt-3 border-t border-white/5 text-xs animate-in fade-in duration-200">
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-vacancy-floor" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Vacancy Floor (%)
                     </label>
                     <input
+                      id="deal-calc-vacancy-floor"
                       type="number"
                       value={inputs.vacancyRatePct}
                       onChange={(e) => handleInputChange('vacancyRatePct', Number(e.target.value))}
@@ -2060,10 +2075,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-amortization-years" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Amortization (Years)
                     </label>
                     <input
+                      id="deal-calc-amortization-years"
                       type="number"
                       value={inputs.amortizationYears}
                       onChange={(e) => handleInputChange('amortizationYears', Number(e.target.value))}
@@ -2071,10 +2087,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-hold-period-years" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Hold Period (Years)
                     </label>
                     <input
+                      id="deal-calc-hold-period-years"
                       type="number"
                       value={inputs.holdPeriodYears}
                       onChange={(e) => handleInputChange('holdPeriodYears', Number(e.target.value))}
@@ -2082,10 +2099,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-exit-cap-rate" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Exit Cap Rate (%)
                     </label>
                     <input
+                      id="deal-calc-exit-cap-rate"
                       type="number"
                       step="0.1"
                       value={inputs.exitCapRatePct}
@@ -2094,10 +2112,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-closing-costs" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Closing Costs (%)
                     </label>
                     <input
+                      id="deal-calc-closing-costs"
                       type="number"
                       step="0.1"
                       value={inputs.buyerClosingCostsPct}
@@ -2106,10 +2125,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-cost-of-sale" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Cost of Sale (%)
                     </label>
                     <input
+                      id="deal-calc-cost-of-sale"
                       type="number"
                       step="0.1"
                       value={inputs.costOfSalePct}
@@ -2118,10 +2138,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-annual-appreciation" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Annual Appreciation (%)
                     </label>
                     <input
+                      id="deal-calc-annual-appreciation"
                       type="number"
                       step="0.1"
                       value={inputs.annualAppreciationPct}
@@ -2130,10 +2151,11 @@ export default function DealCalculatorView({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-selling-costs-exit" className="block text-[11px] font-medium text-white/50 mb-1.5">
                       Selling Costs at Exit (%)
                     </label>
                     <input
+                      id="deal-calc-selling-costs-exit"
                       type="number"
                       step="0.1"
                       value={inputs.sellingCostsPct}

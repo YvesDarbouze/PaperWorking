@@ -7,10 +7,21 @@ import {
 import {
   updateTeamTierInStore,
   getTeamSeatsFromStore,
+  listTeamMembersFromStore,
+  updateTeamMemberInStore,
 } from '@/lib/team/team-store';
 
 const UpdateTierSchema = z.object({
-  tier: z.enum(['Individual', 'Team']),
+  tier: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      const lower = val.trim().toLowerCase();
+      if (lower === 'individual' || lower === 'investor' || lower === 'free') return 'Individual';
+      if (lower === 'team' || lower === 'investment_team' || lower === 'pro' || lower === 'investment team') return 'Team';
+    }
+    return val;
+  }, z.enum(['Individual', 'Team'])),
+  force: z.boolean().optional(),
+  autoSuspend: z.boolean().optional(),
 });
 
 export async function PATCH(request: Request) {
@@ -21,7 +32,7 @@ export async function PATCH(request: Request) {
 
   try {
     const raw = await request.json();
-    const { tier } = UpdateTierSchema.parse(raw);
+    const { tier, force, autoSuspend } = UpdateTierSchema.parse(raw);
 
     const orgId = auth.organizationId || 'org-1';
 
@@ -29,12 +40,28 @@ export async function PATCH(request: Request) {
     if (tier === 'Individual') {
       const current = await getTeamSeatsFromStore(orgId);
       if (current.used > 1) {
-        return NextResponse.json(
-          {
-            error: `Cannot downgrade to Individual: ${current.used} operators are currently active or invited. Please revoke or remove other members first.`,
-          },
-          { status: 400 },
-        );
+        if (force || autoSuspend) {
+          const allMembers = await listTeamMembersFromStore({ organizationId: orgId });
+          let kept = 0;
+          for (const member of allMembers) {
+            if (member.status === 'Active' || member.status === 'Invited') {
+              if (kept === 0) {
+                kept++;
+              } else {
+                await updateTeamMemberInStore(member.id, { status: 'Suspended' });
+              }
+            }
+          }
+        } else {
+          return NextResponse.json(
+            {
+              error: `Cannot downgrade to Individual: ${current.used} operators are currently active or invited. Please revoke or remove other members first.`,
+              code: 'SEATS_EXCEEDED',
+              activeSeats: current.used,
+            },
+            { status: 400 },
+          );
+        }
       }
     }
 

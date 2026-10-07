@@ -50,20 +50,20 @@ describe('Mission Verification — Deal Calculator Top Nav, Auth Gate & Project 
       expect(config.matcher).toContain('/deal-calculator/:path*');
     });
 
-    it('redirects unauthenticated direct requests on /deal-calculator to /login?next=%2Fdeal-calculator', () => {
+    it('redirects unauthenticated direct requests on /deal-calculator to /login?next=%2Fdeal-calculator', async () => {
       const request = new NextRequest('http://localhost:3000/deal-calculator');
-      const response = middleware(request);
+      const response = await middleware(request);
 
       expect(response.status).toBe(307);
       const redirectLocation = response.headers.get('location');
       expect(redirectLocation).toBe('http://localhost:3000/login?next=%2Fdeal-calculator');
     });
 
-    it('preserves query parameters when redirecting unauthenticated visitors to /login', () => {
+    it('preserves query parameters when redirecting unauthenticated visitors to /login', async () => {
       const request = new NextRequest(
         'http://localhost:3000/deal-calculator?price=500000&arv=650000'
       );
-      const response = middleware(request);
+      const response = await middleware(request);
 
       expect(response.status).toBe(307);
       const redirectLocation = response.headers.get('location');
@@ -72,13 +72,13 @@ describe('Mission Verification — Deal Calculator Top Nav, Auth Gate & Project 
       );
     });
 
-    it('allows requests with valid __session cookie to proceed to /deal-calculator', () => {
+    it('allows requests with valid __session cookie to proceed to /deal-calculator', async () => {
       const request = new NextRequest('http://localhost:3000/deal-calculator', {
         headers: {
           cookie: '__session=valid_authenticated_investor_session',
         },
       });
-      const response = middleware(request);
+      const response = await middleware(request);
 
       expect(response.status).toBe(200);
       expect(response.headers.get('location')).toBeNull();

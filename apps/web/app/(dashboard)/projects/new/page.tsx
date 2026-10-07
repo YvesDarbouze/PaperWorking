@@ -859,6 +859,7 @@ export default function NewProjectPage() {
                 </label>
                 <div className="space-y-2">
                   <AddressSearch
+                    id="address-input"
                     mode="select"
                     value={address}
                     placeholder="Search Google Places or type street address…"
@@ -994,8 +995,8 @@ export default function NewProjectPage() {
             </div>
 
             <div className="border-t border-border pt-4">
-              <label htmlFor="property-type-select" className="block text-xs font-semibold text-white/70 mb-2">Property Type</label>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <span className="block text-xs font-semibold text-white/70 mb-2">Property Type</span>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2" role="group" aria-label="Property Type">
                 {(
                   [
                     { id: 'single_family', label: 'Single Family' },
@@ -1098,10 +1099,10 @@ export default function NewProjectPage() {
 
             {/* Strategy Selection inside Deal Calculation */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold text-white/70 mb-2">
+              <span className="block text-xs font-semibold text-white/70 mb-2">
                 Investment Strategy Template <span className="text-foreground">*</span>
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2.5" role="group" aria-label="Investment Strategy Template">
                 {STRATEGY_OPTIONS.map((opt) => {
                   const isSelected = strategy === opt.id;
                   return (
@@ -1411,17 +1412,16 @@ export default function NewProjectPage() {
           <div className="rounded-none border border-border bg-card p-5 sm:p-7 shadow-sm">
             <div className="flex items-center justify-between mb-3 border-b border-border pb-3">
               <div>
-                <h2 className="text-lg font-bold text-white">Step 3: Execution Scope &amp; Property Specifications</h2>
+                <h2 className="text-lg font-bold text-white">Step 3: Property Specs &amp; Standard Scope</h2>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  Review standard rehab categories for {STRATEGY_OPTIONS.find((s) => s.id === strategy)?.label} and confirm physical asset specifications.
+                  Confirm the physical specifications of the property and review the typical scope of work for this strategy.
                 </p>
               </div>
-              <span className="text-xs text-primary font-mono">Hold Phase Seed</span>
             </div>
 
             <div className="mt-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                Auto-Seeded Scope Categories (Hold Phase Module)
+                Standard Scope of Work Categories
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {(STRATEGY_OPTIONS.find((s) => s.id === strategy)?.defaultCategories || []).map((cat, idx) => (
@@ -1582,12 +1582,14 @@ export default function NewProjectPage() {
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                 <input
                   type="text"
+                  aria-label="New team member name"
                   placeholder="Team member name"
                   value={newMemberName}
                   onChange={(e) => setNewMemberName(e.target.value)}
                   className="min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
                 />
                 <select
+                  aria-label="New team member role"
                   value={newMemberRole}
                   onChange={(e) => setNewMemberRole(e.target.value)}
                   className="min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
@@ -1600,6 +1602,7 @@ export default function NewProjectPage() {
                 </select>
                 <input
                   type="email"
+                  aria-label="New team member email"
                   placeholder="Email (optional)"
                   value={newMemberEmail}
                   onChange={(e) => setNewMemberEmail(e.target.value)}

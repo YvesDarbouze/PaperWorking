@@ -85,6 +85,7 @@ interface DisplayVendor {
 
 interface DealCardData {
   id: string;
+  slug?: string;
   propertyName: string;
   address: string;
   city: string;
@@ -525,7 +526,7 @@ function MarketplaceContent() {
               {deals.map((deal) => (
                 <Link
                   key={deal.id}
-                  href={`/dashboard/deals/${deal.id}`}
+                  href={`/marketplace/${deal.slug || deal.id}`}
                   className="rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20"
                 >
                   <p className="text-[11px] uppercase tracking-[0.07em] text-white/45">

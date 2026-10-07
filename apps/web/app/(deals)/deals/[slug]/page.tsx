@@ -183,10 +183,11 @@ export default function DealCreationPage() {
           <form onSubmit={handleSave} className="mt-6 space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-target-purchase-price" className="block text-xs font-medium text-muted-foreground">
                   Target Purchase Price ($)
                 </label>
                 <input
+                  id="deal-target-purchase-price"
                   type="number"
                   required
                   value={purchasePrice}
@@ -196,10 +197,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-rehab-estimate" className="block text-xs font-medium text-muted-foreground">
                   Rehab Estimate ($)
                 </label>
                 <input
+                  id="deal-rehab-estimate"
                   type="number"
                   required
                   value={rehabEstimate}
@@ -209,10 +211,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-arv-estimate" className="block text-xs font-medium text-muted-foreground">
                   After Repair Value / ARV ($)
                 </label>
                 <input
+                  id="deal-arv-estimate"
                   type="number"
                   required
                   value={arvEstimate}
@@ -222,10 +225,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-projected-monthly-rent" className="block text-xs font-medium text-muted-foreground">
                   Projected Monthly Rent ($)
                 </label>
                 <input
+                  id="deal-projected-monthly-rent"
                   type="number"
                   required
                   value={estRent}
@@ -237,10 +241,11 @@ export default function DealCreationPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-planned-hold-period" className="block text-xs font-medium text-muted-foreground">
                   Planned Hold Period
                 </label>
                 <select
+                  id="deal-planned-hold-period"
                   value={holdPeriod}
                   onChange={(e) => setHoldPeriod(e.target.value)}
                   className="mt-1 min-h-[44px] w-full rounded-none border border-input bg-background px-3.5 py-2 text-base md:text-sm text-foreground focus:border-ring focus:outline-none"
@@ -254,10 +259,11 @@ export default function DealCreationPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-muted-foreground">
+                <label htmlFor="deal-exit-disposition" className="block text-xs font-medium text-muted-foreground">
                   Exit / Disposition Strategy
                 </label>
                 <select
+                  id="deal-exit-disposition"
                   value={disposition}
                   onChange={(e) =>
                     setDisposition(e.target.value as 'SALE' | 'RENT' | 'BRRRR' | 'WHOLESALE')
@@ -273,10 +279,11 @@ export default function DealCreationPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-muted-foreground">
+              <label htmlFor="deal-visibility-setting" className="block text-xs font-medium text-muted-foreground">
                 Deal Visibility
               </label>
               <select
+                id="deal-visibility-setting"
                 value={visibility}
                 onChange={(e) =>
                   setVisibility(e.target.value as 'marketplace' | 'invitation_only' | 'private')

@@ -165,7 +165,7 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
       };
 
       const res = await fetch('/api/marketplace/profile', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -412,7 +412,7 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
 
             {/* Avatar / Photo Upload */}
             <div>
-              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
+              <label htmlFor="avatar-upload" className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">
                 Avatar / Firm Logo
               </label>
               <div className="flex items-center gap-4">
@@ -518,9 +518,9 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     AUM ($M)
-                  </label>
+                  </span>
                   <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
                     <span className="material-symbols-outlined text-[11px]">lock</span>
                     KPI #1 &amp; #3
@@ -546,9 +546,9 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
 
               <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     Realized IRR %
-                  </label>
+                  </span>
                   <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
                     <span className="material-symbols-outlined text-[11px]">lock</span>
                     KPI #10
@@ -573,9 +573,9 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
 
               <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     Equity Multiple
-                  </label>
+                  </span>
                   <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
                     <span className="material-symbols-outlined text-[11px]">lock</span>
                     KPI #11
@@ -600,9 +600,9 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
 
               <div className="relative rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-3.5 space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                     Exits / Deals
-                  </label>
+                  </span>
                   <span className="inline-flex items-center gap-0.5 font-mono text-[9px] text-emerald-400">
                     <span className="material-symbols-outlined text-[11px]">lock</span>
                     KPIs #27–#33

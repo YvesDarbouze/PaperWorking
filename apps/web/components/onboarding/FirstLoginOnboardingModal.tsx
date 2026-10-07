@@ -120,29 +120,61 @@ export function FirstLoginOnboardingModal({
     if (onComplete) onComplete();
   };
 
-  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const resizeImage = (file: File, maxWidth = 800): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(e.target?.result as string);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL(file.type, 0.8));
+        };
+        img.onerror = () => reject(new Error('Failed to parse image'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleLogoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setLogoUrl(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const resized = await resizeImage(file, 400);
+        setLogoUrl(resized);
+      } catch (err) {
+        console.error('Logo resize failed', err);
+      }
     }
   };
 
-  const handleAvatarUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setAvatarUrl(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const resized = await resizeImage(file, 400);
+        setAvatarUrl(resized);
+      } catch (err) {
+        console.error('Avatar resize failed', err);
+      }
     }
   };
 
@@ -159,7 +191,7 @@ export function FirstLoginOnboardingModal({
     try {
       // 1. Persist business name, logo, avatar, and completion flag to profile
       const res = await fetch('/api/marketplace/profile', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           displayName: displayName.trim(),
@@ -274,8 +306,9 @@ export function FirstLoginOnboardingModal({
                 )}
               </div>
               <div className="flex-1 space-y-1.5">
-                <label className="text-xs text-white/70 block">Your Name</label>
+                <label htmlFor="onboarding-display-name" className="text-xs text-white/70 block">Your Name</label>
                 <input
+                  id="onboarding-display-name"
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
@@ -284,9 +317,10 @@ export function FirstLoginOnboardingModal({
                 />
               </div>
               <div>
-                <label className="cursor-pointer rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-medium text-white/80 hover:bg-white/10 transition inline-block">
+                <label htmlFor="onboarding-avatar-upload" className="cursor-pointer rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-[11px] font-medium text-white/80 hover:bg-white/10 transition inline-block">
                   Change Photo
                   <input
+                    id="onboarding-avatar-upload"
                     type="file"
                     accept="image/*"
                     onChange={handleAvatarUpload}
@@ -302,13 +336,14 @@ export function FirstLoginOnboardingModal({
 
           {/* Question 1: What is your business name */}
           <div>
-            <label className="text-xs font-semibold text-white block">
+            <label htmlFor="onboarding-business-name" className="text-xs font-semibold text-white block">
               What is your business name? <span className="text-rose-400">*</span>
             </label>
             <p className="text-[11px] text-white/50 mb-1.5">
               Enter the legal entity, fund, or operating company name that represents your real estate investments.
             </p>
             <input
+              id="onboarding-business-name"
               type="text"
               data-testid="onboarding-business-name-input"
               value={businessName}
@@ -321,9 +356,9 @@ export function FirstLoginOnboardingModal({
 
           {/* Question 2: Do you want to add your business logo */}
           <div>
-            <label className="text-xs font-semibold text-white block">
+            <span className="text-xs font-semibold text-white block">
               Do you want to add your business logo?
-            </label>
+            </span>
             <p className="text-[11px] text-white/50 mb-2">
               Your logo appears on deal pitch decks, investor distributions, and underwriting summaries.
             </p>
@@ -339,10 +374,11 @@ export function FirstLoginOnboardingModal({
                 </div>
               )}
               <div className="flex flex-col gap-1.5">
-                <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 transition">
+                <label htmlFor="onboarding-logo-upload-input" className="cursor-pointer inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 transition">
                   <span className="material-symbols-outlined text-[16px]">upload</span>
                   <span>Upload Logo Image</span>
                   <input
+                    id="onboarding-logo-upload-input"
                     type="file"
                     data-testid="onboarding-logo-upload"
                     accept="image/png,image/jpeg,image/svg+xml"

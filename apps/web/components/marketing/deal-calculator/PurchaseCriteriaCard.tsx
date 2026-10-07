@@ -70,10 +70,11 @@ export default function PurchaseCriteriaCard({
       {showConfig && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/30 text-xs animate-in fade-in duration-150">
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="criteria-min-coc-pct" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Min CoC (%)
             </label>
             <input
+              id="criteria-min-coc-pct"
               type="number"
               step="0.5"
               value={criteria.minCashOnCashPct ?? 8.0}
@@ -82,10 +83,11 @@ export default function PurchaseCriteriaCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="criteria-min-dscr" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Min DSCR
             </label>
             <input
+              id="criteria-min-dscr"
               type="number"
               step="0.05"
               value={criteria.minDscr ?? 1.25}
@@ -94,10 +96,11 @@ export default function PurchaseCriteriaCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="criteria-min-cap-rate-pct" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Min Cap Rate (%)
             </label>
             <input
+              id="criteria-min-cap-rate-pct"
               type="number"
               step="0.25"
               value={criteria.minCapRatePct ?? 6.0}
@@ -106,10 +109,11 @@ export default function PurchaseCriteriaCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="criteria-min-flip-profit" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Min Flip Profit ($)
             </label>
             <input
+              id="criteria-min-flip-profit"
               type="number"
               step="5000"
               value={criteria.minFlipProfit ?? 30000}
@@ -118,10 +122,11 @@ export default function PurchaseCriteriaCard({
             />
           </div>
           <div>
-            <label className="block text-[10.5px] font-medium text-white/50 mb-1">
+            <label htmlFor="criteria-max-ltv-pct" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Max LTV (%)
             </label>
             <input
+              id="criteria-max-ltv-pct"
               type="number"
               step="5"
               value={criteria.maxLtvPct ?? 80.0}

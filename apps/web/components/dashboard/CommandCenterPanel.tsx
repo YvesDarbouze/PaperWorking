@@ -339,14 +339,6 @@ export default function CommandCenterPanel({
 
           <div className="flex shrink-0 items-center gap-2">
             <Button
-              href="/dashboard/insights"
-              variant="secondary"
-              size="sm"
-              icon={<Calculator className="h-4 w-4" />}
-            >
-              33 Datapoints
-            </Button>
-            <Button
               href="/dashboard/deals"
               variant="secondary"
               size="sm"

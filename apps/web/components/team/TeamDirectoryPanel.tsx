@@ -76,6 +76,8 @@ export default function TeamDirectoryPanel() {
   const [assignTabOrTask, setAssignTabOrTask] = useState('');
   const [flash, setFlash] = useState<string | null>(null);
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null);
+  const [isUpdatingTier, setIsUpdatingTier] = useState(false);
+  const [pendingDowngrade, setPendingDowngrade] = useState(false);
 
   const fetchTeam = async () => {
     try {
@@ -250,12 +252,22 @@ export default function TeamDirectoryPanel() {
     }
   }
 
-  async function handleTierChange(tier: 'Individual' | 'Team') {
+  async function handleTierChange(tier: 'Individual' | 'Team', options?: { force?: boolean }) {
+    if (isUpdatingTier) return;
+
+    const force = options?.force ?? false;
+    if (tier === 'Individual' && activeSeatsCount > 1 && !force) {
+      setPendingDowngrade(true);
+      return;
+    }
+
+    setPendingDowngrade(false);
+    setIsUpdatingTier(true);
     try {
       const res = await bffFetch('/api/team/tier', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier }),
+        body: JSON.stringify({ tier, force }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -268,11 +280,14 @@ export default function TeamDirectoryPanel() {
             ? 'Upgraded workspace to Investment Team plan.'
             : 'Downgraded workspace to Individual Investor plan.',
         );
+        void fetchTeam();
       } else {
         showFlash(data.error || 'Failed to update plan tier.');
       }
     } catch {
       showFlash('Failed to update subscription tier.');
+    } finally {
+      setIsUpdatingTier(false);
     }
   }
 
@@ -431,20 +446,49 @@ export default function TeamDirectoryPanel() {
                 </div>
                 <button
                   type="button"
+                  disabled={isUpdatingTier}
                   onClick={() => void handleTierChange('Individual')}
-                  className="mt-2 block cursor-pointer text-left text-[11px] font-semibold text-red-400 hover:underline"
+                  className="mt-2 block cursor-pointer text-left text-[11px] font-semibold text-red-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Downgrade to Individual Tier
+                  {isUpdatingTier ? 'Updating Tier…' : 'Downgrade to Individual Tier'}
                 </button>
+                {pendingDowngrade && (
+                  <div className="mt-3 rounded-md border border-red-500/25 bg-red-500/10 p-3 text-left">
+                    <p className="text-[11px] leading-relaxed text-red-200">
+                      Downgrading to Individual Investor (1 seat) will suspend{' '}
+                      {Math.max(0, activeSeatsCount - 1)} excess operator seat(s). Do you want to
+                      proceed?
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={isUpdatingTier}
+                        onClick={() => void handleTierChange('Individual', { force: true })}
+                        className="cursor-pointer rounded-md bg-red-500 px-3 py-1.5 text-[11px] font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Confirm Downgrade
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isUpdatingTier}
+                        onClick={() => setPendingDowngrade(false)}
+                        className="cursor-pointer rounded-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-white/70 transition-all hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <button
                 type="button"
+                disabled={isUpdatingTier}
                 onClick={() => void handleTierChange('Team')}
-                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110"
+                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-                Upgrade to Investment Team
+                {isUpdatingTier ? 'Updating Tier…' : 'Upgrade to Investment Team'}
               </button>
             )}
           </div>

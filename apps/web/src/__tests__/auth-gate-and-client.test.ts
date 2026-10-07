@@ -110,18 +110,18 @@ describe('Fix B: Client-side apiFetch wrapper', () => {
 });
 
 describe('Fix A: Server-side middleware auth gate', () => {
-  it('redirects unauthenticated requests on /dashboard/team to /login?next=', () => {
+  it('redirects unauthenticated requests on /dashboard/team to /login?next=', async () => {
     const request = new NextRequest('http://localhost:3000/dashboard/team');
-    const response = middleware(request);
+    const response = await middleware(request);
 
     expect(response.status).toBe(307);
     const redirectLocation = response.headers.get('location');
     expect(redirectLocation).toBe('http://localhost:3000/login?next=%2Fdashboard%2Fteam');
   });
 
-  it('preserves query parameters in next parameter', () => {
+  it('preserves query parameters in next parameter', async () => {
     const request = new NextRequest('http://localhost:3000/dashboard/team?view=compact&sort=name');
-    const response = middleware(request);
+    const response = await middleware(request);
 
     expect(response.status).toBe(307);
     const redirectLocation = response.headers.get('location');
@@ -130,26 +130,26 @@ describe('Fix A: Server-side middleware auth gate', () => {
     );
   });
 
-  it('allows requests with valid __session cookie to proceed', () => {
+  it('allows requests with valid __session cookie to proceed', async () => {
     const request = new NextRequest('http://localhost:3000/dashboard/team', {
       headers: {
         cookie: '__session=valid_test_token_123',
       },
     });
-    const response = middleware(request);
+    const response = await middleware(request);
 
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
   });
 
-  it('allows /login and /api/auth requests to pass through without redirect loops', () => {
+  it('allows /login and /api/auth requests to pass through without redirect loops', async () => {
     const loginReq = new NextRequest('http://localhost:3000/login');
-    const loginRes = middleware(loginReq);
+    const loginRes = await middleware(loginReq);
     expect(loginRes.status).toBe(200);
     expect(loginRes.headers.get('location')).toBeNull();
 
     const authReq = new NextRequest('http://localhost:3000/api/auth/me');
-    const authRes = middleware(authReq);
+    const authRes = await middleware(authReq);
     expect(authRes.status).toBe(200);
     expect(authRes.headers.get('location')).toBeNull();
   });
@@ -161,24 +161,24 @@ describe('Fix A: Server-side middleware auth gate', () => {
     expect(config.matcher).not.toContain('/api/auth/:path*');
   });
 
-  it('Item 1: gates dotted protected URL paths (e.g. /projects/foo.bar, /projects/my-project.v2) for unauthenticated users', () => {
+  it('Item 1: gates dotted protected URL paths (e.g. /projects/foo.bar, /projects/my-project.v2) for unauthenticated users', async () => {
     const req1 = new NextRequest('http://localhost:3000/projects/foo.bar');
-    const res1 = middleware(req1);
+    const res1 = await middleware(req1);
     expect(res1.status).toBe(307);
     expect(res1.headers.get('location')).toBe('http://localhost:3000/login?next=%2Fprojects%2Ffoo.bar');
 
     const req2 = new NextRequest('http://localhost:3000/projects/my-project.v2');
-    const res2 = middleware(req2);
+    const res2 = await middleware(req2);
     expect(res2.status).toBe(307);
     expect(res2.headers.get('location')).toBe('http://localhost:3000/login?next=%2Fprojects%2Fmy-project.v2');
 
     const req3 = new NextRequest('http://localhost:3000/dashboard/team.v1');
-    const res3 = middleware(req3);
+    const res3 = await middleware(req3);
     expect(res3.status).toBe(307);
     expect(res3.headers.get('location')).toBe('http://localhost:3000/login?next=%2Fdashboard%2Fteam.v1');
   });
 
-  it('Item 1: static asset paths and well-known endpoints bypass middleware without gating', () => {
+  it('Item 1: static asset paths and well-known endpoints bypass middleware without gating', async () => {
     const assets = [
       'http://localhost:3000/favicon.ico',
       'http://localhost:3000/logo.png',
@@ -191,19 +191,19 @@ describe('Fix A: Server-side middleware auth gate', () => {
 
     for (const url of assets) {
       const req = new NextRequest(url);
-      const res = middleware(req);
+      const res = await middleware(req);
       expect(res.status).toBe(200);
       expect(res.headers.get('location')).toBeNull();
     }
   });
 
-  it('Item 2: forwards x-pathname header on pass-through requests for downstream layouts', () => {
+  it('Item 2: forwards x-pathname header on pass-through requests for downstream layouts', async () => {
     const request = new NextRequest('http://localhost:3000/dashboard/team?tab=active', {
       headers: {
         cookie: '__session=valid_test_token',
       },
     });
-    const response = middleware(request);
+    const response = await middleware(request);
     expect(response.status).toBe(200);
     // Next.js NextResponse.next() encodes mutated request headers into response
     const forwardedPath =
@@ -212,7 +212,7 @@ describe('Fix A: Server-side middleware auth gate', () => {
     expect(forwardedPath).toBe('/dashboard/team?tab=active');
   });
 
-  it('Item 3: middleware contains no bypass path at all (no env vars, headers, or cookies can bypass the auth gate)', () => {
+  it('Item 3: middleware contains no bypass path at all (no env vars, headers, or cookies can bypass the auth gate)', async () => {
     // Attempting bypass with bypass headers or cookies without __session MUST still be gated
     const requestWithBypassHeaders = new NextRequest('http://localhost:3000/dashboard/team', {
       headers: {
@@ -221,7 +221,7 @@ describe('Fix A: Server-side middleware auth gate', () => {
         cookie: '__bypass_attempt=true; custom_token=test',
       },
     });
-    const response = middleware(requestWithBypassHeaders);
+    const response = await middleware(requestWithBypassHeaders);
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe('http://localhost:3000/login?next=%2Fdashboard%2Fteam');
   });

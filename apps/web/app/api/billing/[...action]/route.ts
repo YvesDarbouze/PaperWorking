@@ -16,7 +16,7 @@ import {
 } from '@/lib/settings/settings-store';
 
 interface RouteContext {
-  params: Promise<{ action?: string[] }>;
+  params: Promise<{ action: string[] }>;
 }
 
 async function getAuthContext() {

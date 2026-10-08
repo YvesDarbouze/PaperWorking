@@ -760,4 +760,53 @@ export function TrashSimple(props: PhosphorIconProps) {
   );
 }
 
+export function ArrowsIn(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <polyline points="208 48 152 48 152 104" />
+      <line x1="208" y1="48" x2="152" y2="104" />
+      <polyline points="48 208 104 208 104 152" />
+      <line x1="48" y1="208" x2="104" y2="152" />
+    </BasePhosphorIcon>
+  );
+}
+
+export function ArrowsOut(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <polyline points="152 48 208 48 208 104" />
+      <line x1="144" y1="112" x2="208" y2="48" />
+      <polyline points="104 208 48 208 48 152" />
+      <line x1="112" y1="144" x2="48" y2="208" />
+    </BasePhosphorIcon>
+  );
+}
+
+export function TrendUp(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <polyline points="232 56 136 152 96 112 24 184" />
+      <polyline points="232 120 232 56 168 56" />
+    </BasePhosphorIcon>
+  );
+}
+
+export function TrendDown(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <polyline points="232 200 136 104 96 144 24 72" />
+      <polyline points="232 136 232 200 168 200" />
+    </BasePhosphorIcon>
+  );
+}
+
+export function Minus(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <line x1="40" y1="128" x2="216" y2="128" />
+    </BasePhosphorIcon>
+  );
+}
+
+
 

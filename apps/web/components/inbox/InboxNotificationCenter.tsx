@@ -570,7 +570,11 @@ export default function InboxNotificationCenter() {
         </section>
       </div>
 
-      <ComposeEmailModal isOpen={composeOpen} onClose={() => setComposeOpen(false)} />
+      <ComposeEmailModal
+        isOpen={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        onSent={fetchThreads}
+      />
     </>
   );
 }

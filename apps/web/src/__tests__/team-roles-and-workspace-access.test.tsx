@@ -88,5 +88,17 @@ describe('Team Roles and Workspace Access Guessing & Adjustment', () => {
       expect(html).toContain('value="Vendor"');
       expect(html).toContain('value="Intern"');
     });
+
+    it('renders scoped assignment badges and scope action buttons for team operators', () => {
+      const html = renderToString(<TeamDirectoryPanel />);
+
+      // Verify Scope action button exists in table
+      expect(html).toContain('Scope');
+      // Verify existing scoped member assignments are rendered as badges
+      expect(html).toContain('88 Harbor Lane');
+      expect(html).toContain('Update monthly operating statement');
+      expect(html).toContain('1247 Elm Street');
+      expect(html).toContain('Underwriting Review');
+    });
   });
 });

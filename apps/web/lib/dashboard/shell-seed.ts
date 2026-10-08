@@ -228,6 +228,9 @@ export interface TeamMember {
   invitedAt?: string;
   isYou?: boolean;
   accessLevel?: WorkspaceAccessLevel;
+  scopedProjectId?: string | null;
+  scopedProjectName?: string | null;
+  scopedTabOrTask?: string | null;
 }
 
 export const ROLE_PERMISSIONS: Record<InternalRole, string> = {
@@ -260,6 +263,27 @@ export const INTERNAL_ROLES: InternalRole[] = [
   'President',
   'CEO',
 ];
+
+export const SCOPED_ACCESS_TABS = [
+  { id: 'tab-projects', label: 'Projects Tab', icon: 'folder' },
+  { id: 'tab-underwriting', label: 'Deal Underwriting', icon: 'calculate' },
+  { id: 'tab-marketplace', label: 'Vendor Directory', icon: 'storefront' },
+  { id: 'tab-deals', label: 'Deals Marketplace', icon: 'handshake' },
+  { id: 'tab-insights', label: 'Insights & Analytics', icon: 'insights' },
+  { id: 'tab-reports', label: 'Reports', icon: 'description' },
+  { id: 'tab-inbox', label: 'Inbox', icon: 'inbox' },
+] as const;
+
+export const CANONICAL_LIFECYCLE_TASKS = [
+  { id: 'task-acq-pof', label: 'Upload Proof of Funds & LOI Package', phase: 'Acquisition' },
+  { id: 'task-acq-cap', label: 'Confirm Maximum Allowable Offer (MAO)', phase: 'Acquisition' },
+  { id: 'task-fund-emd', label: 'Wire Earnest Money Deposit to Escrow', phase: 'Fund' },
+  { id: 'task-fund-lender', label: 'Submit Lender Package & Disclosures', phase: 'Fund' },
+  { id: 'task-fund-le', label: 'Review Loan Estimate (LE) & Lock Rate', phase: 'Fund' },
+  { id: 'task-fund-ins', label: "Obtain Hazard & Builder's Risk Binder", phase: 'Fund' },
+  { id: 'task-hold-stmt', label: 'Update Monthly Operating Statement', phase: 'Hold' },
+  { id: 'task-exit-stmt', label: 'Upload Disposition Settlement Statement', phase: 'Exit' },
+] as const;
 
 /** Seed roster — mirrors PaperWorking Team Directory. */
 export const TEAM_MEMBERS: TeamMember[] = [
@@ -306,6 +330,9 @@ export const TEAM_MEMBERS: TeamMember[] = [
     status: 'Active',
     accessLevel: 'Scoped Edit',
     projects: 1,
+    scopedProjectId: 'deal-2',
+    scopedProjectName: '88 Harbor Lane',
+    scopedTabOrTask: 'Update monthly operating statement',
     lastActive: 'Active 1d ago',
   },
   {
@@ -317,6 +344,9 @@ export const TEAM_MEMBERS: TeamMember[] = [
     status: 'Active',
     accessLevel: 'View Only',
     projects: 1,
+    scopedProjectId: 'deal-1',
+    scopedProjectName: '1247 Elm Street',
+    scopedTabOrTask: 'Underwriting Review',
     lastActive: 'Active 4h ago',
   },
   {

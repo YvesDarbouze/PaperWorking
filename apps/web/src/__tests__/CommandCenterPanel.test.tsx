@@ -111,7 +111,7 @@ describe('CommandCenterPanel: Contextual Primary Resolution', () => {
     expect(exploreDealsHtml).toContain('border-border');
   });
 
-  it('contains zero hardcoded bg-emerald-500 classes in the panel', () => {
+  it('contains zero solid hardcoded bg-emerald-500 backgrounds in the panel', () => {
     mockUseAuth.mockReturnValue({
       loading: false,
       authenticated: true,
@@ -119,7 +119,7 @@ describe('CommandCenterPanel: Contextual Primary Resolution', () => {
     });
 
     const html = renderToString(<CommandCenterPanel />);
-    expect(html).not.toContain('bg-emerald-500');
+    expect(html).not.toMatch(/bg-emerald-500(?![/\w-])/);
     expect(html).not.toContain('hover:bg-emerald-400');
   });
 

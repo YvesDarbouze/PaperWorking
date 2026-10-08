@@ -10,6 +10,8 @@ import {
   TEAM_MEMBERS,
   TEAM_SEATS,
   WORKSPACE_ACCESS_LEVELS,
+  SCOPED_ACCESS_TABS,
+  CANONICAL_LIFECYCLE_TASKS,
   getDefaultAccessLevelForRole,
   type InternalRole,
   type TeamMember,
@@ -21,6 +23,37 @@ function initials(name: string, email: string): string {
   if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   if (parts[0]) return parts[0].slice(0, 2).toUpperCase();
   return email[0]?.toUpperCase() ?? '?';
+}
+
+function getTasksForProject(projectId?: string | null): { id: string; label: string; phase?: string }[] {
+  if (!projectId) {
+    return CANONICAL_LIFECYCLE_TASKS.map((t) => ({ id: t.id, label: t.label, phase: t.phase }));
+  }
+  const project = SEED_PROJECTS.find((p) => p.id === projectId);
+  if (!project) {
+    return CANONICAL_LIFECYCLE_TASKS.map((t) => ({ id: t.id, label: t.label, phase: t.phase }));
+  }
+
+  const items: { id: string; label: string; phase?: string }[] = [];
+  if (Array.isArray(project.tasks) && project.tasks.length > 0) {
+    for (const t of project.tasks) {
+      items.push({ id: t.id, label: t.title, phase: 'Milestone Task' });
+    }
+  }
+  if (Array.isArray(project.todos) && project.todos.length > 0) {
+    for (const td of project.todos) {
+      items.push({
+        id: td.id,
+        label: td.content,
+        phase: td.phase ? td.phase.charAt(0).toUpperCase() + td.phase.slice(1) : undefined,
+      });
+    }
+  }
+
+  if (items.length === 0) {
+    return CANONICAL_LIFECYCLE_TASKS.map((t) => ({ id: t.id, label: t.label, phase: t.phase }));
+  }
+  return items;
 }
 
 function roleBadgeClass(role: string, isInternal: boolean): string {
@@ -74,10 +107,16 @@ export default function TeamDirectoryPanel() {
   const [enableScopedInvite, setEnableScopedInvite] = useState(false);
   const [assignProject, setAssignProject] = useState('');
   const [assignTabOrTask, setAssignTabOrTask] = useState('');
+  const [inviteScopeType, setInviteScopeType] = useState<'tab' | 'task'>('task');
+  const [scopedModalMember, setScopedModalMember] = useState<TeamMember | null>(null);
+  const [editScopeProject, setEditScopeProject] = useState<string>('');
+  const [editScopeTabOrTask, setEditScopeTabOrTask] = useState<string>('');
+  const [editScopeType, setEditScopeType] = useState<'tab' | 'task'>('task');
+  const [isSavingScope, setIsSavingScope] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const [hoveredRoleId, setHoveredRoleId] = useState<string | null>(null);
   const [isUpdatingTier, setIsUpdatingTier] = useState(false);
-  const [pendingDowngrade, setPendingDowngrade] = useState(false);
+  const [pendingDowngradeConfirmation, setPendingDowngradeConfirmation] = useState(false);
 
   const fetchTeam = async () => {
     try {
@@ -211,6 +250,110 @@ export default function TeamDirectoryPanel() {
     }
   }
 
+  function handleOpenManageScope(member: TeamMember) {
+    setScopedModalMember(member);
+    setEditScopeProject(member.scopedProjectId || '');
+    setEditScopeTabOrTask(member.scopedTabOrTask || '');
+    const isKnownTab = SCOPED_ACCESS_TABS.some((t) => t.label === member.scopedTabOrTask);
+    setEditScopeType(isKnownTab ? 'tab' : 'task');
+  }
+
+  async function handleSaveScope() {
+    if (!scopedModalMember) return;
+    setIsSavingScope(true);
+    const memberId = scopedModalMember.id;
+    const targetProjectName = editScopeProject
+      ? SEED_PROJECTS.find((p) => p.id === editScopeProject)?.propertyName || editScopeProject
+      : null;
+
+    try {
+      const res = await bffFetch(`/api/team/${memberId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scopedProjectId: editScopeProject || null,
+          scopedProjectName: targetProjectName,
+          scopedTabOrTask: editScopeTabOrTask || null,
+          accessLevel: editScopeProject || editScopeTabOrTask ? 'Scoped Edit' : scopedModalMember.accessLevel,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to update scope: ${err.error || 'Server error'}`);
+        return;
+      }
+
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.id === memberId
+            ? {
+                ...m,
+                scopedProjectId: editScopeProject || null,
+                scopedProjectName: targetProjectName,
+                scopedTabOrTask: editScopeTabOrTask || null,
+                accessLevel: editScopeProject || editScopeTabOrTask ? 'Scoped Edit' : m.accessLevel,
+                projects: editScopeProject ? 1 : 0,
+              }
+            : m,
+        ),
+      );
+
+      showFlash(
+        editScopeProject || editScopeTabOrTask
+          ? `Updated project and task scope for ${scopedModalMember.name}`
+          : `Cleared scoped restrictions for ${scopedModalMember.name}`,
+      );
+      setScopedModalMember(null);
+    } catch {
+      showFlash('Failed to update scope. Please check connection.');
+    } finally {
+      setIsSavingScope(false);
+    }
+  }
+
+  async function handleRevokeScope(memberId: string, memberName: string) {
+    setIsSavingScope(true);
+    try {
+      const res = await bffFetch(`/api/team/${memberId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scopedProjectId: null,
+          scopedProjectName: null,
+          scopedTabOrTask: null,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        showFlash(`Failed to revoke scope: ${err.error || 'Server error'}`);
+        return;
+      }
+
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.id === memberId
+            ? {
+                ...m,
+                scopedProjectId: null,
+                scopedProjectName: null,
+                scopedTabOrTask: null,
+                projects: 0,
+              }
+            : m,
+        ),
+      );
+
+      showFlash(`Revoked scoped restrictions for ${memberName}`);
+      setScopedModalMember(null);
+    } catch {
+      showFlash('Failed to revoke scope. Please check connection.');
+    } finally {
+      setIsSavingScope(false);
+    }
+  }
+
   async function handleRevoke(id: string, email: string) {
     setMembers((prev) => prev.filter((m) => m.id !== id));
     showFlash(`Revoked access for ${email}`);
@@ -252,16 +395,7 @@ export default function TeamDirectoryPanel() {
     }
   }
 
-  async function handleTierChange(tier: 'Individual' | 'Team', options?: { force?: boolean }) {
-    if (isUpdatingTier) return;
-
-    const force = options?.force ?? false;
-    if (tier === 'Individual' && activeSeatsCount > 1 && !force) {
-      setPendingDowngrade(true);
-      return;
-    }
-
-    setPendingDowngrade(false);
+  async function executeTierChange(tier: 'Individual' | 'Team', force: boolean) {
     setIsUpdatingTier(true);
     try {
       const res = await bffFetch('/api/team/tier', {
@@ -288,7 +422,19 @@ export default function TeamDirectoryPanel() {
       showFlash('Failed to update subscription tier.');
     } finally {
       setIsUpdatingTier(false);
+      setPendingDowngradeConfirmation(false);
     }
+  }
+
+  async function handleTierChange(tier: 'Individual' | 'Team') {
+    if (isUpdatingTier) return;
+
+    if (tier === 'Individual' && activeSeatsCount > 1) {
+      setPendingDowngradeConfirmation(true);
+      return;
+    }
+
+    await executeTierChange(tier, false);
   }
 
   async function handleSendInvites(e: FormEvent) {
@@ -452,33 +598,6 @@ export default function TeamDirectoryPanel() {
                 >
                   {isUpdatingTier ? 'Updating Tier…' : 'Downgrade to Individual Tier'}
                 </button>
-                {pendingDowngrade && (
-                  <div className="mt-3 rounded-md border border-red-500/25 bg-red-500/10 p-3 text-left">
-                    <p className="text-[11px] leading-relaxed text-red-200">
-                      Downgrading to Individual Investor (1 seat) will suspend{' '}
-                      {Math.max(0, activeSeatsCount - 1)} excess operator seat(s). Do you want to
-                      proceed?
-                    </p>
-                    <div className="mt-2 flex items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={isUpdatingTier}
-                        onClick={() => void handleTierChange('Individual', { force: true })}
-                        className="cursor-pointer rounded-md bg-red-500 px-3 py-1.5 text-[11px] font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Confirm Downgrade
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isUpdatingTier}
-                        onClick={() => setPendingDowngrade(false)}
-                        className="cursor-pointer rounded-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-white/70 transition-all hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <button
@@ -711,6 +830,36 @@ export default function TeamDirectoryPanel() {
                                   </span>
                                 )}
                               </div>
+                              {member.scopedProjectId || member.scopedTabOrTask ? (
+                                <div className="mt-1 flex flex-wrap items-center gap-1">
+                                  <span className="inline-flex items-center gap-1 rounded border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] text-sky-300">
+                                    <span className="material-symbols-outlined text-[10px]">tune</span>
+                                    {member.scopedProjectName || member.scopedProjectId ? (
+                                      <span>{member.scopedProjectName || member.scopedProjectId}</span>
+                                    ) : null}
+                                    {member.scopedTabOrTask ? (
+                                      <span className="text-white/60">· {member.scopedTabOrTask}</span>
+                                    ) : null}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenManageScope(member)}
+                                    className="cursor-pointer text-[9px] font-semibold text-sky-400 underline hover:text-sky-300"
+                                  >
+                                    Edit
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="mt-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenManageScope(member)}
+                                    className="cursor-pointer text-[9px] font-semibold text-white/40 hover:text-sky-300"
+                                  >
+                                    + Scope to tab or task
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           )}
                         </td>
@@ -734,6 +883,16 @@ export default function TeamDirectoryPanel() {
 
                         <td className="px-4 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-3">
+                            {!member.isYou ? (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenManageScope(member)}
+                                className="cursor-pointer text-[11px] font-semibold text-sky-400 hover:text-sky-300"
+                                title="Assign or revoke tasks and project scope"
+                              >
+                                Scope
+                              </button>
+                            ) : null}
                             {!member.isYou && isInternal ? (
                               <>
                                 <button
@@ -875,10 +1034,14 @@ export default function TeamDirectoryPanel() {
 
             <form onSubmit={handleSendInvites} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="modal-bulk-emails"
+                  className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                >
                   Email Addresses
                 </label>
                 <textarea
+                  id="modal-bulk-emails"
                   value={bulkEmailInput}
                   onChange={(e) => setBulkEmailInput(e.target.value)}
                   placeholder="name@company.com, partner@fund.com (separated by commas or newlines)"
@@ -888,10 +1051,14 @@ export default function TeamDirectoryPanel() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                <label
+                  htmlFor="modal-role-select"
+                  className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                >
                   Initial Role assignment
                 </label>
                 <select
+                  id="modal-role-select"
                   value={selectedRole}
                   data-testid="modal-role-select"
                   onChange={(e) => {
@@ -920,7 +1087,10 @@ export default function TeamDirectoryPanel() {
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                  <label
+                    htmlFor="modal-access-level-select"
+                    className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                  >
                     Workspace Edit Access
                   </label>
                   <span className="text-[10px] font-medium text-emerald-400">
@@ -928,6 +1098,7 @@ export default function TeamDirectoryPanel() {
                   </span>
                 </div>
                 <select
+                  id="modal-access-level-select"
                   value={selectedAccessLevel}
                   data-testid="modal-access-level-select"
                   onChange={(e) =>
@@ -964,15 +1135,19 @@ export default function TeamDirectoryPanel() {
                 </div>
 
                 {enableScopedInvite ? (
-                  <div className="grid grid-cols-2 gap-3 rounded border border-white/8 bg-white/[0.03] p-3">
+                  <div className="space-y-3 rounded-lg border border-white/8 bg-white/[0.03] p-3.5">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-white/40">
-                        Restrict to Project
+                      <label
+                        htmlFor="modal-scoped-project"
+                        className="text-[10px] font-bold uppercase tracking-wider text-white/50"
+                      >
+                        Restrict to Specific Project
                       </label>
                       <select
+                        id="modal-scoped-project"
                         value={assignProject}
                         onChange={(e) => setAssignProject(e.target.value)}
-                        className="w-full cursor-pointer rounded border border-white/10 bg-[#0d0a0b] p-1.5 text-[10px] text-white outline-none"
+                        className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-sky-500/40"
                       >
                         <option value="">Select Target Project</option>
                         {SEED_PROJECTS.map((p) => (
@@ -982,17 +1157,119 @@ export default function TeamDirectoryPanel() {
                         ))}
                       </select>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-white/40">
-                        Assign to Tab or Task
-                      </label>
-                      <input
-                        type="text"
-                        value={assignTabOrTask}
-                        onChange={(e) => setAssignTabOrTask(e.target.value)}
-                        placeholder="e.g. Underwriting tab"
-                        className="w-full rounded border border-white/10 bg-[#0d0a0b] p-1.5 text-[10px] text-white outline-none placeholder:text-white/30"
-                      />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+                          Assign to Tab or Task
+                        </label>
+                        <div className="flex items-center gap-1 rounded border border-white/10 bg-black/40 p-0.5">
+                          <button
+                            type="button"
+                            onClick={() => setInviteScopeType('task')}
+                            className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                              inviteScopeType === 'task'
+                                ? 'bg-sky-500/20 text-sky-300'
+                                : 'text-white/40 hover:text-white/70'
+                            }`}
+                          >
+                            Project Tasks
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setInviteScopeType('tab')}
+                            className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                              inviteScopeType === 'tab'
+                                ? 'bg-sky-500/20 text-sky-300'
+                                : 'text-white/40 hover:text-white/70'
+                            }`}
+                          >
+                            Navigation Tabs
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] text-white/40">
+                          {inviteScopeType === 'task'
+                            ? 'Select a task to restrict this operator to (or choose a tab):'
+                            : 'Select a navigation tab from the dashboard to grant access to:'}
+                        </p>
+                        <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-white/8 bg-[#0d0a0b]/80 p-2">
+                          {inviteScopeType === 'tab'
+                            ? SCOPED_ACCESS_TABS.map((tab) => {
+                                const isSelected = assignTabOrTask === tab.label;
+                                return (
+                                  <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() =>
+                                      setAssignTabOrTask(isSelected ? '' : tab.label)
+                                    }
+                                    className={`group flex items-center gap-1.5 rounded border px-2.5 py-1 text-[11px] font-medium transition ${
+                                      isSelected
+                                        ? 'border-sky-500/50 bg-sky-500/20 text-sky-200 ring-1 ring-sky-500/30'
+                                        : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                    }`}
+                                  >
+                                    <span className="material-symbols-outlined text-[13px] text-sky-400">
+                                      {tab.icon}
+                                    </span>
+                                    <span>{tab.label}</span>
+                                    {isSelected ? (
+                                      <span className="material-symbols-outlined text-[12px] text-sky-300">
+                                        check
+                                      </span>
+                                    ) : null}
+                                  </button>
+                                );
+                              })
+                            : getTasksForProject(assignProject).map((task) => {
+                                const isSelected = assignTabOrTask === task.label;
+                                return (
+                                  <button
+                                    key={task.id}
+                                    type="button"
+                                    onClick={() =>
+                                      setAssignTabOrTask(isSelected ? '' : task.label)
+                                    }
+                                    className={`group flex items-center gap-1.5 rounded border px-2.5 py-1 text-[11px] font-medium transition ${
+                                      isSelected
+                                        ? 'border-sky-500/50 bg-sky-500/20 text-sky-200 ring-1 ring-sky-500/30'
+                                        : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                    }`}
+                                  >
+                                    <span className="material-symbols-outlined text-[13px] text-amber-400">
+                                      task_alt
+                                    </span>
+                                    <span>{task.label}</span>
+                                    {isSelected ? (
+                                      <span className="material-symbols-outlined text-[12px] text-sky-300">
+                                        check
+                                      </span>
+                                    ) : null}
+                                  </button>
+                                );
+                              })}
+                        </div>
+                        {assignTabOrTask ? (
+                          <div className="flex items-center justify-between text-[10px] text-sky-300">
+                            <span>
+                              Selected:{' '}
+                              <strong className="font-semibold text-white">
+                                {assignTabOrTask}
+                              </strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setAssignTabOrTask('')}
+                              className="cursor-pointer text-white/40 hover:text-red-400"
+                            >
+                              Clear selection
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 ) : null}
@@ -1014,6 +1291,248 @@ export default function TeamDirectoryPanel() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Manage Scoped Access Modal for Team Member */}
+      {scopedModalMember ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setScopedModalMember(null)}
+        >
+          <div
+            role="dialog"
+            aria-label={`Scoped Access for ${scopedModalMember.name}`}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-lg rounded-xl border border-white/10 bg-[#161318] p-6 shadow-2xl"
+          >
+            <button
+              type="button"
+              onClick={() => setScopedModalMember(null)}
+              className="absolute right-4 top-4 cursor-pointer rounded text-white/40 hover:text-white"
+              aria-label="Close"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            <div className="mb-4">
+              <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-sky-400">
+                <span className="material-symbols-outlined text-[13px]">tune</span>
+                Scoped Access Control
+              </span>
+              <h3 className="mt-0.5 text-lg font-bold text-[#fdfffc]">
+                Manage Access for {scopedModalMember.name}
+              </h3>
+              <p className="mt-1 text-xs text-white/50">
+                Grant or revoke permission to specific project tasks or dashboard navigation tabs for{' '}
+                <span className="font-semibold text-white/70">{scopedModalMember.email}</span>.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="manage-scope-project"
+                  className="text-[10px] font-bold uppercase tracking-wider text-white/50"
+                >
+                  Target Project
+                </label>
+                <select
+                  id="manage-scope-project"
+                  value={editScopeProject}
+                  onChange={(e) => setEditScopeProject(e.target.value)}
+                  className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-sky-500/40"
+                >
+                  <option value="">No Project Restriction (All Workspace Projects)</option>
+                  {SEED_PROJECTS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.propertyName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+                    Select Tab or Task to Grant / Revoke
+                  </label>
+                  <div className="flex items-center gap-1 rounded border border-white/10 bg-black/40 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setEditScopeType('task')}
+                      className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                        editScopeType === 'task'
+                          ? 'bg-sky-500/20 text-sky-300'
+                          : 'text-white/40 hover:text-white/70'
+                      }`}
+                    >
+                      Project Tasks
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditScopeType('tab')}
+                      className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                        editScopeType === 'tab'
+                          ? 'bg-sky-500/20 text-sky-300'
+                          : 'text-white/40 hover:text-white/70'
+                      }`}
+                    >
+                      Navigation Tabs
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-[10px] text-white/40">
+                    {editScopeType === 'task'
+                      ? 'Click a selectable button to assign this team member to an active project task:'
+                      : 'Click a selectable button to grant or restrict access to a navigation tab:'}
+                  </p>
+                  <div className="flex max-h-44 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-white/8 bg-[#0d0a0b]/80 p-2.5">
+                    {editScopeType === 'tab'
+                      ? SCOPED_ACCESS_TABS.map((tab) => {
+                          const isSelected = editScopeTabOrTask === tab.label;
+                          return (
+                            <button
+                              key={tab.id}
+                              type="button"
+                              onClick={() =>
+                                setEditScopeTabOrTask(isSelected ? '' : tab.label)
+                              }
+                              className={`group flex items-center gap-1.5 rounded border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                                isSelected
+                                  ? 'border-sky-500/60 bg-sky-500/25 text-sky-100 ring-1 ring-sky-500/40 font-semibold'
+                                  : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[14px] text-sky-400">
+                                {tab.icon}
+                              </span>
+                              <span>{tab.label}</span>
+                              {isSelected ? (
+                                <span className="material-symbols-outlined text-[13px] text-sky-300">
+                                  check
+                                </span>
+                              ) : null}
+                            </button>
+                          );
+                        })
+                      : getTasksForProject(editScopeProject).map((task) => {
+                          const isSelected = editScopeTabOrTask === task.label;
+                          return (
+                            <button
+                              key={task.id}
+                              type="button"
+                              onClick={() =>
+                                setEditScopeTabOrTask(isSelected ? '' : task.label)
+                              }
+                              className={`group flex items-center gap-1.5 rounded border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                                isSelected
+                                  ? 'border-sky-500/60 bg-sky-500/25 text-sky-100 ring-1 ring-sky-500/40 font-semibold'
+                                  : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[14px] text-amber-400">
+                                task_alt
+                              </span>
+                              <span>{task.label}</span>
+                              {isSelected ? (
+                                <span className="material-symbols-outlined text-[13px] text-sky-300">
+                                  check
+                                </span>
+                              ) : null}
+                            </button>
+                          );
+                        })}
+                  </div>
+                </div>
+
+                {editScopeTabOrTask ? (
+                  <div className="flex items-center justify-between rounded border border-sky-500/20 bg-sky-500/5 p-2 text-xs text-sky-300">
+                    <span className="truncate">
+                      Active Scope:{' '}
+                      <strong className="font-semibold text-white">
+                        {editScopeTabOrTask}
+                      </strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditScopeTabOrTask('')}
+                      className="shrink-0 cursor-pointer font-medium text-white/50 hover:text-red-400"
+                    >
+                      Deselect
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="flex items-center justify-between border-t border-white/8 pt-4">
+                <div>
+                  {scopedModalMember.scopedProjectId || scopedModalMember.scopedTabOrTask ? (
+                    <button
+                      type="button"
+                      disabled={isSavingScope}
+                      onClick={() =>
+                        handleRevokeScope(scopedModalMember.id, scopedModalMember.name)
+                      }
+                      className="cursor-pointer text-xs font-semibold text-red-400 hover:text-red-300 disabled:opacity-50"
+                    >
+                      Revoke All Restrictions
+                    </button>
+                  ) : null}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isSavingScope}
+                    onClick={() => setScopedModalMember(null)}
+                    className="cursor-pointer rounded-md border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/60 hover:bg-white/5"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSavingScope}
+                    onClick={handleSaveScope}
+                    className="cursor-pointer rounded-md bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-50"
+                  >
+                    {isSavingScope ? 'Saving…' : 'Save Access'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {pendingDowngradeConfirmation ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-xl border border-white/10 bg-[#121118] p-6 text-white shadow-2xl">
+            <h3 className="text-base font-semibold text-white">Confirm Plan Downgrade</h3>
+            <p className="mt-2 text-xs text-white/70 leading-relaxed">
+              Downgrading to the Individual Investor plan includes 1 operator seat.
+              Proceeding will automatically suspend {activeSeatsCount - 1} excess operator seat(s).
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={isUpdatingTier}
+                onClick={() => setPendingDowngradeConfirmation(false)}
+                className="cursor-pointer rounded-md border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isUpdatingTier}
+                onClick={() => executeTierChange('Individual', true)}
+                className="cursor-pointer rounded-md bg-amber-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-50"
+              >
+                {isUpdatingTier ? 'Downgrading…' : 'Proceed with Downgrade'}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

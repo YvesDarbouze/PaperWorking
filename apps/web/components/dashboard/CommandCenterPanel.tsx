@@ -21,6 +21,7 @@ import {
 import { listSeedProjectSummaries } from '@/lib/projects/seed-data';
 import DashboardTrendDetailModal from './DashboardTrendDetailModal';
 import FollowersModal from './FollowersModal';
+import MarketScoreboardPanel from './scoreboard/MarketScoreboardPanel';
 import {
   Calculator,
   ChartLineUp,
@@ -356,6 +357,9 @@ export default function CommandCenterPanel({
             </Button>
           </div>
         </header>
+
+        {/* Real-time Macroeconomic Benchmarks & Local Real Estate Scoreboard */}
+        <MarketScoreboardPanel />
 
         {/* Quick Launch Actions: Deals Marketplace & Create new Project */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">

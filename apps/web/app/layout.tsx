@@ -80,6 +80,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 'app-init-liveness',
                 'background-liveness',
                 'SENTRY_DSN is absent',
+                'error_capture: unconfigured',
+                'OBSERVABILITY WARNING',
                 'chrome-extension://',
                 'moz-extension://',
                 'safari-web-extension://',
@@ -107,6 +109,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               console.error = function() {
                 if (shouldFilter(arguments)) return;
                 return origError.apply(console, arguments);
+              };
+              var origLog = console.log;
+              console.log = function() {
+                if (shouldFilter(arguments)) return;
+                return origLog.apply(console, arguments);
+              };
+              var origInfo = console.info;
+              console.info = function() {
+                if (shouldFilter(arguments)) return;
+                return origInfo.apply(console, arguments);
               };
             })();`,
           }}

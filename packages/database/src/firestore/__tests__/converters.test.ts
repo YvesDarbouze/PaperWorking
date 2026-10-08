@@ -23,6 +23,17 @@ describe('firestore converters', () => {
     expect(user.createdAt.toISOString()).toBe('2026-01-01T00:00:00.000Z');
   });
 
+  it('tolerates missing timestamps on partially-written user documents', () => {
+    const user = userFromFirestore('uid-9', {
+      displayName: 'Sparse Profile',
+      publicProfile: true,
+    });
+
+    expect(user.id).toBe('uid-9');
+    expect(user.createdAt).toBeInstanceOf(Date);
+    expect(user.updatedAt).toBeInstanceOf(Date);
+  });
+
   it('maps organization ownerUid to ownerId', () => {
     const org = organizationFromFirestore('org-1', {
       name: 'Acme',

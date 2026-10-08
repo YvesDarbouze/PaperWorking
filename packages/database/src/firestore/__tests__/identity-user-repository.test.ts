@@ -30,6 +30,35 @@ describe('Firestore identity user repository', () => {
     expect(mock.getDocument('users', 'user@example.com')?.displayName).toBeTruthy();
   });
 
+  it('prefers the canonical email document over a sparse uid-keyed document', async () => {
+    mock.seed('users', [
+      {
+        id: 'uid-3',
+        data: {
+          displayName: 'Sparse Profile',
+          publicProfile: true,
+          updatedAt: ts('2026-01-02'),
+        },
+      },
+      {
+        id: 'canonical@example.com',
+        data: {
+          uid: 'uid-3',
+          email: 'canonical@example.com',
+          displayName: 'Canonical',
+          accountType: 'investor',
+          legacyFirebaseUid: 'uid-3',
+          createdAt: ts('2026-01-01'),
+          updatedAt: ts('2026-01-02'),
+        },
+      },
+    ]);
+    const repo = createFirestoreIdentityUserRepository(createMockFirestoreFactory(mock));
+    const found = await repo.findByFirebaseUid('uid-3');
+    expect(found?.documentId).toBe('canonical@example.com');
+    expect(found?.email).toBe('canonical@example.com');
+  });
+
   it('finds user by email', async () => {
     mock.seed('users', [
       {

@@ -16,17 +16,8 @@ export async function resolveUserDocumentByFirebaseUid(
 ): Promise<ResolvedUserDocument | null> {
   const col = db.collection(FIRESTORE_COLLECTIONS.users);
 
-  const direct = await col.doc(firebaseUid).get();
-  const directData = documentData(direct);
-  if (directData) {
-    const model = userFromFirestore(direct.id, directData);
-    return {
-      documentId: direct.id,
-      firebaseUid: model.id,
-      data: directData,
-    };
-  }
-
+  // Canonical documents carry `uid`/`legacyFirebaseUid` fields and are preferred over
+  // partially-written uid-keyed documents (e.g. profile saves) that can shadow them.
   for (const field of ['uid', 'legacyFirebaseUid'] as const) {
     const snap = await col.where(field, '==', firebaseUid).limit(1).get();
     const doc = snap.docs[0];
@@ -38,6 +29,17 @@ export async function resolveUserDocumentByFirebaseUid(
       documentId: doc.id,
       firebaseUid: model.id,
       data,
+    };
+  }
+
+  const direct = await col.doc(firebaseUid).get();
+  const directData = documentData(direct);
+  if (directData) {
+    const model = userFromFirestore(direct.id, directData);
+    return {
+      documentId: direct.id,
+      firebaseUid: model.id,
+      data: directData,
     };
   }
 

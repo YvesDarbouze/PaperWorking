@@ -2,6 +2,16 @@ import { FirestoreDocumentParseError } from '../errors.js';
 import type { UserReadModel } from '../types/read-models.js';
 import { optionalString, toDate } from './timestamp.js';
 
+/** Tolerates missing or malformed timestamp fields on partially-written user documents. */
+function safeDate(value: unknown): Date | null {
+  if (value === undefined || value === null) return null;
+  try {
+    return toDate(value, 'timestamp');
+  } catch {
+    return null;
+  }
+}
+
 export function userFromFirestore(
   documentId: string,
   data: Record<string, unknown>,
@@ -21,8 +31,8 @@ export function userFromFirestore(
       subscriptionPlan: optionalString(data.subscriptionPlan),
       subscriptionStatus: optionalString(data.subscriptionStatus),
       stripeSubscriptionId: optionalString(data.stripeSubscriptionId),
-      createdAt: toDate(data.createdAt, 'createdAt'),
-      updatedAt: toDate(data.updatedAt, 'updatedAt'),
+      createdAt: safeDate(data.createdAt) ?? safeDate(data.updatedAt) ?? new Date(0),
+      updatedAt: safeDate(data.updatedAt) ?? safeDate(data.createdAt) ?? new Date(0),
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

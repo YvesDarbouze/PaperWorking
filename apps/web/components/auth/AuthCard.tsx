@@ -7,13 +7,13 @@ interface AuthCardProps {
 
 export default function AuthCard({ children, className = '' }: AuthCardProps) {
   return (
-    <div className={`auth-card relative overflow-hidden p-6 md:p-10 ${className}`}>
+    <div className={`auth-card relative overflow-hidden rounded-none p-6 md:p-10 ${className}`}>
       <div
-        className="pointer-events-none absolute right-0 top-0 h-16 w-16 rounded-tr-xl border-r border-t"
+        className="pointer-events-none absolute right-0 top-0 h-16 w-16 border-r border-t"
         style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
       <div
-        className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 rounded-bl-xl border-b border-l"
+        className="pointer-events-none absolute bottom-0 left-0 h-16 w-16 border-b border-l"
         style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
       <div className="relative z-10">{children}</div>
@@ -28,7 +28,7 @@ export function AuthFieldError({ message }: { message?: string }) {
 
 export function AuthNotice({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border px-4 py-3 text-sm leading-relaxed" style={{ borderColor: 'rgba(255,255,255,0.12)', color: 'rgba(253,255,252,0.72)' }}>
+    <p className="rounded-none border border-neutral-800 bg-neutral-900/50 px-4 py-3 text-sm leading-relaxed text-neutral-300">
       {children}
     </p>
   );

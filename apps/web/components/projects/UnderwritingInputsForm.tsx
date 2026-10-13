@@ -1,4 +1,5 @@
 'use client';
+import { SlidersHorizontal, CheckCircle, FloppyDisk, Calculator } from '@phosphor-icons/react';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Button from '@/components/ui/Button';
@@ -294,12 +295,10 @@ export default function UnderwritingInputsForm({
   return (
     <div className="space-y-6">
       {/* Live Financial Engine Quick-Bar */}
-      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
+      <div className="rounded-none border border-white/10 bg-white/[0.02] p-4 backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-3">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px] text-emerald-400">
-              calculate
-            </span>
+            <Calculator size={18} className="text-emerald-400" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-white">
               Underwriting Pro-Forma Summary
             </h3>
@@ -358,7 +357,7 @@ export default function UnderwritingInputsForm({
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* 1. ACQUISITION */}
-        <section className="rounded-2xl border border-white/10 bg-[#141216] p-5">
+        <section className="rounded-none border border-white/10 bg-[#141216] p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/5 pb-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
@@ -391,7 +390,7 @@ export default function UnderwritingInputsForm({
                   step={1000}
                   value={values.acquisition.purchasePrice}
                   onChange={(e) => updateField('acquisition.purchasePrice', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
               {errors['acquisition.purchasePrice'] && (
@@ -419,7 +418,7 @@ export default function UnderwritingInputsForm({
                   step={500}
                   value={values.acquisition.buyerClosingCosts}
                   onChange={(e) => updateField('acquisition.buyerClosingCosts', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
             </div>
@@ -444,7 +443,7 @@ export default function UnderwritingInputsForm({
                   step={1000}
                   value={values.acquisition.rehabBudget}
                   onChange={(e) => updateField('acquisition.rehabBudget', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
             </div>
@@ -477,7 +476,7 @@ export default function UnderwritingInputsForm({
                       e.target.value === '' ? undefined : Number(e.target.value),
                     )
                   }
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
             </div>
@@ -485,7 +484,7 @@ export default function UnderwritingInputsForm({
         </section>
 
         {/* 2. RENT ROLL & OPERATIONS */}
-        <section className="rounded-2xl border border-white/10 bg-[#141216] p-5">
+        <section className="rounded-none border border-white/10 bg-[#141216] p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/5 pb-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
@@ -518,7 +517,7 @@ export default function UnderwritingInputsForm({
                   step={100}
                   value={values.rentRoll.grossScheduledRent}
                   onChange={(e) => updateField('rentRoll.grossScheduledRent', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   /month
@@ -544,7 +543,7 @@ export default function UnderwritingInputsForm({
                   step={50}
                   value={values.rentRoll.otherIncome ?? 0}
                   onChange={(e) => updateField('rentRoll.otherIncome', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   /month
@@ -568,7 +567,7 @@ export default function UnderwritingInputsForm({
                   step={0.5}
                   value={values.rentRoll.vacancyRate}
                   onChange={(e) => updateField('rentRoll.vacancyRate', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -594,7 +593,7 @@ export default function UnderwritingInputsForm({
                   step={1}
                   value={values.rentRoll.operatingExpenseRatio}
                   onChange={(e) => updateField('rentRoll.operatingExpenseRatio', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -628,7 +627,7 @@ export default function UnderwritingInputsForm({
                       data-testid="project-leaseup-stabilization-months"
                       value={values.rentRoll.stabilizationMonths ?? 0}
                       onChange={(e) => updateField('rentRoll.stabilizationMonths', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       mos
@@ -645,7 +644,7 @@ export default function UnderwritingInputsForm({
                       data-testid="project-leaseup-ramp-pct"
                       value={values.rentRoll.leaseUpRentRampPct ?? 100}
                       onChange={(e) => updateField('rentRoll.leaseUpRentRampPct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -666,7 +665,7 @@ export default function UnderwritingInputsForm({
                         data-testid="project-leaseup-vacant-months"
                         value={values.rentRoll.monthsVacantAtClose ?? 0}
                         onChange={(e) => updateField('rentRoll.monthsVacantAtClose', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                        className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                       />
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                         mos
@@ -683,7 +682,7 @@ export default function UnderwritingInputsForm({
                         data-testid="project-leaseup-concessions-months"
                         value={values.rentRoll.concessionsMonths ?? 0}
                         onChange={(e) => updateField('rentRoll.concessionsMonths', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                        className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                       />
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                         mos
@@ -697,7 +696,7 @@ export default function UnderwritingInputsForm({
         </section>
 
         {/* 3. DEBT & CAPITAL STACK */}
-        <section className="rounded-2xl border border-white/10 bg-[#141216] p-5">
+        <section className="rounded-none border border-white/10 bg-[#141216] p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/5 pb-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
@@ -725,7 +724,7 @@ export default function UnderwritingInputsForm({
                   step={1}
                   value={values.debt.targetLTV}
                   onChange={(e) => handleLtvChange(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -751,7 +750,7 @@ export default function UnderwritingInputsForm({
                   step={5000}
                   value={values.debt.loanAmount}
                   onChange={(e) => handleLoanAmountChange(Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
             </div>
@@ -798,7 +797,7 @@ export default function UnderwritingInputsForm({
                     step={0.125}
                     value={values.debt.interestRate}
                     onChange={(e) => updateField('debt.interestRate', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
+                    className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                     %
@@ -814,7 +813,7 @@ export default function UnderwritingInputsForm({
                         values.debt.floatingSpreadBps ?? 250,
                       )
                     }
-                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white focus:outline-none"
+                    className="rounded-none border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white focus:outline-none"
                   >
                     <option value="SOFR" className="bg-slate-950">
                       SOFR (5.30%)
@@ -834,7 +833,7 @@ export default function UnderwritingInputsForm({
                           Number(e.target.value),
                         )
                       }
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-10 font-mono text-xs text-white focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-3 pr-10 font-mono text-xs text-white focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-[10px] text-white/40">
                       bps
@@ -860,7 +859,7 @@ export default function UnderwritingInputsForm({
                     max={50}
                     value={values.debt.amortizationYears}
                     onChange={(e) => updateField('debt.amortizationYears', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-[10px] text-white/40">
                     yrs amort
@@ -879,7 +878,7 @@ export default function UnderwritingInputsForm({
                         e.target.value ? Number(e.target.value) : undefined,
                       )
                     }
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-[10px] text-white/40">
                     yr balloon
@@ -904,7 +903,7 @@ export default function UnderwritingInputsForm({
                 <button
                   type="button"
                   onClick={() => updateField('debt.loanType', 'amortizing')}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     (values.debt.loanType ?? 'amortizing') === 'amortizing'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -920,7 +919,7 @@ export default function UnderwritingInputsForm({
                       updateField('debt.ioPeriodMonths', 60);
                     }
                   }}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     values.debt.loanType === 'interest_only'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -939,7 +938,7 @@ export default function UnderwritingInputsForm({
                       updateField('debt.armAdjustmentPct', 2.0);
                     }
                   }}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     values.debt.loanType === 'arm'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -950,7 +949,7 @@ export default function UnderwritingInputsForm({
               </div>
 
               {values.debt.loanType === 'interest_only' && (
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                <div className="rounded-none border border-white/10 bg-white/[0.02] p-3">
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-semibold text-white/80">
                       Interest-Only Period (Years)
@@ -966,7 +965,7 @@ export default function UnderwritingInputsForm({
                       max={30}
                       value={Math.round((values.debt.ioPeriodMonths ?? 60) / 12)}
                       onChange={(e) => updateField('debt.ioPeriodMonths', Number(e.target.value) * 12)}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       years
@@ -976,7 +975,7 @@ export default function UnderwritingInputsForm({
               )}
 
               {values.debt.loanType === 'arm' && (
-                <div className="grid grid-cols-2 gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                <div className="grid grid-cols-2 gap-3 rounded-none border border-white/10 bg-white/[0.02] p-3">
                   <div>
                     <label className="text-xs font-semibold text-white/80 mb-1.5 block">
                       ARM Fixed Period
@@ -988,7 +987,7 @@ export default function UnderwritingInputsForm({
                         max={30}
                         value={values.debt.armFixedPeriodYears ?? 5}
                         onChange={(e) => updateField('debt.armFixedPeriodYears', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                        className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-3 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                       />
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                         years
@@ -1005,7 +1004,7 @@ export default function UnderwritingInputsForm({
                         step={0.1}
                         value={values.debt.armAdjustmentPct ?? 2.0}
                         onChange={(e) => updateField('debt.armAdjustmentPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-3 pr-8 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                        className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2 pl-3 pr-8 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                       />
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                         %
@@ -1019,7 +1018,7 @@ export default function UnderwritingInputsForm({
         </section>
 
         {/* 4. EXIT & PROJECTION */}
-        <section className="rounded-2xl border border-white/10 bg-[#141216] p-5">
+        <section className="rounded-none border border-white/10 bg-[#141216] p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/5 pb-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
@@ -1040,7 +1039,7 @@ export default function UnderwritingInputsForm({
                 <button
                   type="button"
                   onClick={() => updateField('exit.terminalValueMethod', 'appreciation_pct')}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     (values.exit.terminalValueMethod ?? 'appreciation_pct') === 'appreciation_pct'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -1051,7 +1050,7 @@ export default function UnderwritingInputsForm({
                 <button
                   type="button"
                   onClick={() => updateField('exit.terminalValueMethod', 'exit_cap')}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     values.exit.terminalValueMethod === 'exit_cap'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -1062,7 +1061,7 @@ export default function UnderwritingInputsForm({
                 <button
                   type="button"
                   onClick={() => updateField('exit.terminalValueMethod', 'per_unit')}
-                  className={`rounded-xl border p-2.5 text-center text-xs font-medium transition-all ${
+                  className={`rounded-none border p-2.5 text-center text-xs font-medium transition-all ${
                     values.exit.terminalValueMethod === 'per_unit'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                       : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -1087,7 +1086,7 @@ export default function UnderwritingInputsForm({
                   max={30}
                   value={values.exit.holdPeriodYears}
                   onChange={(e) => updateField('exit.holdPeriodYears', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-12 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   years
@@ -1111,7 +1110,7 @@ export default function UnderwritingInputsForm({
                     step={0.25}
                     value={values.exit.exitCapRate}
                     onChange={(e) => updateField('exit.exitCapRate', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                     %
@@ -1134,7 +1133,7 @@ export default function UnderwritingInputsForm({
                       type="button"
                       data-testid="appreciation-base-purchase-price"
                       onClick={() => updateField('exit.appreciationBase' as any, 'purchase_price')}
-                      className={`rounded-xl border p-2 text-center text-xs font-medium transition-all ${
+                      className={`rounded-none border p-2 text-center text-xs font-medium transition-all ${
                         ((values.exit as any)?.appreciationBase ?? 'purchase_price') === 'purchase_price'
                           ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                           : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -1146,7 +1145,7 @@ export default function UnderwritingInputsForm({
                       type="button"
                       data-testid="appreciation-base-arv"
                       onClick={() => updateField('exit.appreciationBase' as any, 'arv')}
-                      className={`rounded-xl border p-2 text-center text-xs font-medium transition-all ${
+                      className={`rounded-none border p-2 text-center text-xs font-medium transition-all ${
                         (values.exit as any)?.appreciationBase === 'arv'
                           ? 'border-emerald-500/30 bg-emerald-500/10 text-white font-bold'
                           : 'border-white/10 bg-white/[0.02] text-white/60 hover:text-white'
@@ -1172,7 +1171,7 @@ export default function UnderwritingInputsForm({
                       step={0.5}
                       value={values.exit.annualAppreciationPct ?? 3.0}
                       onChange={(e) => updateField('exit.annualAppreciationPct' as any, Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -1197,7 +1196,7 @@ export default function UnderwritingInputsForm({
                     step={5000}
                     value={values.exit.perUnitExitValue ?? 250000}
                     onChange={(e) => updateField('exit.perUnitExitValue' as any, Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                    className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -1218,7 +1217,7 @@ export default function UnderwritingInputsForm({
                   step={0.5}
                   value={values.exit.annualRentGrowth}
                   onChange={(e) => updateField('exit.annualRentGrowth', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -1241,7 +1240,7 @@ export default function UnderwritingInputsForm({
                   step={0.5}
                   value={values.exit.annualExpenseGrowth}
                   onChange={(e) => updateField('exit.annualExpenseGrowth', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -1264,7 +1263,7 @@ export default function UnderwritingInputsForm({
                   step={0.5}
                   value={values.exit.costOfSale}
                   onChange={(e) => updateField('exit.costOfSale', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   %
@@ -1275,7 +1274,7 @@ export default function UnderwritingInputsForm({
         </section>
 
         {/* 5. HURDLES & SENSITIVITY */}
-        <section className="rounded-2xl border border-white/10 bg-[#141216] p-5">
+        <section className="rounded-none border border-white/10 bg-[#141216] p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/5 pb-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
@@ -1302,7 +1301,7 @@ export default function UnderwritingInputsForm({
                   step={0.05}
                   value={values.hurdles.minDSCR}
                   onChange={(e) => updateField('hurdles.minDSCR', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   x
@@ -1325,7 +1324,7 @@ export default function UnderwritingInputsForm({
                   step={5}
                   value={values.hurdles.exitCapSensitivityBps}
                   onChange={(e) => updateField('hurdles.exitCapSensitivityBps', Number(e.target.value))}
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                  className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                   bps
@@ -1334,7 +1333,7 @@ export default function UnderwritingInputsForm({
             </div>
 
             {/* Waterfall & Promote Structure Group */}
-            <div className="col-span-full mt-2 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <div className="col-span-full mt-2 rounded-none border border-white/10 bg-white/[0.02] p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white">Waterfall &amp; Promote Structure</h3>
@@ -1364,7 +1363,7 @@ export default function UnderwritingInputsForm({
                       step={1}
                       value={values.hurdles.lpEquityPct ?? 90}
                       onChange={(e) => handleLpEquityPctChange(Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none focus:border-ring"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none focus:border-ring"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -1386,7 +1385,7 @@ export default function UnderwritingInputsForm({
                       step={1}
                       value={values.hurdles.gpEquityPct ?? 10}
                       onChange={(e) => handleGpEquityPctChange(Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none focus:border-ring"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none focus:border-ring"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -1410,7 +1409,7 @@ export default function UnderwritingInputsForm({
                       step={0.5}
                       value={values.hurdles.preferredReturn ?? 8}
                       onChange={(e) => updateField('hurdles.preferredReturn', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -1434,7 +1433,7 @@ export default function UnderwritingInputsForm({
                       step={1}
                       value={values.hurdles.gpPromotePct ?? 20}
                       onChange={(e) => updateField('hurdles.gpPromotePct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                      className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                       %
@@ -1470,7 +1469,7 @@ export default function UnderwritingInputsForm({
                             step={0.5}
                             value={values.hurdles.hurdle2Irr ?? 15}
                             onChange={(e) => updateField('hurdles.hurdle2Irr', Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                            className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                           />
                           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                             % IRR
@@ -1487,7 +1486,7 @@ export default function UnderwritingInputsForm({
                             step={1}
                             value={values.hurdles.gpPromote2Pct ?? 30}
                             onChange={(e) => updateField('hurdles.gpPromote2Pct', Number(e.target.value))}
-                            className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
+                            className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-4 pr-10 font-mono text-sm font-semibold tabular-nums text-white focus:outline-none"
                           />
                           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
                             %
@@ -1519,7 +1518,7 @@ export default function UnderwritingInputsForm({
                   value={values.hurdles.equityRequiredGpVsLp ?? '10% GP / 90% LP'}
                   onChange={(e) => updateField('hurdles.equityRequiredGpVsLp', e.target.value)}
                   placeholder="e.g. 10% GP Co-invest / 90% LP Syndicate with 8% pref"
-                  className="mt-1 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-white focus:outline-none"
+                  className="mt-1 w-full rounded-none border border-white/10 bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-white focus:outline-none"
                 />
               </div>
             </div>
@@ -1532,7 +1531,7 @@ export default function UnderwritingInputsForm({
             <div>
               {saveSuccess && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  <CheckCircle size={16} />
                   Underwriting inputs saved &amp; KPIs recomputed!
                 </span>
               )}
@@ -1544,7 +1543,7 @@ export default function UnderwritingInputsForm({
               disabled={!isValid || isSaving}
               loading={isSaving}
               onClick={handleSave}
-              icon={<span className="material-symbols-outlined text-[18px]">save</span>}
+              icon={<FloppyDisk size={18} />}
             >
               Save &amp; Recompute KPIs
             </Button>

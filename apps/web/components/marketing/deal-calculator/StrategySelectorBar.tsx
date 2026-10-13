@@ -1,6 +1,14 @@
 'use client';
 
 import React from 'react';
+import {
+  House,
+  Bed,
+  Hammer,
+  ArrowsClockwise,
+  Buildings,
+  Tag,
+} from '@phosphor-icons/react';
 
 export type InvestmentStrategyType =
   | 'buy_and_hold_rental'
@@ -15,7 +23,7 @@ export interface StrategyOption {
   label: string;
   shortLabel: string;
   tagline: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   badge?: string;
 }
 
@@ -25,14 +33,14 @@ export const STRATEGY_OPTIONS: StrategyOption[] = [
     label: 'Long-Term Rental',
     shortLabel: 'Rental',
     tagline: 'Cash flow, debt paydown, and equity growth',
-    icon: 'home',
+    icon: House,
   },
   {
     id: 'short_term_rental_airbnb',
     label: 'Short-Term (STR / Airbnb)',
     shortLabel: 'STR',
     tagline: 'Nightly ADR, dynamic occupancy, and hospitality yields',
-    icon: 'hotel',
+    icon: Bed,
     badge: 'STR Engine',
   },
   {
@@ -40,14 +48,14 @@ export const STRATEGY_OPTIONS: StrategyOption[] = [
     label: 'Fix & Flip',
     shortLabel: 'Flip',
     tagline: 'Short-term value-add, holding cost carry, and margin',
-    icon: 'handyman',
+    icon: Hammer,
   },
   {
     id: 'brrrr',
     label: 'BRRRR Refinance',
     shortLabel: 'BRRRR',
     tagline: 'Cash-out refinance timeline and capital recycling',
-    icon: 'cycle',
+    icon: ArrowsClockwise,
     badge: 'Cash-Out',
   },
   {
@@ -55,14 +63,14 @@ export const STRATEGY_OPTIONS: StrategyOption[] = [
     label: 'Commercial & Multi-Family',
     shortLabel: 'Commercial',
     tagline: 'Multi-unit NOI, debt yield, and cap rate expansion',
-    icon: 'apartment',
+    icon: Buildings,
   },
   {
     id: 'wholesale',
     label: 'Wholesaling',
     shortLabel: 'Wholesale',
     tagline: 'Contract spread, MAO 70% rule, and double closing',
-    icon: 'sell',
+    icon: Tag,
     badge: 'Assignment',
   },
 ];
@@ -79,51 +87,50 @@ export default function StrategySelectorBar({
   return (
     <div className="w-full space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           Investment Strategy
         </label>
-        <span className="text-[10px] font-mono text-emerald-400">
+        <span className="text-[10px] font-mono text-muted-foreground">
           6 Strategies Supported
         </span>
       </div>
 
       <div
         data-testid="strategy-selector-bar"
-        className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10"
+        className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin"
       >
         {STRATEGY_OPTIONS.map((strat) => {
           const isSelected = selectedStrategy === strat.id;
+          const Icon = strat.icon;
           return (
             <button
               key={strat.id}
               type="button"
               data-testid={`strategy-tab-${strat.id}`}
               onClick={() => onSelectStrategy(strat.id)}
-              className={`flex shrink-0 items-center gap-2 rounded-xl border px-3.5 py-2.5 text-left transition min-h-[44px] ${
+              className={`flex shrink-0 items-center gap-2 rounded-none border px-3.5 py-2.5 text-left transition min-h-[44px] ${
                 isSelected
-                  ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white shadow-[0_0_16px_rgba(0,221,148,0.15)]'
-                  : 'border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20 hover:text-white'
+                  ? 'border-foreground bg-foreground/10 text-foreground'
+                  : 'border-border bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground'
               }`}
             >
-              <span
-                className={`material-symbols-outlined text-[18px] ${
-                  isSelected ? 'text-[color:var(--color-primary)]' : 'text-white/40'
+              <Icon
+                className={`h-[18px] w-[18px] shrink-0 ${
+                  isSelected ? 'text-foreground' : 'text-muted-foreground'
                 }`}
-              >
-                {strat.icon}
-              </span>
+              />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-bold leading-tight">
                     {strat.label}
                   </span>
                   {strat.badge && (
-                    <span className="rounded bg-white/10 px-1.5 py-0.2 text-[9px] font-mono uppercase text-white/70">
+                    <span className="rounded-none border border-border bg-muted px-1.5 py-0.5 text-[9px] font-mono uppercase text-muted-foreground">
                       {strat.badge}
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] text-white/40 hidden sm:inline">
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">
                   {strat.tagline}
                 </span>
               </div>

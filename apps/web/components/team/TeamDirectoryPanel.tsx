@@ -2,6 +2,30 @@
 
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import {
+  Plus,
+  Sparkle,
+  Info,
+  Lock,
+  Users,
+  MagnifyingGlass,
+  User,
+  CaretDown,
+  SlidersHorizontal,
+  EnvelopeSimple,
+  ArrowsClockwise,
+  Trash,
+  X,
+  Check,
+  CheckSquare,
+  Folder,
+  Calculator,
+  Storefront,
+  Handshake,
+  ChartLineUp,
+  FileText,
+  Tray,
+} from '@phosphor-icons/react';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import {
@@ -17,6 +41,27 @@ import {
   type TeamMember,
   type WorkspaceAccessLevel,
 } from '@/lib/dashboard/shell-seed';
+
+function renderTabIcon(icon: string) {
+  switch (icon) {
+    case 'folder':
+      return <Folder className="h-3.5 w-3.5 text-sky-400" />;
+    case 'calculate':
+      return <Calculator className="h-3.5 w-3.5 text-sky-400" />;
+    case 'storefront':
+      return <Storefront className="h-3.5 w-3.5 text-sky-400" />;
+    case 'handshake':
+      return <Handshake className="h-3.5 w-3.5 text-sky-400" />;
+    case 'insights':
+      return <ChartLineUp className="h-3.5 w-3.5 text-sky-400" />;
+    case 'description':
+      return <FileText className="h-3.5 w-3.5 text-sky-400" />;
+    case 'inbox':
+      return <Tray className="h-3.5 w-3.5 text-sky-400" />;
+    default:
+      return <Folder className="h-3.5 w-3.5 text-sky-400" />;
+  }
+}
 
 function initials(name: string, email: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -513,7 +558,7 @@ export default function TeamDirectoryPanel() {
       data-testid="team-directory-page"
     >
       {flash ? (
-        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-xl border border-emerald-500/30 bg-[#161318] px-4 py-2.5 text-sm font-semibold text-emerald-300 shadow-xl">
+        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-none border border-neutral-700 bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xl">
           {flash}
         </div>
       ) : null}
@@ -521,10 +566,10 @@ export default function TeamDirectoryPanel() {
       {/* Header */}
       <header className="mb-2 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-[#fdfffc]">
+          <h1 className="text-[26px] font-bold tracking-tight text-white">
             Team Directory & Scopes
           </h1>
-          <p className="mt-1 text-xs text-white/50">
+          <p className="mt-1 text-xs text-neutral-400">
             Manage operator permissions, provision collaboration credentials, and restrict
             marketplace credentials.
           </p>
@@ -534,9 +579,9 @@ export default function TeamDirectoryPanel() {
             <button
               type="button"
               onClick={() => setInviteModalOpen(true)}
-              className="flex cursor-pointer items-center gap-1.5 rounded-md bg-emerald-500 px-4 py-2 text-[13px] font-bold text-slate-950 transition-all hover:bg-emerald-400"
+              className="flex cursor-pointer items-center gap-1.5 rounded-none bg-white px-4 py-2 text-xs font-semibold text-black transition-all hover:bg-neutral-200 min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">add</span>
+              <Plus className="h-4 w-4" />
               Invite Team User
             </button>
           ) : null}
@@ -544,47 +589,47 @@ export default function TeamDirectoryPanel() {
       </header>
 
       {/* Tier panel */}
-      <section className="rounded-xl border border-white/10 bg-[#161318]/90 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+      <section className="rounded-none border border-neutral-800 bg-neutral-900 p-6 shadow-xl">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="max-w-xl space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                 Subscription Tier
               </span>
               <span
-                className={`inline-flex items-center rounded border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                className={`inline-flex items-center rounded-none border px-2 py-0.5 text-[10px] font-bold uppercase ${
                   accountTier === 'Team'
-                    ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300'
-                    : 'border-white/10 bg-white/5 text-white/50'
+                    ? 'border-neutral-700 bg-neutral-800 text-white'
+                    : 'border-neutral-800 bg-neutral-900 text-neutral-400'
                 }`}
               >
                 {accountTier} Active
               </span>
             </div>
-            <h2 className="text-lg font-bold text-[#fdfffc]">
+            <h2 className="text-lg font-bold text-white">
               {accountTier === 'Team'
                 ? 'Investment Team Workspace'
                 : 'Investor Individual Plan'}
             </h2>
-            <p className="text-[12px] leading-relaxed text-white/50">
+            <p className="text-[12px] leading-relaxed text-neutral-400">
               {accountTier === 'Team'
                 ? 'Your account supports up to 10 team seats. Invited members are sandboxed to your projects and cannot create standalone deals. You can configure granular roles inline.'
                 : 'Your current account is set up for a single operator. To collaborate with other deal underwriters, appraisers, or general contractors, upgrade to the Investment Team plan.'}
             </p>
           </div>
 
-          <div className="flex w-full flex-col items-stretch justify-between gap-3 self-stretch border-t border-white/8 pt-4 md:w-auto md:items-end md:self-auto md:border-t-0 md:pt-0">
+          <div className="flex w-full flex-col items-stretch justify-between gap-3 self-stretch border-t border-neutral-800 pt-4 md:w-auto md:items-end md:self-auto md:border-t-0 md:pt-0">
             {accountTier === 'Team' ? (
               <div className="w-full space-y-1.5 md:w-56">
-                <div className="flex justify-between text-[11px] font-medium text-white/55">
+                <div className="flex justify-between text-[11px] font-medium text-neutral-300">
                   <span>Workspace Seat Capacity</span>
                   <span className="font-mono">
                     {activeSeatsCount} / {seatLimit} Seats Used
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-2 overflow-hidden rounded-none bg-neutral-800">
                   <div
-                    className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                    className="h-full rounded-none bg-white transition-all duration-300"
                     style={{
                       width: `${Math.min(100, (activeSeatsCount / seatLimit) * 100)}%`,
                     }}
@@ -604,40 +649,36 @@ export default function TeamDirectoryPanel() {
                 type="button"
                 disabled={isUpdatingTier}
                 onClick={() => void handleTierChange('Team')}
-                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-md bg-emerald-500 px-5 py-2 text-[13px] font-semibold text-slate-950 transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex cursor-pointer items-center justify-center gap-1.5 rounded-none bg-white px-5 py-2 text-xs font-semibold text-black transition-all hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
               >
-                <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+                <Sparkle className="h-4 w-4" />
                 {isUpdatingTier ? 'Updating Tier…' : 'Upgrade to Investment Team'}
               </button>
             )}
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 border-t border-white/8 pt-6 md:grid-cols-2">
-          <div className="flex items-start gap-2.5 rounded-md border border-white/8 bg-white/[0.03] p-3.5">
-            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[16px] text-white/40">
-              info
-            </span>
+        <div className="mt-6 grid grid-cols-1 gap-4 border-t border-neutral-800 pt-6 md:grid-cols-2">
+          <div className="flex items-start gap-2.5 rounded-none border border-neutral-800 bg-neutral-900/50 p-3.5">
+            <Info className="mt-0.5 shrink-0 h-4 w-4 text-neutral-400" />
             <div className="space-y-0.5">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-white/45">
-                Vendor Marketplace Policy
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                Vendor Directory Policy
               </span>
-              <p className="text-[11px] leading-relaxed text-white/45">
-                To list services on the Vendor Marketplace, operators must purchase and subscribe to
+              <p className="text-[11px] leading-relaxed text-neutral-400">
+                To list services on the Vendor Directory, operators must purchase and subscribe to
                 their own independent account. Corporate accounts do not extend listing privileges
                 to invited team seats.
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 rounded-md border border-white/8 bg-white/[0.03] p-3.5">
-            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[16px] text-white/40">
-              lock
-            </span>
+          <div className="flex items-start gap-2.5 rounded-none border border-neutral-800 bg-neutral-900/50 p-3.5">
+            <Lock className="mt-0.5 shrink-0 h-4 w-4 text-neutral-400" />
             <div className="space-y-0.5">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-white/45">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                 Scoped Access Lock
               </span>
-              <p className="text-[11px] leading-relaxed text-white/45">
+              <p className="text-[11px] leading-relaxed text-neutral-400">
                 Invited team members cannot create separate projects or organizations. They can
                 only contribute to assets and folders under the inviter&apos;s organization
                 workspace.
@@ -649,25 +690,23 @@ export default function TeamDirectoryPanel() {
 
       {/* Roster + Pending */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className="rounded-xl border border-white/10 bg-[#161318]/90 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.12)] lg:col-span-8">
+        <div className="rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-sm lg:col-span-8">
           <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-white/45">group</span>
-              <h2 className="text-base font-bold text-[#fdfffc]">Roster</h2>
-              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/45">
+              <Users className="h-5 w-5 text-neutral-400" />
+              <h2 className="text-base font-bold text-neutral-100">Roster</h2>
+              <span className="rounded-none border border-neutral-800 px-2 py-0.5 text-[10px] font-semibold text-neutral-400">
                 {activePersonnel.length}
               </span>
             </div>
             <div className="relative w-full sm:w-64">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-white/35">
-                search
-              </span>
+              <MagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, email, or role..."
-                className="w-full rounded-md border border-white/10 bg-white/[0.04] py-1.5 pl-9 pr-3 text-xs text-white outline-none placeholder:text-white/35 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/30"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-1.5 pl-9 pr-3 text-base md:text-xs text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
               />
             </div>
           </div>
@@ -675,7 +714,7 @@ export default function TeamDirectoryPanel() {
           <div className="relative min-h-[300px] overflow-x-auto">
             <table className="w-full min-w-[650px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-white/8 text-[10px] font-bold uppercase tracking-wider text-white/40">
+                <tr className="border-b border-neutral-800 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   <th className="px-4 py-3">Member</th>
                   <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Workspace Access</th>
@@ -684,13 +723,11 @@ export default function TeamDirectoryPanel() {
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/8 text-[13px] text-white/70">
+              <tbody className="divide-y divide-neutral-800 text-[13px] text-neutral-300">
                 {activePersonnel.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-white/40">
-                      <span className="material-symbols-outlined mb-2 block text-4xl opacity-30">
-                        account_circle
-                      </span>
+                    <td colSpan={6} className="py-12 text-center text-neutral-500">
+                      <User className="mb-2 block h-8 w-8 text-neutral-600 mx-auto" />
                       <p className="text-[12px]">No active operators matched your search.</p>
                     </td>
                   </tr>
@@ -707,22 +744,22 @@ export default function TeamDirectoryPanel() {
                     return (
                       <tr
                         key={member.id}
-                        className="transition-colors hover:bg-white/[0.03]"
+                        className="transition-colors hover:bg-neutral-900/60"
                         data-testid={`team-row-${member.id}`}
                       >
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[11px] font-semibold text-white/70">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-[11px] font-semibold text-neutral-300">
                               {initials(member.name, member.email)}
                             </div>
                             <div className="min-w-0">
-                              <p className="mb-1 truncate font-semibold leading-none text-[#fdfffc]">
+                              <p className="mb-1 truncate font-semibold leading-none text-neutral-100">
                                 {member.name}{' '}
                                 {member.isYou ? (
-                                  <span className="text-[10px] font-normal text-white/40">(you)</span>
+                                  <span className="text-[10px] font-normal text-neutral-500">(you)</span>
                                 ) : null}
                               </p>
-                              <p className="truncate font-mono text-[10px] leading-none text-white/40">
+                              <p className="truncate font-mono text-[10px] leading-none text-neutral-500">
                                 {member.email}
                               </p>
                             </div>
@@ -743,29 +780,27 @@ export default function TeamDirectoryPanel() {
                                 onChange={(e) =>
                                   handleRoleChange(member.id, e.target.value as InternalRole)
                                 }
-                                className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-1 pl-2.5 pr-7 text-[11px] font-semibold uppercase tracking-wider text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                                className="cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-1 pl-2.5 pr-7 text-[11px] font-semibold uppercase tracking-wider text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
                               >
                                 <optgroup label="Standard Roles">
-                                  <option value="Manager" className="bg-slate-950">Manager</option>
-                                  <option value="Associate" className="bg-slate-950">Associate</option>
-                                  <option value="Vendor" className="bg-slate-950">Vendor</option>
-                                  <option value="Intern" className="bg-slate-950">Intern</option>
+                                  <option value="Manager" className="bg-neutral-950">Manager</option>
+                                  <option value="Associate" className="bg-neutral-950">Associate</option>
+                                  <option value="Vendor" className="bg-neutral-950">Vendor</option>
+                                  <option value="Intern" className="bg-neutral-950">Intern</option>
                                 </optgroup>
                                 <optgroup label="Executive & Pipeline Roles">
-                                  <option value="Deal Lead" className="bg-slate-950">Deal Lead</option>
-                                  <option value="Admin" className="bg-slate-950">Admin</option>
-                                  <option value="COO" className="bg-slate-950">COO</option>
-                                  <option value="CFO" className="bg-slate-950">CFO</option>
-                                  <option value="President" className="bg-slate-950">President</option>
-                                  <option value="CEO" className="bg-slate-950">CEO</option>
+                                  <option value="Deal Lead" className="bg-neutral-950">Deal Lead</option>
+                                  <option value="Admin" className="bg-neutral-950">Admin</option>
+                                  <option value="COO" className="bg-neutral-950">COO</option>
+                                  <option value="CFO" className="bg-neutral-950">CFO</option>
+                                  <option value="President" className="bg-neutral-950">President</option>
+                                  <option value="CEO" className="bg-neutral-950">CEO</option>
                                 </optgroup>
                               </select>
-                              <span className="material-symbols-outlined pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[12px] text-white/40">
-                                expand_more
-                              </span>
+                              <CaretDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
                               {hoveredRoleId === member.id ? (
-                                <div className="absolute bottom-full left-0 z-50 mb-1.5 w-64 rounded border border-white/10 bg-[#1a1719] p-2.5 text-[11px] text-white/60 shadow-lg">
-                                  <strong className="mb-0.5 block text-white">
+                                <div className="absolute bottom-full left-0 z-50 mb-1.5 w-64 rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-[11px] text-neutral-300 shadow-lg">
+                                  <strong className="mb-0.5 block text-neutral-100">
                                     {member.role} Role Permissions:
                                   </strong>
                                   {ROLE_PERMISSIONS[member.role as InternalRole] ?? 'Workspace role'}
@@ -775,7 +810,7 @@ export default function TeamDirectoryPanel() {
                           ) : (
                             <div className="flex items-center gap-1">
                               <span
-                                className={`inline-flex items-center rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${roleBadgeClass(member.role, isInternal)}`}
+                                className={`inline-flex items-center rounded-none border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${roleBadgeClass(member.role, isInternal)}`}
                               >
                                 {member.role}
                               </span>
@@ -786,10 +821,10 @@ export default function TeamDirectoryPanel() {
                         <td className="px-4 py-3.5">
                           {member.isYou ? (
                             <div className="space-y-0.5">
-                              <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                              <span className="inline-flex items-center rounded-none border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                                 Full Edit (Owner)
                               </span>
-                              <span className="block text-[10px] text-white/40">
+                              <span className="block text-[10px] text-neutral-500">
                                 Workspace administrator
                               </span>
                             </div>
@@ -806,39 +841,37 @@ export default function TeamDirectoryPanel() {
                                       e.target.value as WorkspaceAccessLevel,
                                     )
                                   }
-                                  className="cursor-pointer appearance-none rounded border border-white/15 bg-[#0d0a0b] py-1 pl-2.5 pr-7 text-[11px] font-semibold tracking-wide text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                                  className="cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-1 pl-2.5 pr-7 text-[11px] font-semibold tracking-wide text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
                                 >
                                   {WORKSPACE_ACCESS_LEVELS.map((al) => (
-                                    <option key={al.level} value={al.level} className="bg-slate-950">
+                                    <option key={al.level} value={al.level} className="bg-neutral-950">
                                       {al.label}
                                     </option>
                                   ))}
                                 </select>
-                                <span className="material-symbols-outlined pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[12px] text-white/40">
-                                  expand_more
-                                </span>
+                                <CaretDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
                               </div>
                               <div>
                                 {isAccessOverridden ? (
                                   <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-400">
-                                    <span className="material-symbols-outlined text-[11px]">tune</span>
+                                    <SlidersHorizontal className="h-3 w-3" />
                                     Custom override
                                   </span>
                                 ) : (
-                                  <span className="text-[10px] text-white/40">
+                                  <span className="text-[10px] text-neutral-500">
                                     Guessed from {member.role}
                                   </span>
                                 )}
                               </div>
                               {member.scopedProjectId || member.scopedTabOrTask ? (
                                 <div className="mt-1 flex flex-wrap items-center gap-1">
-                                  <span className="inline-flex items-center gap-1 rounded border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] text-sky-300">
-                                    <span className="material-symbols-outlined text-[10px]">tune</span>
+                                  <span className="inline-flex items-center gap-1 rounded-none border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] text-sky-300">
+                                    <SlidersHorizontal className="h-2.5 w-2.5" />
                                     {member.scopedProjectName || member.scopedProjectId ? (
                                       <span>{member.scopedProjectName || member.scopedProjectId}</span>
                                     ) : null}
                                     {member.scopedTabOrTask ? (
-                                      <span className="text-white/60">· {member.scopedTabOrTask}</span>
+                                      <span className="text-neutral-400">· {member.scopedTabOrTask}</span>
                                     ) : null}
                                   </span>
                                   <button
@@ -854,7 +887,7 @@ export default function TeamDirectoryPanel() {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenManageScope(member)}
-                                    className="cursor-pointer text-[9px] font-semibold text-white/40 hover:text-sky-300"
+                                    className="cursor-pointer text-[9px] font-semibold text-neutral-400 hover:text-sky-300"
                                   >
                                     + Scope to tab or task
                                   </button>
@@ -867,17 +900,17 @@ export default function TeamDirectoryPanel() {
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`h-1.5 w-1.5 rounded-full ${
+                              className={`h-1.5 w-1.5 rounded-none ${
                                 isSuspended ? 'bg-red-500' : 'bg-emerald-500'
                               }`}
                             />
-                            <span className="text-[12px] font-medium text-white/70">
+                            <span className="text-[12px] font-medium text-neutral-300">
                               {isSuspended ? 'Suspended' : 'Active'}
                             </span>
                           </div>
                         </td>
 
-                        <td className="px-4 py-3.5 font-mono text-[11px] text-white/40">
+                        <td className="px-4 py-3.5 font-mono text-[11px] text-neutral-500">
                           {member.lastActive}
                         </td>
 
@@ -900,7 +933,7 @@ export default function TeamDirectoryPanel() {
                                   onClick={() =>
                                     handleToggleSuspend(member.id, member.email, member.status)
                                   }
-                                  className="cursor-pointer text-[11px] font-semibold text-white/50 hover:text-white"
+                                  className="cursor-pointer text-[11px] font-semibold text-neutral-400 hover:text-neutral-100"
                                 >
                                   {isSuspended ? 'Reactivate' : 'Suspend'}
                                 </button>
@@ -934,33 +967,33 @@ export default function TeamDirectoryPanel() {
         </div>
 
         <aside className="flex flex-col gap-6 lg:col-span-4">
-          <div className="rounded-xl border border-white/10 bg-[#161318]/90 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-[#fdfffc]">
-              <span className="material-symbols-outlined text-[16px] text-white/45">mail</span>
+          <div className="rounded-none border border-neutral-800 bg-neutral-950 p-5 shadow-sm">
+            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-neutral-100">
+              <EnvelopeSimple className="h-4 w-4 text-neutral-400" />
               Pending Invitations
             </h2>
             <div className="space-y-3">
               {pendingInvitations.length === 0 ? (
-                <div className="py-8 text-center text-[12px] text-white/40">
+                <div className="py-8 text-center text-[12px] text-neutral-500">
                   No pending invites found.
                 </div>
               ) : (
                 pendingInvitations.map((invite) => (
                   <div
                     key={invite.id}
-                    className="flex items-center justify-between gap-3 rounded border border-white/8 bg-white/[0.03] p-3"
+                    className="flex items-center justify-between gap-3 rounded-none border border-neutral-800 bg-neutral-900/50 p-3"
                   >
                     <div className="min-w-0 space-y-0.5">
-                      <p className="truncate text-xs font-semibold text-white">{invite.email}</p>
+                      <p className="truncate text-xs font-semibold text-neutral-200">{invite.email}</p>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${roleBadgeClass(invite.role, invite.type === 'Internal')}`}>
+                        <span className={`rounded-none border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${roleBadgeClass(invite.role, invite.type === 'Internal')}`}>
                           {invite.role}
                         </span>
-                        <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${accessBadgeClass(invite.accessLevel ?? getDefaultAccessLevelForRole(invite.role))}`}>
+                        <span className={`rounded-none border px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${accessBadgeClass(invite.accessLevel ?? getDefaultAccessLevelForRole(invite.role))}`}>
                           {invite.accessLevel ?? getDefaultAccessLevelForRole(invite.role)}
                         </span>
                         {invite.invitedAt ? (
-                          <span className="text-[9px] font-medium text-white/40">
+                          <span className="text-[9px] font-medium text-neutral-500">
                             Sent {new Date(invite.invitedAt).toLocaleDateString()}
                           </span>
                         ) : null}
@@ -972,17 +1005,17 @@ export default function TeamDirectoryPanel() {
                         type="button"
                         title="Resend Invite"
                         onClick={() => void handleResendInvite(invite.id, invite.email)}
-                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-white/10 hover:text-white"
+                        className="cursor-pointer rounded-none p-1.5 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-100"
                       >
-                        <span className="material-symbols-outlined text-[16px]">refresh</span>
+                        <ArrowsClockwise className="h-3.5 w-3.5" />
                       </button>
                       <button
                         type="button"
                         title="Cancel Invitation"
                         onClick={() => handleRevoke(invite.id, invite.email)}
-                        className="cursor-pointer rounded p-1 text-white/45 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                        className="cursor-pointer rounded-none p-1.5 text-neutral-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
                       >
-                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                        <Trash className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -993,10 +1026,10 @@ export default function TeamDirectoryPanel() {
 
           <Link
             href="/dashboard/settings/billing"
-            className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-sm text-white/55 no-underline transition hover:bg-white/[0.04]"
+            className="rounded-none border border-neutral-800 bg-neutral-950 p-4 text-sm text-neutral-400 no-underline transition hover:bg-neutral-900"
           >
-            <span className="font-semibold text-white">Billing & seats</span>
-            <p className="mt-1 text-xs text-white/40">
+            <span className="font-semibold text-neutral-200">Billing & seats</span>
+            <p className="mt-1 text-xs text-neutral-500">
               Manage plan upgrades and seat capacity in Settings → Billing.
             </p>
           </Link>
@@ -1006,28 +1039,28 @@ export default function TeamDirectoryPanel() {
       {/* Invite modal */}
       {inviteModalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={() => setInviteModalOpen(false)}
         >
           <div
             role="dialog"
             aria-label="Invite operators"
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg rounded-xl border border-white/10 bg-[#161318] p-6 shadow-2xl"
+            className="relative w-full max-w-lg rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-2xl"
           >
             <button
               type="button"
               onClick={() => setInviteModalOpen(false)}
-              className="absolute right-4 top-4 cursor-pointer rounded text-white/40 hover:text-white"
+              className="absolute right-4 top-4 cursor-pointer rounded-none p-1 text-neutral-400 hover:text-neutral-100"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined">close</span>
+              <X className="h-4 w-4" />
             </button>
 
-            <h3 className="mb-1 text-lg font-bold text-[#fdfffc]">
+            <h3 className="mb-1 text-lg font-bold text-neutral-100">
               Invite Operators & Collaborators
             </h3>
-            <p className="mb-4 text-[11px] leading-normal text-white/40">
+            <p className="mb-4 text-[11px] leading-normal text-neutral-400">
               Enter email addresses to provision workspace credentials. Seats invited count towards
               your {seatLimit}-operator cap.
             </p>
@@ -1036,7 +1069,7 @@ export default function TeamDirectoryPanel() {
               <div className="space-y-1">
                 <label
                   htmlFor="modal-bulk-emails"
-                  className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                  className="text-[11px] font-bold uppercase tracking-wider text-neutral-400"
                 >
                   Email Addresses
                 </label>
@@ -1046,14 +1079,14 @@ export default function TeamDirectoryPanel() {
                   onChange={(e) => setBulkEmailInput(e.target.value)}
                   placeholder="name@company.com, partner@fund.com (separated by commas or newlines)"
                   rows={3}
-                  className="w-full resize-none rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none placeholder:text-white/30 focus:ring-1 focus:ring-emerald-500/40"
+                  className="w-full resize-none rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-neutral-100 outline-none placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
                 />
               </div>
 
               <div className="space-y-1">
                 <label
                   htmlFor="modal-role-select"
-                  className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                  className="text-[11px] font-bold uppercase tracking-wider text-neutral-400"
                 >
                   Initial Role assignment
                 </label>
@@ -1066,7 +1099,7 @@ export default function TeamDirectoryPanel() {
                     setSelectedRole(nextRole);
                     setSelectedAccessLevel(getDefaultAccessLevelForRole(nextRole));
                   }}
-                  className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                  className="w-full cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-neutral-100 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 min-h-[44px]"
                 >
                   <optgroup label="Standard Roles">
                     <option value="Manager">Manager (Full Workspace Management)</option>
@@ -1089,7 +1122,7 @@ export default function TeamDirectoryPanel() {
                 <div className="flex items-center justify-between">
                   <label
                     htmlFor="modal-access-level-select"
-                    className="text-[11px] font-bold uppercase tracking-wider text-white/45"
+                    className="text-[11px] font-bold uppercase tracking-wider text-neutral-400"
                   >
                     Workspace Edit Access
                   </label>
@@ -1104,7 +1137,7 @@ export default function TeamDirectoryPanel() {
                   onChange={(e) =>
                     setSelectedAccessLevel(e.target.value as WorkspaceAccessLevel)
                   }
-                  className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-emerald-500/40"
+                  className="w-full cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-neutral-100 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 min-h-[44px]"
                 >
                   {WORKSPACE_ACCESS_LEVELS.map((al) => (
                     <option key={al.level} value={al.level}>
@@ -1112,34 +1145,34 @@ export default function TeamDirectoryPanel() {
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] leading-relaxed text-white/40">
-                  Role default: <span className="font-semibold text-white/70">{getDefaultAccessLevelForRole(selectedRole)}</span>. You can adjust this operator&apos;s workspace edit level as needed.
+                <p className="text-[10px] leading-relaxed text-neutral-500">
+                  Role default: <span className="font-semibold text-neutral-300">{getDefaultAccessLevelForRole(selectedRole)}</span>. You can adjust this operator&apos;s workspace edit level as needed.
                 </p>
               </div>
 
-              <div className="space-y-3 border-t border-white/8 pt-3">
+              <div className="space-y-3 border-t border-neutral-800 pt-3">
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     id="scoped-checkbox"
                     checked={enableScopedInvite}
                     onChange={(e) => setEnableScopedInvite(e.target.checked)}
-                    className="h-4 w-4 cursor-pointer rounded border-white/20"
+                    className="h-4 w-4 cursor-pointer rounded-none border-neutral-700 bg-neutral-900"
                   />
                   <label
                     htmlFor="scoped-checkbox"
-                    className="cursor-pointer text-[12px] font-semibold text-white/70"
+                    className="cursor-pointer text-[12px] font-semibold text-neutral-300"
                   >
                     Apply direct task or project underwriting scope restriction
                   </label>
                 </div>
 
                 {enableScopedInvite ? (
-                  <div className="space-y-3 rounded-lg border border-white/8 bg-white/[0.03] p-3.5">
+                  <div className="space-y-3 rounded-none border border-neutral-800 bg-neutral-900/50 p-3.5">
                     <div className="space-y-1">
                       <label
                         htmlFor="modal-scoped-project"
-                        className="text-[10px] font-bold uppercase tracking-wider text-white/50"
+                        className="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
                       >
                         Restrict to Specific Project
                       </label>
@@ -1147,7 +1180,7 @@ export default function TeamDirectoryPanel() {
                         id="modal-scoped-project"
                         value={assignProject}
                         onChange={(e) => setAssignProject(e.target.value)}
-                        className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-sky-500/40"
+                        className="w-full cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-neutral-100 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 min-h-[44px]"
                       >
                         <option value="">Select Target Project</option>
                         {SEED_PROJECTS.map((p) => (
@@ -1160,17 +1193,17 @@ export default function TeamDirectoryPanel() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                           Assign to Tab or Task
                         </label>
-                        <div className="flex items-center gap-1 rounded border border-white/10 bg-black/40 p-0.5">
+                        <div className="flex items-center gap-1 rounded-none border border-neutral-800 bg-neutral-950 p-0.5">
                           <button
                             type="button"
                             onClick={() => setInviteScopeType('task')}
-                            className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                            className={`cursor-pointer rounded-none px-2 py-0.5 text-[10px] font-semibold transition ${
                               inviteScopeType === 'task'
                                 ? 'bg-sky-500/20 text-sky-300'
-                                : 'text-white/40 hover:text-white/70'
+                                : 'text-neutral-400 hover:text-neutral-200'
                             }`}
                           >
                             Project Tasks
@@ -1178,10 +1211,10 @@ export default function TeamDirectoryPanel() {
                           <button
                             type="button"
                             onClick={() => setInviteScopeType('tab')}
-                            className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                            className={`cursor-pointer rounded-none px-2 py-0.5 text-[10px] font-semibold transition ${
                               inviteScopeType === 'tab'
                                 ? 'bg-sky-500/20 text-sky-300'
-                                : 'text-white/40 hover:text-white/70'
+                                : 'text-neutral-400 hover:text-neutral-200'
                             }`}
                           >
                             Navigation Tabs
@@ -1190,12 +1223,12 @@ export default function TeamDirectoryPanel() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <p className="text-[10px] text-white/40">
+                        <p className="text-[10px] text-neutral-400">
                           {inviteScopeType === 'task'
                             ? 'Select a task to restrict this operator to (or choose a tab):'
                             : 'Select a navigation tab from the dashboard to grant access to:'}
                         </p>
-                        <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-white/8 bg-[#0d0a0b]/80 p-2">
+                        <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-none border border-neutral-800 bg-neutral-950 p-2">
                           {inviteScopeType === 'tab'
                             ? SCOPED_ACCESS_TABS.map((tab) => {
                                 const isSelected = assignTabOrTask === tab.label;
@@ -1206,20 +1239,16 @@ export default function TeamDirectoryPanel() {
                                     onClick={() =>
                                       setAssignTabOrTask(isSelected ? '' : tab.label)
                                     }
-                                    className={`group flex items-center gap-1.5 rounded border px-2.5 py-1 text-[11px] font-medium transition ${
+                                    className={`group flex items-center gap-1.5 rounded-none border px-2.5 py-1 text-[11px] font-medium transition ${
                                       isSelected
                                         ? 'border-sky-500/50 bg-sky-500/20 text-sky-200 ring-1 ring-sky-500/30'
-                                        : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                        : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-700 hover:text-neutral-100'
                                     }`}
                                   >
-                                    <span className="material-symbols-outlined text-[13px] text-sky-400">
-                                      {tab.icon}
-                                    </span>
+                                    {renderTabIcon(tab.icon)}
                                     <span>{tab.label}</span>
                                     {isSelected ? (
-                                      <span className="material-symbols-outlined text-[12px] text-sky-300">
-                                        check
-                                      </span>
+                                      <Check className="h-3 w-3 text-sky-300" />
                                     ) : null}
                                   </button>
                                 );
@@ -1233,20 +1262,16 @@ export default function TeamDirectoryPanel() {
                                     onClick={() =>
                                       setAssignTabOrTask(isSelected ? '' : task.label)
                                     }
-                                    className={`group flex items-center gap-1.5 rounded border px-2.5 py-1 text-[11px] font-medium transition ${
+                                    className={`group flex items-center gap-1.5 rounded-none border px-2.5 py-1 text-[11px] font-medium transition ${
                                       isSelected
                                         ? 'border-sky-500/50 bg-sky-500/20 text-sky-200 ring-1 ring-sky-500/30'
-                                        : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                        : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-700 hover:text-neutral-100'
                                     }`}
                                   >
-                                    <span className="material-symbols-outlined text-[13px] text-amber-400">
-                                      task_alt
-                                    </span>
+                                    <CheckSquare className="h-3.5 w-3.5 text-amber-400" />
                                     <span>{task.label}</span>
                                     {isSelected ? (
-                                      <span className="material-symbols-outlined text-[12px] text-sky-300">
-                                        check
-                                      </span>
+                                      <Check className="h-3 w-3 text-sky-300" />
                                     ) : null}
                                   </button>
                                 );
@@ -1256,14 +1281,14 @@ export default function TeamDirectoryPanel() {
                           <div className="flex items-center justify-between text-[10px] text-sky-300">
                             <span>
                               Selected:{' '}
-                              <strong className="font-semibold text-white">
+                              <strong className="font-semibold text-neutral-100">
                                 {assignTabOrTask}
                               </strong>
                             </span>
                             <button
                               type="button"
                               onClick={() => setAssignTabOrTask('')}
-                              className="cursor-pointer text-white/40 hover:text-red-400"
+                              className="cursor-pointer text-neutral-400 hover:text-red-400"
                             >
                               Clear selection
                             </button>
@@ -1275,17 +1300,17 @@ export default function TeamDirectoryPanel() {
                 ) : null}
               </div>
 
-              <div className="flex justify-end gap-3 border-t border-white/8 pt-3">
+              <div className="flex justify-end gap-3 border-t border-neutral-800 pt-3">
                 <button
                   type="button"
                   onClick={() => setInviteModalOpen(false)}
-                  className="cursor-pointer rounded-md border border-white/15 px-4 py-2 text-xs font-semibold text-white/60 hover:bg-white/5"
+                  className="cursor-pointer rounded-none border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="cursor-pointer rounded-md bg-emerald-500 px-5 py-2 text-xs font-semibold text-slate-950 hover:bg-emerald-400"
+                  className="cursor-pointer rounded-none bg-neutral-100 px-5 py-2 text-xs font-semibold text-neutral-900 hover:bg-neutral-200 min-h-[44px]"
                 >
                   Send Invitations
                 </button>
@@ -1305,28 +1330,28 @@ export default function TeamDirectoryPanel() {
             role="dialog"
             aria-label={`Scoped Access for ${scopedModalMember.name}`}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg rounded-xl border border-white/10 bg-[#161318] p-6 shadow-2xl"
+            className="relative w-full max-w-lg rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-2xl"
           >
             <button
               type="button"
               onClick={() => setScopedModalMember(null)}
-              className="absolute right-4 top-4 cursor-pointer rounded text-white/40 hover:text-white"
+              className="absolute right-4 top-4 cursor-pointer rounded-none p-1 text-neutral-400 hover:text-neutral-100"
               aria-label="Close"
             >
-              <span className="material-symbols-outlined">close</span>
+              <X className="h-4 w-4" />
             </button>
 
             <div className="mb-4">
               <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-sky-400">
-                <span className="material-symbols-outlined text-[13px]">tune</span>
+                <SlidersHorizontal className="h-3.5 w-3.5" />
                 Scoped Access Control
               </span>
-              <h3 className="mt-0.5 text-lg font-bold text-[#fdfffc]">
+              <h3 className="mt-0.5 text-lg font-bold text-neutral-100">
                 Manage Access for {scopedModalMember.name}
               </h3>
-              <p className="mt-1 text-xs text-white/50">
+              <p className="mt-1 text-xs text-neutral-400">
                 Grant or revoke permission to specific project tasks or dashboard navigation tabs for{' '}
-                <span className="font-semibold text-white/70">{scopedModalMember.email}</span>.
+                <span className="font-semibold text-neutral-200">{scopedModalMember.email}</span>.
               </p>
             </div>
 
@@ -1334,7 +1359,7 @@ export default function TeamDirectoryPanel() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="manage-scope-project"
-                  className="text-[10px] font-bold uppercase tracking-wider text-white/50"
+                  className="text-[10px] font-bold uppercase tracking-wider text-neutral-400"
                 >
                   Target Project
                 </label>
@@ -1342,7 +1367,7 @@ export default function TeamDirectoryPanel() {
                   id="manage-scope-project"
                   value={editScopeProject}
                   onChange={(e) => setEditScopeProject(e.target.value)}
-                  className="w-full cursor-pointer rounded-md border border-white/10 bg-[#0d0a0b] p-2 text-xs text-white outline-none focus:ring-1 focus:ring-sky-500/40"
+                  className="w-full cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-neutral-100 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600 min-h-[44px]"
                 >
                   <option value="">No Project Restriction (All Workspace Projects)</option>
                   {SEED_PROJECTS.map((p) => (
@@ -1355,17 +1380,17 @@ export default function TeamDirectoryPanel() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-white/50">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                     Select Tab or Task to Grant / Revoke
                   </label>
-                  <div className="flex items-center gap-1 rounded border border-white/10 bg-black/40 p-0.5">
+                  <div className="flex items-center gap-1 rounded-none border border-neutral-800 bg-neutral-950 p-0.5">
                     <button
                       type="button"
                       onClick={() => setEditScopeType('task')}
-                      className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                      className={`cursor-pointer rounded-none px-2 py-0.5 text-[10px] font-semibold transition ${
                         editScopeType === 'task'
                           ? 'bg-sky-500/20 text-sky-300'
-                          : 'text-white/40 hover:text-white/70'
+                          : 'text-neutral-400 hover:text-neutral-200'
                       }`}
                     >
                       Project Tasks
@@ -1373,10 +1398,10 @@ export default function TeamDirectoryPanel() {
                     <button
                       type="button"
                       onClick={() => setEditScopeType('tab')}
-                      className={`cursor-pointer rounded px-2 py-0.5 text-[10px] font-semibold transition ${
+                      className={`cursor-pointer rounded-none px-2 py-0.5 text-[10px] font-semibold transition ${
                         editScopeType === 'tab'
                           ? 'bg-sky-500/20 text-sky-300'
-                          : 'text-white/40 hover:text-white/70'
+                          : 'text-neutral-400 hover:text-neutral-200'
                       }`}
                     >
                       Navigation Tabs
@@ -1385,12 +1410,12 @@ export default function TeamDirectoryPanel() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <p className="text-[10px] text-white/40">
+                  <p className="text-[10px] text-neutral-400">
                     {editScopeType === 'task'
                       ? 'Click a selectable button to assign this team member to an active project task:'
                       : 'Click a selectable button to grant or restrict access to a navigation tab:'}
                   </p>
-                  <div className="flex max-h-44 flex-wrap gap-1.5 overflow-y-auto rounded-md border border-white/8 bg-[#0d0a0b]/80 p-2.5">
+                  <div className="flex max-h-44 flex-wrap gap-1.5 overflow-y-auto rounded-none border border-neutral-800 bg-neutral-950 p-2.5">
                     {editScopeType === 'tab'
                       ? SCOPED_ACCESS_TABS.map((tab) => {
                           const isSelected = editScopeTabOrTask === tab.label;
@@ -1401,20 +1426,16 @@ export default function TeamDirectoryPanel() {
                               onClick={() =>
                                 setEditScopeTabOrTask(isSelected ? '' : tab.label)
                               }
-                              className={`group flex items-center gap-1.5 rounded border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                              className={`group flex items-center gap-1.5 rounded-none border px-2.5 py-1.5 text-[11px] font-medium transition ${
                                 isSelected
                                   ? 'border-sky-500/60 bg-sky-500/25 text-sky-100 ring-1 ring-sky-500/40 font-semibold'
-                                  : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                  : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-700 hover:text-neutral-100'
                               }`}
                             >
-                              <span className="material-symbols-outlined text-[14px] text-sky-400">
-                                {tab.icon}
-                              </span>
+                              {renderTabIcon(tab.icon)}
                               <span>{tab.label}</span>
                               {isSelected ? (
-                                <span className="material-symbols-outlined text-[13px] text-sky-300">
-                                  check
-                                </span>
+                                <Check className="h-3 w-3 text-sky-300" />
                               ) : null}
                             </button>
                           );
@@ -1428,20 +1449,16 @@ export default function TeamDirectoryPanel() {
                               onClick={() =>
                                 setEditScopeTabOrTask(isSelected ? '' : task.label)
                               }
-                              className={`group flex items-center gap-1.5 rounded border px-2.5 py-1.5 text-[11px] font-medium transition ${
+                              className={`group flex items-center gap-1.5 rounded-none border px-2.5 py-1.5 text-[11px] font-medium transition ${
                                 isSelected
                                   ? 'border-sky-500/60 bg-sky-500/25 text-sky-100 ring-1 ring-sky-500/40 font-semibold'
-                                  : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:text-white'
+                                  : 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-700 hover:text-neutral-100'
                               }`}
                             >
-                              <span className="material-symbols-outlined text-[14px] text-amber-400">
-                                task_alt
-                              </span>
+                              <CheckSquare className="h-3.5 w-3.5 text-amber-400" />
                               <span>{task.label}</span>
                               {isSelected ? (
-                                <span className="material-symbols-outlined text-[13px] text-sky-300">
-                                  check
-                                </span>
+                                <Check className="h-3 w-3 text-sky-300" />
                               ) : null}
                             </button>
                           );
@@ -1450,17 +1467,17 @@ export default function TeamDirectoryPanel() {
                 </div>
 
                 {editScopeTabOrTask ? (
-                  <div className="flex items-center justify-between rounded border border-sky-500/20 bg-sky-500/5 p-2 text-xs text-sky-300">
+                  <div className="flex items-center justify-between rounded-none border border-sky-500/20 bg-sky-500/5 p-2 text-xs text-sky-300">
                     <span className="truncate">
                       Active Scope:{' '}
-                      <strong className="font-semibold text-white">
+                      <strong className="font-semibold text-neutral-100">
                         {editScopeTabOrTask}
                       </strong>
                     </span>
                     <button
                       type="button"
                       onClick={() => setEditScopeTabOrTask('')}
-                      className="shrink-0 cursor-pointer font-medium text-white/50 hover:text-red-400"
+                      className="shrink-0 cursor-pointer font-medium text-neutral-400 hover:text-red-400"
                     >
                       Deselect
                     </button>
@@ -1468,7 +1485,7 @@ export default function TeamDirectoryPanel() {
                 ) : null}
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/8 pt-4">
+              <div className="flex items-center justify-between border-t border-neutral-800 pt-4">
                 <div>
                   {scopedModalMember.scopedProjectId || scopedModalMember.scopedTabOrTask ? (
                     <button
@@ -1477,7 +1494,7 @@ export default function TeamDirectoryPanel() {
                       onClick={() =>
                         handleRevokeScope(scopedModalMember.id, scopedModalMember.name)
                       }
-                      className="cursor-pointer text-xs font-semibold text-red-400 hover:text-red-300 disabled:opacity-50"
+                      className="cursor-pointer text-xs font-semibold text-red-400 hover:text-red-300 disabled:opacity-50 min-h-[44px]"
                     >
                       Revoke All Restrictions
                     </button>
@@ -1488,7 +1505,7 @@ export default function TeamDirectoryPanel() {
                     type="button"
                     disabled={isSavingScope}
                     onClick={() => setScopedModalMember(null)}
-                    className="cursor-pointer rounded-md border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/60 hover:bg-white/5"
+                    className="cursor-pointer rounded-none border border-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 min-h-[44px]"
                   >
                     Cancel
                   </button>
@@ -1496,7 +1513,7 @@ export default function TeamDirectoryPanel() {
                     type="button"
                     disabled={isSavingScope}
                     onClick={handleSaveScope}
-                    className="cursor-pointer rounded-md bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-50"
+                    className="cursor-pointer rounded-none bg-neutral-100 px-4 py-1.5 text-xs font-semibold text-neutral-900 hover:bg-neutral-200 disabled:opacity-50 min-h-[44px]"
                   >
                     {isSavingScope ? 'Saving…' : 'Save Access'}
                   </button>
@@ -1509,9 +1526,9 @@ export default function TeamDirectoryPanel() {
 
       {pendingDowngradeConfirmation ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-xl border border-white/10 bg-[#121118] p-6 text-white shadow-2xl">
-            <h3 className="text-base font-semibold text-white">Confirm Plan Downgrade</h3>
-            <p className="mt-2 text-xs text-white/70 leading-relaxed">
+          <div className="w-full max-w-md rounded-none border border-neutral-800 bg-neutral-950 p-6 text-neutral-100 shadow-2xl">
+            <h3 className="text-base font-semibold text-neutral-100">Confirm Plan Downgrade</h3>
+            <p className="mt-2 text-xs text-neutral-400 leading-relaxed">
               Downgrading to the Individual Investor plan includes 1 operator seat.
               Proceeding will automatically suspend {activeSeatsCount - 1} excess operator seat(s).
             </p>
@@ -1520,7 +1537,7 @@ export default function TeamDirectoryPanel() {
                 type="button"
                 disabled={isUpdatingTier}
                 onClick={() => setPendingDowngradeConfirmation(false)}
-                className="cursor-pointer rounded-md border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 hover:bg-white/5"
+                className="cursor-pointer rounded-none border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 min-h-[44px]"
               >
                 Cancel
               </button>
@@ -1528,7 +1545,7 @@ export default function TeamDirectoryPanel() {
                 type="button"
                 disabled={isUpdatingTier}
                 onClick={() => executeTierChange('Individual', true)}
-                className="cursor-pointer rounded-md bg-amber-500 px-4 py-2 text-xs font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-50"
+                className="cursor-pointer rounded-none bg-amber-500 px-4 py-2 text-xs font-semibold text-neutral-950 hover:bg-amber-400 disabled:opacity-50 min-h-[44px]"
               >
                 {isUpdatingTier ? 'Downgrading…' : 'Proceed with Downgrade'}
               </button>

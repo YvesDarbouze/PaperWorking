@@ -1,4 +1,5 @@
 'use client';
+import { ShieldCheck, PaperPlaneRight, CheckCircle, Checks } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -87,7 +88,7 @@ export default function DownPaymentCoordinator({
       paymentMethod,
       dispatchReferenceNumber: ref,
       dispatchedAt: new Date().toISOString(),
-      proofOfPaymentUrl: proofDocName ? `/documents/${proofDocName}` : '/documents/wire_receipt.pdf',
+      proofOfPaymentUrl: proofDocName ? `/documents/${proofDocName}` : undefined,
       status: 'payment_dispatched',
     };
 
@@ -224,7 +225,7 @@ export default function DownPaymentCoordinator({
         }`}
       >
         <div className="flex items-center gap-2 font-bold text-sm">
-          <span className="material-symbols-outlined text-[18px]">security</span>
+          <ShieldCheck size={18} />
           <span>Mandatory Anti-Fraud Verbal Phone Verification Gate</span>
         </div>
         <p className="text-[11px] leading-relaxed text-neutral-300">
@@ -298,7 +299,7 @@ export default function DownPaymentCoordinator({
                 disabled={!verbalConfirmed}
                 data-testid="dispatch-funds-btn"
               >
-                <span className="material-symbols-outlined text-[16px] mr-1.5">send</span>
+                <PaperPlaneRight size={16} className="mr-1.5" />
                 Confirm Funds Dispatched to Escrow
               </Button>
             </div>
@@ -307,7 +308,7 @@ export default function DownPaymentCoordinator({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-neutral-900/40 p-4 rounded-none border border-neutral-800 text-xs">
             <div>
               <div className="flex items-center gap-2 text-blue-400 font-semibold">
-                <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                <ShieldCheck size={18} />
                 <span>Closing Funds Dispatched to Escrow ({formatCurrency(totalCashToClose)})</span>
               </div>
               <p className="text-neutral-400 text-[11px] mt-0.5">
@@ -319,7 +320,7 @@ export default function DownPaymentCoordinator({
             <div>
               {isConfirmed ? (
                 <span className="rounded-none border border-emerald-500/40 bg-emerald-500/20 px-3 py-2 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  <CheckCircle size={16} />
                   Funds Cleared & Logged by Escrow
                 </span>
               ) : (
@@ -331,7 +332,7 @@ export default function DownPaymentCoordinator({
                   onClick={handleEscrowConfirmFunds}
                   data-testid="escrow-confirm-receipt-btn"
                 >
-                  <span className="material-symbols-outlined text-[16px] mr-1.5">done_all</span>
+                  <Checks size={16} className="mr-1.5" />
                   Record Escrow Wire Confirmation
                 </Button>
               )}

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ArrowRight } from '@phosphor-icons/react';
 
 export interface StickyMobileCtaProps {
   thresholdY?: number;
@@ -60,14 +61,14 @@ export default function StickyMobileCta({
           : 'translate-y-8 opacity-0 pointer-events-none'
       }`}
     >
-      <div className="pointer-events-auto mx-auto max-w-sm rounded-2xl border border-white/12 bg-[#0a0a0f]/90 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.75)] backdrop-blur-xl">
+      <div className="pointer-events-auto mx-auto max-w-sm rounded-none border border-neutral-800 bg-neutral-950/95 p-2 shadow-xl backdrop-blur-xl">
         <Link
           href="/signup"
           tabIndex={visible ? 0 : -1}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--color-primary)] px-5 text-sm font-bold text-[#0a0a0f] no-underline shadow-[0_0_24px_rgba(0,221,148,0.35)] transition-all hover:brightness-110 active:scale-[0.98] touch-press"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-none bg-neutral-100 px-5 text-sm font-bold text-neutral-900 no-underline shadow-sm transition-all hover:bg-neutral-200 active:scale-[0.98] touch-press min-h-[44px]"
         >
           <span>Start Free 14-Day Trial</span>
-          <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
     </div>

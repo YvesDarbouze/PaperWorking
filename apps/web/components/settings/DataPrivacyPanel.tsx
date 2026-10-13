@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { CheckCircle, CircleNotch, Warning } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 
 export default function DataPrivacyPanel() {
@@ -122,9 +123,7 @@ export default function DataPrivacyPanel() {
     return (
       <div className="flex min-h-[300px] items-center justify-center p-8">
         <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-          <span className="material-symbols-outlined animate-spin text-[var(--accent)]">
-            progress_activity
-          </span>
+          <CircleNotch className="h-4 w-4 animate-spin text-[var(--accent)]" />
           Loading privacy controls…
         </div>
       </div>
@@ -141,7 +140,7 @@ export default function DataPrivacyPanel() {
       </div>
 
       {error && (
-        <div className="flex items-center justify-between rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">
+        <div className="flex items-center justify-between rounded-none border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">
           <span>{error}</span>
           <Button type="button" variant="secondary" size="sm" onClick={fetchPrivacyState}>
             Retry
@@ -150,14 +149,14 @@ export default function DataPrivacyPanel() {
       )}
 
       {exportSuccess && (
-        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-          <span className="material-symbols-outlined text-base">check_circle</span>
+        <div className="flex items-center gap-2 rounded-none border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-400">
+          <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
           Data export bundle successfully generated and downloaded.
         </div>
       )}
 
       {/* GDPR Data Export Section */}
-      <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-3 shadow-sm">
+      <section className="rounded-none border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-3 shadow-sm">
         <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-2">
           Export Account &amp; Workspace Data
         </h3>
@@ -180,7 +179,7 @@ export default function DataPrivacyPanel() {
       </section>
 
       {/* Erasure / Danger Zone Section */}
-      <section className="rounded-2xl border border-[var(--danger)]/30 bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm">
+      <section className="rounded-none border border-[var(--danger)]/30 bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm">
         <div className="border-b border-[var(--danger)]/20 pb-2">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--danger)]">
             Workspace Erasure &amp; GDPR Right to be Forgotten
@@ -188,9 +187,9 @@ export default function DataPrivacyPanel() {
         </div>
 
         {deletionScheduledAt ? (
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
+          <div className="rounded-none border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
             <div className="flex items-start gap-2">
-              <span className="material-symbols-outlined text-amber-400">warning</span>
+              <Warning className="h-5 w-5 text-amber-400 shrink-0" />
               <div>
                 <h4 className="text-sm font-bold text-amber-300">
                   Workspace Erasure Scheduled
@@ -236,7 +235,7 @@ export default function DataPrivacyPanel() {
       {/* Erasure Confirmation Modal */}
       {showDeleteModal && (
         <div data-testid="data-privacy-erasure-modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-[var(--danger)]/40 bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-none border border-[var(--danger)]/40 bg-[var(--bg-surface)] p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-[var(--danger)]">
               Confirm Workspace Erasure
             </h3>
@@ -246,7 +245,7 @@ export default function DataPrivacyPanel() {
             </p>
 
             {deleteError && (
-              <div className="rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5 text-xs text-[var(--danger)]">
+              <div className="rounded-none border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-2.5 text-xs text-[var(--danger)]">
                 {deleteError}
               </div>
             )}
@@ -256,7 +255,7 @@ export default function DataPrivacyPanel() {
               value={confirmName}
               onChange={(e) => setConfirmName(e.target.value)}
               placeholder={workspaceName}
-              className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--danger)]"
+              className="w-full rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-base md:text-sm text-[var(--text-primary)] outline-none focus:border-[var(--danger)]"
             />
 
             <div className="flex justify-end gap-2 pt-2 border-t border-[var(--border-subtle)]">

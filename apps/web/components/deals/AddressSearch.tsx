@@ -2,6 +2,12 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  MagnifyingGlass,
+  CircleNotch,
+  ArrowRight,
+  MapPin,
+} from '@phosphor-icons/react';
 import CollisionModal, { type CollisionDeal } from '@/components/deals/CollisionModal';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { loadGoogleMaps } from '@/lib/maps/loader';
@@ -338,9 +344,7 @@ export default function AddressSearch({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="relative flex items-center">
-        <span className="material-symbols-outlined pointer-events-none absolute left-3 text-[18px] text-white/40">
-          search
-        </span>
+        <MagnifyingGlass className="pointer-events-none absolute left-3 h-4 w-4 text-neutral-400" />
         <input
           id={id}
           ref={inputRef}
@@ -359,26 +363,24 @@ export default function AddressSearch({
           }}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-10 text-sm text-white outline-none placeholder:text-white/35 transition focus:border-ring"
+          className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-2.5 pl-10 pr-10 text-base md:text-sm text-white outline-none placeholder:text-neutral-500 transition focus:border-neutral-400"
         />
 
         {/* 16px Spinner (delayed 200ms) or submit icon */}
         <div className="absolute right-3 flex items-center">
           {showSpinner && loading ? (
-            <span
+            <CircleNotch
               data-testid="address-search-spinner"
-              className="material-symbols-outlined animate-spin text-[16px] text-primary"
-            >
-              progress_activity
-            </span>
+              className="h-4 w-4 animate-spin text-white"
+            />
           ) : query ? (
             <button
               type="button"
               onClick={() => handleAddressSubmit(query)}
               aria-label="Submit address search"
-              className="text-white/40 hover:text-white transition"
+              className="text-neutral-400 hover:text-white transition"
             >
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              <ArrowRight className="h-4 w-4" />
             </button>
           ) : null}
         </div>
@@ -390,7 +392,7 @@ export default function AddressSearch({
           id="address-predictions-list"
           role="listbox"
           aria-label="Address suggestions"
-          className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-xl border border-white/10 bg-[#161318] p-1 shadow-xl backdrop-blur-md"
+          className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-none border border-neutral-800 bg-neutral-900 p-1 shadow-xl"
         >
           {predictions.map((pred, index) => {
             const isSelected = index === activeIndex;
@@ -402,21 +404,19 @@ export default function AddressSearch({
                 aria-selected={isSelected}
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => handleSelectSuggestion(pred)}
-                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs transition ${
+                className={`flex cursor-pointer items-center gap-2.5 rounded-none px-3 py-2 text-xs transition ${
                   isSelected
-                    ? 'bg-[var(--accent)]/15 text-white border border-[var(--accent)]/30'
-                    : 'text-white/80 hover:bg-white/[0.06] hover:text-white'
+                    ? 'bg-neutral-800 text-white'
+                    : 'text-neutral-300 hover:bg-neutral-800/60 hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px] text-white/40 flex-shrink-0">
-                  location_on
-                </span>
+                <MapPin className="h-4 w-4 text-neutral-400 shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-medium text-white truncate">
                     {pred.mainText || pred.description}
                   </span>
                   {pred.secondaryText && (
-                    <span className="text-[11px] text-white/40 truncate">
+                    <span className="text-[11px] text-neutral-400 truncate">
                       {pred.secondaryText}
                     </span>
                   )}

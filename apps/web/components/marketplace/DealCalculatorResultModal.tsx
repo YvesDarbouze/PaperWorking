@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { CheckCircle, MapPin, X, GitFork, ArrowRight, UserCheck, CurrencyDollar, Calculator, ArrowSquareOut } from '@phosphor-icons/react';
 import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
 import type { DealCardData } from '@/components/marketplace/DealCard';
 import { formatCurrency, formatPercent } from '@/lib/projects/phase-utils';
@@ -100,7 +101,7 @@ export default function DealCalculatorResultModal({
                     data-testid="modal-interest-registered-badge"
                     className="rounded-none bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono uppercase text-emerald-400 font-semibold flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                    <CheckCircle className="h-3 w-3 text-emerald-400" />
                     <span>Investment Interest Registered</span>
                   </span>
                 )}
@@ -109,7 +110,7 @@ export default function DealCalculatorResultModal({
                 {deal.propertyName || deal.name || deal.address.split(',')[0]}
               </h2>
               <p className="text-xs text-neutral-400 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px] text-neutral-500">location_on</span>
+                <MapPin className="h-3.5 w-3.5 text-neutral-500" />
                 <span>{deal.address}</span>
               </p>
             </div>
@@ -121,7 +122,7 @@ export default function DealCalculatorResultModal({
               className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
               aria-label="Close modal"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <X className="h-5 w-5" />
             </button>
           </div>
 
@@ -131,7 +132,7 @@ export default function DealCalculatorResultModal({
             className="flex flex-wrap items-center justify-between gap-3 rounded-none border border-neutral-800 bg-neutral-900/60 p-3 text-xs"
           >
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-neutral-400">account_tree</span>
+              <GitFork className="h-4 w-4 text-neutral-400" />
               <span className="text-[10px] font-mono uppercase text-neutral-400">Overarching Project:</span>
               <Link
                 href={overarchingProjectId ? `/projects/${overarchingProjectId}` : '/projects'}
@@ -139,7 +140,7 @@ export default function DealCalculatorResultModal({
                 className="font-medium text-neutral-100 hover:text-white hover:underline flex items-center gap-1"
               >
                 <span>{overarchingProjectName}</span>
-                <span className="material-symbols-outlined text-[13px]">arrow_forward</span>
+                <ArrowRight className="h-3.5 w-3.5 text-neutral-400" />
               </Link>
             </div>
             <div className="text-[11px] font-mono text-neutral-400">
@@ -205,7 +206,7 @@ export default function DealCalculatorResultModal({
                   onClick={handleExpressInterestClick}
                   className="w-full flex items-center justify-center gap-2 rounded-none border border-neutral-700 bg-neutral-800 py-2.5 text-xs font-bold text-neutral-100 hover:bg-neutral-700 hover:text-white transition shadow-sm min-h-[44px]"
                 >
-                  <span className="material-symbols-outlined text-[16px]">how_to_reg</span>
+                  <UserCheck className="h-4 w-4" />
                   <span>{internalInterested ? 'Update Project Investment Interest' : 'Interested in Investing into this Project'}</span>
                 </button>
 
@@ -216,7 +217,7 @@ export default function DealCalculatorResultModal({
                   onClick={() => setIsCrowdfundOpen(true)}
                   className="w-full flex items-center justify-center gap-2 rounded-none bg-neutral-100 py-2.5 text-xs font-bold text-neutral-950 hover:bg-white transition shadow-sm min-h-[44px]"
                 >
-                  <span className="material-symbols-outlined text-[16px]">payments</span>
+                  <CurrencyDollar className="h-4 w-4" />
                   <span>Crowdfund / Allocate Capital</span>
                 </button>
               </div>
@@ -227,7 +228,7 @@ export default function DealCalculatorResultModal({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5 font-mono">
-                <span className="material-symbols-outlined text-neutral-400 text-[16px]">calculate</span>
+                <Calculator className="h-4 w-4 text-neutral-400" />
                 <span>Deal Calculator Output Engine (Institutional Underwriting)</span>
               </h3>
               <Link
@@ -236,7 +237,7 @@ export default function DealCalculatorResultModal({
                 className="text-[11px] font-semibold text-neutral-300 hover:text-white hover:underline flex items-center gap-1"
               >
                 <span>Open in Deal Calculator</span>
-                <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+                <ArrowSquareOut className="h-3.5 w-3.5" />
               </Link>
             </div>
 

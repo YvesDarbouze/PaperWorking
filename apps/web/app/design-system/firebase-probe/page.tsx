@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { Lightning, CheckCircle, XCircle, Check } from '@phosphor-icons/react';
 
 interface ProbeResult {
   success: boolean;
@@ -57,17 +58,17 @@ export default function FirebaseProbePage() {
         </div>
 
         {/* Header */}
-        <div className="mb-8 border-b border-white/8 pb-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-1 text-xs text-[var(--status-live)] mb-3">
-            <span className="h-2 w-2 rounded-full bg-[var(--status-live)] animate-pulse" />
+        <div className="mb-8 border-b border-border pb-6">
+          <div className="inline-flex items-center gap-2 rounded-none border border-border bg-muted/30 px-3 py-1 text-xs text-foreground mb-3">
+            <span className="h-2 w-2 rounded-none bg-emerald-500 animate-pulse" />
             Standing Data Layer Foundation
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#fdfffc]">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Firebase Emulator Proof-of-Life
           </h1>
-          <p className="mt-2 text-sm text-white/60">
+          <p className="mt-2 text-sm text-muted-foreground">
             Dev-only verification test verifying the round-trip pipeline:{' '}
-            <code className="text-xs bg-white/[0.06] px-1.5 py-0.5 rounded text-[var(--accent)]">
+            <code className="text-xs bg-muted px-1.5 py-0.5 rounded-none text-foreground font-mono">
               Client → API Route → Firebase Admin SDK → Firestore Emulator
             </code>
             . Writes, verifies reads, and deletes test probes with zero permanent data retention.
@@ -75,11 +76,11 @@ export default function FirebaseProbePage() {
         </div>
 
         {/* Action Panel */}
-        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 mb-8 shadow-xl">
+        <div className="rounded-none border border-border bg-card p-6 mb-8 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-semibold text-[#fdfffc]">Execute Round-Trip Probe</h2>
-              <p className="text-xs text-white/50 mt-1">
+              <h2 className="text-base font-semibold text-foreground">Execute Round-Trip Probe</h2>
+              <p className="text-xs text-muted-foreground mt-1">
                 Triggers an atomic write → read → delete sequence on the local Firestore emulator.
               </p>
             </div>
@@ -91,7 +92,7 @@ export default function FirebaseProbePage() {
               onClick={handleRunProbe}
               data-testid="run-firebase-probe-btn"
             >
-              <span className="material-symbols-outlined text-[18px]">bolt</span>
+              <Lightning className="h-4 w-4" weight="bold" />
               Run Firebase Probe
             </Button>
           </div>
@@ -100,36 +101,34 @@ export default function FirebaseProbePage() {
         {/* Results Display */}
         {result && (
           <div
-            className={`rounded-2xl border p-6 transition-all ${
+            className={`rounded-none border p-6 transition-all ${
               result.success
-                ? 'border-[var(--accent)]/40 bg-[var(--accent-subtle)]/20'
-                : 'border-rose-500/30 bg-rose-500/5'
+                ? 'border-emerald-500/40 bg-emerald-500/10'
+                : 'border-destructive/30 bg-destructive/10'
             }`}
             data-testid="firebase-probe-result"
           >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-2.5">
-                <span
-                  className={`material-symbols-outlined text-[24px] ${
-                    result.success ? 'text-[var(--accent)]' : 'text-rose-400'
-                  }`}
-                >
-                  {result.success ? 'check_circle' : 'error'}
-                </span>
+                {result.success ? (
+                  <CheckCircle className="h-6 w-6 text-emerald-500" weight="bold" />
+                ) : (
+                  <XCircle className="h-6 w-6 text-destructive" weight="bold" />
+                )}
                 <div>
-                  <h3 className="text-base font-bold text-[#fdfffc]">
+                  <h3 className="text-base font-bold text-foreground">
                     {result.success ? 'Round-Trip Succeeded' : 'Probe Failed'}
                   </h3>
-                  <p className="text-xs text-white/60 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {result.message || result.error}
                   </p>
                 </div>
               </div>
 
               {result.roundtripMs !== undefined && (
-                <div className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1 text-right">
-                  <span className="text-[10px] uppercase font-bold text-white/40 block">Latency</span>
-                  <span className="text-sm font-mono font-bold text-[var(--accent)]">
+                <div className="rounded-none border border-border bg-muted/40 px-3 py-1 text-right">
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground block">Latency</span>
+                  <span className="text-sm font-mono font-bold text-foreground">
                     {result.roundtripMs}ms
                   </span>
                 </div>
@@ -137,36 +136,28 @@ export default function FirebaseProbePage() {
             </div>
 
             {result.verifiedSteps && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10 text-xs">
-                <div className="flex items-center gap-2 text-white/75">
-                  <span className="material-symbols-outlined text-[16px] text-[var(--accent)]">
-                    done
-                  </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border text-xs">
+                <div className="flex items-center gap-2 text-foreground">
+                  <Check className="h-4 w-4 text-emerald-500" weight="bold" />
                   <span>1. Write Doc</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/75">
-                  <span className="material-symbols-outlined text-[16px] text-[var(--accent)]">
-                    done
-                  </span>
+                <div className="flex items-center gap-2 text-foreground">
+                  <Check className="h-4 w-4 text-emerald-500" weight="bold" />
                   <span>2. Read Back</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/75">
-                  <span className="material-symbols-outlined text-[16px] text-[var(--accent)]">
-                    done
-                  </span>
+                <div className="flex items-center gap-2 text-foreground">
+                  <Check className="h-4 w-4 text-emerald-500" weight="bold" />
                   <span>3. Delete Doc</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/75">
-                  <span className="material-symbols-outlined text-[16px] text-[var(--accent)]">
-                    done
-                  </span>
+                <div className="flex items-center gap-2 text-foreground">
+                  <Check className="h-4 w-4 text-emerald-500" weight="bold" />
                   <span>4. Cleaned Up</span>
                 </div>
               </div>
             )}
 
             {result.probeId && (
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-white/45">
+              <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-[11px] font-mono text-muted-foreground">
                 <span>Probe ID: {result.probeId}</span>
                 <span>{result.timestamp}</span>
               </div>

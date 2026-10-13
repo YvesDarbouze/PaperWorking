@@ -91,3 +91,16 @@ export async function markPlaidStatusByItemId(
 export function decryptPlaidConnectionToken(record: PlaidConnectionRecord): string {
   return decryptAccessTokenEnvelope(record.credentials);
 }
+
+export async function markPlaidConnectionsSynced(userId: string): Promise<number> {
+  const items = await listPlaidConnections(userId);
+  const now = new Date().toISOString();
+  await Promise.all(
+    items.map((item) =>
+      collection()
+        .doc(item.id)
+        .set({ syncedAt: now, lastSyncAt: now, updatedAt: now }, { merge: true }),
+    ),
+  );
+  return items.length;
+}

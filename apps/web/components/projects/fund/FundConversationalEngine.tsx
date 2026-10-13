@@ -1,4 +1,5 @@
 'use client';
+import { Check, ArrowRight, Storefront, User, UserPlus, Lightning, PlusCircle, CheckCircle, PaperPlaneRight, WarningCircle, Plus, X, ShieldCheck, Gavel } from '@phosphor-icons/react';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -422,27 +423,27 @@ export default function FundConversationalEngine({
     earnest_money: {
       trade: 'Title & Escrow',
       taskTitle: 'Earnest Money Escrow Deposit',
-      ctaText: `Need a licensed escrow officer or title company in ${propertyState}? View Marketplace`,
+      ctaText: `Need a licensed escrow officer or title company in ${propertyState}? View Directory`,
     },
     property_inspection: {
       trade: 'Home Inspector',
       taskTitle: 'Licensed Physical & Mechanical Property Inspection',
-      ctaText: `Need a licensed home or commercial inspector in ${propertyState}? View Marketplace`,
+      ctaText: `Need a licensed home or commercial inspector in ${propertyState}? View Directory`,
     },
     repair_negotiation: {
       trade: 'General Contractor',
       taskTitle: 'Inspection Defect Bids & Repair Credit Negotiation',
-      ctaText: `Need licensed contractors for repair estimates in ${propertyState}? View Marketplace`,
+      ctaText: `Need licensed contractors for repair estimates in ${propertyState}? View Directory`,
     },
     appraisal_valuation: {
       trade: 'Appraiser',
       taskTitle: 'Commercial Narrative Appraisal',
-      ctaText: `Need a licensed commercial appraiser in ${propertyState}? View Marketplace`,
+      ctaText: `Need a licensed commercial appraiser in ${propertyState}? View Directory`,
     },
     title_clearance: {
       trade: 'Title & Escrow',
       taskTitle: 'Title Commitment & Schedule B Clearance',
-      ctaText: `Need a title agency or real estate counsel in ${propertyState}? View Marketplace`,
+      ctaText: `Need a title agency or real estate counsel in ${propertyState}? View Directory`,
     },
     closing_disclosure: {
       trade: 'Title & Escrow',
@@ -745,7 +746,7 @@ export default function FundConversationalEngine({
         <div className="flex items-center gap-3">
           {syncToast && (
             <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-mono">
-              <span className="material-symbols-outlined text-[14px]">check</span>
+              <Check size={14} />
               {syncToast}
             </span>
           )}
@@ -756,7 +757,7 @@ export default function FundConversationalEngine({
             data-testid="switch-to-executive-from-conversational"
           >
             <span>Executive Workspace</span>
-            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+            <ArrowRight size={14} />
           </button>
         </div>
       </div>
@@ -776,9 +777,7 @@ export default function FundConversationalEngine({
           <div className="flex items-center gap-2">
             <span className="text-neutral-400 font-medium">Assigned To:</span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none border border-neutral-700 bg-neutral-900 text-neutral-200 font-medium">
-              <span className="material-symbols-outlined text-[14px]">
-                {stepAssignees[currentStepId]?.isVendor ? 'storefront' : 'person'}
-              </span>
+              {stepAssignees[currentStepId]?.isVendor ? <Storefront size={14} /> : <User size={14} />}
               <span>{stepAssignees[currentStepId]?.name || 'You (Lead Investor)'}</span>
               <span className="text-[10px] text-neutral-400 font-mono">
                 ({stepAssignees[currentStepId]?.role || 'Principal'})
@@ -793,7 +792,7 @@ export default function FundConversationalEngine({
               data-testid="delegate-step-btn"
               className="inline-flex items-center gap-1.5 text-xs text-neutral-300 hover:text-white px-3 py-1.5 rounded-none border border-neutral-700 bg-neutral-900 min-h-[44px] transition"
             >
-              <span className="material-symbols-outlined text-[15px]">group_add</span>
+              <UserPlus size={15} />
               <span>Delegate Step</span>
             </button>
 
@@ -910,7 +909,7 @@ export default function FundConversationalEngine({
 
             {capitalType === 'cash' && (
               <div className="p-3.5 border border-emerald-500/30 bg-emerald-500/10 text-xs text-emerald-300 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">bolt</span>
+                <Lightning size={18} />
                 <span>
                   <strong>Adaptive Branching Active:</strong> All-Cash selected. Lender applications, rate lock, and loan disclosures will be automatically skipped.
                 </span>
@@ -978,7 +977,7 @@ export default function FundConversationalEngine({
                 data-testid="btn-create-new-lending-pkg"
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1 min-h-[36px]"
               >
-                <span className="material-symbols-outlined text-[14px]">add_circle</span>
+                <PlusCircle size={14} />
                 <span>+ Create Another Lending Package</span>
               </button>
             </div>
@@ -1176,7 +1175,7 @@ export default function FundConversationalEngine({
               <div className="pt-2 border-t border-neutral-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 {applicationSubmittedMsg ? (
                   <div className="text-xs text-emerald-400 flex items-center gap-1.5 font-medium" data-testid="loan-app-submitted-notice">
-                    <span className="material-symbols-outlined text-[16px]">verified</span>
+                    <CheckCircle size={16} />
                     <span>{applicationSubmittedMsg}</span>
                   </div>
                 ) : (
@@ -1209,7 +1208,7 @@ export default function FundConversationalEngine({
                   }}
                   data-testid="btn-finalize-loan-application"
                 >
-                  <span className="material-symbols-outlined text-[16px] mr-1.5">send</span>
+                  <PaperPlaneRight size={16} className="mr-1.5" />
                   {activePackage.status === 'submitted'
                     ? 'Re-submit Application & Documents'
                     : 'Finalize Loan Application & Submit to Lender'}
@@ -1225,7 +1224,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-lender-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Need a competitive debt quote in ${propertyState}? View Subscribed Lenders`}</span>
               </button>
 
@@ -1334,7 +1333,7 @@ export default function FundConversationalEngine({
               </div>
             ) : (
               <div className="p-3.5 border border-amber-500/30 bg-amber-500/10 text-xs text-amber-300 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">warning</span>
+                <WarningCircle size={18} />
                 <span>
                   Floating rate active at {interestRatePct}%. We will issue a mandatory warning 14 days prior to settlement if rates spike.
                 </span>
@@ -1540,7 +1539,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-inspector-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Need a licensed home or commercial inspector in ${propertyState}? View Marketplace`}</span>
               </button>
 
@@ -1602,7 +1601,7 @@ export default function FundConversationalEngine({
               <div>
                 <span className="text-[10px] uppercase font-bold text-neutral-400">Cash-to-Close Adjustment</span>
                 <p className="text-xs font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">verified</span>
+                  <CheckCircle size={14} />
                   Reduces Cash Required by {formatCurrency(
                     inspectionIssues.reduce(
                       (sum, item) => sum + (item.sellerResponse === 'agreed' && item.requestedResolution === 'closing_credit' ? (item.agreedCreditAmount ?? item.estimatedCost) : 0),
@@ -1625,7 +1624,7 @@ export default function FundConversationalEngine({
                   onClick={() => setShowConvAddIssue(!showConvAddIssue)}
                   className="h-8 rounded-none px-3 text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
                 >
-                  <span className="material-symbols-outlined text-[16px] mr-1">add</span>
+                  <Plus size={16} className="mr-1" />
                   Add Defect
                 </Button>
               </div>
@@ -1771,7 +1770,7 @@ export default function FundConversationalEngine({
                         onClick={() => setInspectionIssues((prev) => prev.filter((i) => i.id !== issue.id))}
                         className="p-1.5 text-neutral-500 hover:text-red-400"
                       >
-                        <span className="material-symbols-outlined text-[16px]">close</span>
+                        <X size={16} />
                       </button>
                     </div>
                   </div>
@@ -1802,7 +1801,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-contractor-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Need licensed contractors for repair estimates in ${propertyState}? View Marketplace`}</span>
               </button>
 
@@ -1934,7 +1933,7 @@ export default function FundConversationalEngine({
               </div>
             ) : (
               <div className="p-3.5 border border-emerald-500/30 bg-emerald-500/10 text-xs text-emerald-300 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">verified</span>
+                <CheckCircle size={18} />
                 <span>
                   Appraisal satisfies senior loan underwriting at {formatCurrency(appraisedValue)}. Contingency cleared.
                 </span>
@@ -1949,7 +1948,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-appraiser-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Need a licensed commercial appraiser in ${propertyState}? View Marketplace`}</span>
               </button>
 
@@ -2298,7 +2297,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-title-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Need a title company or insurance broker in ${propertyState}? View Marketplace`}</span>
               </button>
 
@@ -2353,7 +2352,7 @@ export default function FundConversationalEngine({
               <div>
                 <span className="text-[10px] uppercase font-bold text-neutral-400">TRID Tolerance Audit</span>
                 <p className="text-xs font-semibold text-emerald-400 mt-1 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[14px]">verified</span>
+                  <CheckCircle size={14} />
                   Within Legal Limits
                 </p>
               </div>
@@ -2510,7 +2509,7 @@ export default function FundConversationalEngine({
             {/* Formal Final Walk-Through Sign-off Gate */}
             <div className="p-4 border border-emerald-500/40 bg-emerald-500/5 space-y-3 rounded-none">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                <span className="material-symbols-outlined text-[18px]">verified</span>
+                <CheckCircle size={18} />
                 <span>Final Walk-Through Authorization Gate</span>
               </div>
               <p className="text-xs text-neutral-200">
@@ -2543,7 +2542,7 @@ export default function FundConversationalEngine({
                 className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
                 data-testid="toggle-walkthrough-marketplace-help"
               >
-                <span className="material-symbols-outlined text-[16px]">storefront</span>
+                <Storefront size={16} />
                 <span>{`Coordinate closing walk-through with title escrow in ${propertyState}`}</span>
               </button>
 
@@ -2619,7 +2618,7 @@ export default function FundConversationalEngine({
             {/* Anti-Fraud Verbal Phone Verification Gate */}
             <div className="p-4 border border-amber-500/40 bg-amber-500/5 space-y-3 rounded-none">
               <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                <ShieldCheck size={18} />
                 <span>Mandatory Two-Party Phone Verification Gate</span>
               </div>
               <p className="text-xs text-neutral-200">
@@ -2834,7 +2833,7 @@ export default function FundConversationalEngine({
             {closingFinalized ? (
               <div className="p-4 border border-emerald-500/40 bg-emerald-500/10 text-xs text-emerald-300 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[20px]">verified</span>
+                  <CheckCircle size={20} />
                   <span>
                     <strong>Transaction Legally Closed!</strong> Project has transitioned into Phase 03 · Hold.
                   </span>
@@ -2859,7 +2858,7 @@ export default function FundConversationalEngine({
                   onClick={handleFinalizeAndAdvanceToHold}
                   data-testid="btn-record-deed-advance-hold"
                 >
-                  <span className="material-symbols-outlined text-[16px] mr-1.5">gavel</span>
+                  <Gavel size={16} className="mr-1.5" />
                   Record Deed & Advance to Phase 03 · Hold
                 </Button>
               </div>
@@ -2867,7 +2866,7 @@ export default function FundConversationalEngine({
           </div>
         )}
 
-        {/* Contextual Subscribed Vendor Marketplace Assistance (All Steps) */}
+        {/* Contextual Subscribed Vendor Directory Assistance (All Steps) */}
         <div className="pt-4 border-t border-neutral-800/80 space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <button
@@ -2876,11 +2875,11 @@ export default function FundConversationalEngine({
               data-testid="toggle-step-vendor-help"
               className="text-xs text-emerald-400 hover:text-emerald-300 underline flex items-center gap-1.5 min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">storefront</span>
+              <Storefront size={16} />
               <span>
                 {activeVendorHelp
-                  ? 'Hide Vendor Marketplace'
-                  : stepVendorConfig[currentStepId]?.ctaText || `Need assistance in ${propertyState}? View Marketplace`}
+                  ? 'Hide Vendor Directory'
+                  : stepVendorConfig[currentStepId]?.ctaText || `Need assistance in ${propertyState}? View Directory`}
               </span>
             </button>
 

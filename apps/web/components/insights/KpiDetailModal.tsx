@@ -1,4 +1,5 @@
 'use client';
+import { X, CheckCircle, TreeStructure, DownloadSimple } from '@phosphor-icons/react';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -261,7 +262,7 @@ export function KpiDetailModal({
         aria-modal="true"
         aria-labelledby="kpi-modal-title"
         tabIndex={-1}
-        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl border-t md:border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[var(--bg-elevated,#18151c)] shadow-2xl transition-all duration-200 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-0"
+        className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-none border-t md:border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[var(--bg-elevated,#18151c)] shadow-2xl transition-all duration-200 pb-[calc(1rem+env(safe-area-inset-bottom))] md:pb-0"
       >
         {/* Mobile Drag Handle */}
         <div className="flex justify-center pt-2.5 pb-1 md:hidden">
@@ -305,7 +306,7 @@ export function KpiDetailModal({
                 data-testid="modal-kpi-value"
                 className={`text-3xl font-extrabold tracking-tight tabular-nums ${
                   kpi.unit === 'percent' || kpi.unit === 'ratio'
-                    ? 'text-[var(--accent,#00dd94)]'
+                    ? 'text-[var(--accent,currentColor)]'
                     : 'text-[var(--text-primary,#ffffff)]'
                 }`}
               >
@@ -320,9 +321,9 @@ export function KpiDetailModal({
                 if (triggerRef?.current) triggerRef.current.focus();
               }}
               aria-label="Close details"
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--text-muted,#9ca3af)] hover:bg-white/10 hover:text-[var(--text-primary,#ffffff)] transition active:scale-95 touch-press"
+              className="flex h-11 w-11 items-center justify-center rounded-none text-[var(--text-muted,#9ca3af)] hover:bg-white/10 hover:text-[var(--text-primary,#ffffff)] transition active:scale-95 touch-press"
             >
-              <span className="material-symbols-outlined text-xl">close</span>
+              <X size={20} />
             </button>
           </div>
         </div>
@@ -332,9 +333,9 @@ export function KpiDetailModal({
           {downloadToast && (
             <div
               data-testid="modal-download-toast"
-              className="flex items-center gap-2 rounded-lg border border-[var(--accent,#00dd94)]/40 bg-[var(--accent,#00dd94)]/10 px-4 py-2.5 text-xs font-medium text-[var(--accent,#00dd94)]"
+              className="flex items-center gap-2 rounded-lg border border-[var(--accent,currentColor)]/40 bg-[var(--accent,currentColor)]/10 px-4 py-2.5 text-xs font-medium text-[var(--accent,currentColor)]"
             >
-              <span className="material-symbols-outlined text-sm">check_circle</span>
+              <CheckCircle size={14} />
               <span>{downloadToast}</span>
             </div>
           )}
@@ -367,7 +368,7 @@ export function KpiDetailModal({
                 </span>
               )}
             </div>
-            <div className="rounded-xl border border-white/5 bg-black/40 p-4 font-mono text-xs space-y-2.5">
+            <div className="rounded-none border border-white/5 bg-black/40 p-4 font-mono text-xs space-y-2.5">
               <div>
                 <span className="text-[var(--text-muted,#9ca3af)] uppercase text-[10px] tracking-wider block mb-1">
                   Canonical Formula
@@ -382,7 +383,7 @@ export function KpiDetailModal({
                 </span>
                 <div
                   data-testid="modal-formula-substituted"
-                  className="text-sm font-semibold text-[var(--status-live,var(--accent,#00dd94))]"
+                  className="text-sm font-semibold text-[var(--status-live,var(--accent,currentColor))]"
                 >
                   {substitutedFormula}
                 </div>
@@ -393,7 +394,7 @@ export function KpiDetailModal({
             {derivedMetricsList.length > 0 && (
               <div data-testid="modal-derived-metrics" className="mt-2 space-y-2">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted,#9ca3af)]">
-                  <span className="material-symbols-outlined text-[14px] text-[var(--accent,#00dd94)]">account_tree</span>
+                  <TreeStructure size={14} className="text-primary" />
                   <span>Supporting Derived Metrics</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -426,12 +427,12 @@ export function KpiDetailModal({
               </h3>
               <Link
                 href={projectEditUrl}
-                className="text-xs font-medium text-[var(--accent,#00dd94)] hover:underline"
+                className="text-xs font-medium text-[var(--accent,currentColor)] hover:underline"
               >
                 Edit in Project →
               </Link>
             </div>
-            <div className="divide-y divide-white/5 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div className="divide-y divide-white/5 rounded-none border border-white/5 bg-white/[0.02]">
               {kpi.inputs.map((inp, idx) => {
                 const isAvail = inp.isAvailable(project);
                 const val = inp.getValue(project, metrics);
@@ -473,7 +474,7 @@ export function KpiDetailModal({
               Visualization & Benchmark
             </h3>
 
-            <div className="rounded-xl border border-white/5 bg-black/40 p-4">
+            <div className="rounded-none border border-white/5 bg-black/40 p-4">
               {kpi.vizType === 'gauge' && (
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs text-[var(--text-muted,#9ca3af)]">
@@ -483,7 +484,7 @@ export function KpiDetailModal({
                   </div>
                   <div className="relative h-3 w-full overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full rounded-full bg-[var(--accent,#00dd94)]"
+                      className="h-full rounded-full bg-[var(--accent,currentColor)]"
                       style={{
                         width: `${Math.min(100, Math.max(15, (rawVal || 50) * (kpi.unit === 'ratio' ? 40 : 1)))}%`,
                       }}
@@ -502,7 +503,7 @@ export function KpiDetailModal({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-white">Equity Capitalization Split</span>
-                      <span className="font-mono text-[var(--accent,#00dd94)] tabular-nums">
+                      <span className="font-mono text-[var(--accent,currentColor)] tabular-nums">
                         Total Equity: {formatCurrency(metrics?.derived.totalCashInvested ?? 150000)}
                       </span>
                     </div>
@@ -510,7 +511,7 @@ export function KpiDetailModal({
                     {/* Proportional Split Bar */}
                     <div className="relative flex h-5 w-full overflow-hidden rounded-lg bg-white/10 p-0.5">
                       <div
-                        className="flex items-center justify-center rounded-l bg-[var(--accent,#00dd94)]/80 transition-all duration-300"
+                        className="flex items-center justify-center rounded-l bg-[var(--accent,currentColor)]/80 transition-all duration-300"
                         style={{ width: `${metrics?.derived.lpEquityPct ?? 90}%` }}
                         title={`LP Share: ${metrics?.derived.lpEquityPct ?? 90}%`}
                       >
@@ -531,7 +532,7 @@ export function KpiDetailModal({
 
                     <div className="flex items-center justify-between font-mono text-xs tabular-nums text-[var(--text-muted,#9ca3af)]">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-[var(--accent,#00dd94)]" />
+                        <span className="h-2 w-2 rounded-full bg-[var(--accent,currentColor)]" />
                         LP Equity: {formatCurrency(metrics?.derived.lpEquity ?? 135000)}
                       </span>
                       <span className="flex items-center gap-1.5">
@@ -546,7 +547,7 @@ export function KpiDetailModal({
                     <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted,#9ca3af)]">
                       Distribution Waterfall Tier Breakdown
                     </div>
-                    <div className="overflow-hidden rounded-xl border border-white/5 bg-white/[0.02]">
+                    <div className="overflow-hidden rounded-none border border-white/5 bg-white/[0.02]">
                       <table className="w-full text-left text-xs font-mono">
                         <thead className="border-b border-white/10 bg-white/[0.04] text-[10px] uppercase tracking-wider text-[var(--text-muted,#9ca3af)]">
                           <tr>
@@ -564,7 +565,7 @@ export function KpiDetailModal({
                               <tr key={tier.tierNumber} className="hover:bg-white/[0.02]">
                                 <td className="py-2 px-3 font-sans font-medium text-white">{tier.name}</td>
                                 <td className="py-2 px-3 text-[var(--text-muted,#9ca3af)]">{tier.thresholdDescription}</td>
-                                <td className="py-2 px-3 text-center text-[var(--accent,#00dd94)]">{tier.lpSplitPct}%</td>
+                                <td className="py-2 px-3 text-center text-[var(--accent,currentColor)]">{tier.lpSplitPct}%</td>
                                 <td className="py-2 px-3 text-center text-[var(--text-secondary,#d1d5db)]">{tier.gpSplitPct}%</td>
                                 <td className="py-2 px-3 text-right text-white">
                                   {formatCurrency(tier.totalAmount)}
@@ -573,7 +574,7 @@ export function KpiDetailModal({
                                   <span
                                     className={`rounded px-1.5 py-0.5 text-[10px] font-sans font-medium ${
                                       tier.totalAmount > 0
-                                        ? 'bg-[var(--accent,#00dd94)]/10 text-[var(--accent,#00dd94)]'
+                                        ? 'bg-[var(--accent,currentColor)]/10 text-[var(--accent,currentColor)]'
                                         : 'bg-white/5 text-white/40'
                                     }`}
                                   >
@@ -587,11 +588,11 @@ export function KpiDetailModal({
                               <tr className="hover:bg-white/[0.02]">
                                 <td className="py-2 px-3 font-sans font-medium text-white">Tier 1: Return of Capital</td>
                                 <td className="py-2 px-3 text-[var(--text-muted,#9ca3af)]">100% Invested Capital</td>
-                                <td className="py-2 px-3 text-center text-[var(--accent,#00dd94)]">90%</td>
+                                <td className="py-2 px-3 text-center text-[var(--accent,currentColor)]">90%</td>
                                 <td className="py-2 px-3 text-center text-[var(--text-secondary,#d1d5db)]">10%</td>
                                 <td className="py-2 px-3 text-right text-white">$150,000</td>
                                 <td className="py-2 px-3 text-right">
-                                  <span className="rounded bg-[var(--accent,#00dd94)]/10 px-1.5 py-0.5 text-[10px] font-sans font-medium text-[var(--accent,#00dd94)]">
+                                  <span className="rounded bg-[var(--accent,currentColor)]/10 px-1.5 py-0.5 text-[10px] font-sans font-medium text-[var(--accent,currentColor)]">
                                     Met
                                   </span>
                                 </td>
@@ -599,7 +600,7 @@ export function KpiDetailModal({
                               <tr className="hover:bg-white/[0.02]">
                                 <td className="py-2 px-3 font-sans font-medium text-white">Tier 2: Preferred Return</td>
                                 <td className="py-2 px-3 text-[var(--text-muted,#9ca3af)]">8.0% Annual Pref</td>
-                                <td className="py-2 px-3 text-center text-[var(--accent,#00dd94)]">100%</td>
+                                <td className="py-2 px-3 text-center text-[var(--accent,currentColor)]">100%</td>
                                 <td className="py-2 px-3 text-center text-[var(--text-secondary,#d1d5db)]">0%</td>
                                 <td className="py-2 px-3 text-right text-white">—</td>
                                 <td className="py-2 px-3 text-right">
@@ -611,7 +612,7 @@ export function KpiDetailModal({
                               <tr className="hover:bg-white/[0.02]">
                                 <td className="py-2 px-3 font-sans font-medium text-white">Tier 3: Promote</td>
                                 <td className="py-2 px-3 text-[var(--text-muted,#9ca3af)]">Profits Above 8% Pref</td>
-                                <td className="py-2 px-3 text-center text-[var(--accent,#00dd94)]">80%</td>
+                                <td className="py-2 px-3 text-center text-[var(--accent,currentColor)]">80%</td>
                                 <td className="py-2 px-3 text-center text-[var(--text-secondary,#d1d5db)]">20%</td>
                                 <td className="py-2 px-3 text-right text-white">—</td>
                                 <td className="py-2 px-3 text-right">
@@ -631,7 +632,7 @@ export function KpiDetailModal({
                   <div className="grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">
                     <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5">
                       <div className="text-[10px] text-[var(--text-muted,#9ca3af)]">LP Levered IRR</div>
-                      <div className="font-mono text-sm font-bold text-[var(--accent,#00dd94)] tabular-nums">
+                      <div className="font-mono text-sm font-bold text-[var(--accent,currentColor)] tabular-nums">
                         {metrics?.derived.lpIrr !== undefined && metrics?.derived.lpIrr !== null
                           ? `${metrics.derived.lpIrr.toFixed(1)}%`
                           : '—'}
@@ -673,7 +674,7 @@ export function KpiDetailModal({
                     <span className="text-[var(--text-muted,#9ca3af)]">
                       Capital Stack Sizing Band
                     </span>
-                    <span className="font-mono text-[var(--accent,#00dd94)] tabular-nums">
+                    <span className="font-mono text-[var(--accent,currentColor)] tabular-nums">
                       Baseline: {formattedVal}
                     </span>
                   </div>
@@ -690,8 +691,8 @@ export function KpiDetailModal({
                           : '—'}
                       </div>
                     </div>
-                    <div className="rounded-lg border border-[var(--accent,#00dd94)]/40 bg-[var(--accent,#00dd94)]/10 p-2.5 shadow-sm">
-                      <div className="text-[10px] uppercase font-bold text-[var(--accent,#00dd94)]">
+                    <div className="rounded-lg border border-[var(--accent,currentColor)]/40 bg-[var(--accent,currentColor)]/10 p-2.5 shadow-sm">
+                      <div className="text-[10px] uppercase font-bold text-[var(--accent,currentColor)]">
                         Base Case (Target)
                       </div>
                       <div className="mt-1 font-mono font-bold text-[var(--text-primary,#ffffff)] tabular-nums">
@@ -727,14 +728,14 @@ export function KpiDetailModal({
                   <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono">
                     <div className="rounded border border-white/5 bg-white/5 p-2">
                       <div className="text-[10px] text-[var(--text-muted,#9ca3af)]">-50 bps</div>
-                      <div className="text-[var(--status-live,var(--accent,#00dd94))] tabular-nums">+8.2% Value</div>
+                      <div className="text-[var(--status-live,var(--accent,currentColor))] tabular-nums">+8.2% Value</div>
                     </div>
                     <div className="rounded border border-white/5 bg-white/5 p-2">
                       <div className="text-[10px] text-[var(--text-muted,#9ca3af)]">-25 bps</div>
-                      <div className="text-[var(--status-live,var(--accent,#00dd94))] tabular-nums">+4.0% Value</div>
+                      <div className="text-[var(--status-live,var(--accent,currentColor))] tabular-nums">+4.0% Value</div>
                     </div>
-                    <div className="rounded border border-[var(--accent,#00dd94)]/40 bg-[var(--accent,#00dd94)]/10 p-2 font-bold shadow-xs">
-                      <div className="text-[10px] text-[var(--accent,#00dd94)]">Base Case</div>
+                    <div className="rounded border border-[var(--accent,currentColor)]/40 bg-[var(--accent,currentColor)]/10 p-2 font-bold shadow-xs">
+                      <div className="text-[10px] text-[var(--accent,currentColor)]">Base Case</div>
                       <div className="tabular-nums">{formattedVal}</div>
                     </div>
                     <div className="rounded border border-white/5 bg-white/5 p-2">
@@ -759,14 +760,14 @@ export function KpiDetailModal({
                     <span>Debt Coverage</span>
                   </div>
                   <div className="divide-y divide-white/5 text-xs font-mono tabular-nums">
-                    <div className="flex justify-between py-1.5 text-[var(--accent,#00dd94)]">
+                    <div className="flex justify-between py-1.5 text-[var(--accent,currentColor)]">
                       <span>Mild (-2.5% rent / 5% vac)</span>
                       <span>-3.2%</span>
                       <span>1.38×</span>
                     </div>
-                    <div className="flex items-center justify-between rounded-md border border-[var(--accent,#00dd94)]/40 bg-[var(--accent,#00dd94)]/10 px-2 py-1.5 font-bold text-white shadow-xs">
+                    <div className="flex items-center justify-between rounded-md border border-[var(--accent,currentColor)]/40 bg-[var(--accent,currentColor)]/10 px-2 py-1.5 font-bold text-white shadow-xs">
                       <span className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent,#00dd94)]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent,currentColor)]" />
                         Base Underwritten Case
                       </span>
                       <span>0.0%</span>
@@ -796,7 +797,7 @@ export function KpiDetailModal({
                     {[1, 2, 3, 4, 5].map((yr) => (
                       <div key={yr} className="flex flex-1 flex-col items-center gap-1">
                         <div
-                          className="w-full rounded-t bg-[var(--accent,#00dd94)]"
+                          className="w-full rounded-t bg-[var(--accent,currentColor)]"
                           style={{ height: `${30 + yr * 12}%` }}
                         />
                         <span className="text-[10px] font-mono text-[var(--text-muted,#9ca3af)]">
@@ -822,11 +823,9 @@ export function KpiDetailModal({
           </section>
 
           {/* 5. THRESHOLD CONTEXT */}
-          <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs">
+          <section className="rounded-none border border-white/10 bg-white/[0.03] p-4 text-xs">
             <div className="flex items-center gap-2 font-medium text-[var(--text-primary,#ffffff)]">
-              <span className="material-symbols-outlined text-sm text-[var(--accent,#00dd94)]">
-                verified
-              </span>
+              <CheckCircle size={14} className="text-primary" />
               <span>Institutional Benchmark: {kpi.thresholdContext.benchmark}</span>
             </div>
             <p className="mt-1 text-[var(--text-muted,#9ca3af)]">
@@ -843,7 +842,7 @@ export function KpiDetailModal({
               size="md"
               data-testid="modal-export-csv-btn"
               onClick={handleExportCsv}
-              icon={<span className="material-symbols-outlined text-base">download</span>}
+              icon={<DownloadSimple size={16} />}
             >
               Export to CSV
             </Button>

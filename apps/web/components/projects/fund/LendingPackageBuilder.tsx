@@ -1,4 +1,5 @@
 'use client';
+import { Plus, X, EnvelopeSimpleOpen, FileText, CheckCircle, WarningCircle, PaperPlaneRight } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -206,7 +207,7 @@ export default function LendingPackageBuilder({
             onClick={() => setIsCreatingNew(true)}
             data-testid="create-lending-package-btn"
           >
-            <span className="material-symbols-outlined text-[16px] mr-1.5">add</span>
+            <Plus size={16} className="mr-1.5" />
             New Lending Package
           </Button>
         </div>
@@ -263,7 +264,7 @@ export default function LendingPackageBuilder({
               onClick={() => setIsCreatingNew(false)}
               className="text-neutral-400 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
-              <span className="material-symbols-outlined text-[18px]">close</span>
+              <X size={18} />
             </button>
           </div>
 
@@ -373,7 +374,7 @@ export default function LendingPackageBuilder({
               className="flex items-center justify-between rounded-none border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-300"
             >
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">mark_email_read</span>
+                <EnvelopeSimpleOpen size={18} />
                 <span>
                   <strong>{`Loan Application Finalized & Submitted to ${activePkg.targetLender}`}</strong> on{' '}
                   {activePkg.submissionDate ? new Date(activePkg.submissionDate).toLocaleDateString() : 'Today'}.
@@ -433,9 +434,7 @@ export default function LendingPackageBuilder({
                     <td className="px-4 py-3 text-neutral-400">
                       {doc.fileName ? (
                         <span className="flex items-center gap-1.5 text-neutral-200">
-                          <span className="material-symbols-outlined text-[14px] text-emerald-400">
-                            check_circle
-                          </span>
+                          <CheckCircle size={14} className="text-emerald-400" />
                           {doc.fileName} ({doc.fileSize || '1.8 MB'})
                         </span>
                       ) : (
@@ -453,12 +452,12 @@ export default function LendingPackageBuilder({
             <div className="text-xs text-neutral-400">
               {isReadyToSubmit ? (
                 <span className="text-emerald-400 flex items-center gap-1.5 font-semibold">
-                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  <CheckCircle size={16} />
                   All mandatory files bundled and ready for lender review.
                 </span>
               ) : (
                 <span className="text-amber-400 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]">warning</span>
+                  <WarningCircle size={16} />
                   Missing {totalRequired - requiredIncluded} mandatory documents to complete application.
                 </span>
               )}
@@ -474,7 +473,7 @@ export default function LendingPackageBuilder({
                 disabled={activePkg.status === 'submitted'}
                 data-testid="finalize-loan-app-btn"
               >
-                <span className="material-symbols-outlined text-[16px] mr-1.5">send</span>
+                <PaperPlaneRight size={16} className="mr-1.5" />
                 {activePkg.status === 'submitted'
                   ? 'Application Submitted'
                   : 'Finalize Loan Application & Submit to Lender'}

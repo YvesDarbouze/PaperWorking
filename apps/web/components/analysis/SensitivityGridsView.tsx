@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { GridFour, FilePdf } from '@phosphor-icons/react';
 import type { SensitivityGridsResult, SensitivityCell } from '@paperworking/validation';
 
 interface SensitivityGridsViewProps {
@@ -32,18 +33,18 @@ export function SensitivityGridsView({
   return (
     <div
       data-testid="sensitivity-grids-container"
-      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+      className="rounded-none border border-neutral-800 bg-neutral-900/60 p-5 space-y-4"
     >
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px] text-emerald-400">grid_on</span>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white/80">
+            <GridFour className="h-4 w-4 text-white" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-200">
               Institutional Sensitivity Matrix (5x5)
             </h3>
           </div>
-          <p className="mt-0.5 text-[11px] text-white/50">
+          <p className="mt-0.5 text-[11px] text-neutral-400">
             Every cell is a discrete server engine execution — zero interpolation. Base Case highlighted.
           </p>
         </div>
@@ -56,23 +57,23 @@ export function SensitivityGridsView({
               onClick={onExportPdf}
               disabled={isExportingPdf}
               data-testid="export-pdf-btn"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-1.5 text-xs font-semibold text-neutral-200 hover:bg-neutral-700 hover:text-white transition-colors disabled:opacity-50"
             >
-              <span className="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+              <FilePdf className="h-4 w-4" />
               <span>{isExportingPdf ? 'Generating...' : 'Export PDF'}</span>
             </button>
           )}
 
           {/* Metric Selector (IRR vs CoC) */}
-          <div className="inline-flex rounded-lg bg-black/40 p-0.5 border border-white/10">
+          <div className="inline-flex rounded-none bg-neutral-950 p-0.5 border border-neutral-800">
             <button
               type="button"
               data-testid="sensitivity-metric-irr"
               onClick={() => setActiveMetric('irr')}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`rounded-none px-2.5 py-1 text-xs font-semibold transition-all ${
                 activeMetric === 'irr'
-                  ? 'bg-emerald-500 text-black shadow-sm font-bold'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-neutral-200 text-black shadow-sm font-bold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
               IRR (%)
@@ -81,10 +82,10 @@ export function SensitivityGridsView({
               type="button"
               data-testid="sensitivity-metric-coc"
               onClick={() => setActiveMetric('coc')}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
+              className={`rounded-none px-2.5 py-1 text-xs font-semibold transition-all ${
                 activeMetric === 'coc'
-                  ? 'bg-emerald-500 text-black shadow-sm font-bold'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-neutral-200 text-black shadow-sm font-bold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
               Cash-on-Cash (%)
@@ -94,28 +95,28 @@ export function SensitivityGridsView({
       </div>
 
       {/* Grid Dimension Tabs */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+      <div className="flex items-center gap-2 border-b border-neutral-800 pb-2">
         <button
           type="button"
           data-testid="sensitivity-tab-exit"
           onClick={() => setActiveGrid('exit_value')}
           className={`text-xs font-semibold pb-1 transition-colors border-b-2 -mb-[9px] ${
             activeGrid === 'exit_value'
-              ? 'border-emerald-400 text-emerald-400 font-bold'
-              : 'border-transparent text-white/50 hover:text-white/80'
+              ? 'border-white text-white font-bold'
+              : 'border-transparent text-neutral-400 hover:text-neutral-200'
           }`}
         >
           Rent vs. Exit Valuation (±10%)
         </button>
-        <span className="text-white/20">•</span>
+        <span className="text-neutral-600">•</span>
         <button
           type="button"
           data-testid="sensitivity-tab-rate"
           onClick={() => setActiveGrid('interest_rate')}
           className={`text-xs font-semibold pb-1 transition-colors border-b-2 -mb-[9px] ${
             activeGrid === 'interest_rate'
-              ? 'border-emerald-400 text-emerald-400 font-bold'
-              : 'border-transparent text-white/50 hover:text-white/80'
+              ? 'border-white text-white font-bold'
+              : 'border-transparent text-neutral-400 hover:text-neutral-200'
           }`}
         >
           Rent vs. Interest Rate (±200 bps)
@@ -131,19 +132,19 @@ export function SensitivityGridsView({
               <th className="p-1"></th>
               <th
                 colSpan={5}
-                className="py-1 text-[10px] font-sans font-bold uppercase tracking-wider text-white/50 border-b border-white/10"
+                className="py-1 text-[10px] font-sans font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-800"
               >
                 {colDimensionLabel}
               </th>
             </tr>
             {/* Column Labels */}
-            <tr className="border-b border-white/10 text-white/40 text-[10px]">
-              <th className="py-2 px-3 text-left font-sans text-white/50">Rent Shock</th>
+            <tr className="border-b border-neutral-800 text-neutral-400 text-[10px]">
+              <th className="py-2 px-3 text-left font-sans text-neutral-400">Rent Shock</th>
               {currentGrid.colSteps.map((step, idx) => (
                 <th
                   key={idx}
                   className={`py-2 px-2.5 font-bold ${
-                    step === 0 ? 'text-emerald-400' : 'text-white/70'
+                    step === 0 ? 'text-white font-extrabold' : 'text-neutral-300'
                   }`}
                 >
                   {step === 0 ? 'Base' : activeGrid === 'exit_value' ? `${step > 0 ? '+' : ''}${step}%` : `${step > 0 ? '+' : ''}${step} bps`}
@@ -151,13 +152,13 @@ export function SensitivityGridsView({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-neutral-800">
             {currentGrid.cells.map((row, rIdx) => {
               const rowStep = currentGrid.rowSteps[rIdx];
               return (
-                <tr key={rIdx} className="hover:bg-white/[0.01]">
+                <tr key={rIdx} className="hover:bg-neutral-800/20">
                   {/* Row Header */}
-                  <td className={`py-2.5 px-3 text-left font-bold ${rowStep === 0 ? 'text-emerald-400 font-extrabold' : 'text-white/70'}`}>
+                  <td className={`py-2.5 px-3 text-left font-bold ${rowStep === 0 ? 'text-white font-extrabold' : 'text-neutral-300'}`}>
                     {rowStep === 0 ? 'Base Rent' : `${rowStep > 0 ? '+' : ''}${rowStep}%`}
                   </td>
 
@@ -167,22 +168,22 @@ export function SensitivityGridsView({
                     const value = activeMetric === 'irr' ? cell.irrPct : cell.cashOnCashPct;
 
                     // Color ramp styling
-                    let textColor = 'text-white/90';
-                    let bgColor = 'bg-white/[0.01]';
+                    let textColor = 'text-neutral-200';
+                    let bgColor = 'bg-neutral-900/30';
 
                     if (isBase) {
-                      bgColor = 'bg-emerald-500/15 border-2 border-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.2)]';
-                      textColor = 'text-emerald-300 font-extrabold text-sm';
+                      bgColor = 'bg-neutral-800 border-2 border-white';
+                      textColor = 'text-white font-extrabold text-sm';
                     } else if (value === null) {
                       textColor = 'text-amber-400/90 text-[10px] font-normal';
                       bgColor = 'bg-amber-500/5';
                     } else if (value >= 8.0) {
-                      textColor = 'text-emerald-400 font-bold';
-                      bgColor = 'bg-emerald-500/5';
+                      textColor = 'text-white font-bold';
+                      bgColor = 'bg-neutral-800/60';
                     } else if (value >= 4.0) {
-                      textColor = 'text-emerald-300/90 font-medium';
+                      textColor = 'text-neutral-200 font-medium';
                     } else if (value >= 0) {
-                      textColor = 'text-white/80';
+                      textColor = 'text-neutral-300';
                     } else {
                       textColor = 'text-red-400 font-semibold';
                       bgColor = 'bg-red-500/5';
@@ -192,10 +193,10 @@ export function SensitivityGridsView({
                       <td
                         key={cIdx}
                         data-testid={isBase ? 'sensitivity-base-cell' : `sensitivity-cell-${rIdx}-${cIdx}`}
-                        className={`py-2.5 px-2 relative transition-all rounded ${bgColor}`}
+                        className={`py-2.5 px-2 relative transition-all rounded-none ${bgColor}`}
                       >
                         {isBase && (
-                          <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 rounded bg-emerald-500 px-1 py-0.2 text-[8px] font-sans font-extrabold text-black uppercase tracking-wider">
+                          <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 rounded-none bg-white px-1 py-0.2 text-[8px] font-sans font-extrabold text-black uppercase tracking-wider">
                             Base
                           </span>
                         )}
@@ -230,18 +231,18 @@ export function SensitivityGridsView({
       </div>
 
       {/* Legend & Footnote */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-white/45 pt-1 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-neutral-400 pt-1 gap-2">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-sm bg-emerald-500/40 border border-emerald-400"></span>
+            <span className="inline-block h-2 w-2 rounded-none bg-neutral-800 border border-white"></span>
             <span>Base Case (0%, 0%)</span>
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-sm bg-emerald-500/20"></span>
+            <span className="inline-block h-2 w-2 rounded-none bg-neutral-700"></span>
             <span>Accretive (&gt;4%)</span>
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-2 w-2 rounded-sm bg-red-500/20"></span>
+            <span className="inline-block h-2 w-2 rounded-none bg-red-500/20"></span>
             <span>Dilutive (&lt;0%)</span>
           </span>
         </div>

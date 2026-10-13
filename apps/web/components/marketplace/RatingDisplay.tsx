@@ -1,3 +1,5 @@
+import { Star } from '@phosphor-icons/react';
+
 interface RatingDisplayProps {
   rating?: number | null;
   totalReviews?: number | null;
@@ -16,11 +18,11 @@ export function RatingDisplay({ rating, totalReviews, variant = 'default' }: Rat
   if (!hasReviews) {
     return (
       <div className="flex items-center gap-2">
-        <span className="rounded border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-400">
+        <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-neutral-300">
           New Vendor
         </span>
         {variant === 'default' ? (
-          <span className="text-[10px] font-medium italic text-white/45">No reviews yet</span>
+          <span className="text-[10px] font-normal italic text-neutral-400">No reviews yet</span>
         ) : null}
       </div>
     );
@@ -28,12 +30,12 @@ export function RatingDisplay({ rating, totalReviews, variant = 'default' }: Rat
 
   return (
     <div className="flex items-center gap-2">
-      <span className="inline-flex items-center gap-1 rounded border border-amber-400/20 bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold text-amber-400">
-        <span className="material-symbols-outlined text-[12px] text-amber-400">star</span>
+      <span className="inline-flex items-center gap-1 rounded-none border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+        <Star weight="fill" className="h-3 w-3 text-amber-400" />
         {rating!.toFixed(1)}
       </span>
       {variant === 'default' ? (
-        <span className="text-[10px] font-medium text-white/45">
+        <span className="text-[10px] font-normal text-neutral-400">
           ({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})
         </span>
       ) : null}

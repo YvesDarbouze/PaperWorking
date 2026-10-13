@@ -9,6 +9,7 @@ import BillingPreviewPanel from '@/components/dashboard/BillingPreviewPanel';
 import BankConnectionsPanel from '@/components/settings/BankConnectionsPanel';
 import DataPrivacyPanel from '@/components/settings/DataPrivacyPanel';
 import { isSettingsSectionRestricted } from '@/lib/auth/progressive-unlock';
+import { Lock } from '@phosphor-icons/react';
 
 export default function SettingsSectionRouter() {
   const searchParams = useSearchParams();
@@ -32,19 +33,19 @@ export default function SettingsSectionRouter() {
     return (
       <div
         data-testid="settings-milestone-gate"
-        className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-8 text-center"
+        className="rounded-none border border-border bg-card p-8 text-center text-card-foreground shadow-sm"
       >
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
-          <span className="material-symbols-outlined text-2xl">lock</span>
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-amber-500/30 bg-amber-500/10 text-amber-400">
+          <Lock size={24} />
         </div>
-        <h3 className="mb-2 text-xl font-bold text-white">First Value Milestone Required</h3>
-        <p className="mx-auto mb-6 max-w-md text-sm text-white/70">
+        <h3 className="mb-2 text-xl font-bold text-foreground">First Value Milestone Required</h3>
+        <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
           Billing configuration and advanced workspace controls unlock once you establish your first
           deal. Let Ava set up your workspace or test an address in the Deal Calculator.
         </p>
         <Link
           href="/#deal-calculator"
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[color:var(--color-primary)] px-5 text-sm font-bold text-black no-underline hover:opacity-90"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-none bg-primary px-5 text-sm font-semibold text-primary-foreground no-underline hover:bg-primary/90 transition"
         >
           Open Deal Calculator
         </Link>

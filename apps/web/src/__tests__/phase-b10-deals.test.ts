@@ -97,7 +97,7 @@ describe('phase B10 — Next route wiring', () => {
     const existsRoute = readFileSync(join(here, '../../app/api/deals/exists/route.ts'), 'utf8');
 
     expect(listRoute).toContain('buildDealsReadService');
-    expect(listRoute).toContain('buildDealsCommandService');
+    expect(listRoute).toContain('createDealInStore');
     expect(existsRoute).toContain('buildDealsReadService');
     expect(listRoute).not.toContain('prisma.');
     expect(existsRoute).not.toContain('prisma.');

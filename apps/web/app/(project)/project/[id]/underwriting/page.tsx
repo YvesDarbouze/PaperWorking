@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useProjectWorkspace } from '@/components/projects/ProjectWorkspaceProvider';
 import UnderwritingInputsForm from '@/components/projects/UnderwritingInputsForm';
 import Button from '@/components/ui/Button';
@@ -9,6 +10,14 @@ import {
   getDefaultUnderwritingInputs,
 } from '@paperworking/validation';
 import { bffFetch } from '@/lib/api/bff-fetch';
+import {
+  Storefront,
+  Calculator,
+  ChartBar,
+  Gavel,
+  WarningCircle,
+  PlusCircle,
+} from '@phosphor-icons/react';
 
 export default function ProjectUnderwritingPage() {
   const { project, updateProject } = useProjectWorkspace();
@@ -65,61 +74,61 @@ export default function ProjectUnderwritingPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-4 md:flex-row md:items-center">
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-4 md:flex-row md:items-center">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground">
               Financial Underwriting
             </span>
-            <span className="rounded-md border border-border bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
+            <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
               33 KPIs Engine
             </span>
           </div>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
             Underwriting Inputs &amp; Pro-Forma
           </h1>
-          <p className="mt-1 text-xs text-white/60">
+          <p className="mt-1 text-xs text-muted-foreground">
             Authoritative financial inputs feeding Deal Intake, Return Modeling, Debt Sizing, and Exit Analysis.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           {project.dealId || (project as any).dealSlug ? (
-            <a
+            <Link
               href={`/marketplace/${(project as any).dealSlug || project.dealId}`}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 transition min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-none border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">storefront</span>
+              <Storefront size={16} />
               <span>View Deal Card</span>
-            </a>
+            </Link>
           ) : null}
 
-          <a
+          <Link
             href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice || project.purchase_price || 485000}&strategy=${(project as any).strategy || 'buy_and_hold_rental'}`}
             data-testid="project-open-deal-calc-btn"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition min-h-[44px]"
+            className="inline-flex items-center gap-1.5 rounded-none border border-border bg-muted/60 px-4 py-2 text-xs font-bold text-foreground hover:bg-muted transition min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[16px]">calculate</span>
+            <Calculator size={16} />
             <span>Open in Deal Calculator</span>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href={`/project/${project.id}/insights`}
             data-testid="project-underwriting-to-33-kpis-btn"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition min-h-[44px]"
+            className="inline-flex items-center gap-1.5 rounded-none border border-border bg-muted/60 px-4 py-2 text-xs font-bold text-foreground hover:bg-muted transition min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[16px]">analytics</span>
+            <ChartBar size={16} />
             <span>33 Datapoints Analysis</span>
-          </a>
+          </Link>
         </div>
       </div>
 
       {/* Off-Platform Closing Policy Notice */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-white/60 flex items-center justify-between gap-3">
+      <div className="rounded-none border border-border bg-muted/20 p-3 text-xs text-muted-foreground flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-[18px] text-white/40">gavel</span>
+          <Gavel size={18} className="text-muted-foreground shrink-0" />
           <span>
-            <strong className="text-white">PaperWorking Deal Flow:</strong> Underwriting models directly populate listed Deal cards and promotional broadcasts. Negotiation occurs in Messages; legal agreements and capital closing occur off-platform.
+            <strong className="text-foreground">PaperWorking Deal Flow:</strong> Underwriting models directly populate listed Deal cards and promotional broadcasts. Negotiation occurs in Messages; legal agreements and capital closing occur off-platform.
           </span>
         </div>
       </div>
@@ -128,34 +137,35 @@ export default function ProjectUnderwritingPage() {
       {!currentUnderwriting ? (
         <div
           data-testid="not-yet-collected-banner"
-          className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-8 text-center space-y-4"
+          className="rounded-none border border-amber-500/20 bg-amber-500/5 p-8 text-center space-y-4 shadow-sm"
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
-            <span className="material-symbols-outlined text-[24px]">assignment_late</span>
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-none border border-amber-500/30 bg-amber-500/10 text-amber-400">
+            <WarningCircle size={24} />
           </div>
           <div>
-            <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+            <span className="inline-flex items-center rounded-none border border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
               Not yet collected
             </span>
-            <h2 className="mt-2 text-lg font-bold text-white">
+            <h2 className="mt-2 text-lg font-bold text-foreground">
               Underwriting Inputs Missing
             </h2>
-            <p className="mx-auto mt-1.5 max-w-lg text-xs leading-relaxed text-white/60">
+            <p className="mx-auto mt-1.5 max-w-lg text-xs leading-relaxed text-muted-foreground">
               Financial underwriting inputs have not yet been collected for{' '}
-              <strong className="text-white">{project.propertyName}</strong>. The 33 underwriting KPIs
+              <strong className="text-foreground">{project.propertyName}</strong>. The 33 underwriting KPIs
               (IRR, DSCR, Debt Yield, Break-Even Occupancy, Sensitivity) require these inputs to compute.
             </p>
           </div>
           <div className="pt-2">
             <Button
               type="button"
-              variant="primary"
-              size="md"
+              variant="default"
+              size="default"
               onClick={handleInitializeDefaults}
               loading={isInitializing}
-              icon={<span className="material-symbols-outlined text-[18px]">add_circle</span>}
+              className="rounded-none min-h-[44px] flex items-center gap-2"
             >
-              Initialize with Institutional Defaults
+              <PlusCircle size={18} />
+              <span>Initialize with Institutional Defaults</span>
             </Button>
           </div>
         </div>

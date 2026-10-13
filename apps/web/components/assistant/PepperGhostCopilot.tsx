@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { Robot, X } from '@phosphor-icons/react';
 import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 
@@ -41,14 +42,14 @@ export default function PepperGhostCopilot() {
       role="status"
       aria-live="polite"
       data-testid="ava-ghost-copilot"
-      className="fixed bottom-24 right-6 z-40 max-w-sm rounded-xl border border-[color:var(--color-primary)]/40 bg-[#121016]/95 p-3.5 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200"
+      className="fixed bottom-24 right-6 z-40 max-w-sm rounded-none border border-border bg-card p-3.5 shadow-sm ring-1 ring-foreground/10 text-card-foreground animate-in fade-in slide-in-from-bottom-2 duration-200"
     >
       <div className="flex items-start justify-between gap-2.5">
         <div className="flex items-center gap-2">
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--color-primary)]/20 text-[color:var(--color-primary)]">
-            <span className="material-symbols-outlined text-xs">smart_toy</span>
+          <div className="flex h-5 w-5 items-center justify-center rounded-none bg-muted text-foreground">
+            <Robot weight="bold" className="h-3.5 w-3.5" />
           </div>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-primary)]">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-foreground">
             {AVA_CONFIG.agentName} Copilot
           </span>
         </div>
@@ -57,9 +58,9 @@ export default function PepperGhostCopilot() {
           onClick={dismissGhostSuggestion}
           aria-label="Dismiss suggestion"
           data-testid="dismiss-ghost-button"
-          className="text-white/40 hover:text-white"
+          className="text-muted-foreground hover:text-foreground"
         >
-          <span className="material-symbols-outlined text-xs">close</span>
+          <X weight="bold" className="h-3.5 w-3.5" />
         </button>
       </div>
 

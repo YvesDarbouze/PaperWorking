@@ -78,7 +78,7 @@ describe('phase B11 — Next route wiring', () => {
     expect(investors).toContain('buildMarketplaceInvestorsReadService');
     expect(investorDetail).toContain('buildMarketplaceInvestorsReadService');
     expect(vendors).toContain('buildVendorsReadService');
-    expect(portalProfile).toContain('buildVendorPortalReadService');
+    expect(portalProfile).toContain('getVendorProfileFromStore');
     expect(investors).not.toContain('prisma.');
   });
 

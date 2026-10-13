@@ -9,12 +9,25 @@ import MarketplaceFilterRail, {
 } from '@/components/marketplace/MarketplaceFilterRail';
 import MarketplaceActiveFilters from '@/components/marketplace/MarketplaceActiveFilters';
 import DealsDenseTable from '@/components/marketplace/DealsDenseTable';
+import {
+  Broadcast,
+  PlusCircle,
+  Faders,
+  SquaresFour,
+  Rows,
+  X,
+  WarningCircle,
+  MagnifyingGlass,
+  Bell,
+  CheckCircle,
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { useOptionalAuth } from '@/context/AuthContext';
 import DealBroadcastModal from '@/components/marketplace/DealBroadcastModal';
 import DealCalculatorResultModal from '@/components/marketplace/DealCalculatorResultModal';
 import ExpressInterestModal from '@/components/marketplace/ExpressInterestModal';
+import DealOfferServicesModal from '@/components/marketplace/DealOfferServicesModal';
 import CompareTray from '@/components/marketplace/CompareTray';
 import { useRovingTabindex } from '@/lib/a11y/useRovingTabindex';
 
@@ -81,6 +94,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
   const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
   const [selectedDealForModal, setSelectedDealForModal] = useState<DealCardData | null>(null);
   const [selectedDealForInterest, setSelectedDealForInterest] = useState<DealCardData | null>(null);
+  const [selectedDealForOfferServices, setSelectedDealForOfferServices] = useState<DealCardData | null>(null);
   const [interestedDealIds, setInterestedDealIds] = useState<string[]>([]);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
@@ -121,6 +135,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
 
   const auth = useOptionalAuth();
   const isAuthed = auth ? auth.authenticated && !auth.loading : true;
+  const isVendor = (auth?.profile?.accountType || '').toLowerCase() === 'vendor';
 
   // Sync state to URL search parameters
   const updateUrlParams = useCallback(
@@ -395,53 +410,62 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
       </div>
 
       {/* 1. Page Header with Live Status Dot */}
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-neutral-800 pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-[#fdfffc] sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-100 sm:text-3xl">
               Deals Marketplace
             </h1>
-            <span className="flex items-center gap-1.5 rounded-full border border-[var(--status-live)]/30 bg-[var(--accent-subtle)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[var(--status-live)]">
+            <span className="flex items-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--status-live)] opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--status-live)]" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-none bg-emerald-400" />
               </span>
               Live
             </span>
           </div>
-          <p className="mt-1 text-sm text-[#9E9DA0]">
+          <p className="mt-1 text-sm text-neutral-400">
             {loading ? (
               'Scanning live market inventory…'
             ) : (
               <>
-                <strong className="font-mono text-white">{sortedDeals.length}</strong> active
+                <strong className="font-mono text-neutral-100">{sortedDeals.length}</strong> active
                 opportunities across{' '}
-                <strong className="font-mono text-white">{marketsCount}</strong> markets
+                <strong className="font-mono text-neutral-100">{marketsCount}</strong> markets
               </>
             )}
           </p>
         </div>
 
         {/* Secondary Header CTA: Broadcast / Post Deal */}
-        <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setIsBroadcastOpen(true)}
-            icon={<span className="material-symbols-outlined text-[16px]">campaign</span>}
-          >
-            Broadcast Deal
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            href="/deal-calculator?post=true"
-            data-testid="marketplace-post-deal-btn"
-            icon={<span className="material-symbols-outlined text-[16px]">add_circle</span>}
-          >
-            + Post Deal to Marketplace
-          </Button>
-        </div>
+        {isVendor ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 rounded-none border border-neutral-800 bg-neutral-900/60 px-3.5 py-2 text-xs">
+            <span className="font-semibold text-neutral-100">Vendor Search Mode:</span>
+            <span className="text-neutral-400">
+              Discover active projects and submit trade/service proposals to operators.
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsBroadcastOpen(true)}
+              icon={<Broadcast className="h-4 w-4" />}
+            >
+              Broadcast Deal
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              href="/deal-calculator?post=true"
+              data-testid="marketplace-post-deal-btn"
+              icon={<PlusCircle className="h-4 w-4" />}
+            >
+              + Post Deal to Marketplace
+            </Button>
+          </div>
+        )}
       </header>
 
       {/* 2. Full-Width Search Hero (F-03 In-Place Autocomplete) */}
@@ -471,28 +495,28 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
             variant="secondary"
             size="sm"
             onClick={() => setIsMobileFilterOpen(true)}
-            icon={<span className="material-symbols-outlined text-[16px]">tune</span>}
+            icon={<Faders className="h-4 w-4" />}
           >
             Filters ({filters.assetClasses.length + filters.markets.length + (filters.dealType !== 'all' ? 1 : 0)})
           </Button>
 
           {/* Density Toggle (Mobile) */}
-          <div className="flex items-center rounded-lg border border-white/10 bg-[#121014] p-0.5">
+          <div className="flex items-center rounded-none border border-neutral-800 bg-neutral-900/50 p-0.5">
             <button
               type="button"
               onClick={() => handleDensityChange('grid')}
-              className={`p-1.5 rounded ${density === 'grid' ? 'bg-white/10 text-white' : 'text-[#9E9DA0]'}`}
+              className={`p-1.5 rounded-none ${density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'}`}
               aria-label="Grid view"
             >
-              <span className="material-symbols-outlined text-[18px]">grid_view</span>
+              <SquaresFour className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => handleDensityChange('table')}
-              className={`p-1.5 rounded ${density === 'table' ? 'bg-white/10 text-white' : 'text-[#9E9DA0]'}`}
+              className={`p-1.5 rounded-none ${density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'}`}
               aria-label="Table view"
             >
-              <span className="material-symbols-outlined text-[18px]">table_rows</span>
+              <Rows className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -500,15 +524,15 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
         {/* Mobile Filter Modal */}
         {isMobileFilterOpen && (
           <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm lg:hidden">
-            <div className="w-full max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-white/10 bg-[#121014] p-5">
-              <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-base font-bold text-white">Filters</h3>
+            <div className="w-full max-h-[85vh] overflow-y-auto rounded-none border-t border-neutral-800 bg-neutral-950 p-5">
+              <div className="mb-4 flex items-center justify-between border-b border-neutral-800 pb-3">
+                <h3 className="text-base font-bold text-neutral-100">Filters</h3>
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="rounded-lg p-1 text-[#9E9DA0] hover:text-white"
+                  className="rounded-none p-1 text-neutral-400 hover:text-white"
                 >
-                  <span className="material-symbols-outlined text-[20px]">close</span>
+                  <X className="h-5 w-5" />
                 </button>
               </div>
               <MarketplaceFilterRail
@@ -534,7 +558,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
         {/* Right Content Area: Active Chips + Sort Bar + Results */}
         <main className="flex-1 w-full min-w-0 space-y-4">
           {/* Active Filter Chips & View Controls Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-white/10 bg-[#121014] p-3.5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-none border border-neutral-800 bg-neutral-900/40 p-3.5 shadow-sm">
             <MarketplaceActiveFilters
               filters={filters}
               searchQuery={searchQuery}
@@ -575,14 +599,14 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
             {/* Sort Dropdown & Density Toggle */}
             <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
               {/* Sort Selector */}
-              <div className="flex items-center gap-1.5 text-xs text-[#9E9DA0]">
+              <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                 <span>Sort:</span>
                 <select
                   value={sortOption}
                   onChange={(e) => handleSortChange(e.target.value as SortOption)}
                   data-testid="marketplace-sort-select"
                   aria-label="Sort deals by"
-                  className="rounded-lg border border-white/10 bg-[#161318] px-2.5 py-1.5 text-xs font-semibold text-[#fdfffc] outline-none focus:border-[var(--accent)] cursor-pointer"
+                  className="rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1.5 text-base md:text-xs font-semibold text-neutral-100 outline-none focus:border-neutral-600 cursor-pointer"
                 >
                   <option value="recommended">Recommended</option>
                   <option value="newest">Newest</option>
@@ -593,24 +617,24 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
               </div>
 
               {/* Density Toggle (Desktop) */}
-              <div className="hidden sm:flex items-center rounded-lg border border-white/10 bg-[#161318] p-0.5">
+              <div className="hidden sm:flex items-center rounded-none border border-neutral-800 bg-neutral-900/50 p-0.5">
                 <button
                   type="button"
                   data-testid="toggle-view-grid"
                   onClick={() => handleDensityChange('grid')}
-                  className={`p-1.5 rounded transition ${density === 'grid' ? 'bg-white/15 text-white' : 'text-[#9E9DA0] hover:text-white'}`}
+                  className={`p-1.5 rounded-none transition ${density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'}`}
                   aria-label="Grid view"
                 >
-                  <span className="material-symbols-outlined text-[18px]">grid_view</span>
+                  <SquaresFour className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
                   data-testid="toggle-view-table"
                   onClick={() => handleDensityChange('table')}
-                  className={`p-1.5 rounded transition ${density === 'table' ? 'bg-white/15 text-white' : 'text-[#9E9DA0] hover:text-white'}`}
+                  className={`p-1.5 rounded-none transition ${density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'}`}
                   aria-label="Dense table view"
                 >
-                  <span className="material-symbols-outlined text-[18px]">table_rows</span>
+                  <Rows className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -625,20 +649,20 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
               {[1, 2, 3, 4, 5, 6].map((idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-white/10 bg-[#121014] overflow-hidden"
+                  className="rounded-none border border-neutral-800 bg-neutral-950 overflow-hidden"
                 >
                   <div className="aspect-[16/9] w-full skeleton-pulse" />
                   <div className="p-5 space-y-3">
-                    <div className="h-5 w-3/4 rounded skeleton-pulse" />
-                    <div className="h-3 w-1/2 rounded skeleton-pulse" />
-                    <div className="my-4 border-y border-white/10 py-3 grid grid-cols-4 gap-2">
-                      <div className="h-8 rounded skeleton-pulse" />
-                      <div className="h-8 rounded skeleton-pulse" />
-                      <div className="h-8 rounded skeleton-pulse" />
-                      <div className="h-8 rounded skeleton-pulse" />
+                    <div className="h-5 w-3/4 rounded-none skeleton-pulse" />
+                    <div className="h-3 w-1/2 rounded-none skeleton-pulse" />
+                    <div className="my-4 border-y border-neutral-800 py-3 grid grid-cols-4 gap-2">
+                      <div className="h-8 rounded-none skeleton-pulse" />
+                      <div className="h-8 rounded-none skeleton-pulse" />
+                      <div className="h-8 rounded-none skeleton-pulse" />
+                      <div className="h-8 rounded-none skeleton-pulse" />
                     </div>
-                    <div className="h-2 w-full rounded-full skeleton-pulse" />
-                    <div className="h-10 w-full rounded-lg skeleton-pulse" />
+                    <div className="h-2 w-full rounded-none skeleton-pulse" />
+                    <div className="h-10 w-full rounded-none skeleton-pulse" />
                   </div>
                 </div>
               ))}
@@ -649,11 +673,11 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
           {!loading && error && (
             <div
               data-testid="marketplace-error-state"
-              className="rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center"
+              className="rounded-none border border-red-500/30 bg-red-500/10 p-8 text-center"
             >
-              <span className="material-symbols-outlined text-4xl text-red-400">error</span>
-              <h3 className="mt-2 text-base font-bold text-white">We couldn&apos;t load deals for this filter</h3>
-              <p className="mt-1 text-xs text-white/70 max-w-md mx-auto">
+              <WarningCircle className="mx-auto h-10 w-10 text-red-400" />
+              <h3 className="mt-2 text-base font-bold text-neutral-100">We couldn&apos;t load deals for this filter</h3>
+              <p className="mt-1 text-xs text-neutral-400 max-w-md mx-auto">
                 Try removing one of your active filters, or check your connection and retry.
               </p>
               <div className="mt-4">
@@ -668,16 +692,14 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
           {!loading && !error && sortedDeals.length === 0 && (
             <div
               data-testid="marketplace-no-results"
-              className="rounded-2xl border border-white/10 bg-[#121014] p-12 text-center"
+              className="rounded-none border border-neutral-800 bg-neutral-950 p-12 text-center"
             >
-              <span className="material-symbols-outlined text-5xl text-[#9E9DA0]/40">
-                search_off
-              </span>
-              <h3 className="mt-3 text-lg font-bold text-white">No opportunities matched your criteria</h3>
-              <p className="mt-1 text-sm text-[#9E9DA0] max-w-md mx-auto">
+              <MagnifyingGlass className="mx-auto h-12 w-12 text-neutral-600" />
+              <h3 className="mt-3 text-lg font-bold text-neutral-100">No opportunities matched your criteria</h3>
+              <p className="mt-1 text-sm text-neutral-400 max-w-md mx-auto">
                 {searchQuery ? (
                   <>
-                    No listings found matching &quot;<strong className="text-white">{searchQuery}</strong>&quot;.
+                    No listings found matching &quot;<strong className="text-neutral-100">{searchQuery}</strong>&quot;.
                     Try relaxing your filters or clearing the search query.
                   </>
                 ) : (
@@ -692,7 +714,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
                   variant="secondary"
                   size="md"
                   onClick={() => setDealAlertSaved(true)}
-                  icon={<span className="material-symbols-outlined text-[16px]">notifications</span>}
+                  icon={<Bell className="h-4 w-4" />}
                 >
                   Create Deal Alert
                 </Button>
@@ -700,16 +722,16 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
               {dealAlertSaved && (
                 <div
                   role="status"
-                  className="mt-5 max-w-md mx-auto flex items-center justify-between gap-3 rounded-xl border border-white/20 bg-white/10 p-3.5 text-xs text-white"
+                  className="mt-5 max-w-md mx-auto flex items-center justify-between gap-3 rounded-none border border-neutral-700 bg-neutral-800 p-3.5 text-xs text-neutral-200"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px] text-emerald-400">check_circle</span>
+                    <CheckCircle className="h-4 w-4 text-emerald-400" />
                     <span>Deal alert created. You will receive notifications when matching opportunities are listed.</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setDealAlertSaved(false)}
-                    className="text-white/60 hover:text-white underline text-xs shrink-0"
+                    className="text-neutral-400 hover:text-white underline text-xs shrink-0"
                   >
                     Dismiss
                   </button>
@@ -735,7 +757,9 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
                       onKeyDown={(e) => handleGridKeyDown(e, idx)}
                       onViewCalculatorModal={(d) => setSelectedDealForModal(d)}
                       onExpressInterest={handleExpressInterest}
+                      onOfferServices={(d) => setSelectedDealForOfferServices(d)}
                       isInterested={interestedDealIds.includes(deal.id)}
+                      isVendor={isVendor}
                     />
                   ))}
                 </div>
@@ -744,7 +768,9 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
                   deals={visibleDeals}
                   onViewCalculatorModal={(d) => setSelectedDealForModal(d)}
                   onExpressInterest={handleExpressInterest}
+                  onOfferServices={(d) => setSelectedDealForOfferServices(d)}
                   interestedDealIds={interestedDealIds}
+                  isVendor={isVendor}
                 />
               )}
 
@@ -820,6 +846,25 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
             handleInterestSuccess(selectedDealForInterest.id);
             setSelectedDealForInterest(null);
           }}
+        />
+      )}
+
+      {/* Offer Services on Deal Modal */}
+      {selectedDealForOfferServices && (
+        <DealOfferServicesModal
+          deal={{
+            id: selectedDealForOfferServices.id,
+            slug: selectedDealForOfferServices.slug,
+            name: selectedDealForOfferServices.name,
+            propertyName: selectedDealForOfferServices.propertyName,
+            address: selectedDealForOfferServices.address,
+            city: selectedDealForOfferServices.city,
+            state: selectedDealForOfferServices.state,
+            assetClass: selectedDealForOfferServices.assetClass,
+            creatorName: selectedDealForOfferServices.creatorName,
+          }}
+          isOpen={Boolean(selectedDealForOfferServices)}
+          onClose={() => setSelectedDealForOfferServices(null)}
         />
       )}
 

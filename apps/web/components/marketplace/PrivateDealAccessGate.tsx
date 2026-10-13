@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { ArrowLeft, Lock, LockKey, Calculator, ShieldCheck } from '@phosphor-icons/react';
 import { RawDealCalculatorResults } from '@/lib/marketplace/seed-data';
 import { formatCurrency, formatPercent } from '@/lib/format';
 import { extractStreetAddress } from '@/lib/marketplace/address-utils';
@@ -41,7 +42,7 @@ export default function PrivateDealAccessGate({
               href="/marketplaces"
               className="text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              <ArrowLeft className="h-4 w-4" />
               Deals Marketplace
             </Link>
             <span className="text-neutral-600">/</span>
@@ -51,7 +52,7 @@ export default function PrivateDealAccessGate({
           </div>
 
           <div className="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-medium border border-neutral-700 bg-neutral-900 text-neutral-300">
-            <span className="material-symbols-outlined text-[14px] text-amber-400">lock</span>
+            <Lock className="h-3.5 w-3.5 text-amber-400" />
             Private Deal · Restricted Access
           </div>
         </div>
@@ -60,7 +61,7 @@ export default function PrivateDealAccessGate({
         <div className="border border-neutral-800 bg-neutral-900/60 p-6 md:p-8 space-y-4">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 flex-shrink-0 bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-200">
-              <span className="material-symbols-outlined text-[24px]">lock_clock</span>
+              <LockKey className="h-6 w-6" />
             </div>
             <div className="space-y-2 flex-1">
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans">
@@ -100,7 +101,7 @@ export default function PrivateDealAccessGate({
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-3">
               <div>
                 <h2 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-neutral-400">calculate</span>
+                  <Calculator className="h-4 w-4 text-neutral-400" />
                   Delivered Deal Calculator Results
                 </h2>
                 <p className="text-xs text-neutral-400 mt-0.5">
@@ -176,7 +177,7 @@ export default function PrivateDealAccessGate({
         <div data-testid="subscriber-full-deal-gate" className="relative border border-neutral-800 bg-neutral-900/20 overflow-hidden p-6 md:p-8 space-y-6">
           <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[18px] text-neutral-400">shield_lock</span>
+              <ShieldCheck className="h-4 w-4 text-neutral-400" />
               Confidential Deal Room Assets (Restricted)
             </h3>
             <span className="text-xs text-neutral-500 font-mono">Subscriber Tier Exclusive</span>

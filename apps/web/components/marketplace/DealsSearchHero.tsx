@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { MagnifyingGlass, X, ClockCounterClockwise, Buildings, MapPin, House } from '@phosphor-icons/react';
 import type { DealCardData } from '@/components/marketplace/DealCard';
 
 export interface DealsSearchHeroProps {
@@ -233,10 +234,8 @@ export default function DealsSearchHero({
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       {/* Search Input Bar */}
-      <div className="relative flex h-12 w-full items-center rounded-xl border border-white/10 bg-[#121014] px-4 shadow-[0_4px_24px_rgba(0,0,0,0.25)] transition-all duration-200 focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)] focus-within:ring-offset-2 focus-within:ring-offset-[#0a0a0f]">
-        <span className="material-symbols-outlined text-[20px] text-[#9E9DA0] select-none mr-3">
-          search
-        </span>
+      <div className="relative flex h-12 w-full items-center rounded-none border border-neutral-800 bg-neutral-950 px-4 focus-within:border-neutral-500 focus-within:ring-1 focus-within:ring-neutral-500 transition-colors">
+        <MagnifyingGlass className="h-5 w-5 text-neutral-400 select-none mr-3 shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -254,7 +253,7 @@ export default function DealsSearchHero({
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="h-full w-full bg-transparent text-[14px] text-[#fdfffc] placeholder:text-[#9E9DA0]/80 outline-none"
+          className="h-full w-full bg-transparent text-base md:text-sm text-neutral-100 placeholder:text-neutral-500 outline-none"
           autoComplete="off"
           data-testid="marketplace-search-input"
         />
@@ -262,23 +261,23 @@ export default function DealsSearchHero({
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-[#9E9DA0] hover:bg-white/10 hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="flex h-7 w-7 items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-white transition focus:outline-none"
             aria-label="Clear search"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X className="h-4 w-4" />
           </button>
         ) : null}
       </div>
 
-      {/* Autocomplete Dropdown with Scale+Fade Motion Token */}
+      {/* Autocomplete Dropdown */}
       {isOpen && suggestions.length > 0 && (
         <div
           data-testid="search-suggestions-dropdown"
-          className="absolute left-0 right-0 top-[52px] z-50 max-h-[380px] overflow-y-auto rounded-xl border border-white/10 bg-[#161318] p-2 shadow-2xl backdrop-blur-xl dropdown-entrance"
+          className="absolute left-0 right-0 top-[50px] z-50 max-h-[380px] overflow-y-auto rounded-none border border-neutral-800 bg-neutral-950 p-2 shadow-2xl backdrop-blur-xl"
         >
           {recents.length > 0 && (
             <div className="mb-2">
-              <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-neutral-400">
                 Recent Searches
               </div>
               {recents.map((item, idx) => {
@@ -288,12 +287,12 @@ export default function DealsSearchHero({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm transition ${
-                      isSelected ? 'bg-white/10 text-[var(--accent)]' : 'text-[#fdfffc]/85 hover:bg-white/5'
+                    className={`flex w-full items-center justify-between rounded-none px-2.5 py-2 text-left text-sm transition ${
+                      isSelected ? 'bg-neutral-800 text-white' : 'text-neutral-300 hover:bg-neutral-900'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-[#9E9DA0]">history</span>
+                      <ClockCounterClockwise className="h-4 w-4 text-neutral-400" />
                       <span>{item.label}</span>
                     </div>
                   </button>
@@ -304,7 +303,7 @@ export default function DealsSearchHero({
 
           {markets.length > 0 && (
             <div className="mb-2">
-              <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-neutral-400">
                 Markets
               </div>
               {markets.map((item) => {
@@ -315,15 +314,15 @@ export default function DealsSearchHero({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm transition ${
-                      isSelected ? 'bg-white/10 text-[var(--accent)]' : 'text-[#fdfffc]/85 hover:bg-white/5'
+                    className={`flex w-full items-center justify-between rounded-none px-2.5 py-2 text-left text-sm transition ${
+                      isSelected ? 'bg-neutral-800 text-white' : 'text-neutral-300 hover:bg-neutral-900'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-[var(--accent)]">location_city</span>
+                      <Buildings className="h-4 w-4 text-neutral-400" />
                       <span className="font-medium">{item.label}</span>
                     </div>
-                    <span className="text-xs text-[#9E9DA0]">{item.sublabel}</span>
+                    <span className="text-xs text-neutral-400">{item.sublabel}</span>
                   </button>
                 );
               })}
@@ -332,7 +331,7 @@ export default function DealsSearchHero({
 
           {dealSuggestions.length > 0 && (
             <div className="mb-2">
-              <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-neutral-400">
                 Deals
               </div>
               {dealSuggestions.map((item) => {
@@ -343,15 +342,15 @@ export default function DealsSearchHero({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm transition ${
-                      isSelected ? 'bg-white/10 text-[var(--accent)]' : 'text-[#fdfffc]/85 hover:bg-white/5'
+                    className={`flex w-full items-center justify-between rounded-none px-2.5 py-2 text-left text-sm transition ${
+                      isSelected ? 'bg-neutral-800 text-white' : 'text-neutral-300 hover:bg-neutral-900'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-amber-400">domain</span>
+                      <House className="h-4 w-4 text-neutral-400" />
                       <span className="font-medium">{item.label}</span>
                     </div>
-                    <span className="text-xs text-[#9E9DA0]">{item.sublabel}</span>
+                    <span className="text-xs text-neutral-400">{item.sublabel}</span>
                   </button>
                 );
               })}
@@ -360,7 +359,7 @@ export default function DealsSearchHero({
 
           {addresses.length > 0 && (
             <div>
-              <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <div className="px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-neutral-400">
                 Addresses
               </div>
               {addresses.map((item) => {
@@ -371,15 +370,15 @@ export default function DealsSearchHero({
                     key={item.id}
                     type="button"
                     onClick={() => handleSelect(item)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-sm transition ${
-                      isSelected ? 'bg-white/10 text-[var(--accent)]' : 'text-[#fdfffc]/85 hover:bg-white/5'
+                    className={`flex w-full items-center justify-between rounded-none px-2.5 py-2 text-left text-sm transition ${
+                      isSelected ? 'bg-neutral-800 text-white' : 'text-neutral-300 hover:bg-neutral-900'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-[#7A9EAA]">pin_drop</span>
+                      <MapPin className="h-4 w-4 text-neutral-400" />
                       <span className="font-medium">{item.label}</span>
                     </div>
-                    <span className="text-xs text-[#9E9DA0]">{item.sublabel}</span>
+                    <span className="text-xs text-neutral-400">{item.sublabel}</span>
                   </button>
                 );
               })}

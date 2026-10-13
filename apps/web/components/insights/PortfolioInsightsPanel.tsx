@@ -1,4 +1,5 @@
 'use client';
+import { WarningCircle, Flask, ChartBar, CheckCircle, DownloadSimple, TrendUp, Warning, ArrowUpRight, ArrowsDownUp, Pulse, Stack, Users, ShieldCheck } from "@phosphor-icons/react";
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -437,9 +438,9 @@ export default function PortfolioInsightsPanel() {
         className="min-h-[70vh] flex flex-col items-center justify-center px-6 py-16 text-center"
         data-testid="insights-api-error"
       >
-        <div className="rounded-3xl border border-rose-500/20 bg-rose-500/5 p-12 max-w-lg w-full shadow-2xl backdrop-blur-md">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20">
-            <span className="material-symbols-outlined text-3xl text-rose-400">error</span>
+        <div className="rounded-none border border-rose-500/20 bg-rose-500/5 p-12 max-w-lg w-full shadow-2xl backdrop-blur-md">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-rose-500/10 border border-rose-500/20">
+            <WarningCircle size={32} className="text-rose-400" />
           </div>
           <h2 className="text-xl font-bold tracking-tight text-white">Unable to load insights</h2>
           <p className="mt-2 text-sm leading-relaxed text-white/60">
@@ -472,10 +473,10 @@ export default function PortfolioInsightsPanel() {
         {isDemoParam && (
           <div
             data-testid="demo-fixture-banner"
-            className="mb-8 w-full max-w-lg flex items-center justify-between rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-xs font-semibold text-amber-300 backdrop-blur-sm"
+            className="mb-8 w-full max-w-lg flex items-center justify-between rounded-none border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-xs font-semibold text-amber-300 backdrop-blur-sm"
           >
             <span className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">science</span>
+              <Flask size={14} />
               DEMO FIXTURE ACTIVE — Displaying sample underwriting data for evaluation.
             </span>
             <button
@@ -489,9 +490,9 @@ export default function PortfolioInsightsPanel() {
           </div>
         )}
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-12 max-w-lg w-full shadow-2xl backdrop-blur-md">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10">
-            <span className="material-symbols-outlined text-3xl text-white/30">analytics</span>
+        <div className="rounded-none border border-white/10 bg-white/[0.02] p-12 max-w-lg w-full shadow-2xl backdrop-blur-md">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-white/5 border border-white/10">
+            <ChartBar size={32} className="text-white/30" />
           </div>
           <div className="text-xs uppercase tracking-wider font-semibold text-white/40 mb-1">
             No KPI data yet.
@@ -536,9 +537,9 @@ export default function PortfolioInsightsPanel() {
       {bulkExportToast && (
         <div
           data-testid="bulk-download-toast"
-          className="fixed top-6 right-6 z-[150] flex items-center gap-2 rounded-xl border border-[var(--accent,#00dd94)]/40 bg-[var(--bg-elevated,#18151c)] px-5 py-3 text-xs font-semibold text-[var(--accent,#00dd94)] shadow-2xl backdrop-blur-md"
+          className="fixed top-6 right-6 z-[150] flex items-center gap-2 rounded-none border border-[var(--accent,currentColor)]/40 bg-[var(--bg-elevated,#18151c)] px-5 py-3 text-xs font-semibold text-[var(--accent,currentColor)] shadow-2xl backdrop-blur-md"
         >
-          <span className="material-symbols-outlined text-sm">check_circle</span>
+          <CheckCircle size={14} />
           <span>{bulkExportToast}</span>
         </div>
       )}
@@ -547,10 +548,10 @@ export default function PortfolioInsightsPanel() {
       {isDemoParam && (
         <div
           data-testid="demo-fixture-banner"
-          className="flex items-center justify-between rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-xs font-semibold text-amber-300 backdrop-blur-sm"
+          className="flex items-center justify-between rounded-none border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-xs font-semibold text-amber-300 backdrop-blur-sm"
         >
           <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-sm">science</span>
+            <Flask size={14} />
             DEMO FIXTURE ACTIVE — Displaying sample underwriting data for evaluation.
           </span>
           <button
@@ -581,20 +582,20 @@ export default function PortfolioInsightsPanel() {
             size="md"
             onClick={handleBulkExportCsv}
             data-testid="header-bulk-export-csv-btn"
-            icon={<span className="material-symbols-outlined text-[16px]">download</span>}
+            icon={<DownloadSimple size={16} />}
           >
             Export to CSV
           </Button>
 
           {hasProjects ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md">
+            <div className="flex flex-wrap items-center gap-3 rounded-none border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md">
               <div className="relative">
                 <select
                   data-testid="project-context-selector"
                   aria-label="Select project context"
                   value={scope === 'portfolio' ? '__portfolio__' : selectedProjectId}
                   onChange={(e) => handleProjectContextChange(e.target.value)}
-                  className="cursor-pointer appearance-none rounded-lg border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
+                  className="cursor-pointer appearance-none rounded-none border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
                 >
                   <option value="__portfolio__" className="bg-slate-950">
                     Portfolio Aggregate
@@ -619,7 +620,7 @@ export default function PortfolioInsightsPanel() {
       {/* Persona / engine category cards (Portfolio Metrics) */}
       <div className="space-y-8">
         {loadingCats ? (
-          <div className="animate-pulse rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-white/40">
+          <div className="animate-pulse rounded-none border border-dashed border-white/10 p-8 text-center text-sm text-white/40">
             Calculating portfolio metrics…
           </div>
         ) : (
@@ -627,9 +628,7 @@ export default function PortfolioInsightsPanel() {
             <div key={catGroup.category} className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
-                  <span className="material-symbols-outlined text-[18px] text-[color:var(--status-live,var(--accent,#00dd94))]">
-                    trending_up
-                  </span>
+                  <TrendUp size={18} className="text-primary" />
                   {catGroup.category}
                 </h2>
                 <span className="text-xs font-medium text-slate-400">
@@ -641,7 +640,7 @@ export default function PortfolioInsightsPanel() {
                   <div
                     key={metric.id}
                     id={metric.id}
-                    className={`rounded-2xl border p-5 shadow-sm backdrop-blur-md transition-all ${
+                    className={`rounded-none border p-5 shadow-sm backdrop-blur-md transition-all ${
                       metric.isWarning
                         ? 'border-rose-500/30 bg-rose-500/10'
                         : 'border-white/10 bg-white/[0.03] hover:border-white/20'
@@ -656,7 +655,7 @@ export default function PortfolioInsightsPanel() {
                           <span
                             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
                               metric.trend === 'up'
-                                ? 'bg-[var(--accent,#00dd94)]/10 text-[var(--accent,#00dd94)]'
+                                ? 'bg-[var(--accent,currentColor)]/10 text-[var(--accent,currentColor)]'
                                 : 'bg-rose-500/10 text-rose-400'
                             }`}
                           >
@@ -695,7 +694,7 @@ export default function PortfolioInsightsPanel() {
           </p>
 
           <div className="flex items-center gap-2" data-testid="trend-period-selector">
-            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5">
+            <div className="flex rounded-none border border-white/10 bg-white/5 p-0.5">
               {(['monthly', 'quarterly', 'annual'] as TrendPeriod[]).map((tp) => (
                 <button
                   key={tp}
@@ -720,10 +719,10 @@ export default function PortfolioInsightsPanel() {
         {!hasInputsForContext && (
           <div
             data-testid="underwriting-needed-banner"
-            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-200 backdrop-blur-sm"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-amber-200 backdrop-blur-sm"
           >
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-amber-400 text-xl">warning</span>
+              <Warning size={20} className="text-amber-400" />
               <p className="text-sm font-medium">
                 Underwriting inputs needed. Complete inputs for{' '}
                 <span className="font-semibold text-white">
@@ -759,7 +758,7 @@ export default function PortfolioInsightsPanel() {
         {/* All 33 Underwriting KPIs Grouped in 4 Categories */}
         <div className="space-y-10" data-testid="kpi-sections">
           {computingMetrics && !activeMetrics ? (
-            <div className="rounded-2xl border border-dashed border-white/10 p-12 text-center text-sm text-white/40 animate-pulse">
+            <div className="rounded-none border border-dashed border-white/10 p-12 text-center text-sm text-white/40 animate-pulse">
               Recomputing 33 underwriting KPIs…
             </div>
           ) : (
@@ -836,7 +835,7 @@ export default function PortfolioInsightsPanel() {
                               data-testid="kpi-card"
                               data-kpi-number={kpi.number}
                               data-metric-id={metricDataId}
-                              className="group relative flex flex-col justify-between cursor-pointer rounded-xl border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[#161318] p-4 text-left transition-all duration-150 hover:border-[var(--accent,#00dd94)]/50 hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent,#00dd94)]"
+                              className="group relative flex flex-col justify-between cursor-pointer rounded-none border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[#161318] p-4 text-left transition-all duration-150 hover:border-[var(--accent,currentColor)]/50 hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent,currentColor)]"
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-white/45 transition-colors group-hover:text-white/70">
@@ -845,13 +844,11 @@ export default function PortfolioInsightsPanel() {
                                 <div className="flex items-center gap-1.5 shrink-0">
                                   <span
                                     data-testid="kpi-computed-badge"
-                                    className="inline-flex items-center rounded-xs px-1.5 py-0.5 text-[9px] font-semibold bg-[var(--accent,#00dd94)]/10 text-[var(--accent,#00dd94)]"
+                                    className="inline-flex items-center rounded-xs px-1.5 py-0.5 text-[9px] font-semibold bg-[var(--accent,currentColor)]/10 text-[var(--accent,currentColor)]"
                                   >
                                     computed
                                   </span>
-                                  <span className="material-symbols-outlined text-[16px] text-white/20 transition-all duration-150 group-hover:scale-110 group-hover:text-[var(--accent,#00dd94)]">
-                                    open_in_new
-                                  </span>
+                                  <ArrowUpRight size={16} className="text-muted-foreground group-hover:text-primary transition-all duration-150" />
                                 </div>
                               </div>
 
@@ -859,7 +856,7 @@ export default function PortfolioInsightsPanel() {
                                 <span
                                   className={`truncate text-2xl font-extrabold tabular-nums tracking-tight ${
                                     kpi.unit === 'percent' || kpi.unit === 'ratio'
-                                      ? 'text-[var(--accent,#00dd94)]'
+                                      ? 'text-[var(--accent,currentColor)]'
                                       : 'text-white'
                                   }`}
                                   data-testid="kpi-value"
@@ -884,7 +881,7 @@ export default function PortfolioInsightsPanel() {
                             data-testid="kpi-card"
                             data-kpi-number={kpi.number}
                             data-metric-id={metricDataId}
-                            className="group relative flex flex-col justify-between rounded-xl border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[#161318] p-4 text-left transition-all duration-150 hover:border-[var(--accent,#00dd94)]/50 hover:bg-white/[0.04]"
+                            className="group relative flex flex-col justify-between rounded-none border border-[var(--border-subtle,rgba(255,255,255,0.1))] bg-[#161318] p-4 text-left transition-all duration-150 hover:border-[var(--accent,currentColor)]/50 hover:bg-white/[0.04]"
                           >
                             <div className="flex items-start justify-between gap-2">
                               <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-white/45 transition-colors group-hover:text-white/70">
@@ -905,9 +902,8 @@ export default function PortfolioInsightsPanel() {
                                     triggerRef.current = e.currentTarget;
                                     setExpandedKpi(kpi);
                                   }}
-                                  className="material-symbols-outlined text-[16px] text-white/20 transition-all duration-150 group-hover:scale-110 group-hover:text-[var(--accent,#00dd94)] cursor-pointer"
-                                >
-                                  open_in_new
+                                  className="text-muted-foreground group-hover:text-primary transition cursor-pointer">
+                                  <ArrowUpRight size={16} />
                                 </button>
                               </div>
                             </div>
@@ -928,7 +924,7 @@ export default function PortfolioInsightsPanel() {
                                     ? `/project/${selectedProject.id}/underwriting`
                                     : '/projects'
                                 }
-                                className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent,#00dd94)] hover:underline"
+                                className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent,currentColor)] hover:underline"
                                 data-testid="complete-inputs-link"
                               >
                                 Complete inputs →
@@ -1017,12 +1013,10 @@ export default function PortfolioInsightsPanel() {
                   triggerRef.current = e.currentTarget;
                   if (correspondingKpi) setExpandedKpi(correspondingKpi);
                 }}
-                className="group hover:border-[var(--accent,#00dd94)]/50 hover:bg-white/[0.03] transition-all duration-150"
+                className="group hover:border-[var(--accent,currentColor)]/50 hover:bg-white/[0.03] transition-all duration-150"
                 headerAction={
                   <div className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-white/20 group-hover:text-[var(--accent,#00dd94)]">
-                      open_in_new
-                    </span>
+                    <ArrowUpRight size={14} className="text-muted-foreground group-hover:text-primary" />
                     <select
                       value={opt.id}
                       onClick={(e) => e.stopPropagation()}
@@ -1032,7 +1026,7 @@ export default function PortfolioInsightsPanel() {
                         setTrendMetrics(next);
                       }}
                       aria-label={`Select trend metric for slot ${idx + 1}`}
-                      className="cursor-pointer appearance-none rounded-lg border border-white/10 bg-white/5 py-1 pl-2.5 pr-7 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
+                      className="cursor-pointer appearance-none rounded-none border border-white/10 bg-white/5 py-1 pl-2.5 pr-7 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
                     >
                       {TREND_METRIC_OPTIONS.map((o) => (
                         <option key={o.id} value={o.id} className="bg-slate-950">
@@ -1127,7 +1121,7 @@ export default function PortfolioInsightsPanel() {
               onClick={() =>
                 setSortOrder((s) => (s === 'none' ? 'desc' : s === 'desc' ? 'asc' : 'none'))
               }
-              icon={<span className="material-symbols-outlined text-[14px]">swap_vert</span>}
+              icon={<ArrowsDownUp size={14} />}
             >
               Sort:{' '}
               {sortOrder === 'none'
@@ -1140,7 +1134,7 @@ export default function PortfolioInsightsPanel() {
               value={compareMetric}
               onChange={(e) => setCompareMetric(e.target.value)}
               aria-label="Select comparison metric"
-              className="cursor-pointer appearance-none rounded-lg border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
+              className="cursor-pointer appearance-none rounded-none border border-white/10 bg-white/5 py-1.5 pl-3 pr-8 text-xs font-semibold text-white focus:outline-none hover:bg-white/10 transition-colors"
             >
               {COMPARE_METRIC_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id} className="bg-slate-950">
@@ -1162,20 +1156,20 @@ export default function PortfolioInsightsPanel() {
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveTab(cat.id)}
-                className={`flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${
+                className={`flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-none px-4 py-2.5 text-xs font-semibold tracking-wide transition-all ${
                   isActive
                     ? 'border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)] text-[#0d0a0b] shadow-md'
                     : 'border border-white/10 bg-white/[0.02] text-slate-400 hover:bg-white/[0.05] hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">{cat.icon}</span>
+                {cat.id === "financial" ? <ChartBar size={16} /> : cat.id === "operational" ? <Pulse size={16} /> : cat.id === "portfolio" ? <Stack size={16} /> : cat.id === "marketing" ? <Users size={16} /> : <ShieldCheck size={16} />}
                 {cat.name}
               </button>
             );
           })}
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-white/10">
+        <div className="overflow-hidden rounded-none border border-white/10">
           <table className="w-full text-left text-sm">
             <thead className="bg-white/[0.03] text-[11px] uppercase tracking-wider text-white/40">
               <tr>

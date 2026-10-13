@@ -593,6 +593,17 @@ export default function NewProjectPage() {
     const projectPayload = {
       address: address.trim(),
       projectName: address.split(',')[0]?.trim() || 'New Investment Project',
+      city: city.trim(),
+      state: state.trim(),
+      zip: zipCode.trim(),
+      beds,
+      baths,
+      sqft: squareFeet,
+      yearBuilt,
+      sourceType,
+      sourceContactName,
+      sourceContactPhone,
+      propertyType,
       purchasePrice,
       rehabBudget,
       estimatedARV,
@@ -601,9 +612,18 @@ export default function NewProjectPage() {
       targetLtvPct,
       interestRatePct,
       amortizationYears,
+      vacancyRatePct,
+      buyerClosingCostsPct,
+      capExReservePct,
+      exitCapRatePct,
       strategy,
       terminalValueMethod: 'appreciation_pct',
       assumptionsNotes: dealNotes.trim() || 'Created via 5-Step Acquisition Wizard',
+      teamMembers,
+      targetContractDate,
+      targetClosingDate,
+      inspectionDays,
+      financingDays,
     };
 
     try {
@@ -644,8 +664,8 @@ export default function NewProjectPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               type: 'inspection',
-              label: 'General Property Inspection',
-              deadline: new Date(Date.now() + inspectionDays * 86400000).toISOString(),
+              name: 'General Property Inspection',
+              deadlineDate: new Date(Date.now() + inspectionDays * 86400000).toISOString(),
               daysFromEffective: inspectionDays,
             }),
           });
@@ -654,8 +674,8 @@ export default function NewProjectPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               type: 'financing',
-              label: 'Lender Loan Approval Contingency',
-              deadline: new Date(Date.now() + financingDays * 86400000).toISOString(),
+              name: 'Lender Loan Approval Contingency',
+              deadlineDate: new Date(Date.now() + financingDays * 86400000).toISOString(),
               daysFromEffective: financingDays,
             }),
           });

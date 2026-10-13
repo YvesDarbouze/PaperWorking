@@ -665,7 +665,7 @@ export default function HoldRenovationDevelopmentTasks({
         </div>
       </section>
 
-      {/* Vendor Marketplace Modal */}
+      {/* Vendor Directory Modal */}
       {activeVendorTrade && (
         <div
           role="dialog"

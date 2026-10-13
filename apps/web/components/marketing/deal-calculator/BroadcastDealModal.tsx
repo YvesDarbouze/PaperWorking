@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { EnvelopeSimple, X, Gavel } from '@phosphor-icons/react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 import type { ReconciledUnderwritingMetrics } from '@paperworking/financial-engine';
 
@@ -114,14 +115,12 @@ export default function BroadcastDealModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg rounded-t-2xl sm:rounded-2xl border-t sm:border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
+        className="relative w-full max-w-lg rounded-none border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
       >
         <div className="flex items-center justify-between border-b border-white/10 pb-4 shrink-0">
           <div>
             <h2 id="broadcast-deal-title" className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-white">
-                forward_to_inbox
-              </span>
+              <EnvelopeSimple className="h-5 w-5 text-white" />
               Crowdfund via Email Promotion
             </h2>
             <p className="text-xs text-white/50 mt-0.5">
@@ -131,16 +130,16 @@ export default function BroadcastDealModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
             aria-label="Close modal"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="overflow-y-auto py-3 space-y-3.5 text-xs pr-1">
           {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-red-300">
+            <div className="rounded-none border border-red-500/30 bg-red-500/10 p-3 text-red-300">
               {error}
             </div>
           )}
@@ -156,7 +155,7 @@ export default function BroadcastDealModal({
               value={emails}
               onChange={(e) => setEmails(e.target.value)}
               placeholder="investor1@fund.com, partners@group.io"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-mono text-xs focus:outline-none focus:border-white min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-white font-mono text-base md:text-xs focus:outline-none focus:border-white min-h-[44px]"
             />
           </div>
 
@@ -170,7 +169,7 @@ export default function BroadcastDealModal({
               required
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-white min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold text-base md:text-xs focus:outline-none focus:border-white min-h-[44px]"
             />
           </div>
 
@@ -184,7 +183,7 @@ export default function BroadcastDealModal({
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none focus:border-white min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-white text-base md:text-xs focus:outline-none focus:border-white min-h-[44px]"
             />
           </div>
 
@@ -194,7 +193,7 @@ export default function BroadcastDealModal({
               id="includeCardCheckbox"
               checked={includeCard}
               onChange={(e) => setIncludeCard(e.target.checked)}
-              className="h-4 w-4 rounded border-white/20 bg-white/5 text-white focus:ring-0"
+              className="h-4 w-4 rounded-none border-white/20 bg-white/5 text-white focus:ring-0"
             />
             <label htmlFor="includeCardCheckbox" className="text-[11px] text-white/80 cursor-pointer">
               Attach Verified Operator Digital Business Card to Email
@@ -202,10 +201,8 @@ export default function BroadcastDealModal({
           </div>
 
           {/* Off-Platform Closing Reminder */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-[11px] text-white/60 flex items-start gap-2.5">
-            <span className="material-symbols-outlined text-[18px] text-white/40 shrink-0 mt-0.5">
-              gavel
-            </span>
+          <div className="rounded-none border border-white/10 bg-white/[0.02] p-3 text-[11px] text-white/60 flex items-start gap-2.5">
+            <Gavel className="h-4 w-4 text-white/40 shrink-0 mt-0.5" />
             <p>
               <strong className="text-white font-semibold">Off-Platform Closing:</strong> PaperWorking dispatches institutional teasers and coordinates messaging inquiries. All final subscription agreements, PPM distributions, and capital wiring take place directly off-platform.
             </p>
@@ -215,14 +212,14 @@ export default function BroadcastDealModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-4 py-2.5 text-white/70 hover:bg-white/5 text-xs font-semibold min-h-[44px]"
+              className="rounded-none px-4 py-2.5 text-white/70 hover:bg-white/5 text-xs font-semibold min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-white text-black hover:bg-white/90 px-5 py-2.5 font-bold text-xs shadow-lg transition active:scale-95 disabled:opacity-50 min-h-[44px]"
+              className="rounded-none bg-white text-black hover:bg-white/90 px-5 py-2.5 font-bold text-xs shadow-lg transition active:scale-95 disabled:opacity-50 min-h-[44px]"
             >
               {loading ? 'Broadcasting...' : 'Broadcast to Investor List'}
             </button>

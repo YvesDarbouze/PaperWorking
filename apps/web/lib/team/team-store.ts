@@ -363,6 +363,9 @@ export async function updateTeamTierInStore(
       );
     } catch (err: any) {
       console.warn('[team-store] Warning: Failed to persist tier update to Firestore (memory cache preserved):', err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -421,6 +424,9 @@ export async function createTeamMemberInStore(
         .set(firestoreData);
     } catch (err: any) {
       console.warn(`[team-store] Warning: Failed to persist member ${id} to Firestore (memory cache preserved):`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -544,6 +550,9 @@ export async function updateTeamMemberInStore(
         .set(firestoreData, { merge: true });
     } catch (err: any) {
       console.warn(`[team-store] Warning: Failed to update member ${id} in Firestore (memory cache preserved):`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -565,6 +574,9 @@ export async function deleteTeamMemberInStore(id: string): Promise<boolean> {
       await db.collection('team_members').doc(id).delete();
     } catch (err: any) {
       console.warn(`[team-store] Warning: Failed to delete member ${id} from Firestore:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 

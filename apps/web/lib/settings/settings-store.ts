@@ -35,6 +35,7 @@ export interface UserProfileData {
   equityMultiple?: number;
   dealCount?: number;
   showRoiPublicly?: boolean;
+  vendorSkills?: string[];
   [key: string]: unknown;
 }
 
@@ -116,6 +117,7 @@ function getInitialProfile(uid: string): UserProfileData {
     equityMultiple: 1.88,
     dealCount: 8,
     showRoiPublicly: true,
+    vendorSkills: [],
   };
 }
 

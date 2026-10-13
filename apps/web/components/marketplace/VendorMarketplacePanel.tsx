@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { MapPin, CircleNotch, WarningCircle, Warning, MagnifyingGlass, PlusCircle, Storefront, X } from '@phosphor-icons/react';
 import { MarketplaceSubnav } from '@/components/marketplace/MarketplaceSubnav';
 import { RatingDisplay } from '@/components/marketplace/RatingDisplay';
 import VendorSideSheet, {
@@ -70,6 +71,7 @@ interface ApiVendor {
   feeRangeLabel?: string;
   verified?: boolean;
   insuranceVerified?: boolean;
+  vendorSkills?: string[];
 }
 
 interface DisplayVendor {
@@ -81,6 +83,7 @@ interface DisplayVendor {
   totalReviews: number;
   bio: string;
   specialties: string[];
+  vendorSkills?: string[];
 }
 
 interface DealCardData {
@@ -127,10 +130,10 @@ function VendorCard({
     CATEGORY_BADGE_STYLES[vendor.category] ?? 'border-white/10 bg-white/5 text-white/55';
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-5 transition-all duration-200 hover:border-white/20 hover:shadow-[0_0_24px_rgba(253,255,252,0.04)]">
+    <div className="flex flex-col gap-4 rounded-none border border-neutral-800 bg-neutral-900/40 p-5 transition-all duration-200 hover:border-neutral-700">
       <div className="flex items-center justify-between gap-2">
         <span
-          className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClass}`}
+          className={`rounded-none border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${badgeClass}`}
         >
           {vendor.category}
         </span>
@@ -138,20 +141,20 @@ function VendorCard({
       </div>
 
       <div>
-        <h3 className="text-base font-bold leading-snug text-[#fdfffc]">{vendor.companyName}</h3>
-        <p className="mt-0.5 flex items-center gap-1 text-xs text-white/40">
-          <span className="material-symbols-outlined text-[14px]">location_on</span>
+        <h3 className="text-base font-semibold leading-snug text-white">{vendor.companyName}</h3>
+        <p className="mt-0.5 flex items-center gap-1 text-xs text-neutral-400">
+          <MapPin className="h-3.5 w-3.5 text-neutral-400" />
           {vendor.location}
         </p>
       </div>
 
-      <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-white/55">{vendor.bio}</p>
+      <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-neutral-400">{vendor.bio}</p>
 
       <div className="flex flex-wrap gap-1.5">
         {(vendor.specialties ?? []).slice(0, 3).map((tag) => (
           <span
             key={tag}
-            className="rounded border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-semibold text-white/55"
+            className="rounded-none border border-neutral-800 bg-neutral-900 px-2 py-0.5 text-[10px] font-medium text-neutral-300"
           >
             {tag}
           </span>
@@ -162,20 +165,20 @@ function VendorCard({
         <button
           type="button"
           onClick={() => onViewProfile(vendor.id)}
-          className="flex-1 rounded-lg border border-white/20 px-3 py-2 text-xs font-bold text-white/80 hover:bg-white/5"
+          className="flex-1 rounded-none border border-neutral-700 px-3 py-2 text-xs font-medium text-white hover:bg-neutral-800 min-h-[44px] transition"
         >
           View Profile
         </button>
         <button
           type="button"
           onClick={() => onRequestQuote(vendor.id)}
-          className="flex-1 rounded-lg bg-[#fdfffc] px-3 py-2 text-xs font-bold text-[#0d0a0b] hover:bg-white/90"
+          className="flex-1 rounded-none bg-white px-3 py-2 text-xs font-medium text-neutral-950 hover:bg-neutral-200 min-h-[44px] transition"
         >
           Request Quote
         </button>
       </div>
 
-      <p className="border-t border-white/5 pt-2 text-[10px] leading-relaxed text-white/35">
+      <p className="border-t border-neutral-800 pt-2 text-[10px] leading-relaxed text-neutral-500">
         PaperWorking does not vet vendors. You must verify credentials and references before engaging.
       </p>
     </div>
@@ -226,8 +229,34 @@ function MarketplaceContent() {
   const [sideSheetVendor, setSideSheetVendor] = useState<VendorSideSheetData | null>(null);
   const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
+  const [userVendorSkills, setUserVendorSkills] = useState<string[] | null>(null);
+  const [isSkillsGateOpen, setIsSkillsGateOpen] = useState(false);
+
   useEffect(() => {
-    document.title = 'PaperWorking · Vendor Marketplace';
+    let isMounted = true;
+    async function loadUserSkills() {
+      try {
+        const res = await fetch('/api/marketplace/profile', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setUserVendorSkills(Array.isArray(data.profile?.vendorSkills) ? data.profile.vendorSkills : []);
+          }
+        }
+      } catch {
+        if (isMounted) setUserVendorSkills([]);
+      }
+    }
+    if (isAuthed) {
+      loadUserSkills();
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [isAuthed]);
+
+  useEffect(() => {
+    document.title = 'PaperWorking · Vendor Directory';
   }, []);
 
   useEffect(() => {
@@ -374,17 +403,38 @@ function MarketplaceContent() {
       rating: v.overallRating ?? 0,
       totalReviews: v.totalReviews ?? 0,
       bio: v.bio ?? '',
-      specialties: v.specialties ?? [],
+      specialties: (v as any).vendorSkills ?? v.specialties ?? [],
+      vendorSkills: (v as any).vendorSkills ?? v.specialties ?? [],
     }));
 
     if (activeFilter !== 'All') {
       const apiType = CATEGORY_TO_API_TYPE[activeFilter];
       source = source.filter((v) => {
         const cat = v.category?.toLowerCase();
+        const specs = (v.specialties || []).map((s) => s.toLowerCase());
         return (
           cat === apiType.toLowerCase() ||
-          (apiType === 'Lawyer' && (cat === 'attorney' || cat === 'lawyer')) ||
-          (apiType === 'Listing Agent' && (cat === 'agent' || cat === 'listing agent'))
+          (apiType === 'Lawyer' && (cat === 'attorney' || cat === 'lawyer' || specs.some((s) => s.includes('attorney') || s.includes('lawyer')))) ||
+          (apiType === 'Listing Agent' && (cat === 'agent' || cat === 'listing agent' || specs.some((s) => s.includes('broker') || s.includes('agent')))) ||
+          specs.some((s) => s.includes(apiType.toLowerCase()))
+        );
+      });
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      source = source.filter((v) => {
+        const name = v.companyName.toLowerCase();
+        const cat = v.category.toLowerCase();
+        const bio = v.bio.toLowerCase();
+        const loc = v.location.toLowerCase();
+        const specs = (v.specialties || []).map((s) => s.toLowerCase());
+        return (
+          name.includes(q) ||
+          cat.includes(q) ||
+          bio.includes(q) ||
+          loc.includes(q) ||
+          specs.some((s) => s.includes(q))
         );
       });
     }
@@ -399,7 +449,7 @@ function MarketplaceContent() {
     });
 
     return source;
-  }, [vendors, activeFilter]);
+  }, [vendors, activeFilter, searchQuery]);
 
   const handleViewProfile = useCallback(
     (vendorId: string) => {
@@ -454,7 +504,7 @@ function MarketplaceContent() {
 
   const title =
     activeTab === 'vendors'
-      ? 'Vendor Marketplace'
+      ? 'Vendor Directory'
       : activeTab === 'deals'
         ? 'Deal Marketplace'
         : 'Investor Directory';
@@ -466,6 +516,13 @@ function MarketplaceContent() {
         ? 'Browse active deal opportunities across the network'
         : 'Discover and follow public investor profiles';
 
+  const handleListServicesClick = (e: React.MouseEvent) => {
+    if (userVendorSkills !== null && userVendorSkills.length === 0) {
+      e.preventDefault();
+      setIsSkillsGateOpen(true);
+    }
+  };
+
   return (
     <div className="mx-auto min-h-full max-w-[1400px] space-y-6 px-5 py-6 lg:px-8 lg:py-7">
       <MarketplaceSubnav />
@@ -476,48 +533,69 @@ function MarketplaceContent() {
           <p className="text-sm text-white/55">{subtitle}</p>
         </div>
 
-        <div className="flex self-start rounded-lg border border-white/10 bg-white/5 p-0.5 md:self-center">
-          {(
-            [
-              { id: 'vendors' as const, label: 'Service Providers' },
-              { id: 'deals' as const, label: 'Active Deals' },
-            ] as const
-          ).map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => setActiveTab(option.id)}
-              className={`rounded-md px-4 py-1.5 text-xs font-bold transition-all ${
-                activeTab === option.id
-                  ? 'bg-[#fdfffc] text-[#0d0a0b] shadow'
-                  : 'text-white/55 hover:text-white'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Link
+            href="/vendor-portal/profile"
+            data-testid="list-services-vendor-directory-btn"
+            onClick={handleListServicesClick}
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-neutral-100 px-4 py-2 text-xs font-semibold text-neutral-950 transition hover:bg-white"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span>+ List Your Services</span>
+          </Link>
+
+          <div className="flex self-start rounded-none border border-neutral-800 bg-neutral-900/50 p-0.5 md:self-center">
+            {(
+              [
+                { id: 'vendors' as const, label: 'Service Providers' },
+                { id: 'deals' as const, label: 'Active Deals' },
+              ] as const
+            ).map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setActiveTab(option.id)}
+                className={`rounded-none px-4 py-1.5 text-xs font-medium transition-all min-h-[40px] ${
+                  activeTab === option.id
+                    ? 'bg-neutral-100 text-neutral-950 shadow'
+                    : 'text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Universal Directory Privileges Announcement */}
+      <div
+        data-testid="universal-vendor-directory-banner"
+        className="flex items-center gap-2.5 rounded-none border border-neutral-800 bg-neutral-900/40 px-4 py-2.5 text-xs text-neutral-400"
+      >
+        <Storefront className="h-4 w-4 shrink-0 text-neutral-300" />
+        <span>
+          <strong className="text-neutral-200">Universal Directory Privileges:</strong> Investors, Investment Teams, and Vendors are all entitled to list trade and professional services on the Vendor Directory.
+        </span>
       </div>
 
       {activeTab === 'deals' ? (
         <div className="space-y-4">
           {loadingDeals ? (
-            <div className="flex h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-[#121014]/50">
-              <span className="material-symbols-outlined animate-spin text-2xl text-white/50">
-                progress_activity
-              </span>
-              <span className="text-xs font-medium text-white/45">Fetching active deal listings…</span>
+            <div className="flex h-[320px] flex-col items-center justify-center gap-3 rounded-none border border-neutral-800 bg-neutral-950">
+              <CircleNotch className="h-6 w-6 animate-spin text-neutral-400" />
+              <span className="text-xs font-medium text-neutral-400">Fetching active deal listings…</span>
             </div>
           ) : dealsError ? (
-            <div className="flex h-[320px] flex-col items-center justify-center gap-3 rounded-2xl border border-red-500/20 px-4 text-center">
-              <span className="material-symbols-outlined text-3xl text-red-400">error</span>
-              <p className="text-sm font-bold text-[#fdfffc]">Unable to Load Deals</p>
-              <p className="max-w-sm text-xs text-white/55">{dealsError}</p>
+            <div className="flex h-[320px] flex-col items-center justify-center gap-3 rounded-none border border-red-500/20 px-4 text-center">
+              <WarningCircle className="h-8 w-8 text-red-400" />
+              <p className="text-sm font-bold text-neutral-100">Unable to Load Deals</p>
+              <p className="max-w-sm text-xs text-neutral-400">{dealsError}</p>
             </div>
           ) : deals.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center text-sm text-white/55">
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-8 text-center text-sm text-neutral-400">
               No published deals right now.{' '}
-              <Link href="/dashboard/deals" className="text-[#fdfffc] underline-offset-4 hover:underline">
+              <Link href="/dashboard/deals" className="text-neutral-100 underline-offset-4 hover:underline">
                 Open Deals Marketplace
               </Link>
             </div>
@@ -527,15 +605,15 @@ function MarketplaceContent() {
                 <Link
                   key={deal.id}
                   href={`/marketplace/${deal.slug || deal.id}`}
-                  className="rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20"
+                  className="rounded-none border border-neutral-800 bg-neutral-900/40 p-5 transition hover:border-neutral-700"
                 >
-                  <p className="text-[11px] uppercase tracking-[0.07em] text-white/45">
+                  <p className="text-[11px] uppercase tracking-[0.07em] text-neutral-400">
                     {deal.assetClass}
                   </p>
-                  <h3 className="mt-1 text-lg font-semibold text-[#fdfffc]">{deal.propertyName}</h3>
-                  <p className="mt-1 text-sm text-white/55">{deal.address || deal.city}</p>
+                  <h3 className="mt-1 text-lg font-semibold text-neutral-100">{deal.propertyName}</h3>
+                  <p className="mt-1 text-sm text-neutral-400">{deal.address || deal.city}</p>
                   {deal.projectedRoi != null ? (
-                    <p className="mt-3 text-sm text-[var(--accent)]">ROI {deal.projectedRoi}%</p>
+                    <p className="mt-3 text-sm text-neutral-200">ROI {deal.projectedRoi}%</p>
                   ) : null}
                 </Link>
               ))}
@@ -545,8 +623,8 @@ function MarketplaceContent() {
       ) : activeTab === 'investors' ? (
         <div className="space-y-4">
           {loadingInvestors ? (
-            <div className="flex items-center justify-center gap-3 py-24 text-white/45">
-              <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+            <div className="flex items-center justify-center gap-3 py-24 text-neutral-400">
+              <CircleNotch className="h-5 w-5 animate-spin text-neutral-400" />
               <span className="text-sm">Loading investors…</span>
             </div>
           ) : (
@@ -554,32 +632,32 @@ function MarketplaceContent() {
               {investors.map((profile) => (
                 <article
                   key={profile.uid}
-                  className="rounded-2xl border border-white/8 bg-white/[0.02] p-5"
+                  className="rounded-none border border-neutral-800 bg-neutral-900/40 p-5"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h4 className="text-lg font-semibold text-[#fdfffc]">
+                      <h4 className="text-lg font-semibold text-neutral-100">
                         {profile.displayName}
                         {profile.isVerified ? (
-                          <span className="ml-2 text-xs text-white/45">Verified</span>
+                          <span className="ml-2 text-xs text-neutral-400">Verified</span>
                         ) : null}
                       </h4>
-                      <p className="mt-1 text-sm text-white/60">{profile.location}</p>
+                      <p className="mt-1 text-sm text-neutral-400">{profile.location}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => toggleFollow(profile.uid)}
-                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/80 hover:bg-white/5"
+                      className="rounded-none border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:bg-neutral-800"
                     >
                       {following.includes(profile.uid) ? 'Following' : 'Follow'}
                     </button>
                   </div>
                   {profile.publicBio ? (
-                    <p className="mt-3 text-sm text-white/70">{profile.publicBio}</p>
+                    <p className="mt-3 text-sm text-neutral-300">{profile.publicBio}</p>
                   ) : null}
                   <Link
                     href={`/dashboard/marketplace/investors/${profile.uid}`}
-                    className="mt-4 inline-flex text-sm text-white/75 underline-offset-4 hover:underline"
+                    className="mt-4 inline-flex text-sm text-neutral-400 underline-offset-4 hover:underline"
                   >
                     View profile
                   </Link>
@@ -592,24 +670,20 @@ function MarketplaceContent() {
         <>
           <div className="flex gap-0">
             <div className="relative flex-1">
-              <span className="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[18px] text-white/35">
-                location_on
-              </span>
+              <MapPin className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-neutral-400" />
               <input
                 type="text"
                 placeholder="Search by City or Zip Code…"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchInput)}
-                className="w-full border border-r-0 border-white/10 bg-white/5 py-3.5 pl-11 pr-4 text-sm text-[#fdfffc] outline-none placeholder:text-white/35 focus:border-white/25"
-                style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
+                className="w-full rounded-none border border-r-0 border-neutral-800 bg-neutral-900/50 py-3.5 pl-11 pr-4 text-base md:text-sm text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600"
               />
             </div>
             <button
               type="button"
               onClick={() => setSearchQuery(searchInput)}
-              className="bg-[#fdfffc] px-6 py-3.5 text-sm font-bold text-[#0d0a0b] hover:bg-white/90"
-              style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
+              className="rounded-none bg-neutral-100 px-6 py-3.5 text-sm font-semibold text-neutral-950 hover:bg-white min-h-[44px]"
             >
               Find Vendors
             </button>
@@ -623,10 +697,10 @@ function MarketplaceContent() {
                   key={pill}
                   type="button"
                   onClick={() => setActiveFilter(pill)}
-                  className={`rounded-full border px-4 py-1.5 text-xs font-bold transition-all ${
+                  className={`rounded-none border px-4 py-1.5 text-xs font-medium transition-all ${
                     isActive
-                      ? 'border-[#fdfffc]/40 bg-[#fdfffc]/10 text-[#fdfffc]'
-                      : 'border-white/10 bg-transparent text-white/55 hover:border-white/30 hover:text-[#fdfffc]'
+                      ? 'border-neutral-600 bg-neutral-800 text-neutral-100'
+                      : 'border-neutral-800 bg-transparent text-neutral-400 hover:border-neutral-700 hover:text-neutral-200'
                   }`}
                 >
                   {pill}
@@ -635,10 +709,8 @@ function MarketplaceContent() {
             })}
           </div>
 
-          <div className="flex items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3">
-            <span className="material-symbols-outlined mt-0.5 flex-shrink-0 text-[18px] text-amber-500">
-              warning
-            </span>
+          <div className="flex items-start gap-3 rounded-none border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+            <Warning className="mt-0.5 flex-shrink-0 text-[18px] text-amber-500" />
             <p className="text-xs leading-relaxed text-amber-400/80">
               <span className="font-bold text-amber-400">Disclaimer: </span>
               PaperWorking does not vet vendors. You must verify credentials and references before
@@ -649,28 +721,28 @@ function MarketplaceContent() {
           {listings.length > 0 ? (
             <section className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-[#fdfffc]">Open vendor listings</h3>
-                <span className="text-xs text-white/45">{listingsCount} visible</span>
+                <h3 className="text-sm font-semibold text-neutral-100">Open vendor listings</h3>
+                <span className="text-xs text-neutral-400">{listingsCount} visible</span>
               </div>
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {listings.map((listing) => (
                   <article
                     key={listing.id}
-                    className="rounded-xl border border-white/8 bg-white/[0.03] p-4"
+                    className="rounded-none border border-neutral-800 bg-neutral-900/40 p-4"
                   >
                     <div className="mb-1 flex items-center gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.07em] text-white/45">
+                      <p className="text-[11px] uppercase tracking-[0.07em] text-neutral-400">
                         {listing.vendorType}
                       </p>
                       {listing.isNewListing ? (
-                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.06em]">
+                        <span className="rounded-none bg-neutral-800 px-2 py-0.5 text-[10px] uppercase tracking-[0.06em] text-neutral-300">
                           New
                         </span>
                       ) : null}
                     </div>
-                    <h4 className="text-base font-semibold text-[#fdfffc]">{listing.title}</h4>
-                    <p className="mt-1 text-sm text-white/55">{listing.city}</p>
-                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-white/60">
+                    <h4 className="text-base font-semibold text-neutral-100">{listing.title}</h4>
+                    <p className="mt-1 text-sm text-neutral-400">{listing.city}</p>
+                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-neutral-400">
                       <span>{listing.budgetRange}</span>
                       <span>Response {listing.responseTime}</span>
                     </div>
@@ -681,24 +753,24 @@ function MarketplaceContent() {
           ) : null}
 
           {loadingVendors ? (
-            <div className="flex items-center justify-center gap-3 py-24 text-white/45">
-              <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+            <div className="flex items-center justify-center gap-3 py-24 text-neutral-400">
+              <CircleNotch className="h-5 w-5 animate-spin text-neutral-400" />
               <span className="text-sm">Loading vendors…</span>
             </div>
           ) : vendors.length === 0 ? (
             <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 py-24 text-center">
-              <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/55">
-                <span className="material-symbols-outlined text-[24px]">search</span>
+              <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-neutral-400">
+                <MagnifyingGlass className="h-6 w-6 text-neutral-400" />
               </div>
-              <h3 className="text-lg font-bold leading-snug text-[#fdfffc]">No Registered Vendors</h3>
-              <p className="text-xs leading-relaxed text-white/55">
+              <h3 className="text-lg font-bold leading-snug text-neutral-100">No Registered Vendors</h3>
+              <p className="text-xs leading-relaxed text-neutral-400">
                 There are currently no active service providers registered in the PaperWorking
-                Marketplace.
+                Vendor Directory.
               </p>
             </div>
           ) : displayVendors.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-24 text-white/45">
-              <span className="material-symbols-outlined text-[32px] opacity-30">search</span>
+            <div className="flex flex-col items-center justify-center gap-3 py-24 text-neutral-400">
+              <MagnifyingGlass className="h-8 w-8 text-neutral-600" />
               <p className="text-sm">No vendors found for the selected filters.</p>
               <button
                 type="button"
@@ -707,7 +779,7 @@ function MarketplaceContent() {
                   setSearchQuery('');
                   setSearchInput('');
                 }}
-                className="text-xs text-[#fdfffc] hover:underline"
+                className="text-xs text-neutral-100 hover:underline"
               >
                 Clear filters
               </button>
@@ -763,6 +835,71 @@ function MarketplaceContent() {
           setIsQuoteModalOpen(true);
         }}
       />
+
+      {/* Skills Required Gate Modal */}
+      {isSkillsGateOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="skills-gate-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+        >
+          <div
+            data-testid="skills-required-modal"
+            className="w-full max-w-lg rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-2xl sm:p-8"
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-neutral-800 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-none border border-amber-500/30 bg-amber-500/10 text-amber-400">
+                  <Warning className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 id="skills-gate-modal-title" className="text-lg font-bold text-neutral-100">
+                    Skills Required to List Services
+                  </h3>
+                  <p className="text-xs text-neutral-400 mt-0.5">
+                    Vendor Directory Requirement
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSkillsGateOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100 transition"
+                aria-label="Close dialog"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                Before posting or listing on the PaperWorking Vendor Directory, you must select <strong>1 to 3 professional skills</strong> from our 38 certified professions.
+              </p>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                This identifies your capabilities in directory search engines so investors and deal operators can find and request quotes from you.
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-neutral-800 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsSkillsGateOpen(false)}
+                className="inline-flex min-h-[44px] items-center justify-center rounded-none border border-neutral-800 px-4 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 transition"
+              >
+                Cancel
+              </button>
+              <Link
+                href="/dashboard/settings?section=general#vendor-skills"
+                data-testid="skills-gate-settings-link"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-none bg-neutral-100 px-4 py-2 text-xs font-semibold text-neutral-950 hover:bg-white transition"
+              >
+                Configure 1–3 Skills in Settings →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="border-t border-white/10 pt-6">
         <p className="font-mono text-xs leading-relaxed text-white/35">

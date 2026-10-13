@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { Faders } from '@phosphor-icons/react';
 import type { DealCardData } from '@/components/marketplace/DealCard';
 
 export interface MarketplaceFilterState {
@@ -121,18 +122,18 @@ export default function MarketplaceFilterRail({
 
   return (
     <aside
-      className={`w-full lg:w-[240px] shrink-0 space-y-6 rounded-2xl border border-white/10 bg-[#121014] p-4 lg:sticky lg:top-20 ${className}`}
+      className={`w-full lg:w-[240px] shrink-0 space-y-6 rounded-none border border-neutral-800 bg-neutral-950 p-4 lg:sticky lg:top-20 ${className}`}
       aria-label="Marketplace Filters"
     >
-      <div className="flex items-center justify-between border-b border-white/10 pb-3">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-[#fdfffc] flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px] text-[var(--accent)]">tune</span>
+      <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-neutral-100 flex items-center gap-2">
+          <Faders className="h-4 w-4 text-neutral-300" />
           Filters
         </h3>
         <button
           type="button"
           onClick={onReset}
-          className="text-xs font-semibold text-[#9E9DA0] hover:text-[var(--accent)] transition"
+          className="text-xs font-medium text-neutral-400 hover:text-white transition"
         >
           Reset all
         </button>
@@ -140,19 +141,19 @@ export default function MarketplaceFilterRail({
 
       {/* Deal Type (Crowdfunding vs Syndication) */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
           Deal Structure
         </label>
-        <div className="grid grid-cols-3 gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1">
+        <div className="grid grid-cols-3 gap-1 rounded-none border border-neutral-800 bg-neutral-900/50 p-1">
           {(['all', 'syndication', 'crowdfunding'] as const).map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => onChange({ ...filters, dealType: type })}
-              className={`rounded-md py-1.5 text-[11px] font-semibold capitalize transition ${
+              className={`rounded-none py-1.5 text-[11px] font-medium capitalize transition ${
                 filters.dealType === type
-                  ? 'bg-[var(--accent)] text-[#0a0a0f] font-bold shadow'
-                  : 'text-[#fdfffc]/70 hover:text-white'
+                  ? 'bg-neutral-100 text-neutral-950 font-semibold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
               {type === 'all' ? 'All' : type === 'syndication' ? 'Syndicate' : 'Crowd'}
@@ -164,10 +165,10 @@ export default function MarketplaceFilterRail({
       {/* Target IRR Range Slider */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+          <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
             Min Target IRR
           </label>
-          <span className="font-mono font-bold text-[var(--accent)]">{filters.minIrr}%+</span>
+          <span className="font-mono font-semibold text-neutral-100">{filters.minIrr}%+</span>
         </div>
         <input
           type="range"
@@ -177,9 +178,9 @@ export default function MarketplaceFilterRail({
           aria-label="Minimum Target IRR"
           value={filters.minIrr}
           onChange={(e) => onChange({ ...filters, minIrr: parseFloat(e.target.value) })}
-          className="h-1.5 w-full appearance-none rounded-lg bg-white/15 accent-[var(--accent)] cursor-pointer"
+          className="h-1.5 w-full appearance-none rounded-none bg-neutral-800 accent-neutral-100 cursor-pointer"
         />
-        <div className="flex justify-between text-[10px] text-[#9E9DA0] font-mono">
+        <div className="flex justify-between text-[10px] text-neutral-400 font-mono">
           <span>5%</span>
           <span>15%</span>
           <span>25%+</span>
@@ -189,10 +190,10 @@ export default function MarketplaceFilterRail({
       {/* Maximum Check / Min Investment */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+          <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
             Max Min Check
           </label>
-          <span className="font-mono font-bold text-[var(--accent)]">
+          <span className="font-mono font-semibold text-neutral-100">
             {filters.minInvestmentMax >= 100000 ? '$100K+' : `$${filters.minInvestmentMax.toLocaleString()}`}
           </span>
         </div>
@@ -204,9 +205,9 @@ export default function MarketplaceFilterRail({
           aria-label="Maximum Minimum Investment"
           value={filters.minInvestmentMax}
           onChange={(e) => onChange({ ...filters, minInvestmentMax: parseInt(e.target.value, 10) })}
-          className="h-1.5 w-full appearance-none rounded-lg bg-white/15 accent-[var(--accent)] cursor-pointer"
+          className="h-1.5 w-full appearance-none rounded-none bg-neutral-800 accent-neutral-100 cursor-pointer"
         />
-        <div className="flex justify-between text-[10px] text-[#9E9DA0] font-mono">
+        <div className="flex justify-between text-[10px] text-neutral-400 font-mono">
           <span>$10K</span>
           <span>$50K</span>
           <span>$100K+</span>
@@ -215,7 +216,7 @@ export default function MarketplaceFilterRail({
 
       {/* Asset Class Multi-Select */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
           Asset Class
         </label>
         <div
@@ -245,20 +246,20 @@ export default function MarketplaceFilterRail({
             return (
               <label
                 key={ac}
-                className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-1 text-xs hover:bg-white/5 transition"
+                className="flex cursor-pointer items-center justify-between rounded-none px-2 py-1 text-xs hover:bg-neutral-900 transition"
               >
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleAssetClass(ac)}
-                    className="h-3.5 w-3.5 rounded border-white/20 bg-white/10 text-[var(--accent)] accent-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121014]"
+                    className="h-3.5 w-3.5 rounded-none border-neutral-700 bg-neutral-900 text-neutral-100 accent-neutral-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
                   />
-                  <span className={isChecked ? 'font-semibold text-white' : 'text-[#fdfffc]/80'}>
+                  <span className={isChecked ? 'font-semibold text-white' : 'text-neutral-300'}>
                     {ac}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-[#9E9DA0]">{count}</span>
+                <span className="font-mono text-[10px] text-neutral-500">{count}</span>
               </label>
             );
           })}
@@ -267,7 +268,7 @@ export default function MarketplaceFilterRail({
 
       {/* Target Market Metro */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
           Market / Metro
         </label>
         <div className="relative">
@@ -277,7 +278,7 @@ export default function MarketplaceFilterRail({
             onChange={(e) => setMarketSearch(e.target.value)}
             placeholder="Filter markets…"
             aria-label="Filter markets"
-            className="w-full rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-neutral-500"
           />
         </div>
         <div
@@ -306,20 +307,20 @@ export default function MarketplaceFilterRail({
             return (
               <label
                 key={m.name}
-                className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-1 text-xs hover:bg-white/5 transition"
+                className="flex cursor-pointer items-center justify-between rounded-none px-2 py-1 text-xs hover:bg-neutral-900 transition"
               >
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleMarket(m.name)}
-                    className="h-3.5 w-3.5 rounded border-white/20 bg-white/10 text-[var(--accent)] accent-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121014]"
+                    className="h-3.5 w-3.5 rounded-none border-neutral-700 bg-neutral-900 text-neutral-100 accent-neutral-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
                   />
-                  <span className={isChecked ? 'font-semibold text-white' : 'text-[#fdfffc]/80'}>
+                  <span className={isChecked ? 'font-semibold text-white' : 'text-neutral-300'}>
                     {m.name}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-[#9E9DA0]">{m.count}</span>
+                <span className="font-mono text-[10px] text-neutral-500">{m.count}</span>
               </label>
             );
           })}
@@ -328,7 +329,7 @@ export default function MarketplaceFilterRail({
 
       {/* Hold Period Segmented */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
           Hold Period
         </label>
         <div className="grid grid-cols-2 gap-1.5">
@@ -339,10 +340,10 @@ export default function MarketplaceFilterRail({
                 key={hp.id}
                 type="button"
                 onClick={() => toggleHoldPeriod(hp.id)}
-                className={`rounded-lg border px-2 py-1 text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121014] ${
+                className={`rounded-none border px-2 py-1 text-[11px] font-medium transition focus:outline-none ${
                   isChecked
-                    ? 'border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--accent)]'
-                    : 'border-white/10 bg-white/[0.02] text-[#fdfffc]/70 hover:border-white/20'
+                    ? 'border-neutral-500 bg-neutral-800 text-white'
+                    : 'border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:border-neutral-700'
                 }`}
               >
                 {hp.label}
@@ -354,7 +355,7 @@ export default function MarketplaceFilterRail({
 
       {/* Deal Status */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-wider text-[#9E9DA0]">
+        <label className="text-[11px] font-medium uppercase tracking-wider text-neutral-400">
           Deal Status
         </label>
         <div
@@ -383,16 +384,16 @@ export default function MarketplaceFilterRail({
             return (
               <label
                 key={st.id}
-                className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-1 text-xs hover:bg-white/5 transition"
+                className="flex cursor-pointer items-center justify-between rounded-none px-2 py-1 text-xs hover:bg-neutral-900 transition"
               >
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleStatus(st.id)}
-                    className="h-3.5 w-3.5 rounded border-white/20 bg-white/10 text-[var(--accent)] accent-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#121014]"
+                    className="h-3.5 w-3.5 rounded-none border-neutral-700 bg-neutral-900 text-neutral-100 accent-neutral-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
                   />
-                  <span className={isChecked ? 'font-semibold text-white' : 'text-[#fdfffc]/80'}>
+                  <span className={isChecked ? 'font-semibold text-white' : 'text-neutral-300'}>
                     {st.label}
                   </span>
                 </div>

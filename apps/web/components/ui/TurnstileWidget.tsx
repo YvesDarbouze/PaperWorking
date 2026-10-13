@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { ShieldWarning } from '@phosphor-icons/react';
 
 export interface TurnstileWidgetProps {
   onVerify: (token: string) => void;
@@ -127,10 +128,10 @@ export default function TurnstileWidget({
     return (
       <div
         data-testid="turnstile-unconfigured-banner"
-        className={`rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 text-xs text-amber-200/90 ${className}`}
+        className={`rounded-none border border-amber-500/20 bg-amber-500/5 p-3.5 text-xs text-amber-200/90 ${className}`}
       >
         <div className="flex items-center gap-2 font-semibold text-amber-300">
-          <span className="material-symbols-outlined text-[18px]">security_update_warning</span>
+          <ShieldWarning className="h-4 w-4 text-amber-400 shrink-0" />
           <span>Bot Verification Unconfigured (REQUIRES CREDENTIALS)</span>
         </div>
         <p className="mt-1 text-[11px] text-amber-200/70">

@@ -17,9 +17,9 @@ test.describe('E2E — Marketplace & How It Works (Phase 7d)', () => {
     ).first();
     await expect(bodyCopy).toBeVisible();
 
-    // 3. Two glass cards check: Deal Marketplace & Vendor Marketplace
+    // 3. Two glass cards check: Deal Marketplace & Vendor Directory
     const dealCard = page.locator('h3:has-text("Deal Marketplace")').first();
-    const vendorCard = page.locator('h3:has-text("Vendor Marketplace")').first();
+    const vendorCard = page.locator('h3:has-text("Vendor Directory")').first();
     await expect(dealCard).toBeVisible();
     await expect(vendorCard).toBeVisible();
 

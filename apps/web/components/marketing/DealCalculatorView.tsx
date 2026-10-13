@@ -26,6 +26,37 @@ import BroadcastDealModal from './deal-calculator/BroadcastDealModal';
 import StrategyInputsPanel from './deal-calculator/StrategyInputsPanel';
 import StartProjectFromCalculatorModal from './deal-calculator/StartProjectFromCalculatorModal';
 import ClosingCostsModal, { type ClosingCostLineItem } from './deal-calculator/ClosingCostsModal';
+import {
+  FolderOpen,
+  ArrowLeft,
+  BookmarkSimple,
+  RocketLaunch,
+  EnvelopeSimple,
+  Storefront,
+  Calculator,
+  CheckCircle,
+  WarningCircle,
+  Warning,
+  Info,
+  ArrowsClockwise,
+  Database,
+  Globe,
+  Hammer,
+  Receipt,
+  CurrencyDollar,
+  Buildings,
+  ClockCounterClockwise,
+  CaretUp,
+  CaretDown,
+  BellSimpleRinging,
+  Lock,
+  Medal,
+  SlidersHorizontal,
+  Flag,
+  HourglassMedium,
+  TrendDown,
+  Gavel,
+} from '@phosphor-icons/react';
 
 interface CalculatorInputs {
   address: string;
@@ -802,7 +833,7 @@ export default function DealCalculatorView({
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-muted-foreground">
-                <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                <FolderOpen className="h-5 w-5" weight="bold" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -823,7 +854,7 @@ export default function DealCalculatorView({
               href={`/project/${queryProjectId}`}
               className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-muted px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 transition shrink-0 min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              <ArrowLeft className="h-4 w-4" weight="bold" />
               <span>Back to Project Workspace</span>
             </Link>
           </div>
@@ -837,12 +868,12 @@ export default function DealCalculatorView({
                 ACQUISITION PHASE 01
               </span>
               <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="h-1.5 w-1.5 rounded-none bg-primary" />
                 CANONICAL ENGINE
               </span>
               {persistedSnapshotId && (
                 <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
-                  <span className="material-symbols-outlined text-[12px]">bookmark</span>
+                  <BookmarkSimple className="h-3 w-3" weight="bold" />
                   {persistedSnapshotId}
                 </span>
               )}
@@ -860,11 +891,9 @@ export default function DealCalculatorView({
               type="button"
               data-testid="start-project-from-calculator-btn"
               onClick={() => setShowStartProjectModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[17px] text-emerald-400">
-                rocket_launch
-              </span>
+              <RocketLaunch className="h-4 w-4 text-emerald-400" weight="bold" />
               <span>Start Project from Deal</span>
             </button>
 
@@ -872,11 +901,9 @@ export default function DealCalculatorView({
               type="button"
               data-testid="broadcast-deal-btn"
               onClick={() => setShowBroadcastModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition hover:bg-white/10 hover:text-white min-h-[44px]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[17px] text-foreground">
-                forward_to_inbox
-              </span>
+              <EnvelopeSimple className="h-4 w-4 text-foreground" weight="bold" />
               <span>Share via Email</span>
             </button>
 
@@ -884,11 +911,9 @@ export default function DealCalculatorView({
               type="button"
               data-testid="post-marketplace-btn"
               onClick={() => setShowPublishModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/90 transition hover:bg-white/10 hover:text-white min-h-[44px]"
+              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[17px] text-foreground">
-                storefront
-              </span>
+              <Storefront className="h-4 w-4 text-foreground" weight="bold" />
               <span>Post to Marketplace</span>
             </button>
 
@@ -896,9 +921,9 @@ export default function DealCalculatorView({
               type="button"
               onClick={handleRunAnalysis}
               disabled={snapshotSaving}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary/90 shadow-sm touch-press min-h-[44px]"
+              className="inline-flex items-center justify-center gap-2 rounded-none bg-primary px-6 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary/90 shadow-sm touch-press min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[18px]">calculate</span>
+              <Calculator className="h-4 w-4" weight="bold" />
               {snapshotSaving ? 'Calculating...' : 'Calculate Deal'}
             </button>
           </div>
@@ -914,9 +939,9 @@ export default function DealCalculatorView({
 
         {/* Success Notifications for Marketplace / Broadcast */}
         {publishSuccessDealId && (
-          <div className="mb-6 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
+          <div className="mb-6 flex items-center justify-between rounded-none border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-emerald-400 text-[18px]">check_circle</span>
+              <CheckCircle className="h-4 w-4 text-emerald-400" weight="bold" />
               <span>
                 Deal published to Marketplace. Investors can now submit soft commitments and request introduction meetings.
               </span>
@@ -931,9 +956,9 @@ export default function DealCalculatorView({
         )}
 
         {broadcastSuccessCount !== null && (
-          <div className="mb-6 flex items-center justify-between rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
+          <div className="mb-6 flex items-center justify-between rounded-none border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-emerald-400 text-[18px]">mark_email_read</span>
+              <EnvelopeSimple className="h-4 w-4 text-emerald-400" weight="bold" />
               <span>
                 Pro-forma broadcast successfully dispatched to {broadcastSuccessCount} investor recipient(s).
               </span>
@@ -952,15 +977,15 @@ export default function DealCalculatorView({
         {propertyData?.requiresCredentials && (
           <div
             data-testid="property-data-unconfigured-banner"
-            className="mb-6 flex items-center justify-between rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3.5 text-xs text-amber-200"
+            className="mb-6 flex items-center justify-between rounded-none border border-amber-500/25 bg-amber-500/10 p-3.5 text-xs text-amber-200"
           >
             <div className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-amber-400 text-[18px]">info</span>
+              <Info className="h-4 w-4 text-amber-400 shrink-0" weight="bold" />
               <span>
                 <strong>REQUIRES CREDENTIALS:</strong> Property Data Provider (RentCast) is unconfigured in this environment. Live comps cannot be fetched; manual entry is enabled.
               </span>
             </div>
-            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
+            <span className="rounded-none bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
               Manual Mode
             </span>
           </div>
@@ -970,15 +995,15 @@ export default function DealCalculatorView({
         {propertyData?.degraded && (
           <div
             data-testid="property-outage-banner"
-            className="mb-6 flex items-center justify-between rounded-2xl border border-amber-500/25 bg-amber-500/10 p-3.5 text-xs text-amber-200"
+            className="mb-6 flex items-center justify-between rounded-none border border-amber-500/25 bg-amber-500/10 p-3.5 text-xs text-amber-200"
           >
             <div className="flex items-center gap-2.5">
-              <span className="material-symbols-outlined text-amber-400 text-[18px]">warning</span>
+              <Warning className="h-4 w-4 text-amber-400 shrink-0" weight="bold" />
               <span>
                 <strong>PROVIDER NOTICE:</strong> {propertyData.message || 'Estimates temporarily unavailable — enter manually.'}
               </span>
             </div>
-            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
+            <span className="rounded-none bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
               Manual Entry
             </span>
           </div>
@@ -989,20 +1014,22 @@ export default function DealCalculatorView({
           {/* Inputs Column */}
           <div className="space-y-6 lg:col-span-6">
             {/* Property Address & Live Data Lookup */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-none border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <label htmlFor="address-input" className="block text-xs font-bold uppercase tracking-wider text-white/60">
+                <label htmlFor="address-input" className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Property Address
                 </label>
                 <button
                   type="button"
                   onClick={() => handleLookupProperty()}
                   disabled={lookupLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[color:var(--color-primary)] hover:underline disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline disabled:opacity-50"
                 >
-                  <span className="material-symbols-outlined text-[14px]">
-                    {lookupLoading ? 'sync' : 'travel_explore'}
-                  </span>
+                  {lookupLoading ? (
+                    <ArrowsClockwise className="h-3.5 w-3.5 animate-spin" weight="bold" />
+                  ) : (
+                    <Globe className="h-3.5 w-3.5" weight="bold" />
+                  )}
                   {lookupLoading ? 'Fetching public records…' : 'Lookup Property Data'}
                 </button>
               </div>
@@ -1024,23 +1051,25 @@ export default function DealCalculatorView({
               {(propertyData?.source === 'cache' || propertyData?.stale || Boolean(propertyData?.as_of)) && (
                 <div
                   data-testid="as-of-date-badge property-cache-badge"
-                  className={`flex items-center justify-between rounded-xl border px-3 py-2 text-xs ${
+                  className={`flex items-center justify-between rounded-none border px-3 py-2 text-xs ${
                     propertyData?.stale
                       ? 'border-amber-500/30 bg-amber-500/10 text-amber-200'
-                      : 'border-white/10 bg-white/[0.03] text-white/70'
+                      : 'border-border bg-muted/40 text-muted-foreground'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`material-symbols-outlined text-[16px] ${propertyData?.stale ? 'text-amber-400' : 'text-emerald-400'}`}>
-                      history
-                    </span>
+                    {propertyData?.stale ? (
+                      <ClockCounterClockwise className="h-4 w-4 text-amber-400" weight="bold" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 text-emerald-400" weight="bold" />
+                    )}
                     <span>
                       {propertyData?.stale ? 'Older estimate ' : 'Valuation '}
-                      <span className="font-semibold">
+                      <span className="font-semibold text-foreground">
                         as of {propertyData?.as_of ? new Date(propertyData.as_of).toLocaleDateString() : 'recent'}
                       </span>
                       {propertyData?.stale && (
-                        <span className="ml-1.5 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                        <span className="ml-1.5 rounded-none bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
                           Stale
                         </span>
                       )}
@@ -1051,9 +1080,9 @@ export default function DealCalculatorView({
                     data-testid="property-cache-refresh-btn"
                     onClick={() => handleLookupProperty(inputs.address, true)}
                     disabled={lookupLoading}
-                    className="inline-flex items-center gap-1 rounded px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-500/10 transition"
+                    className="inline-flex items-center gap-1 rounded-none px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-500/10 transition"
                   >
-                    <span className="material-symbols-outlined text-[13px]">refresh</span>
+                    <ArrowsClockwise className="h-3 w-3" weight="bold" />
                     Refresh
                   </button>
                 </div>
@@ -1063,10 +1092,10 @@ export default function DealCalculatorView({
               {propertyData?.source === 'offline' && (
                 <div
                   data-testid="property-offline-badge"
-                  className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-xs text-cyan-200 space-y-1"
+                  className="rounded-none border border-cyan-500/20 bg-cyan-500/5 p-3 text-xs text-cyan-200 space-y-1"
                 >
                   <div className="flex items-center gap-1.5 font-semibold text-cyan-300">
-                    <span className="material-symbols-outlined text-[16px]">database</span>
+                    <Database className="h-4 w-4" weight="bold" />
                     <span>Offline Benchmark Dataset (Austin, Phoenix, Dallas, Denver)</span>
                   </div>
                   <p className="text-[11px] text-cyan-200/70">
@@ -1078,56 +1107,56 @@ export default function DealCalculatorView({
 
               {/* Property Specs Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1 text-xs">
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2 text-center">
-                  <span className="block text-[9.5px] uppercase font-mono text-white/40">Beds</span>
+                <div className="rounded-none border border-border bg-muted/20 p-2 text-center">
+                  <span className="block text-[9.5px] uppercase font-mono text-muted-foreground">Beds</span>
                   <input
                     type="number"
                     value={inputs.beds ?? ''}
                     onChange={(e) => handleInputChange('beds', Number(e.target.value))}
                     placeholder="3"
-                    className="w-full bg-transparent text-center font-bold text-white focus:outline-none"
+                    className="w-full bg-transparent text-center font-bold text-foreground focus:outline-none"
                   />
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2 text-center">
-                  <span className="block text-[9.5px] uppercase font-mono text-white/40">Baths</span>
+                <div className="rounded-none border border-border bg-muted/20 p-2 text-center">
+                  <span className="block text-[9.5px] uppercase font-mono text-muted-foreground">Baths</span>
                   <input
                     type="number"
                     step="0.5"
                     value={inputs.baths ?? ''}
                     onChange={(e) => handleInputChange('baths', Number(e.target.value))}
                     placeholder="2"
-                    className="w-full bg-transparent text-center font-bold text-white focus:outline-none"
+                    className="w-full bg-transparent text-center font-bold text-foreground focus:outline-none"
                   />
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2 text-center">
-                  <span className="block text-[9.5px] uppercase font-mono text-white/40">SqFt</span>
+                <div className="rounded-none border border-border bg-muted/20 p-2 text-center">
+                  <span className="block text-[9.5px] uppercase font-mono text-muted-foreground">SqFt</span>
                   <input
                     type="number"
                     value={inputs.sqft ?? ''}
                     onChange={(e) => handleInputChange('sqft', Number(e.target.value))}
                     placeholder="1850"
-                    className="w-full bg-transparent text-center font-bold text-white focus:outline-none"
+                    className="w-full bg-transparent text-center font-bold text-foreground focus:outline-none"
                   />
                 </div>
-                <div className="rounded-xl border border-white/5 bg-black/30 p-2 text-center">
-                  <span className="block text-[9.5px] uppercase font-mono text-white/40">Year</span>
+                <div className="rounded-none border border-border bg-muted/20 p-2 text-center">
+                  <span className="block text-[9.5px] uppercase font-mono text-muted-foreground">Year</span>
                   <input
                     type="number"
                     value={inputs.yearBuilt ?? ''}
                     onChange={(e) => handleInputChange('yearBuilt', Number(e.target.value))}
                     placeholder="1984"
-                    className="w-full bg-transparent text-center font-bold text-white focus:outline-none"
+                    className="w-full bg-transparent text-center font-bold text-foreground focus:outline-none"
                   />
                 </div>
-                <div className="col-span-2 sm:col-span-1 rounded-xl border border-white/5 bg-black/30 p-2 text-center">
-                  <span className="block text-[9.5px] uppercase font-mono text-white/40">$/SqFt</span>
-                  <span className="block font-bold text-[color:var(--color-primary)]">
+                <div className="col-span-2 sm:col-span-1 rounded-none border border-border bg-muted/20 p-2 text-center">
+                  <span className="block text-[9.5px] uppercase font-mono text-muted-foreground">$/SqFt</span>
+                  <span className="block font-bold text-primary">
                     {pricePerSqFt ? `$${pricePerSqFt}` : 'N/A'}
                   </span>
                 </div>
               </div>
               {!inputs.sqft && (
-                <p className="text-[11px] text-white/40 italic">
+                <p className="text-[11px] text-muted-foreground italic">
                   Sqft not provided by public records. Enter to calculate price/sqft.
                 </p>
               )}
@@ -1135,11 +1164,11 @@ export default function DealCalculatorView({
               {/* Satellite Parcel Screencap */}
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-foreground">satellite_alt</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-foreground" weight="bold" />
                     <span>Satellite Aerial Parcel Screencap</span>
                   </span>
-                  <span className="text-[10px] font-mono text-white/40">
+                  <span className="text-[10px] font-mono text-muted-foreground">
                     Google Maps Platform
                   </span>
                 </div>
@@ -1147,20 +1176,20 @@ export default function DealCalculatorView({
                   address={inputs.address}
                   aspectRatio="16/9"
                   title={inputs.address}
-                  className="rounded-xl border border-white/10"
+                  className="rounded-none border border-border"
                 />
               </div>
             </div>
 
             {/* Acquisition Inputs */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-white/60">
+            <div className="rounded-none border border-border bg-card p-5 shadow-sm space-y-4">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Acquisition Inputs
               </h2>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="price-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                  <label htmlFor="price-input" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                     Purchase Price ($) *
                   </label>
                   <input
@@ -1170,12 +1199,12 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.purchasePrice}
                     onChange={(e) => handleInputChange('purchasePrice', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-primary min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="arv-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                  <label htmlFor="arv-input" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                     After Repair Value (ARV) ($)
                   </label>
                   <input
@@ -1185,13 +1214,13 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.arv}
                     onChange={(e) => handleInputChange('arv', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="rehab-input" className="block text-[11px] font-medium text-white/50">
+                    <label htmlFor="rehab-input" className="block text-[11px] font-medium text-muted-foreground">
                       Rehab Budget ($)
                     </label>
                     <button
@@ -1200,7 +1229,7 @@ export default function DealCalculatorView({
                       onClick={() => setShowRehabModal(true)}
                       className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-primary hover:underline"
                     >
-                      <span className="material-symbols-outlined text-[13px]">construction</span>
+                      <Hammer className="h-3 w-3" weight="bold" />
                       <span>Itemized Worksheet</span>
                     </button>
                   </div>
@@ -1211,13 +1240,13 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.rehabBudget}
                     onChange={(e) => handleInputChange('rehabBudget', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="closing-costs-input" className="block text-[11px] font-medium text-white/50">
+                    <label htmlFor="closing-costs-input" className="block text-[11px] font-medium text-muted-foreground">
                       Buyer Closing Costs (%)
                     </label>
                     <button
@@ -1226,7 +1255,7 @@ export default function DealCalculatorView({
                       onClick={() => setShowClosingCostsModal(true)}
                       className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
                     >
-                      <span className="material-symbols-outlined text-[13px]">receipt</span>
+                      <Receipt className="h-3 w-3" weight="bold" />
                       <span>Itemized Worksheet</span>
                     </button>
                   </div>
@@ -1240,9 +1269,9 @@ export default function DealCalculatorView({
                       max="20"
                       value={inputs.buyerClosingCostsPct}
                       onChange={(e) => handleInputChange('buyerClosingCostsPct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                      className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
-                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-mono text-white/40">
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-mono text-muted-foreground">
                       {formatCurrency(calculations.buyerClosingCostsAmount)}
                     </span>
                   </div>
@@ -1251,11 +1280,11 @@ export default function DealCalculatorView({
                 {/* Total Cost Basis Summary */}
                 <div
                   data-testid="total-cost-basis-display"
-                  className="col-span-1 sm:col-span-2 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs flex items-center justify-between"
+                  className="col-span-1 sm:col-span-2 rounded-none border border-border bg-muted/20 p-3 text-xs flex items-center justify-between"
                 >
                   <div>
-                    <span className="text-[10px] uppercase font-mono text-white/50 block">Total Acquisition Basis</span>
-                    <span className="text-sm font-bold text-white">
+                    <span className="text-[10px] uppercase font-mono text-muted-foreground block">Total Acquisition Basis</span>
+                    <span className="text-sm font-bold text-foreground">
                       Purchase + Closing ({inputs.buyerClosingCostsPct}%) + Rehab
                     </span>
                   </div>
@@ -1266,7 +1295,7 @@ export default function DealCalculatorView({
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="rent-input" className="block text-[11px] font-medium text-white/50">
+                    <label htmlFor="rent-input" className="block text-[11px] font-medium text-muted-foreground">
                       Monthly Gross Rent ($)
                     </label>
                     <button
@@ -1275,7 +1304,7 @@ export default function DealCalculatorView({
                       onClick={() => setShowScheduleEModal(true)}
                       className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
                     >
-                      <span className="material-symbols-outlined text-[13px]">receipt_long</span>
+                      <Receipt className="h-3 w-3" weight="bold" />
                       <span>Schedule E OpEx</span>
                     </button>
                   </div>
@@ -1286,12 +1315,12 @@ export default function DealCalculatorView({
                     inputMode="numeric"
                     value={inputs.grossRentMonthly}
                     onChange={(e) => handleInputChange('grossRentMonthly', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="other-income-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                  <label htmlFor="other-income-input" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                     Additional Income (Laundry/Parking) ($/mo)
                   </label>
                   <input
@@ -1303,54 +1332,54 @@ export default function DealCalculatorView({
                     value={inputs.otherIncomeMonthly ?? 0}
                     onChange={(e) => handleInputChange('otherIncomeMonthly', Number(e.target.value))}
                     placeholder="e.g. 150"
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3.5 py-2 text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 {/* Effective Gross Income Waterfall Card */}
                 <div
                   data-testid="effective-gross-income-card"
-                  className="col-span-1 sm:col-span-2 rounded-xl border border-white/10 bg-black/30 p-4 text-xs space-y-3"
+                  className="col-span-1 sm:col-span-2 rounded-none border border-border bg-muted/20 p-4 text-xs space-y-3"
                 >
-                  <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                    <div className="flex items-center gap-1.5 font-bold text-white">
-                      <span className="material-symbols-outlined text-[16px] text-emerald-400">payments</span>
+                  <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                    <div className="flex items-center gap-1.5 font-bold text-foreground">
+                      <CurrencyDollar className="h-4 w-4 text-emerald-400" weight="bold" />
                       <span>Income &amp; Expense Projections (Effective Gross Income)</span>
                     </div>
-                    <span className="text-[10px] font-mono text-white/40">Canonical Underwriting</span>
+                    <span className="text-[10px] font-mono text-muted-foreground">Canonical Underwriting</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono">
-                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                      <span className="block text-[9.5px] uppercase text-white/40">Gross Potential Rent</span>
-                      <span className="block font-bold text-white text-xs mt-0.5">
+                    <div className="rounded-none border border-border bg-card p-2">
+                      <span className="block text-[9.5px] uppercase text-muted-foreground">Gross Potential Rent</span>
+                      <span className="block font-bold text-foreground text-xs mt-0.5">
                         {formatCurrency(inputs.grossRentMonthly * 12)}/yr
                       </span>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                      <span className="block text-[9.5px] uppercase text-white/40">Ancillary Income</span>
+                    <div className="rounded-none border border-border bg-card p-2">
+                      <span className="block text-[9.5px] uppercase text-muted-foreground">Ancillary Income</span>
                       <span className="block font-bold text-emerald-400 text-xs mt-0.5">
                         +{formatCurrency((inputs.otherIncomeMonthly ?? 0) * 12)}/yr
                       </span>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                      <span className="block text-[9.5px] uppercase text-white/40">Vacancy Loss ({inputs.vacancyRatePct}%)</span>
+                    <div className="rounded-none border border-border bg-card p-2">
+                      <span className="block text-[9.5px] uppercase text-muted-foreground">Vacancy Loss ({inputs.vacancyRatePct}%)</span>
                       <span className="block font-bold text-amber-300 text-xs mt-0.5">
                         -{formatCurrency(Math.round((inputs.grossRentMonthly * 12) * (inputs.vacancyRatePct / 100)))}/yr
                       </span>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                      <span className="block text-[9.5px] uppercase text-white/40">Effective Gross Income</span>
-                      <span className="block font-bold text-white text-xs mt-0.5">
+                    <div className="rounded-none border border-border bg-card p-2">
+                      <span className="block text-[9.5px] uppercase text-muted-foreground">Effective Gross Income</span>
+                      <span className="block font-bold text-foreground text-xs mt-0.5">
                         {formatCurrency(calculations.grossOperatingIncome)}/yr
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs pt-1 border-t border-white/5 gap-1">
-                    <span className="text-white/60">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs pt-1 border-t border-border/50 gap-1">
+                    <span className="text-muted-foreground">
                       Operating Expenses ({inputs.operatingExpensePct}% or Schedule E):{' '}
-                      <strong className="text-white font-mono">-{formatCurrency(calculations.totalOperatingExpenses)}/yr</strong>
+                      <strong className="text-foreground font-mono">-{formatCurrency(calculations.totalOperatingExpenses)}/yr</strong>
                     </span>
-                    <span className="text-white/60">
+                    <span className="text-muted-foreground">
                       Net Operating Income (NOI):{' '}
                       <strong className="text-emerald-400 font-mono font-bold" data-testid="noi-output-metric">
                         {formatCurrency(calculations.netOperatingIncome)}/yr
@@ -1366,7 +1395,7 @@ export default function DealCalculatorView({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 font-bold text-foreground">
-                      <span className="material-symbols-outlined text-[15px]">real_estate_agent</span>
+                      <Buildings className="h-4 w-4" weight="bold" />
                       <span>Rent Potential (RentCast API Engine)</span>
                     </div>
                     {propertyData?.source && (
@@ -1447,31 +1476,33 @@ export default function DealCalculatorView({
             />
 
             {/* Financing & Assumptions (Collapsible) */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4">
+            <div className="rounded-none border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Financing & Underwriting Assumptions
                 </h2>
                 <button
                   type="button"
                   data-testid="toggle-assumptions-btn"
                   onClick={() => setShowAssumptions(!showAssumptions)}
-                  className="text-xs font-semibold text-[color:var(--color-primary)] hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
                 >
                   <span>{showAssumptions ? 'Collapse' : 'Refine Assumptions'}</span>
-                  <span className="material-symbols-outlined text-[14px]">
-                    {showAssumptions ? 'expand_less' : 'expand_more'}
-                  </span>
+                  {showAssumptions ? (
+                    <CaretUp className="h-3.5 w-3.5" weight="bold" />
+                  ) : (
+                    <CaretDown className="h-3.5 w-3.5" weight="bold" />
+                  )}
                 </button>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="down-payment-input" className="block text-[11px] font-medium text-white/50">
+                    <label htmlFor="down-payment-input" className="block text-[11px] font-medium text-muted-foreground">
                       Down Payment (%)
                     </label>
-                    <span className="text-[10px] font-mono text-white/40">
+                    <span className="text-[10px] font-mono text-muted-foreground">
                       {formatCurrency(inputs.purchasePrice * ((inputs.downPaymentPct ?? (100 - inputs.ltvPct)) / 100))}
                     </span>
                   </div>
@@ -1485,16 +1516,16 @@ export default function DealCalculatorView({
                     step="1"
                     value={inputs.downPaymentPct ?? (100 - inputs.ltvPct)}
                     onChange={(e) => handleInputChange('downPaymentPct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="ltv-input" className="block text-[11px] font-medium text-white/50">
+                    <label htmlFor="ltv-input" className="block text-[11px] font-medium text-muted-foreground">
                       Target LTV (%)
                     </label>
-                    <span className="text-[10px] font-mono text-white/40">
+                    <span className="text-[10px] font-mono text-muted-foreground">
                       {formatCurrency(inputs.purchasePrice * (inputs.ltvPct / 100))}
                     </span>
                   </div>
@@ -1508,12 +1539,12 @@ export default function DealCalculatorView({
                     step="1"
                     value={inputs.ltvPct}
                     onChange={(e) => handleInputChange('ltvPct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="rate-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                  <label htmlFor="rate-input" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                     Interest Rate (%)
                   </label>
                   <input
@@ -1524,12 +1555,12 @@ export default function DealCalculatorView({
                     step="0.1"
                     value={inputs.interestRatePct}
                     onChange={(e) => handleInputChange('interestRatePct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="opex-input" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                  <label htmlFor="opex-input" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                     OpEx Ratio (%)
                   </label>
                   <input
@@ -1539,7 +1570,7 @@ export default function DealCalculatorView({
                     inputMode="decimal"
                     value={inputs.operatingExpensePct}
                     onChange={(e) => handleInputChange('operatingExpensePct', Number(e.target.value))}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:border-ring min-h-[44px]"
+                    className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-sm font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                   />
                 </div>
               </div>
@@ -1547,7 +1578,7 @@ export default function DealCalculatorView({
               {/* Loan Terms Quick-Selector */}
               <div className="pt-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="block text-[11px] font-medium text-white/50">
+                  <span className="block text-[11px] font-medium text-muted-foreground">
                     Loan Term / Amortization Schedule
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400">
@@ -1561,10 +1592,10 @@ export default function DealCalculatorView({
                       type="button"
                       data-testid={`loan-term-${term}yr-btn`}
                       onClick={() => handleInputChange('amortizationYears', term)}
-                      className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                      className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                         inputs.amortizationYears === term
-                          ? 'border-primary bg-primary/10 text-white'
-                          : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border bg-card text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       {term}-Yr
@@ -1574,12 +1605,12 @@ export default function DealCalculatorView({
               </div>
 
               {/* Terminal Valuation Method Discipline (W2-06) */}
-              <div className="pt-3 border-t border-white/5 space-y-2">
+              <div className="pt-3 border-t border-border/50 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Terminal Valuation Method *
                   </span>
-                  <span className="text-[10px] font-medium text-white/40">
+                  <span className="text-[10px] font-medium text-muted-foreground">
                     Required — no silent fallback
                   </span>
                 </div>
@@ -1588,10 +1619,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-appreciation"
                     onClick={() => handleInputChange('terminalValueMethod', 'appreciation_pct')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'appreciation_pct'
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Appreciation %
@@ -1600,10 +1631,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-exit-cap"
                     onClick={() => handleInputChange('terminalValueMethod', 'exit_cap')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'exit_cap'
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Exit Cap Rate
@@ -1612,10 +1643,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-per-unit"
                     onClick={() => handleInputChange('terminalValueMethod', 'per_unit')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'per_unit'
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Per Unit Exit
@@ -1626,10 +1657,10 @@ export default function DealCalculatorView({
                   <div className="pt-1 space-y-2">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-medium text-white/50">
+                        <span className="text-[11px] font-medium text-muted-foreground">
                           Appreciation Base
                         </span>
-                        <span className="text-[9px] font-mono text-white/40">
+                        <span className="text-[9px] font-mono text-muted-foreground">
                           {inputs.appreciationBase === 'arv' ? 'ARV Base' : 'Price Base (Default)'}
                         </span>
                       </div>
@@ -1638,10 +1669,10 @@ export default function DealCalculatorView({
                           type="button"
                           data-testid="appreciation-base-purchase-price"
                           onClick={() => handleInputChange('appreciationBase', 'purchase_price')}
-                          className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[38px] ${
+                          className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                             (inputs.appreciationBase ?? 'purchase_price') === 'purchase_price'
-                              ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                              : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border bg-card text-muted-foreground hover:text-foreground'
                           }`}
                         >
                           Purchase Price ({formatCurrency(inputs.purchasePrice)})
@@ -1650,10 +1681,10 @@ export default function DealCalculatorView({
                           type="button"
                           data-testid="appreciation-base-arv"
                           onClick={() => handleInputChange('appreciationBase', 'arv')}
-                          className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[38px] ${
+                          className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                             inputs.appreciationBase === 'arv'
-                              ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                              : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border bg-card text-muted-foreground hover:text-foreground'
                           }`}
                         >
                           ARV ({formatCurrency(inputs.arv)})
@@ -1661,7 +1692,7 @@ export default function DealCalculatorView({
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="deal-calc-annual-appreciation-pct" className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-annual-appreciation-pct" className="block text-[11px] font-medium text-muted-foreground mb-1">
                         Annual Appreciation (%)
                       </label>
                       <input
@@ -1670,14 +1701,14 @@ export default function DealCalculatorView({
                         step="0.1"
                         value={inputs.annualAppreciationPct}
                         onChange={(e) => handleInputChange('annualAppreciationPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
                     </div>
                   </div>
                 )}
                 {inputs.terminalValueMethod === 'exit_cap' && (
                   <div className="pt-1">
-                    <label htmlFor="deal-calc-exit-cap-rate-pct" className="block text-[11px] font-medium text-white/50 mb-1">
+                    <label htmlFor="deal-calc-exit-cap-rate-pct" className="block text-[11px] font-medium text-muted-foreground mb-1">
                       Exit Cap Rate (%)
                     </label>
                     <input
@@ -1686,14 +1717,14 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.exitCapRatePct}
                       onChange={(e) => handleInputChange('exitCapRatePct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                      className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                 )}
                 {inputs.terminalValueMethod === 'per_unit' && (
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div>
-                      <label htmlFor="deal-calc-units-count" className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-units-count" className="block text-[11px] font-medium text-muted-foreground mb-1">
                         Units Count
                       </label>
                       <input
@@ -1701,11 +1732,11 @@ export default function DealCalculatorView({
                         type="number"
                         value={inputs.unitsCount}
                         onChange={(e) => handleInputChange('unitsCount', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
                     </div>
                     <div>
-                      <label htmlFor="deal-calc-per-unit-exit" className="block text-[11px] font-medium text-white/50 mb-1">
+                      <label htmlFor="deal-calc-per-unit-exit" className="block text-[11px] font-medium text-muted-foreground mb-1">
                         Per Unit Exit ($)
                       </label>
                       <input
@@ -1713,7 +1744,7 @@ export default function DealCalculatorView({
                         type="number"
                         value={inputs.perUnitExitValue}
                         onChange={(e) => handleInputChange('perUnitExitValue', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -1721,19 +1752,19 @@ export default function DealCalculatorView({
               </div>
 
               {/* Growth & Escalation Assumptions (W2-09) */}
-              <div data-testid="growth-escalation-section" className="pt-3 border-t border-white/5 space-y-2">
+              <div data-testid="growth-escalation-section" className="pt-3 border-t border-border/50 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Growth &amp; Escalation Assumptions
                   </span>
-                  <span className="text-[10px] font-medium text-white/40">
+                  <span className="text-[10px] font-medium text-muted-foreground">
                     Honest 0.0% defaults — source: default
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="growth-rent-pct" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-rent-pct" className="text-[11px] font-medium text-muted-foreground">
                         Rent Growth (%/yr)
                       </label>
                       {(!inputs.rentGrowthPct || inputs.rentGrowthPct === 0) && (
@@ -1750,16 +1781,16 @@ export default function DealCalculatorView({
                         data-testid="growth-rent-pct"
                         value={inputs.rentGrowthPct ?? 0.0}
                         onChange={(e) => handleInputChange('rentGrowthPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         %
                       </span>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="growth-expense-pct" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-expense-pct" className="text-[11px] font-medium text-muted-foreground">
                         Expense Growth (%/yr)
                       </label>
                       {(!inputs.expenseGrowthPct || inputs.expenseGrowthPct === 0) && (
@@ -1776,16 +1807,16 @@ export default function DealCalculatorView({
                         data-testid="growth-expense-pct"
                         value={inputs.expenseGrowthPct ?? 0.0}
                         onChange={(e) => handleInputChange('expenseGrowthPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         %
                       </span>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="growth-appreciation-pct" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="growth-appreciation-pct" className="text-[11px] font-medium text-muted-foreground">
                         Appreciation (%/yr)
                       </label>
                       {inputs.annualAppreciationPct === 3.0 && (
@@ -1802,9 +1833,9 @@ export default function DealCalculatorView({
                         data-testid="growth-appreciation-pct"
                         value={inputs.annualAppreciationPct}
                         onChange={(e) => handleInputChange('annualAppreciationPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         %
                       </span>
                     </div>
@@ -1813,12 +1844,12 @@ export default function DealCalculatorView({
               </div>
 
               {/* Loan Structure & Terms (W2-10) */}
-              <div data-testid="loan-structure-section" className="pt-3 border-t border-white/5 space-y-2">
+              <div data-testid="loan-structure-section" className="pt-3 border-t border-border/50 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Loan Structure &amp; Terms
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400/80">
+                  <span className="text-[10px] font-mono text-emerald-400">
                     {inputs.loanType === 'amortizing' ? '30-yr amortizing' : inputs.loanType === 'interest_only' ? `${inputs.ioPeriodYears}-yr IO` : `${inputs.armFixedPeriodYears}/1 ARM`}
                   </span>
                 </div>
@@ -1827,10 +1858,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-amortizing"
                     onClick={() => handleInputChange('loanType', 'amortizing')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'amortizing' || !inputs.loanType
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Amortizing
@@ -1839,10 +1870,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-io"
                     onClick={() => handleInputChange('loanType', 'interest_only')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'interest_only'
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     Interest-Only
@@ -1851,10 +1882,10 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-arm"
                     onClick={() => handleInputChange('loanType', 'arm')}
-                    className={`rounded-xl border p-2 text-center text-xs font-semibold transition min-h-[40px] ${
+                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'arm'
-                        ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-card text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     ARM
@@ -1864,10 +1895,10 @@ export default function DealCalculatorView({
                 {inputs.loanType === 'interest_only' && (
                   <div className="pt-2">
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="loan-io-years" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="loan-io-years" className="text-[11px] font-medium text-muted-foreground">
                         Interest-Only Period (Years)
                       </label>
-                      <span className="text-[10px] font-mono text-white/40">
+                      <span className="text-[10px] font-mono text-muted-foreground">
                         Then amortizes over remaining {Math.max(1, (inputs.amortizationYears || 30) - (inputs.ioPeriodYears ?? 5))} yrs
                       </span>
                     </div>
@@ -1880,9 +1911,9 @@ export default function DealCalculatorView({
                         data-testid="loan-io-years"
                         value={inputs.ioPeriodYears ?? 5}
                         onChange={(e) => handleInputChange('ioPeriodYears', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         years
                       </span>
                     </div>
@@ -1893,10 +1924,10 @@ export default function DealCalculatorView({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label htmlFor="loan-arm-fixed-years" className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="loan-arm-fixed-years" className="text-[11px] font-medium text-muted-foreground">
                           ARM Fixed Period (Years)
                         </label>
-                        <span className="text-[9px] font-mono text-emerald-400/80">e.g. 5/1 ARM</span>
+                        <span className="text-[9px] font-mono text-emerald-400">e.g. 5/1 ARM</span>
                       </div>
                       <div className="relative">
                         <input
@@ -1907,19 +1938,19 @@ export default function DealCalculatorView({
                           data-testid="loan-arm-fixed-years"
                           value={inputs.armFixedPeriodYears ?? 5}
                           onChange={(e) => handleInputChange('armFixedPeriodYears', Number(e.target.value))}
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                          className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                         />
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                           years
                         </span>
                       </div>
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label htmlFor="loan-arm-adjustment-pct" className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="loan-arm-adjustment-pct" className="text-[11px] font-medium text-muted-foreground">
                           Assumed Rate Adjustment (%)
                         </label>
-                        <span className="text-[9px] font-mono text-amber-300/80">assumption</span>
+                        <span className="text-[9px] font-mono text-amber-400">assumption</span>
                       </div>
                       <div className="relative">
                         <input
@@ -1929,9 +1960,9 @@ export default function DealCalculatorView({
                           data-testid="loan-arm-adjustment-pct"
                           value={inputs.armAdjustmentPct ?? 2.0}
                           onChange={(e) => handleInputChange('armAdjustmentPct', Number(e.target.value))}
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                          className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                         />
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                           %
                         </span>
                       </div>
@@ -1941,12 +1972,12 @@ export default function DealCalculatorView({
               </div>
 
               {/* Lease-Up & Stabilization Assumptions (W2-11) */}
-              <div data-testid="leaseup-section" className="pt-3 border-t border-white/5 space-y-2">
+              <div data-testid="leaseup-section" className="pt-3 border-t border-border/50 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Lease-Up &amp; Stabilization
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400/80">
+                  <span className="text-[10px] font-mono text-emerald-400">
                     {!inputs.stabilizationMonths || inputs.stabilizationMonths === 0
                       ? 'Stabilized (0 mo)'
                       : `${inputs.stabilizationMonths}-mo lease-up`}
@@ -1956,11 +1987,11 @@ export default function DealCalculatorView({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="leaseup-stabilization-months" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="leaseup-stabilization-months" className="text-[11px] font-medium text-muted-foreground">
                         Stabilization (Months)
                       </label>
                       {(!inputs.stabilizationMonths || inputs.stabilizationMonths === 0) && (
-                        <span className="text-[9px] font-mono text-emerald-400/80">default</span>
+                        <span className="text-[9px] font-mono text-emerald-400">default</span>
                       )}
                     </div>
                     <div className="relative">
@@ -1972,9 +2003,9 @@ export default function DealCalculatorView({
                         data-testid="leaseup-stabilization-months"
                         value={inputs.stabilizationMonths ?? 0}
                         onChange={(e) => handleInputChange('stabilizationMonths', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         mos
                       </span>
                     </div>
@@ -1982,11 +2013,11 @@ export default function DealCalculatorView({
 
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="leaseup-ramp-pct" className="text-[11px] font-medium text-white/50">
+                      <label htmlFor="leaseup-ramp-pct" className="text-[11px] font-medium text-muted-foreground">
                         Rent Ramp (% during ramp)
                       </label>
                       {(inputs.leaseUpRentRampPct === 100 || inputs.leaseUpRentRampPct === undefined) && (
-                        <span className="text-[9px] font-mono text-emerald-400/80">default</span>
+                        <span className="text-[9px] font-mono text-emerald-400">default</span>
                       )}
                     </div>
                     <div className="relative">
@@ -1998,9 +2029,9 @@ export default function DealCalculatorView({
                         data-testid="leaseup-ramp-pct"
                         value={inputs.leaseUpRentRampPct ?? 100}
                         onChange={(e) => handleInputChange('leaseUpRentRampPct', Number(e.target.value))}
-                        className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                        className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                         %
                       </span>
                     </div>
@@ -2011,10 +2042,10 @@ export default function DealCalculatorView({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 animate-in fade-in duration-200">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label htmlFor="leaseup-vacant-months" className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="leaseup-vacant-months" className="text-[11px] font-medium text-muted-foreground">
                           Months Vacant at Close
                         </label>
-                        <span className="text-[9px] font-mono text-white/40">0% rent period</span>
+                        <span className="text-[9px] font-mono text-muted-foreground">0% rent period</span>
                       </div>
                       <div className="relative">
                         <input
@@ -2025,9 +2056,9 @@ export default function DealCalculatorView({
                           data-testid="leaseup-vacant-months"
                           value={inputs.monthsVacantAtClose ?? 0}
                           onChange={(e) => handleInputChange('monthsVacantAtClose', Number(e.target.value))}
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                          className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                         />
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                           mos
                         </span>
                       </div>
@@ -2035,10 +2066,10 @@ export default function DealCalculatorView({
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label htmlFor="leaseup-concessions-months" className="text-[11px] font-medium text-white/50">
+                        <label htmlFor="leaseup-concessions-months" className="text-[11px] font-medium text-muted-foreground">
                           Concessions (Months Free)
                         </label>
-                        <span className="text-[9px] font-mono text-white/40">free rent</span>
+                        <span className="text-[9px] font-mono text-muted-foreground">free rent</span>
                       </div>
                       <div className="relative">
                         <input
@@ -2049,9 +2080,9 @@ export default function DealCalculatorView({
                           data-testid="leaseup-concessions-months"
                           value={inputs.concessionsMonths ?? 0}
                           onChange={(e) => handleInputChange('concessionsMonths', Number(e.target.value))}
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                          className="w-full rounded-none border border-border bg-background px-3 py-2 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                         />
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
                           mos
                         </span>
                       </div>
@@ -2061,9 +2092,9 @@ export default function DealCalculatorView({
               </div>
 
               {showAssumptions && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pt-3 border-t border-white/5 text-xs animate-in fade-in duration-200">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pt-3 border-t border-border/50 text-xs animate-in fade-in duration-200">
                   <div>
-                    <label htmlFor="deal-calc-vacancy-floor" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-vacancy-floor" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Vacancy Floor (%)
                     </label>
                     <input
@@ -2071,11 +2102,11 @@ export default function DealCalculatorView({
                       type="number"
                       value={inputs.vacancyRatePct}
                       onChange={(e) => handleInputChange('vacancyRatePct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-amortization-years" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-amortization-years" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Amortization (Years)
                     </label>
                     <input
@@ -2083,11 +2114,11 @@ export default function DealCalculatorView({
                       type="number"
                       value={inputs.amortizationYears}
                       onChange={(e) => handleInputChange('amortizationYears', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-hold-period-years" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-hold-period-years" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Hold Period (Years)
                     </label>
                     <input
@@ -2095,11 +2126,11 @@ export default function DealCalculatorView({
                       type="number"
                       value={inputs.holdPeriodYears}
                       onChange={(e) => handleInputChange('holdPeriodYears', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-exit-cap-rate" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-exit-cap-rate" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Exit Cap Rate (%)
                     </label>
                     <input
@@ -2108,11 +2139,11 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.exitCapRatePct}
                       onChange={(e) => handleInputChange('exitCapRatePct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-closing-costs" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-closing-costs" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Closing Costs (%)
                     </label>
                     <input
@@ -2121,11 +2152,11 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.buyerClosingCostsPct}
                       onChange={(e) => handleInputChange('buyerClosingCostsPct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-cost-of-sale" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-cost-of-sale" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Cost of Sale (%)
                     </label>
                     <input
@@ -2134,11 +2165,11 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.costOfSalePct}
                       onChange={(e) => handleInputChange('costOfSalePct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-annual-appreciation" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-annual-appreciation" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Annual Appreciation (%)
                     </label>
                     <input
@@ -2147,11 +2178,11 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.annualAppreciationPct}
                       onChange={(e) => handleInputChange('annualAppreciationPct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label htmlFor="deal-calc-selling-costs-exit" className="block text-[11px] font-medium text-white/50 mb-1.5">
+                    <label htmlFor="deal-calc-selling-costs-exit" className="block text-[11px] font-medium text-muted-foreground mb-1.5">
                       Selling Costs at Exit (%)
                     </label>
                     <input
@@ -2160,7 +2191,7 @@ export default function DealCalculatorView({
                       step="0.1"
                       value={inputs.sellingCostsPct}
                       onChange={(e) => handleInputChange('sellingCostsPct', Number(e.target.value))}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white focus:outline-none"
+                      className="w-full rounded-none border border-border bg-background p-2.5 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:border-ring min-h-[44px]"
                     />
                   </div>
                 </div>
@@ -2175,7 +2206,7 @@ export default function DealCalculatorView({
             />
 
             {/* Live Comparable Sales Section (Zero Fabricated Data) */}
-            <div data-testid="comps-section" className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
+            <div data-testid="comps-section" className="rounded-none border border-border bg-card p-5 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-white/60">
                   Comparable Sales (Live Public Records)
@@ -2186,14 +2217,14 @@ export default function DealCalculatorView({
               </div>
 
               {!propertyData ? (
-                <div className="rounded-xl border border-white/5 bg-black/20 p-4 text-center text-xs text-white/45">
+                <div className="rounded-none border border-border bg-muted/20 p-4 text-center text-xs text-muted-foreground">
                   Click &ldquo;Lookup Property Data&rdquo; to pull real public record comparables, or enter valuation directly.
                 </div>
               ) : propertyData.comps && propertyData.comps.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs" data-testid="comps-table">
                     <thead>
-                      <tr className="border-b border-white/10 text-[10px] uppercase font-mono text-white/40">
+                      <tr className="border-b border-border text-[10px] uppercase font-mono text-muted-foreground">
                         <th className="pb-2 font-medium">Address</th>
                         <th className="pb-2 font-medium">Source</th>
                         <th className="pb-2 font-medium text-right">Sale Price</th>
@@ -2202,18 +2233,18 @@ export default function DealCalculatorView({
                         <th className="pb-2 font-medium text-right">Status / As-Of</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-border/50">
                       {propertyData.comps.map((comp, idx) => {
                         const isStale = Boolean(comp.isStale || propertyData.stale);
                         const asOfDate = comp.asOf || comp.sale_date || propertyData.as_of;
                         const formattedDate = asOfDate ? new Date(asOfDate).toLocaleDateString() : 'recent';
                         return (
-                          <tr key={idx} className="hover:bg-white/[0.02]" data-testid={`comp-row-${idx}`}>
-                            <td className="py-2 text-white truncate max-w-[170px]">{comp.address}</td>
+                          <tr key={idx} className="hover:bg-muted/30" data-testid={`comp-row-${idx}`}>
+                            <td className="py-2 text-foreground truncate max-w-[170px]">{comp.address}</td>
                             <td className="py-2">
                               <span
                                 data-testid="comp-source-tag"
-                                className="inline-block rounded bg-white/5 border border-white/10 px-1.5 py-0.5 text-[9.5px] font-mono uppercase text-white/60"
+                                className="inline-block rounded-none bg-muted border border-border px-1.5 py-0.5 text-[9.5px] font-mono uppercase text-muted-foreground"
                               >
                                 {comp.source || propertyData.source || 'rentcast'}
                               </span>
@@ -2221,23 +2252,23 @@ export default function DealCalculatorView({
                             <td className="py-2 text-right font-mono font-semibold text-emerald-400">
                               {formatCurrency(comp.sale_price)}
                             </td>
-                            <td className="py-2 text-right text-white/70">{comp.sqft ? `${comp.sqft}` : 'N/A'}</td>
-                            <td className="py-2 text-right text-white/50">{comp.distance !== undefined ? `${comp.distance} mi` : 'N/A'}</td>
+                            <td className="py-2 text-right text-muted-foreground">{comp.sqft ? `${comp.sqft}` : 'N/A'}</td>
+                            <td className="py-2 text-right text-muted-foreground">{comp.distance !== undefined ? `${comp.distance} mi` : 'N/A'}</td>
                             <td className="py-2 text-right">
                               {isStale ? (
                                 <span
                                   data-testid="comp-staleness-badge"
-                                  className="inline-flex items-center gap-1 rounded bg-amber-500/20 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 font-mono"
+                                  className="inline-flex items-center gap-1 rounded-none bg-amber-500/20 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 font-mono"
                                 >
-                                  <span className="material-symbols-outlined text-[11px]">history</span>
+                                  <ClockCounterClockwise className="h-3 w-3" weight="bold" />
                                   Stale (as of {formattedDate})
                                 </span>
                               ) : (
                                 <span
                                   data-testid="comp-fresh-badge"
-                                  className="inline-flex items-center gap-1 rounded bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 font-mono"
+                                  className="inline-flex items-center gap-1 rounded-none bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400 font-mono"
                                 >
-                                  <span className="material-symbols-outlined text-[11px]">check_circle</span>
+                                  <CheckCircle className="h-3 w-3" weight="bold" />
                                   Fresh (as of {formattedDate})
                                 </span>
                               )}
@@ -2251,14 +2282,14 @@ export default function DealCalculatorView({
               ) : propertyData.requiresCredentials ? (
                 <div
                   data-testid="no-comps-credentials"
-                  className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-center text-xs font-mono text-amber-300"
+                  className="rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-center text-xs font-mono text-amber-300"
                 >
                   no comp data: REQUIRES CREDENTIALS
                 </div>
               ) : (
                 <div
                   data-testid="no-comps-found"
-                  className="rounded-xl border border-white/10 bg-black/20 p-4 text-center text-xs font-mono text-white/50"
+                  className="rounded-none border border-border bg-muted/20 p-4 text-center text-xs font-mono text-muted-foreground"
                 >
                   no recent comps found
                 </div>
@@ -2275,23 +2306,21 @@ export default function DealCalculatorView({
             {calculations.paymentShock && (
               <div
                 data-testid="payment-shock-disclosure"
-                className="flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-200"
+                className="flex items-start gap-3 rounded-none border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-200"
               >
-                <span className="material-symbols-outlined text-amber-400 text-[20px] shrink-0">
-                  notification_important
-                </span>
+                <BellSimpleRinging className="h-5 w-5 text-amber-400 shrink-0" weight="bold" />
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="inline-block rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
+                    <span className="inline-block rounded-none bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-amber-300">
                       Payment Shock Disclosure
                     </span>
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-foreground">
                       {calculations.paymentShock.disclosureLabel}
                     </span>
                   </div>
-                  <p className="text-white/80">
+                  <p className="text-foreground/80">
                     Monthly debt service rises from{' '}
-                    <span className="font-mono font-bold text-white">{formatCurrency(calculations.paymentShock.previousMonthlyPayment)}</span> to{' '}
+                    <span className="font-mono font-bold text-foreground">{formatCurrency(calculations.paymentShock.previousMonthlyPayment)}</span> to{' '}
                     <span className="font-mono font-bold text-amber-300">{formatCurrency(calculations.paymentShock.newMonthlyPayment)}</span>{' '}
                     (+{formatCurrency(calculations.paymentShock.monthlyIncreaseAmount)}/mo, +{calculations.paymentShock.percentageIncrease.toFixed(1)}%).
                   </p>
@@ -2301,59 +2330,59 @@ export default function DealCalculatorView({
 
             {/* Primary KPI Cards (4 Key Metrics) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+              <div className="rounded-none border border-border bg-card p-5 shadow-sm">
                 <span
-                  className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1 cursor-help"
+                  className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 cursor-help"
                   title="Cash-on-Cash Return: Annual Net Cash Flow ÷ Total Cash Required"
                 >
                   Cash-on-Cash Return
                 </span>
                 <span
                   data-testid="coc-output-metric"
-                  className={`text-3xl font-extrabold ${calculations.cashOnCashReturnPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
+                  className={`text-3xl font-extrabold ${calculations.cashOnCashReturnPct >= 0 ? 'text-emerald-400' : 'text-destructive'}`}
                 >
                   {formatPercent(calculations.cashOnCashReturnPct)}
                 </span>
-                <span className="mt-2 block text-[11px] text-white/40">
+                <span className="mt-2 block text-[11px] text-muted-foreground">
                   {formatCurrency(calculations.annualNetCashFlow)}/yr cash flow ÷ {formatCurrency(calculations.cashRequired)} equity
                 </span>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
+              <div className="rounded-none border border-border bg-card p-5 shadow-sm">
                 <span
-                  className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1 cursor-help"
+                  className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 cursor-help"
                   title="Cap Rate on Cost (Yield on Cost): Year-1 NOI ÷ Total Cost Basis"
                 >
                   Cap Rate on Cost
                 </span>
                 <span
                   data-testid="cap-rate-output-metric"
-                  className="text-3xl font-extrabold text-white"
+                  className="text-3xl font-extrabold text-foreground"
                 >
                   {formatPercent(calculations.capRateOnCost)}
                 </span>
-                <span className="mt-2 block text-[11px] text-white/40">
+                <span className="mt-2 block text-[11px] text-muted-foreground">
                   Year-1 NOI {formatCurrency(calculations.netOperatingIncome)} ÷ Basis {formatCurrency(calculations.totalCostBasis)}
                 </span>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">
+              <div className="rounded-none border border-border bg-card p-5 shadow-sm">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   Net Operating Income (NOI)
                 </span>
                 <span
                   data-testid="noi-kpi-metric"
-                  className="text-3xl font-extrabold text-white"
+                  className="text-3xl font-extrabold text-foreground"
                 >
                   {formatCurrency(calculations.netOperatingIncome)}
                 </span>
-                <span className="mt-2 block text-[11px] text-white/40">
+                <span className="mt-2 block text-[11px] text-muted-foreground">
                   EGI {formatCurrency(calculations.grossOperatingIncome)} - OpEx {formatCurrency(calculations.totalOperatingExpenses)}
                 </span>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">
+              <div className="rounded-none border border-border bg-card p-5 shadow-sm">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   Projected IRR
                 </span>
                 <span
@@ -2368,7 +2397,7 @@ export default function DealCalculatorView({
                         ? 'No Sign Change'
                         : 'N/A'}
                 </span>
-                <span className="mt-2 block text-[11px] text-white/40">
+                <span className="mt-2 block text-[11px] text-muted-foreground">
                   {calculations.projectedIrrPct !== null
                     ? `${inputs.holdPeriodYears}-Yr hold (${calculations.terminalValueLabel})`
                     : calculations.irrStatus === 'multiple_roots'
@@ -2384,14 +2413,12 @@ export default function DealCalculatorView({
             {calculations.isLeaseUpActive && (
               <div
                 data-testid="leaseup-status-banner"
-                className="flex items-start gap-3 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 text-xs text-sky-200"
+                className="flex items-start gap-3 rounded-none border border-sky-500/30 bg-sky-500/10 p-4 text-xs text-sky-200"
               >
-                <span className="material-symbols-outlined text-sky-400 text-[20px] shrink-0">
-                  timelapse
-                </span>
+                <HourglassMedium className="h-5 w-5 text-sky-400 shrink-0" weight="bold" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-block rounded-full bg-sky-500/20 border border-sky-500/40 px-2 py-0.5 text-[10px] font-bold tracking-wider text-sky-300 uppercase">
+                    <span className="inline-block rounded-none bg-sky-500/20 border border-sky-500/40 px-2 py-0.5 text-[10px] font-bold tracking-wider text-sky-300 uppercase">
                       Lease-Up Active ({calculations.stabilizationMonths} Months)
                     </span>
                     <span className="text-[10px] font-mono text-sky-300/70">
@@ -2409,16 +2436,14 @@ export default function DealCalculatorView({
             {calculations.monthlyNetCashFlow <= 0 && (
               <div
                 data-testid="negative-cash-flow-banner"
-                className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-xs text-red-200"
+                className="flex items-start gap-3 rounded-none border border-destructive/30 bg-destructive/10 p-4 text-xs text-destructive-foreground"
               >
-                <span className="material-symbols-outlined text-red-400 text-[20px] shrink-0">
-                  warning
-                </span>
+                <WarningCircle className="h-5 w-5 text-destructive shrink-0" weight="bold" />
                 <div>
-                  <p className="font-bold text-red-300">
+                  <p className="font-bold text-destructive">
                     Negative Cash Flow Detected: {formatCurrency(calculations.monthlyNetCashFlow)}/mo
                   </p>
-                  <p className="mt-0.5 text-white/70">
+                  <p className="mt-0.5 text-muted-foreground">
                     Debt service ({formatCurrency(calculations.monthlyDebtService)}/mo) and operating expenses exceed gross rent. Consider increasing down payment or negotiating purchase price.
                   </p>
                 </div>
@@ -2429,21 +2454,19 @@ export default function DealCalculatorView({
             {calculations.isNegativeLeverage && (
               <div
                 data-testid="negative-leverage-banner"
-                className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-200"
+                className="flex items-start gap-3 rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-xs text-amber-200"
               >
-                <span className="material-symbols-outlined text-amber-400 text-[20px] shrink-0">
-                  trending_down
-                </span>
+                <TrendDown className="h-5 w-5 text-amber-400 shrink-0" weight="bold" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-block rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase">
+                    <span className="inline-block rounded-none bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase">
                       Negative Leverage
                     </span>
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-foreground">
                       Debt Constant ({calculations.loanConstantPct.toFixed(2)}%) &gt; Yield on Cost ({calculations.yieldOnCostPct.toFixed(1)}%)
                     </span>
                   </div>
-                  <p className="mt-1 text-white/80">
+                  <p className="mt-1 text-foreground/80">
                     The debt costs more than the deal yields — returns are amplified downward.
                     Borrowing at {inputs.interestRatePct.toFixed(1)}% ({calculations.loanConstantPct.toFixed(2)}% constant) against a {calculations.yieldOnCostPct.toFixed(1)}% yield on cost compresses equity Cash-on-Cash ({calculations.cashOnCashReturnPct.toFixed(1)}%).
                   </p>
@@ -2455,10 +2478,10 @@ export default function DealCalculatorView({
             {calculations.dscr !== null && calculations.dscr < 1.20 && (
               <div
                 data-testid="dscr-warning-banner"
-                className="flex items-center justify-between rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-200"
+                className="flex items-center justify-between rounded-none border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-amber-200"
               >
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-amber-400 text-[18px]">gavel</span>
+                  <Gavel className="h-4 w-4 text-amber-400 shrink-0" weight="bold" />
                   <span>
                     <strong>DSCR {calculations.dscr.toFixed(2)}:</strong> Below standard 1.20 lender floor. May require commercial debt waiver or additional equity.
                   </span>
@@ -2468,9 +2491,9 @@ export default function DealCalculatorView({
 
 
             {/* All 11 Canonical Financial Metrics Table */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-3">
+            <div className="rounded-none border border-border bg-card p-5 shadow-sm space-y-3">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-white/60">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Calculated Metrics & Capital Summary
                 </h2>
                 <span className="text-[10px] font-mono text-emerald-400 font-semibold">
@@ -2478,74 +2501,74 @@ export default function DealCalculatorView({
                 </span>
               </div>
 
-              <div className="divide-y divide-white/5 text-xs">
+              <div className="divide-y divide-border/50 text-xs">
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Target Purchase Price</span>
-                  <span className="font-semibold text-white">{formatCurrency(inputs.purchasePrice)}</span>
+                  <span className="text-muted-foreground">Target Purchase Price</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(inputs.purchasePrice)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">After Repair Value (ARV)</span>
-                  <span className="font-semibold text-white">{formatCurrency(calculations.totalCostBasis > 0 ? inputs.arv : 0)}</span>
+                  <span className="text-muted-foreground">After Repair Value (ARV)</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(calculations.totalCostBasis > 0 ? inputs.arv : 0)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Total Cost Basis (Price + {inputs.buyerClosingCostsPct}% Close + Rehab)</span>
-                  <span className="font-semibold text-white">{formatCurrency(calculations.totalCostBasis)}</span>
+                  <span className="text-muted-foreground">Total Cost Basis (Price + {inputs.buyerClosingCostsPct}% Close + Rehab)</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(calculations.totalCostBasis)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Initial Loan Amount ({calculations.ltvPct}% LTV)</span>
-                  <span className="font-semibold text-white">{formatCurrency(calculations.loanAmount)}</span>
+                  <span className="text-muted-foreground">Initial Loan Amount ({calculations.ltvPct}% LTV)</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(calculations.loanAmount)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Cash Required to Close</span>
-                  <span className="font-semibold text-white">{formatCurrency(calculations.cashRequired)}</span>
+                  <span className="text-muted-foreground">Cash Required to Close</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(calculations.cashRequired)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Net Operating Income (NOI)</span>
-                  <span className="font-semibold text-white">{formatCurrency(calculations.netOperatingIncome)}/yr</span>
+                  <span className="text-muted-foreground">Net Operating Income (NOI)</span>
+                  <span className="font-semibold text-foreground">{formatCurrency(calculations.netOperatingIncome)}/yr</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Monthly Net Cash Flow</span>
+                  <span className="text-muted-foreground">Monthly Net Cash Flow</span>
                   <span className={`font-semibold font-mono ${calculations.monthlyNetCashFlow > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {formatCurrency(calculations.monthlyNetCashFlow)}/mo
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Cash-on-Cash Return</span>
-                  <span className="font-semibold text-white">{formatPercent(calculations.cashOnCashReturnPct)}</span>
+                  <span className="text-muted-foreground">Cash-on-Cash Return</span>
+                  <span className="font-semibold text-foreground">{formatPercent(calculations.cashOnCashReturnPct)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Debt Service Coverage Ratio (DSCR)</span>
+                  <span className="text-muted-foreground">Debt Service Coverage Ratio (DSCR)</span>
                   <span className={`font-semibold font-mono ${calculations.dscr !== null && calculations.dscr >= 1.20 ? 'text-emerald-400' : 'text-amber-400'}`}>
                     {calculations.dscr !== null ? calculations.dscr.toFixed(2) : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Gross Rent Multiplier (GRM)</span>
-                  <span className="font-semibold text-white">
+                  <span className="text-muted-foreground">Gross Rent Multiplier (GRM)</span>
+                  <span className="font-semibold text-foreground">
                     {calculations.grossRentMultiplier !== null ? calculations.grossRentMultiplier.toFixed(1) : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Maximum Allowable Offer (MAO / 70% Rule)</span>
-                  <span className="font-bold text-[color:var(--color-primary)]">
+                  <span className="text-muted-foreground">Maximum Allowable Offer (MAO / 70% Rule)</span>
+                  <span className="font-bold text-primary">
                     {formatCurrency(calculations.maximumAllowableOffer70Pct)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Projected Flip Net Profit</span>
+                  <span className="text-muted-foreground">Projected Flip Net Profit</span>
                   <span className="font-semibold font-mono text-emerald-400">
                     {formatCurrency(calculations.projectedFlipProfit)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Estimated Exit Valuation ({calculations.terminalValueLabel})</span>
-                  <span className="font-semibold text-white font-mono">
+                  <span className="text-muted-foreground">Estimated Exit Valuation ({calculations.terminalValueLabel})</span>
+                  <span className="font-semibold text-foreground font-mono">
                     {formatCurrency(calculations.estimatedExitValue)}
                   </span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-white/60">Annual Debt Constant (Loan Constant)</span>
-                  <span className="font-semibold text-white font-mono">
+                  <span className="text-muted-foreground">Annual Debt Constant (Loan Constant)</span>
+                  <span className="font-semibold text-foreground font-mono">
                     {calculations.loanConstantPct.toFixed(2)}%
                   </span>
                 </div>
@@ -2580,18 +2603,18 @@ export default function DealCalculatorView({
             {/* Advanced Risk & Forward-Looking: "What-If" Sensitivity Scenarios */}
             <div
               data-testid="what-if-scenarios-panel"
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+              className="rounded-none border border-border bg-card p-5 shadow-sm space-y-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-amber-400">tune</span>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-white/80">
+                  <SlidersHorizontal className="h-4 w-4 text-amber-400" weight="bold" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-foreground/80">
                     Sensitivity &amp; &ldquo;What-If&rdquo; Stress Testing
                   </h2>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">Real-time Simulation</span>
+                <span className="text-[10px] font-mono text-muted-foreground">Real-time Simulation</span>
               </div>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-muted-foreground">
                 Stress test returns if market vacancy rises or achieved rents deviate from pro-forma underwriting.
               </p>
 
@@ -2599,7 +2622,7 @@ export default function DealCalculatorView({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                 <div>
                   <div className="flex items-center justify-between mb-1.5 text-xs">
-                    <span className="text-white/60 font-medium">Stressed Vacancy Rate:</span>
+                    <span className="text-muted-foreground font-medium">Stressed Vacancy Rate:</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -2608,9 +2631,9 @@ export default function DealCalculatorView({
                         data-testid="what-if-vacancy-input"
                         value={whatIfVacancy}
                         onChange={(e) => setWhatIfVacancy(Math.max(0, Math.min(100, Number(e.target.value))))}
-                        className="w-14 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-right font-bold text-white font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
+                        className="w-14 rounded-none border border-border bg-background px-2 py-0.5 text-right font-bold text-foreground font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
                       />
-                      <span className="text-white/50 text-xs">%</span>
+                      <span className="text-muted-foreground text-xs">%</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-4 gap-1.5">
@@ -2620,10 +2643,10 @@ export default function DealCalculatorView({
                         type="button"
                         data-testid={`what-if-vacancy-${v}-btn`}
                         onClick={() => setWhatIfVacancy(v)}
-                        className={`rounded-lg border px-2 py-1.5 text-center text-xs font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                        className={`rounded-none border px-2 py-1.5 text-center text-xs font-semibold transition min-h-[44px] sm:min-h-[36px] ${
                           whatIfVacancy === v
                             ? 'border-amber-400 bg-amber-400/10 text-amber-300'
-                            : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                            : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {v}%
@@ -2634,7 +2657,7 @@ export default function DealCalculatorView({
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5 text-xs">
-                    <span className="text-white/60 font-medium">Rent Variance:</span>
+                    <span className="text-muted-foreground font-medium">Rent Variance:</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -2643,9 +2666,9 @@ export default function DealCalculatorView({
                         data-testid="what-if-rent-delta-input"
                         value={whatIfRentDeltaPct}
                         onChange={(e) => setWhatIfRentDeltaPct(Math.max(-50, Math.min(50, Number(e.target.value))))}
-                        className="w-14 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-right font-bold text-white font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
+                        className="w-14 rounded-none border border-border bg-background px-2 py-0.5 text-right font-bold text-foreground font-mono text-xs focus:outline-none focus:border-amber-400 min-h-[32px]"
                       />
-                      <span className="text-white/50 text-xs">%</span>
+                      <span className="text-muted-foreground text-xs">%</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-5 gap-1">
@@ -2655,10 +2678,10 @@ export default function DealCalculatorView({
                         type="button"
                         data-testid={`what-if-rent-delta-${delta}-btn`}
                         onClick={() => setWhatIfRentDeltaPct(delta)}
-                        className={`rounded-lg border px-1.5 py-1.5 text-center text-[11px] font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                        className={`rounded-none border px-1.5 py-1.5 text-center text-[11px] font-semibold transition min-h-[44px] sm:min-h-[36px] ${
                           whatIfRentDeltaPct === delta
                             ? 'border-amber-400 bg-amber-400/10 text-amber-300'
-                            : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                            : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
                         }`}
                       >
                         {delta > 0 ? `+${delta}%` : `${delta}%`}
@@ -2683,30 +2706,30 @@ export default function DealCalculatorView({
                 const stressedDSCR = annualDebt > 0 ? stressedNOI / annualDebt : null;
 
                 return (
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2.5">
+                  <div className="rounded-none border border-border bg-muted/20 p-3.5 space-y-2.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/50">Stressed Effective Gross Income:</span>
-                      <span className="font-mono text-white font-semibold">{formatCurrency(stressedEGI)}/yr</span>
+                      <span className="text-muted-foreground">Stressed Effective Gross Income:</span>
+                      <span className="font-mono text-foreground font-semibold">{formatCurrency(stressedEGI)}/yr</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/50">Stressed Net Operating Income (NOI):</span>
-                      <span className="font-mono text-white font-semibold">{formatCurrency(stressedNOI)}/yr</span>
+                      <span className="text-muted-foreground">Stressed Net Operating Income (NOI):</span>
+                      <span className="font-mono text-foreground font-semibold">{formatCurrency(stressedNOI)}/yr</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/5 text-center">
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Monthly Cash Flow</span>
-                        <span className={`block font-bold text-xs mt-0.5 ${stressedMonthlyCashFlow >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border/50 text-center">
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Monthly Cash Flow</span>
+                        <span className={`block font-bold text-xs mt-0.5 ${stressedMonthlyCashFlow >= 0 ? 'text-emerald-400' : 'text-destructive'}`}>
                           {formatCurrency(stressedMonthlyCashFlow)}/mo
                         </span>
                       </div>
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Cash-on-Cash</span>
-                        <span className={`block font-bold text-xs mt-0.5 ${stressedCoC >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Cash-on-Cash</span>
+                        <span className={`block font-bold text-xs mt-0.5 ${stressedCoC >= 0 ? 'text-emerald-400' : 'text-destructive'}`}>
                           {stressedCoC.toFixed(1)}%
                         </span>
                       </div>
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Stressed DSCR</span>
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Stressed DSCR</span>
                         <span className={`block font-bold text-xs mt-0.5 ${stressedDSCR !== null && stressedDSCR >= 1.20 ? 'text-emerald-400' : 'text-amber-300'}`}>
                           {stressedDSCR !== null ? stressedDSCR.toFixed(2) : 'N/A'}
                         </span>
@@ -2720,18 +2743,18 @@ export default function DealCalculatorView({
             {/* Advanced Risk & Forward-Looking: Exit Strategy Planning (5, 10, 20 Years) */}
             <div
               data-testid="exit-strategy-planning-panel"
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+              className="rounded-none border border-border bg-card p-5 shadow-sm space-y-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-cyan-400">flag</span>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-white/80">
+                  <Flag className="h-4 w-4 text-cyan-400" weight="bold" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-foreground/80">
                     Exit Strategy Planning &amp; Wealth Horizon
                   </h2>
                 </div>
                 <span className="text-[10px] font-mono text-cyan-300">{exitPlanningHorizon}-Year Horizon</span>
               </div>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-muted-foreground">
                 Model long-term wealth building, cumulative rental cash flows, equity paydown, and exit sales proceeds over 5, 10, or 20 years.
               </p>
 
@@ -2746,10 +2769,10 @@ export default function DealCalculatorView({
                       setExitPlanningHorizon(years);
                       handleInputChange('holdPeriodYears', years);
                     }}
-                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`rounded-none border p-2.5 text-center text-xs font-semibold transition min-h-[44px] ${
                       exitPlanningHorizon === years
                         ? 'border-cyan-400 bg-cyan-400/10 text-cyan-300 font-bold'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     {years}-Year Exit Plan
@@ -2796,45 +2819,45 @@ export default function DealCalculatorView({
                 const multiYearRoiPct = calculations.cashRequired > 0 ? (totalCumulativeGain / calculations.cashRequired) * 100 : 0;
 
                 return (
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4 space-y-3 font-mono text-xs">
+                  <div className="rounded-none border border-border bg-muted/20 p-4 space-y-3 font-mono text-xs">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Future Property Value</span>
-                        <span className="block font-bold text-white text-xs mt-0.5">
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Future Property Value</span>
+                        <span className="block font-bold text-foreground text-xs mt-0.5">
                           {formatCurrency(futurePropertyVal)}
                         </span>
                       </div>
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Remaining Debt</span>
-                        <span className="block font-bold text-white/70 text-xs mt-0.5">
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Remaining Debt</span>
+                        <span className="block font-bold text-foreground/70 text-xs mt-0.5">
                           {formatCurrency(remainingDebt)}
                         </span>
                       </div>
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Principal Paydown</span>
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Principal Paydown</span>
                         <span className="block font-bold text-emerald-400 text-xs mt-0.5">
                           +{formatCurrency(debtPaidDown)}
                         </span>
                       </div>
-                      <div className="rounded-lg border border-white/5 bg-white/[0.02] p-2">
-                        <span className="block text-[9.5px] uppercase text-white/40">Total Equity at Exit</span>
+                      <div className="rounded-none border border-border bg-card p-2">
+                        <span className="block text-[9.5px] uppercase text-muted-foreground">Total Equity at Exit</span>
                         <span className="block font-bold text-cyan-300 text-xs mt-0.5">
                           {formatCurrency(totalEquityBuilt)}
                         </span>
                       </div>
                     </div>
 
-                    <div className="border-t border-white/5 pt-2.5 space-y-1.5 text-xs">
+                    <div className="border-t border-border/50 pt-2.5 space-y-1.5 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-white/60">Cumulative {H}-Yr Cash Flow:</span>
-                        <span className="font-semibold text-white">{formatCurrency(cumulativeCashFlow)}</span>
+                        <span className="text-muted-foreground">Cumulative {H}-Yr Cash Flow:</span>
+                        <span className="font-semibold text-foreground">{formatCurrency(cumulativeCashFlow)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-white/60">Estimated Net Sales Proceeds (After Debt &amp; {inputs.sellingCostsPct}% Cost of Sale):</span>
+                        <span className="text-muted-foreground">Estimated Net Sales Proceeds (After Debt &amp; {inputs.sellingCostsPct}% Cost of Sale):</span>
                         <span className="font-semibold text-emerald-400">{formatCurrency(netExitProceeds)}</span>
                       </div>
-                      <div className="flex justify-between border-t border-white/5 pt-1.5 font-bold">
-                        <span className="text-white">Total Projected Multi-Year ROI:</span>
+                      <div className="flex justify-between border-t border-border/50 pt-1.5 font-bold">
+                        <span className="text-foreground">Total Projected Multi-Year ROI:</span>
                         <span className="text-cyan-300 text-sm">{multiYearRoiPct.toFixed(1)}%</span>
                       </div>
                     </div>
@@ -2845,30 +2868,28 @@ export default function DealCalculatorView({
 
             {/* Confidence Gauge */}
             <div className="space-y-3">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="rounded-none border border-border bg-card p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Model Confidence
                   </span>
                   <span className="font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold text-primary">
                     {confidenceScore}%
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-black/40">
+                <div className="h-2 overflow-hidden rounded-none bg-muted/40">
                   <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    className="h-full rounded-none bg-primary transition-all duration-500"
                     style={{ width: `${confidenceScore}%` }}
                   />
                 </div>
               </div>
 
               {/* Appraisal Contingency Alert */}
-              <div className="flex items-center gap-3 rounded-2xl border border-amber-400/20 bg-amber-400/[0.06] p-4 text-xs">
-                <span className="material-symbols-outlined text-[20px] text-amber-300 shrink-0">
-                  notifications_active
-                </span>
-                <p className="text-white/75 leading-relaxed">
-                  <strong className="text-amber-300 font-semibold">Contingency Notice:</strong> Appraisal contingency expires in 3 days. Lock underwriting before earnest money goes hard.
+              <div className="flex items-center gap-3 rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-xs">
+                <BellSimpleRinging className="h-5 w-5 text-amber-400 shrink-0" weight="bold" />
+                <p className="text-foreground/80 leading-relaxed">
+                  <strong className="text-amber-400 font-semibold">Contingency Notice:</strong> Appraisal contingency expires in 3 days. Lock underwriting before earnest money goes hard.
                 </p>
               </div>
 
@@ -2876,24 +2897,22 @@ export default function DealCalculatorView({
               {analysisCompleted && !isExpired && (
                 <div
                   data-testid="make-project-persistent-cta"
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all backdrop-blur-md shadow-sm"
+                  className="rounded-none border border-border bg-card p-4 text-left transition-all shadow-sm"
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="material-symbols-outlined text-[20px] text-emerald-400">
-                      rocket_launch
-                    </span>
-                    <h3 className="text-sm font-bold text-white">
+                    <RocketLaunch className="h-5 w-5 text-emerald-400 shrink-0" weight="bold" />
+                    <h3 className="text-sm font-bold text-foreground">
                       Want to make this deal a Project?
                     </h3>
                   </div>
-                  <p className="text-xs text-white/70 leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     Convert these underwriting numbers into an authoritative project workspace in Phase 01: Acquisition.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowStartProjectModal(true)}
                     disabled={isCreatingProject}
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
+                    className="mt-3 inline-flex items-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
                   >
                     {isCreatingProject ? 'Opening Project...' : 'Make this deal a Project'}
                   </button>
@@ -2903,13 +2922,11 @@ export default function DealCalculatorView({
               {/* Persistent Legal & Investment Disclaimer Bar */}
               <div
                 data-testid="calculator-disclaimer-bar"
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-left backdrop-blur-md"
+                className="rounded-none border border-border bg-card/50 p-4 text-left"
               >
                 <div className="flex items-start gap-2.5">
-                  <span className="material-symbols-outlined text-white/40 text-[18px] mt-0.5 shrink-0">
-                    info
-                  </span>
-                  <p className="text-[11px] leading-relaxed text-white/55">
+                  <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" weight="bold" />
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
                     <strong>Disclaimer:</strong> Hypothetical illustration based on user-supplied
                     assumptions; not investment, legal, tax, or financial advice; not a prediction or
                     guarantee.
@@ -2932,7 +2949,7 @@ export default function DealCalculatorView({
         >
           <div className="relative mx-auto w-full max-w-[500px] rounded-none border border-border bg-card p-6 text-center shadow-2xl md:p-8">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-border bg-muted/50 text-foreground">
-              <span className="material-symbols-outlined text-[24px]">lock</span>
+              <Lock className="h-6 w-6" weight="bold" />
             </div>
 
             <div className="mb-2 inline-flex items-center gap-1.5 rounded-none border border-border/80 bg-muted/30 px-2.5 py-0.5 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
@@ -2984,30 +3001,30 @@ export default function DealCalculatorView({
           data-testid="paywall-modal"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
         >
-          <div className="relative mx-auto w-full max-w-[460px] rounded-2xl border border-amber-500/30 bg-[#0a0a0f] p-6 text-center shadow-2xl md:p-8">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-              <span className="material-symbols-outlined text-[24px]">workspace_premium</span>
+          <div className="relative mx-auto w-full max-w-[460px] rounded-none border border-border bg-card p-6 text-center shadow-2xl md:p-8">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-amber-500/30 bg-amber-500/10 text-amber-400">
+              <Medal className="h-6 w-6 text-amber-400" weight="bold" />
             </div>
 
-            <h2 id="paywall-title" className="text-xl font-bold tracking-tight text-white">
+            <h2 id="paywall-title" className="text-xl font-bold tracking-tight text-foreground">
               Trial Expired
             </h2>
 
-            <p className="mt-2 text-sm text-white/65">
+            <p className="mt-2 text-sm text-muted-foreground">
               Your free trial has ended. Select an investor plan to unlock the Deal Calculator and lifecycle tools.
             </p>
 
             <div className="mt-6 space-y-3">
               <Link
                 href="/pricing"
-                className="flex w-full items-center justify-center rounded-xl bg-[color:var(--color-primary)] px-4 py-3 text-sm font-semibold text-[#0a0a0f] transition hover:brightness-110 no-underline"
+                className="flex w-full min-h-[44px] items-center justify-center rounded-none bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 no-underline shadow-sm"
               >
                 View Plans & Upgrade
               </Link>
 
               <Link
                 href="/dashboard"
-                className="flex w-full items-center justify-center rounded-xl border border-white/15 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/5 no-underline"
+                className="flex w-full min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-secondary no-underline"
               >
                 Return to Dashboard
               </Link>
@@ -3026,21 +3043,21 @@ export default function DealCalculatorView({
           data-testid="make-project-prompt-modal"
           className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/75 p-0 md:p-4 backdrop-blur-md"
         >
-          <div className="relative w-full max-w-[500px] rounded-t-2xl md:rounded-2xl border-t md:border border-white/15 bg-[#0a0a0f] p-5 md:p-8 shadow-2xl pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-8 animate-in slide-in-from-bottom-6 duration-200 md:fade-in-once">
+          <div className="relative w-full max-w-[500px] rounded-none border-t md:border border-border bg-card p-5 md:p-8 shadow-2xl pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-8 animate-in slide-in-from-bottom-6 duration-200 md:fade-in-once">
             {/* Mobile Drag Handle */}
             <div className="flex justify-center pt-1 pb-3 md:hidden">
-              <div className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden="true" />
+              <div className="h-1.5 w-12 rounded-none bg-border" aria-hidden="true" />
             </div>
 
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
-                <span className="material-symbols-outlined text-[20px]">folder_open</span>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-primary/30 bg-primary/10 text-primary">
+                <FolderOpen className="h-5 w-5 text-primary" weight="bold" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-primary)]">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                   LIFECYCLE PROMPT
                 </span>
-                <h2 id="project-prompt-title" className="text-base sm:text-lg font-bold text-white">
+                <h2 id="project-prompt-title" className="text-base sm:text-lg font-bold text-foreground">
                   Want to make this deal a Project?
                   <span className="sr-only"> Do you want to make this deal a Project?</span>
                 </h2>
@@ -3048,40 +3065,40 @@ export default function DealCalculatorView({
             </div>
 
             {/* Deal Summary to Carry Over */}
-            <div className="mb-5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs space-y-2">
+            <div className="mb-5 rounded-none border border-border bg-muted/20 p-4 text-xs space-y-2">
               <div className="flex justify-between">
-                <span className="text-white/50">Property:</span>
-                <span className="font-semibold text-white truncate max-w-[280px]">{inputs.address}</span>
+                <span className="text-muted-foreground">Property:</span>
+                <span className="font-semibold text-foreground truncate max-w-[280px]">{inputs.address}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Purchase Price:</span>
-                <span className="font-semibold text-white">{formatCurrency(inputs.purchasePrice)}</span>
+                <span className="text-muted-foreground">Purchase Price:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(inputs.purchasePrice)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Rehab Budget:</span>
-                <span className="font-semibold text-white">{formatCurrency(inputs.rehabBudget)}</span>
+                <span className="text-muted-foreground">Rehab Budget:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(inputs.rehabBudget)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-white/50">Cap Rate on Cost / IRR:</span>
-                <span className="font-semibold text-[color:var(--color-primary)]">
+                <span className="text-muted-foreground">Cap Rate on Cost / IRR:</span>
+                <span className="font-semibold text-primary">
                   {formatPercent(calculations.capRateOnCost)} / {calculations.projectedIrrPct !== null ? `${calculations.projectedIrrPct.toFixed(1)}%` : 'n/a'}
                 </span>
               </div>
               {persistedSnapshotId && (
                 <div className="flex justify-between">
-                  <span className="text-white/50">Underwriting Lineage:</span>
-                  <span className="font-mono text-emerald-300 font-semibold">{persistedSnapshotId}</span>
+                  <span className="text-muted-foreground">Underwriting Lineage:</span>
+                  <span className="font-mono text-emerald-400 font-semibold">{persistedSnapshotId}</span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-white/5 pt-2">
-                <span className="text-white/50">Lifecycle Assignment:</span>
+              <div className="flex justify-between border-t border-border/50 pt-2">
+                <span className="text-muted-foreground">Lifecycle Assignment:</span>
                 <span className="font-semibold text-emerald-400 uppercase">Phase 01 — Acquisition</span>
               </div>
             </div>
 
             {/* Error Message if project creation fails */}
             {projectCreationError && (
-              <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+              <div className="mb-4 rounded-none border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
                 {projectCreationError}
               </div>
             )}
@@ -3092,7 +3109,7 @@ export default function DealCalculatorView({
                 type="button"
                 onClick={handleDismissProjectPrompt}
                 disabled={isCreatingProject}
-                className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/15 px-6 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/5 hover:text-white disabled:opacity-50 touch-press"
+                className="flex min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-6 py-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50 touch-press"
               >
                 No
               </button>
@@ -3101,11 +3118,11 @@ export default function DealCalculatorView({
                 type="button"
                 onClick={() => handleAcceptProjectPrompt(false)}
                 disabled={isCreatingProject}
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 shadow-sm touch-press"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 shadow-sm touch-press"
               >
                 {isCreatingProject ? (
                   <>
-                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                    <span className="h-3 w-3 animate-spin rounded-none border-2 border-primary-foreground border-t-transparent" />
                     Opening Project...
                   </>
                 ) : (
@@ -3118,20 +3135,20 @@ export default function DealCalculatorView({
       ) : null}
 
       {/* Mobile Sticky Bottom Action Bar (Thumb-reach CTAs) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0b10]/95 backdrop-blur-md border-t border-white/10 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-2 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-2 shadow-2xl">
         <div className="flex flex-col min-w-0">
-          <span className="text-[10px] uppercase font-bold text-white/40 truncate">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground truncate">
             {inputs.strategy.replace(/_/g, ' ')}
           </span>
-          <span className="text-sm font-black text-white font-mono truncate">
-            {formatCurrency(calculations.cashRequired)} <span className="text-[10px] text-white/50 font-normal">Cash</span>
+          <span className="text-sm font-black text-foreground font-mono truncate">
+            {formatCurrency(calculations.cashRequired)} <span className="text-[10px] text-muted-foreground font-normal">Cash</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setShowPublishModal(true)}
-            className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white active:bg-white/10"
+            className="flex min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-3 py-2 text-xs font-semibold text-foreground active:bg-secondary"
           >
             Share
           </button>
@@ -3139,9 +3156,9 @@ export default function DealCalculatorView({
             type="button"
             onClick={() => handleAcceptProjectPrompt(false)}
             disabled={isCreatingProject}
-            className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm active:brightness-95"
+            className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-none bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm active:opacity-90"
           >
-            <span className="material-symbols-outlined text-[16px]">rocket_launch</span>
+            <RocketLaunch className="h-4 w-4" weight="bold" />
             <span>Make Project</span>
           </button>
         </div>

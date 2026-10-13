@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import type { AssigneeOption, LegacyProjectPhase } from '@/lib/projects/types';
 import { SEED_MARKETPLACE_VENDORS } from '@/lib/marketplace/seed-data';
+import { X, Lock, CheckCircle } from '@phosphor-icons/react';
 
 export type { AssigneeOption };
 
@@ -243,7 +244,7 @@ export default function AssignOrInviteModal({
             className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
             aria-label="Close dialog"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X size={18} />
           </button>
         </div>
 
@@ -306,7 +307,7 @@ export default function AssignOrInviteModal({
             className="mt-4 p-5 rounded-none border border-amber-500/30 bg-amber-500/5 text-xs text-neutral-200 space-y-3"
           >
             <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-              <span className="material-symbols-outlined text-[18px]">lock</span>
+              <Lock size={18} />
               <h3>Team Account Required</h3>
             </div>
             <p className="text-neutral-300">
@@ -545,7 +546,7 @@ export default function AssignOrInviteModal({
                     >
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 min-h-[36px] min-w-[36px] items-center justify-center rounded-none border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold">
-                          <span className="material-symbols-outlined text-[16px]">verified</span>
+                          <CheckCircle size={16} />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">

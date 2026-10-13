@@ -3,12 +3,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Calculator,
+  Camera,
+  ChartBar,
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Desktop,
+  FileText,
+  Folder,
+  ForkKnife,
+  Headset,
+  Image,
+  Info,
+  Lock,
+  PaperPlaneTilt,
+  PhoneCall,
+  Question,
+  Record,
+  Sparkle,
+  StopCircle,
+  UploadSimple,
+  VideoCamera,
+  Warning,
+  X,
+} from '@phosphor-icons/react';
 import { useAssistant } from './AssistantProvider';
 import { AVA_CONFIG } from '@/lib/assistant/config';
 import { HIGH_INTENT_CHIPS, isScrolledToBottom, type PromptChip } from '@/lib/assistant/lifecycle-state-machine';
 import { determineEscalationOptions, type EscalationOption } from '@/lib/assistant/escalation';
 import { useOptionalAuth } from '@/context/AuthContext';
 import { getClientDiagnostics, type ClientDiagnostics } from '@/lib/telemetry/client-diagnostic-buffer';
+import { secureRandomCode } from '@/lib/utils/secure-id';
 
 export interface PepperDrawerProps {
   isOpen?: boolean;
@@ -229,7 +258,7 @@ export default function PepperDrawer({
     }
 
     const diag = getClientDiagnostics();
-    const ticketId = `PW-BUG-${Math.floor(10000 + Math.random() * 90000)}`;
+    const ticketId = `PW-BUG-${secureRandomCode(10)}`;
 
     setBugDraft({
       title: text.length > 60 ? `${text.slice(0, 57)}...` : text,
@@ -256,7 +285,7 @@ export default function PepperDrawer({
       phase = 'Portfolio';
     }
 
-    const ticketId = `PW-FEAT-${Math.floor(10000 + Math.random() * 90000)}`;
+    const ticketId = `PW-FEAT-${secureRandomCode(10)}`;
     setFeatureDraft({
       title: text.length > 60 ? `${text.slice(0, 57)}...` : text,
       description: text,
@@ -531,20 +560,20 @@ export default function PepperDrawer({
       />
 
       {/* Drawer Header */}
-      <header className="flex items-center justify-between border-b border-white/10 px-5 py-3.5 bg-[#141217]">
+      <header className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-card">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--color-primary)]/15 text-[color:var(--color-primary)] border border-[color:var(--color-primary)]/30">
-            <span className="material-symbols-outlined text-xl">support_agent</span>
-            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[color:var(--color-primary)] ring-2 ring-[#0e0c10]" />
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-none bg-muted text-foreground border border-border">
+            <Headset weight="bold" className="h-5 w-5" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-none bg-foreground ring-1 ring-background" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-white tracking-tight">PaperWorking Triage</h2>
-              <span className="rounded bg-[color:var(--color-primary)]/20 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase text-[color:var(--color-primary)]">
+              <h2 className="text-sm font-bold text-foreground tracking-tight">PaperWorking Triage</h2>
+              <span className="rounded-none bg-primary/10 border border-primary/20 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase text-foreground">
                 Live
               </span>
             </div>
-            <p className="text-[11px] text-white/50">Customer service & investor support</p>
+            <p className="text-[11px] text-muted-foreground">Customer service & investor support</p>
           </div>
         </div>
 
@@ -557,7 +586,7 @@ export default function PepperDrawer({
               setConversationalFlow('escalation');
             }}
             title="Request human support or phone callback"
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px]"
           >
             Human Desk
           </button>
@@ -567,7 +596,7 @@ export default function PepperDrawer({
             onClick={bailoutToManual}
             data-testid="bailout-manual-button"
             title="Skip AI & Explore Manually"
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px]"
           >
             Skip AI
           </button>
@@ -577,9 +606,9 @@ export default function PepperDrawer({
             onClick={closeDrawer}
             aria-label="Close Assistant Panel"
             data-testid="close-drawer-button"
-            className="rounded-lg p-2 text-white/60 hover:bg-white/5 hover:text-white transition-colors touch-press min-h-[40px] min-w-[40px] flex items-center justify-center"
+            className="rounded-none p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-xl">close</span>
+            <X weight="bold" className="h-4 w-4" />
           </button>
         </div>
       </header>
@@ -587,9 +616,9 @@ export default function PepperDrawer({
       {/* Statutory Assistant Notice Banner */}
       <div
         data-testid="assistant-cage-disclaimer-banner"
-        className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/[0.07] px-4 py-2 text-[11px] text-amber-200"
+        className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground"
       >
-        <span className="material-symbols-outlined text-[14px] text-amber-300 shrink-0">info</span>
+        <Info weight="bold" className="h-3.5 w-3.5 shrink-0 text-foreground" />
         <span>automated assistant — answers may be inaccurate — not advice</span>
       </div>
 
@@ -653,15 +682,15 @@ export default function PepperDrawer({
             className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
           >
             {/* Welcoming Mission Banner - Clean, Crisp, No-Slop */}
-            <div className="rounded-2xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.03] p-4 text-xs leading-relaxed space-y-2">
+            <div className="rounded-none border border-border bg-card p-4 text-xs leading-relaxed space-y-2 shadow-sm ring-1 ring-foreground/10">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[color:var(--color-primary)]">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-foreground">
                   Submit Request
                 </span>
-                <span className="h-1 w-1 rounded-full bg-white/40" />
-                <span className="text-white/60">PaperWorking Service Desk</span>
+                <span className="h-1 w-1 rounded-none bg-muted-foreground/40" />
+                <span className="text-muted-foreground">PaperWorking Service Desk</span>
               </div>
-              <p className="text-white/80 font-medium">
+              <p className="text-foreground/90 font-medium">
                 Report a bug or even make a feature request. Our goal is to have the very best customer service.
                 PaperWorking is not just Prop-Tech, it is a group of people who have sought to service the Real
                 Estate Investment community and give them powerful tools. Report any bug you find or missing feature.
@@ -671,29 +700,27 @@ export default function PepperDrawer({
 
             {/* The Closure & Expectations (The Last Message) */}
             {submittedTicket && (
-              <div className="rounded-2xl border border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 p-4 space-y-3 animate-in zoom-in-95 duration-200">
+              <div className="rounded-none border border-border bg-card p-4 space-y-3 animate-in zoom-in-95 duration-200 shadow-sm ring-1 ring-foreground/10">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-[color:var(--color-primary)]">
-                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                    <CheckCircle weight="bold" className="h-4 w-4" />
                     {submittedTicket.type} Confirmed
                   </span>
-                  <span className="font-mono text-[11px] font-bold text-white bg-black/60 px-2.5 py-1 rounded-md border border-white/10">
+                  <span className="font-mono text-[11px] font-bold text-foreground bg-muted px-2.5 py-1 rounded-none border border-border">
                     {submittedTicket.id}
                   </span>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-white/90">
-                  <p className="font-medium text-white">{submittedTicket.title}</p>
-                  <p className="text-[11px] text-white/70 leading-relaxed">
+                <div className="space-y-1.5 text-xs text-foreground/90">
+                  <p className="font-medium text-foreground">{submittedTicket.title}</p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
                     Your request didn&apos;t vanish into a black hole—it is routed directly into engineering review.
                   </p>
                 </div>
 
                 {/* Timeframe Expectations */}
-                <div className="rounded-xl border border-white/10 bg-black/30 p-2.5 text-[11px] flex items-center gap-2 text-white/80">
-                  <span className="material-symbols-outlined text-sm text-[color:var(--color-primary)] shrink-0">
-                    schedule
-                  </span>
+                <div className="rounded-none border border-border bg-muted/40 p-2.5 text-[11px] flex items-center gap-2 text-foreground">
+                  <Clock weight="bold" className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <span>{submittedTicket.reviewWindow}</span>
                 </div>
 
@@ -701,10 +728,10 @@ export default function PepperDrawer({
                 <div className="pt-1 flex items-center justify-between">
                   <Link
                     href={submittedTicket.trackingUrl}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--color-primary)] hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-foreground hover:underline min-h-[44px]"
                   >
                     <span>Track Status & Public Roadmap</span>
-                    <span className="material-symbols-outlined text-xs">north_east</span>
+                    <ArrowUpRight weight="bold" className="h-3.5 w-3.5" />
                   </Link>
 
                   <button
@@ -715,7 +742,7 @@ export default function PepperDrawer({
                       setBugStep(1);
                       setFeatureStep(1);
                     }}
-                    className="text-xs text-white/50 hover:text-white transition-colors"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-2"
                   >
                     Done
                   </button>
@@ -726,9 +753,9 @@ export default function PepperDrawer({
             {/* The Core Routing (The First Message) - Binary Choice Quick Replies */}
             {conversationalFlow === 'idle' && !submittedTicket && (
               <div className="space-y-3 pt-1" data-testid="intent-chips-container">
-                <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs text-white/90">
-                  <p className="font-semibold text-white">How can we help your investment workflow today?</p>
-                  <p className="text-[11px] text-white/50 mt-0.5">Select an option below to get started immediately.</p>
+                <div className="rounded-none border border-border bg-muted/30 p-3 text-xs text-foreground">
+                  <p className="font-semibold text-foreground">How can we help your investment workflow today?</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Select an option below to get started immediately.</p>
                 </div>
 
                 {/* Primary Binary Quick-Reply Buttons */}
@@ -740,17 +767,17 @@ export default function PepperDrawer({
                       setBugStep(1);
                       setDeflectionTip(null);
                     }}
-                    className="flex flex-col items-start gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-left transition-all hover:border-rose-500 hover:bg-rose-500/20 active:scale-[0.98] group"
+                    className="flex flex-col items-start gap-2 rounded-none border border-border bg-card p-4 text-left transition-all hover:bg-accent active:scale-[0.98] group min-h-[44px] shadow-sm ring-1 ring-foreground/10"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/25 text-rose-300 text-lg">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-none bg-destructive/10 text-destructive text-lg">
                       🐛
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-white group-hover:text-rose-200">
+                      <div className="text-sm font-bold text-foreground">
                         Bug Report 🐛
                       </div>
                       <span className="sr-only">Report a Bug</span>
-                      <div className="text-[11px] text-rose-300/80 mt-0.5">Something went wrong</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">Something went wrong</div>
                     </div>
                   </button>
 
@@ -761,41 +788,41 @@ export default function PepperDrawer({
                       setFeatureStep(1);
                       setDeflectionTip(null);
                     }}
-                    className="flex flex-col items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-left transition-all hover:border-amber-500 hover:bg-amber-500/20 active:scale-[0.98] group"
+                    className="flex flex-col items-start gap-2 rounded-none border border-border bg-card p-4 text-left transition-all hover:bg-accent active:scale-[0.98] group min-h-[44px] shadow-sm ring-1 ring-foreground/10"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/25 text-amber-300 text-lg">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-none bg-muted text-foreground text-lg">
                       💡
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-white group-hover:text-amber-200">
+                      <div className="text-sm font-bold text-foreground">
                         Feature Request 💡
                       </div>
                       <span className="sr-only">Feature Request</span>
-                      <div className="text-[11px] text-amber-300/80 mt-0.5">Dinner on us! 🍽️</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">Dinner on us! 🍽️</div>
                     </div>
                   </button>
                 </div>
 
                 {/* Secondary Discreet Options */}
-                <div className="flex items-center justify-center gap-4 pt-2 border-t border-white/5">
+                <div className="flex items-center justify-center gap-4 pt-2 border-t border-border">
                   <button
                     type="button"
                     onClick={() => setConversationalFlow('chat')}
-                    className="text-xs text-white/50 hover:text-white transition-colors flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-white/5"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-1 px-2 rounded-none hover:bg-muted min-h-[44px]"
                   >
-                    <span className="material-symbols-outlined text-sm">help</span>
+                    <Question weight="bold" className="h-3.5 w-3.5" />
                     <span>Ask a Question</span>
                   </button>
-                  <span className="text-white/20">•</span>
+                  <span className="text-muted-foreground/30">•</span>
                   <button
                     type="button"
                     onClick={() => {
                       setActiveTab('escalation');
                       setConversationalFlow('escalation');
                     }}
-                    className="text-xs text-white/50 hover:text-white transition-colors flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-white/5"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-1 px-2 rounded-none hover:bg-muted min-h-[44px]"
                   >
-                    <span className="material-symbols-outlined text-sm">phone_in_talk</span>
+                    <PhoneCall weight="bold" className="h-3.5 w-3.5" />
                     <span>Talk to Support</span>
                   </button>
                 </div>
@@ -854,12 +881,12 @@ export default function PepperDrawer({
 
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { label: 'Login', icon: 'login', mod: 'Billing / Account' },
-                        { label: 'Payment', icon: 'credit_card', mod: 'Billing / Account' },
-                        { label: 'Display issue', icon: 'desktop_windows', mod: 'Deal Calculator' },
-                        { label: 'Deal Calculator', icon: 'calculate', mod: 'Deal Calculator' },
-                        { label: 'Document Vault', icon: 'folder', mod: 'Document Vault' },
-                        { label: 'Other', icon: 'help_center', mod: 'General' },
+                        { label: 'Login', icon: <Lock className="h-4 w-4" />, mod: 'Billing / Account' },
+                        { label: 'Payment', icon: <CreditCard className="h-4 w-4" />, mod: 'Billing / Account' },
+                        { label: 'Display issue', icon: <Desktop className="h-4 w-4" />, mod: 'Deal Calculator' },
+                        { label: 'Deal Calculator', icon: <Calculator className="h-4 w-4" />, mod: 'Deal Calculator' },
+                        { label: 'Document Vault', icon: <Folder className="h-4 w-4" />, mod: 'Document Vault' },
+                        { label: 'Other', icon: <Question className="h-4 w-4" />, mod: 'General' },
                       ].map((cat) => (
                         <button
                           key={cat.label}
@@ -869,13 +896,13 @@ export default function PepperDrawer({
                             setSelectedModule(cat.mod);
                             setBugStep(2);
                           }}
-                          className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-all active:scale-[0.98] ${
+                          className={`flex items-center gap-2.5 rounded-none border p-3 text-left transition-all active:scale-[0.98] min-h-[44px] ${
                             bugCategory === cat.label
-                              ? 'border-rose-500 bg-rose-500/20 text-white font-bold'
-                              : 'border-white/10 bg-[#16141a] text-white/80 hover:border-white/20 hover:bg-[#1f1c24]'
+                              ? 'border-destructive bg-destructive/10 text-foreground font-bold'
+                              : 'border-border bg-card text-foreground/80 hover:border-foreground/30 hover:bg-accent'
                           }`}
                         >
-                          <span className="material-symbols-outlined text-rose-400 text-lg">{cat.icon}</span>
+                          <span className="text-destructive shrink-0">{cat.icon}</span>
                           <span className="text-xs">{cat.label}</span>
                         </button>
                       ))}
@@ -984,12 +1011,12 @@ export default function PepperDrawer({
                 {/* STEP 3: Technical Context (Auto-detected behind the scenes) */}
                 {bugStep === 3 && (
                   <div className="space-y-3 animate-in fade-in">
-                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
-                      <div className="flex items-center gap-1.5 font-semibold text-white text-sm mb-1">
-                        <span className="material-symbols-outlined text-emerald-400 text-base">auto_fix_high</span>
+                    <div className="rounded-none border border-border bg-card p-3.5 text-xs text-foreground shadow-sm ring-1 ring-foreground/10">
+                      <div className="flex items-center gap-1.5 font-semibold text-foreground text-sm mb-1">
+                        <Sparkle weight="bold" className="h-4 w-4 text-foreground" />
                         <span>Auto-Detected Behind the Scenes</span>
                       </div>
-                      <p className="text-white/60 leading-relaxed text-[11px]">
+                      <p className="text-muted-foreground leading-relaxed text-[11px]">
                         The best UX is what you don&apos;t have to type. We attached your account tier, screen route, device, and recent console logs automatically.
                       </p>
                     </div>
@@ -997,35 +1024,35 @@ export default function PepperDrawer({
                     {(() => {
                       const diag = bugDraft?.diagnostics || getClientDiagnostics();
                       return (
-                        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 space-y-2 text-xs">
-                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                            <span className="text-white/50 text-[11px]">Account & Tier</span>
-                            <span className="font-mono text-white text-[11px] capitalize">
+                        <div className="rounded-none border border-border bg-muted/40 p-3.5 space-y-2 text-xs">
+                          <div className="flex items-center justify-between border-b border-border pb-1.5">
+                            <span className="text-muted-foreground text-[11px]">Account & Tier</span>
+                            <span className="font-mono text-foreground text-[11px] capitalize">
                               {userName} ({accountType})
                             </span>
                           </div>
-                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                            <span className="text-white/50 text-[11px]">Current Screen / URL</span>
-                            <span className="font-mono text-[color:var(--color-primary)] text-[11px] truncate max-w-[200px]">
+                          <div className="flex items-center justify-between border-b border-border pb-1.5">
+                            <span className="text-muted-foreground text-[11px]">Current Screen / URL</span>
+                            <span className="font-mono text-foreground text-[11px] truncate max-w-[200px]">
                               {pathname}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                            <span className="text-white/50 text-[11px]">Browser & OS</span>
-                            <span className="font-mono text-white text-[11px] truncate max-w-[200px]">
+                          <div className="flex items-center justify-between border-b border-border pb-1.5">
+                            <span className="text-muted-foreground text-[11px]">Browser & OS</span>
+                            <span className="font-mono text-foreground text-[11px] truncate max-w-[200px]">
                               {diag.platform} • {diag.appVersion}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                            <span className="text-white/50 text-[11px]">Viewport Size</span>
-                            <span className="font-mono text-white text-[11px]">
+                          <div className="flex items-center justify-between border-b border-border pb-1.5">
+                            <span className="text-muted-foreground text-[11px]">Viewport Size</span>
+                            <span className="font-mono text-foreground text-[11px]">
                               {diag.viewport.width} × {diag.viewport.height}
                             </span>
                           </div>
                           <div className="flex items-center justify-between pt-0.5">
-                            <span className="text-white/50 text-[11px]">Recent Console Logs</span>
-                            <span className="font-mono text-emerald-400 text-[11px] flex items-center gap-1">
-                              <span className="material-symbols-outlined text-xs">check_circle</span>
+                            <span className="text-muted-foreground text-[11px]">Recent Console Logs</span>
+                            <span className="font-mono text-foreground text-[11px] flex items-center gap-1">
+                              <CheckCircle weight="bold" className="h-3.5 w-3.5" />
                               {diag.recentErrors?.length || 0} error logs captured
                             </span>
                           </div>
@@ -1035,7 +1062,7 @@ export default function PepperDrawer({
 
                     {/* Severity Selection */}
                     <div>
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
                         Urgency Level:
                       </span>
                       <div className="grid grid-cols-4 gap-1.5">
@@ -1046,14 +1073,10 @@ export default function PepperDrawer({
                             onClick={() => {
                               if (bugDraft) setBugDraft({ ...bugDraft, severity: s });
                             }}
-                            className={`rounded-lg py-1.5 text-[10px] font-bold uppercase transition-colors ${
+                            className={`rounded-none py-1.5 text-[10px] font-bold uppercase transition-colors min-h-[44px] ${
                               (bugDraft?.severity || 'medium') === s
-                                ? s === 'critical'
-                                  ? 'bg-rose-600 text-white'
-                                  : s === 'high'
-                                  ? 'bg-amber-600 text-white'
-                                  : 'bg-[color:var(--color-primary)] text-black'
-                                : 'bg-white/5 text-white/50 hover:text-white border border-white/10'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted/40 text-muted-foreground hover:text-foreground border border-border'
                             }`}
                           >
                             {s}
@@ -1065,7 +1088,7 @@ export default function PepperDrawer({
                     <button
                       type="button"
                       onClick={() => setBugStep(4)}
-                      className="w-full rounded-xl bg-rose-500 py-2.5 text-xs font-bold text-white shadow hover:bg-rose-600 transition-colors"
+                      className="w-full rounded-none bg-primary py-2.5 text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors min-h-[44px]"
                     >
                       Continue to Evidence & Submission →
                     </button>
@@ -1075,9 +1098,9 @@ export default function PepperDrawer({
                 {/* STEP 4: Evidence (Crucial: Drag & drop, screenshot upload, or 15s recording) */}
                 {bugStep === 4 && (
                   <div className="space-y-3 animate-in fade-in">
-                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
-                      <p className="font-semibold text-white text-sm mb-1">Attach Evidence</p>
-                      <p className="text-white/60 leading-relaxed text-[11px]">
+                    <div className="rounded-none border border-border bg-card p-3.5 text-xs text-foreground shadow-sm ring-1 ring-foreground/10">
+                      <p className="font-semibold text-foreground text-sm mb-1">Attach Evidence</p>
+                      <p className="text-muted-foreground leading-relaxed text-[11px]">
                         Screenshots or a 15-second screen recording help us fix bugs 3x faster.
                       </p>
                     </div>
@@ -1085,31 +1108,31 @@ export default function PepperDrawer({
                     {/* Drag-and-drop / upload target */}
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className={`cursor-pointer rounded-2xl border-2 border-dashed p-5 text-center transition-all ${
+                      className={`cursor-pointer rounded-none border border-dashed p-5 text-center transition-all ${
                         attachedMedia
-                          ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
-                          : 'border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-card hover:border-foreground/30 hover:bg-accent/40'
                       }`}
                     >
                       {attachedMedia ? (
                         <div className="space-y-1">
-                          <span className="material-symbols-outlined text-2xl text-[color:var(--color-primary)]">
-                            {attachedMedia.type === 'video' ? 'videocam' : 'image'}
-                          </span>
-                          <div className="text-xs font-bold text-white truncate max-w-[260px] mx-auto">
+                          {attachedMedia.type === 'video' ? (
+                            <VideoCamera weight="bold" className="h-6 w-6 text-foreground mx-auto" />
+                          ) : (
+                            <Image weight="bold" className="h-6 w-6 text-foreground mx-auto" />
+                          )}
+                          <div className="text-xs font-bold text-foreground truncate max-w-[260px] mx-auto">
                             {attachedMedia.name}
                           </div>
-                          <div className="text-[10px] text-white/50">Click or paste another to replace</div>
+                          <div className="text-[10px] text-muted-foreground">Click or paste another to replace</div>
                         </div>
                       ) : (
                         <div className="space-y-1.5">
-                          <span className="material-symbols-outlined text-2xl text-white/40">
-                            cloud_upload
-                          </span>
-                          <div className="text-xs font-semibold text-white">
+                          <UploadSimple weight="bold" className="h-6 w-6 text-muted-foreground mx-auto" />
+                          <div className="text-xs font-semibold text-foreground">
                             Click to upload or drag & drop screenshot
                           </div>
-                          <div className="text-[10px] text-white/40">
+                          <div className="text-[10px] text-muted-foreground">
                             PNG, JPG, or WebM (or paste directly with Cmd+V)
                           </div>
                         </div>
@@ -1117,23 +1140,25 @@ export default function PepperDrawer({
                     </div>
 
                     {/* Screen Recording Option */}
-                    <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#16141a] p-3">
+                    <div className="flex items-center justify-between rounded-none border border-border bg-card p-3 shadow-sm ring-1 ring-foreground/10">
                       <div className="text-xs">
-                        <div className="font-semibold text-white">Record Screen (15s)</div>
-                        <div className="text-[10px] text-white/50">Capture bug reproduction live</div>
+                        <div className="font-semibold text-foreground">Record Screen (15s)</div>
+                        <div className="text-[10px] text-muted-foreground">Capture bug reproduction live</div>
                       </div>
                       <button
                         type="button"
                         onClick={handleRecordScreen}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                        className={`rounded-none px-3 py-1.5 text-xs font-bold transition-colors flex items-center gap-1.5 min-h-[44px] ${
                           isRecording
-                            ? 'bg-rose-600 text-white animate-pulse'
-                            : 'bg-white/10 text-white hover:bg-white/20'
+                            ? 'bg-destructive text-destructive-foreground animate-pulse'
+                            : 'bg-muted text-foreground hover:bg-accent'
                         }`}
                       >
-                        <span className="material-symbols-outlined text-sm">
-                          {isRecording ? 'stop_circle' : 'videocam'}
-                        </span>
+                        {isRecording ? (
+                          <StopCircle weight="bold" className="h-4 w-4" />
+                        ) : (
+                          <VideoCamera weight="bold" className="h-4 w-4" />
+                        )}
                         <span>{isRecording ? `${recordingSeconds}s` : 'Record'}</span>
                       </button>
                     </div>
@@ -1143,14 +1168,14 @@ export default function PepperDrawer({
                       type="button"
                       onClick={handleConfirmBugSubmit}
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-rose-500 py-3 text-xs font-bold text-white shadow-lg hover:bg-rose-600 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 rounded-none bg-primary py-3 text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50 min-h-[44px]"
                     >
                       {isSubmitting ? (
                         <span>Submitting Ticket...</span>
                       ) : (
                         <>
                           <span>Submit Bug Report Ticket</span>
-                          <span className="material-symbols-outlined text-sm">send</span>
+                          <PaperPlaneTilt weight="bold" className="h-4 w-4" />
                         </>
                       )}
                     </button>
@@ -1361,9 +1386,9 @@ export default function PepperDrawer({
                 {/* STEP 4: Evidence (Optional image upload for sketches or examples) */}
                 {featureStep === 4 && (
                   <div className="space-y-3 animate-in fade-in">
-                    <div className="rounded-xl border border-white/10 bg-[#16141a] p-3.5 text-xs text-white/90">
-                      <p className="font-semibold text-white text-sm mb-1">Sketches or Examples (Optional)</p>
-                      <p className="text-white/60 leading-relaxed text-[11px]">
+                    <div className="rounded-none border border-border bg-card p-3.5 text-xs text-foreground shadow-sm ring-1 ring-foreground/10">
+                      <p className="font-semibold text-foreground text-sm mb-1">Sketches or Examples (Optional)</p>
+                      <p className="text-muted-foreground leading-relaxed text-[11px]">
                         Have a mockup, wireframe, or screenshot from another tool? Attach it here to show us your vision.
                       </p>
                     </div>
@@ -1371,31 +1396,27 @@ export default function PepperDrawer({
                     {/* Upload Target */}
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className={`cursor-pointer rounded-2xl border-2 border-dashed p-5 text-center transition-all ${
+                      className={`cursor-pointer rounded-none border-2 border-dashed p-5 text-center transition-all ${
                         attachedMedia
-                          ? 'border-amber-400 bg-amber-400/10'
-                          : 'border-white/15 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-card hover:border-foreground/30 hover:bg-accent/40'
                       }`}
                     >
                       {attachedMedia ? (
                         <div className="space-y-1">
-                          <span className="material-symbols-outlined text-2xl text-amber-400">
-                            image
-                          </span>
-                          <div className="text-xs font-bold text-white truncate max-w-[260px] mx-auto">
+                          <Image weight="bold" className="h-6 w-6 text-foreground mx-auto" />
+                          <div className="text-xs font-bold text-foreground truncate max-w-[260px] mx-auto">
                             {attachedMedia.name}
                           </div>
-                          <div className="text-[10px] text-white/50">Click to change attachment</div>
+                          <div className="text-[10px] text-muted-foreground">Click to change attachment</div>
                         </div>
                       ) : (
                         <div className="space-y-1.5">
-                          <span className="material-symbols-outlined text-2xl text-white/40">
-                            add_photo_alternate
-                          </span>
-                          <div className="text-xs font-semibold text-white">
+                          <Camera weight="bold" className="h-6 w-6 text-muted-foreground mx-auto" />
+                          <div className="text-xs font-semibold text-foreground">
                             Upload sketch, mockup, or spreadsheet example
                           </div>
-                          <div className="text-[10px] text-white/40">PNG, JPG, or PDF snapshot (optional)</div>
+                          <div className="text-[10px] text-muted-foreground">PNG, JPG, or PDF snapshot (optional)</div>
                         </div>
                       )}
                     </div>
@@ -1405,14 +1426,14 @@ export default function PepperDrawer({
                       type="button"
                       onClick={handleConfirmFeatureSubmit}
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-400 py-3 text-xs font-bold text-black shadow-lg hover:bg-amber-300 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 rounded-none bg-primary py-3 text-xs font-bold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50 min-h-[44px]"
                     >
                       {isSubmitting ? (
                         <span>Submitting Feature Request...</span>
                       ) : (
                         <>
                           <span>Submit Proposal & Claim Dinner Pledge 🍽️</span>
-                          <span className="material-symbols-outlined text-sm">restaurant</span>
+                          <ForkKnife weight="bold" className="h-4 w-4" />
                         </>
                       )}
                     </button>
@@ -1425,18 +1446,16 @@ export default function PepperDrawer({
             {splitViewProgress && (
               <div
                 data-testid="split-view-narration-card"
-                className="rounded-2xl border border-[color:var(--color-primary)]/30 bg-[color:var(--color-primary)]/5 p-4 shadow-lg animate-in fade-in duration-300"
+                className="rounded-none border border-border bg-card p-4 shadow-sm ring-1 ring-foreground/10 animate-in fade-in duration-300"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-primary)]">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-foreground">
                     Real Workspace Build (Step {splitViewProgress.step}/{splitViewProgress.totalSteps})
                   </span>
                   {splitViewProgress.completed ? (
-                    <span className="material-symbols-outlined text-sm text-[color:var(--color-primary)]">
-                      check_circle
-                    </span>
+                    <CheckCircle weight="bold" className="h-4 w-4 text-foreground" />
                   ) : (
-                    <span className="h-3 w-3 rounded-full border-2 border-[color:var(--color-primary)] border-t-transparent animate-spin" />
+                    <span className="h-3 w-3 rounded-none border-2 border-foreground border-t-transparent animate-spin" />
                   )}
                 </div>
                 <p className="text-xs text-white/90 font-medium">{splitViewProgress.message}</p>
@@ -1515,40 +1534,42 @@ export default function PepperDrawer({
 
           {/* Multimodal Media Attachment Preview Toolbar */}
           {attachedMedia && (
-            <div className="border-t border-white/10 bg-[#141217] px-4 py-2 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-white/90">
-                <span className="material-symbols-outlined text-base text-[color:var(--color-primary)]">
-                  {attachedMedia.type === 'video' ? 'videocam' : 'image'}
-                </span>
+            <div className="border-t border-border bg-card px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs text-foreground">
+                {attachedMedia.type === 'video' ? (
+                  <VideoCamera weight="bold" className="h-4 w-4 text-foreground" />
+                ) : (
+                  <Image weight="bold" className="h-4 w-4 text-foreground" />
+                )}
                 <span className="font-mono text-[11px] truncate max-w-[200px]">{attachedMedia.name}</span>
-                <span className="text-[10px] text-white/40">({attachedMedia.type})</span>
+                <span className="text-[10px] text-muted-foreground">({attachedMedia.type})</span>
               </div>
               <button
                 type="button"
                 onClick={() => setAttachedMedia(null)}
-                className="text-white/40 hover:text-white transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors p-1"
                 title="Remove attachment"
               >
-                <span className="material-symbols-outlined text-sm">close</span>
+                <X weight="bold" className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
           {/* Screen Recording In-Progress Banner */}
           {isRecording && (
-            <div className="border-t border-rose-500/40 bg-rose-500/15 px-4 py-2 flex items-center justify-between animate-pulse">
-              <div className="flex items-center gap-2 text-xs text-rose-200 font-semibold">
-                <span className="h-2 w-2 rounded-full bg-rose-500" />
+            <div className="border-t border-destructive/40 bg-destructive/15 px-4 py-2 flex items-center justify-between animate-pulse">
+              <div className="flex items-center gap-2 text-xs text-destructive font-semibold">
+                <span className="h-2 w-2 rounded-none bg-destructive" />
                 <span>Recording screen... ({recordingSeconds}s remaining)</span>
               </div>
-              <span className="text-[10px] text-rose-300">Click &apos;Stop sharing&apos; or wait</span>
+              <span className="text-[10px] text-destructive">Click &apos;Stop sharing&apos; or wait</span>
             </div>
           )}
 
           {/* Clean Input Toolbar with Multimodal Controls */}
           <form
             onSubmit={handleSendText}
-            className="border-t border-white/10 bg-[#121015] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+            className="border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
           >
             <div className="relative flex items-center gap-1.5">
               {/* Attachment Picker Button */}
@@ -1556,9 +1577,9 @@ export default function PepperDrawer({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 title="Attach screenshot or video"
-                className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-white/60 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center shrink-0"
+                className="rounded-none border border-border bg-card p-2.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors flex items-center justify-center shrink-0 min-h-[44px] min-w-[44px]"
               >
-                <span className="material-symbols-outlined text-lg">add_photo_alternate</span>
+                <Camera weight="bold" className="h-5 w-5" />
               </button>
 
               {/* Record Screen Button */}
@@ -1566,13 +1587,13 @@ export default function PepperDrawer({
                 type="button"
                 onClick={handleRecordScreen}
                 title="One-click 15-second screen recording"
-                className={`rounded-xl border p-2.5 transition-colors flex items-center justify-center shrink-0 ${
+                className={`rounded-none border p-2.5 transition-colors flex items-center justify-center shrink-0 min-h-[44px] min-w-[44px] ${
                   isRecording
-                    ? 'border-rose-500 bg-rose-500/20 text-rose-400 animate-pulse'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                    ? 'border-destructive bg-destructive/20 text-destructive animate-pulse'
+                    : 'border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
               >
-                <span className="material-symbols-outlined text-lg">screen_record</span>
+                <VideoCamera weight="bold" className="h-5 w-5" />
               </button>
 
               {/* Smart Expandable Text Input */}
@@ -1596,7 +1617,7 @@ export default function PepperDrawer({
                     : 'Ask anything or describe your request (Shift+Enter for new line)...'
                 }
                 data-testid="assistant-chat-input"
-                className="w-full min-h-[40px] max-h-[140px] rounded-xl border border-white/10 bg-[#1a1721] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[color:var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] resize-y leading-normal"
+                className="w-full min-h-[44px] max-h-[140px] rounded-none border border-input bg-background px-3.5 py-2.5 text-base md:text-xs text-foreground placeholder:text-muted-foreground/60 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring resize-y leading-normal"
               />
 
               {/* Send Button */}
@@ -1605,9 +1626,9 @@ export default function PepperDrawer({
                 disabled={!inputVal.trim()}
                 data-testid="send-message-button"
                 aria-label="Send Message"
-                className="rounded-xl bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/30 p-2.5 text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/25 disabled:opacity-30 transition-all shrink-0 flex items-center justify-center self-end mb-0.5"
+                className="rounded-none bg-primary border border-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-30 transition-all shrink-0 flex items-center justify-center self-end mb-0.5 min-h-[44px] min-w-[44px]"
               >
-                <span className="material-symbols-outlined text-lg">send</span>
+                <PaperPlaneTilt weight="bold" className="h-5 w-5" />
               </button>
             </div>
           </form>
@@ -1745,15 +1766,15 @@ export default function PepperDrawer({
               <div
                 key={opt.type}
                 data-testid={`escalation-channel-${opt.type}`}
-                className={`rounded-xl border p-3.5 ${
+                className={`rounded-none border p-3.5 shadow-sm ring-1 ring-foreground/10 ${
                   opt.isUrgent
-                    ? 'border-red-500/40 bg-red-500/10'
-                    : 'border-white/10 bg-[#16141a]'
+                    ? 'border-destructive/40 bg-destructive/10'
+                    : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    {opt.isUrgent && <span className="material-symbols-outlined text-sm text-red-400">warning</span>}
+                  <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    {opt.isUrgent && <Warning weight="bold" className="h-4 w-4 text-destructive" />}
                     {opt.title}
                   </div>
                   <span

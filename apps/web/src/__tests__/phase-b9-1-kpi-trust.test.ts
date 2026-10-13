@@ -78,10 +78,10 @@ describe('phase B9.1 — UI safety wiring', () => {
       'utf8',
     );
 
-    expect(insights).toContain('trendStatus');
-    expect(insights).toContain('Demo data');
-    expect(insights).toContain('projected={metric.projected}');
-    expect(insights).toContain('recentActivityStatus');
+    expect(insights).toContain('scorecardEntries');
+    expect(insights).toContain('Project KPI engine');
+    expect(insights).toContain('Six-month trend strip');
+    expect(insights).toContain('Recent activity');
     expect(scorecard).toContain('sourceStatus');
     expect(scorecard).not.toContain('authoritative values');
   });

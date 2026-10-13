@@ -1,16 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { VendorProfileData } from '@/lib/vendor-portal/seed-data';
 import { bffFetch } from '@/lib/api/bff-fetch';
-
-const VENDOR_TYPES = [
-  'General Contractor',
-  'Property Manager',
-  'Real Estate Attorney',
-  'Inspector',
-  'Title Company',
-];
+import { CANONICAL_VENDOR_PROFESSIONS } from '@/lib/marketplace/vendor-professions';
+import { Briefcase, Check, X } from '@phosphor-icons/react';
 
 export default function VendorProfilePanel() {
   const [profile, setProfile] = useState<VendorProfileData | null>(null);
@@ -18,6 +12,7 @@ export default function VendorProfilePanel() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [skillsSearch, setSkillsSearch] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -52,9 +47,43 @@ export default function VendorProfilePanel() {
     setSaved(false);
   };
 
+  const toggleSkill = (skill: string) => {
+    if (!profile) return;
+    const current = profile.vendorSkills ?? [];
+    let updated: string[];
+    if (current.includes(skill)) {
+      updated = current.filter((s) => s !== skill);
+    } else {
+      if (current.length >= 3) return;
+      updated = [...current, skill];
+    }
+    setProfile({
+      ...profile,
+      vendorSkills: updated,
+      type: updated[0] || profile.type,
+      specialties: updated,
+    });
+    setSaved(false);
+  };
+
+  const filteredProfessions = useMemo(() => {
+    if (!skillsSearch.trim()) return CANONICAL_VENDOR_PROFESSIONS;
+    const q = skillsSearch.toLowerCase().trim();
+    return CANONICAL_VENDOR_PROFESSIONS.filter((prof) => prof.toLowerCase().includes(q));
+  }, [skillsSearch]);
+
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!profile) return;
+
+    if (!profile.vendorSkills || profile.vendorSkills.length === 0) {
+      setError('Please select between 1 and 3 professional skills to post on the Vendor Directory.');
+      return;
+    }
+    if (profile.vendorSkills.length > 3) {
+      setError('You can select a maximum of 3 professional skills.');
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -119,7 +148,7 @@ export default function VendorProfilePanel() {
         </div>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2">
+      <section>
         <label className="block text-sm">
           <span className="text-white/65">Company name</span>
           <input
@@ -128,20 +157,83 @@ export default function VendorProfilePanel() {
             className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
           />
         </label>
-        <label className="block text-sm">
-          <span className="text-white/65">Vendor type</span>
-          <select
-            value={profile.type}
-            onChange={(event) => updateField('type', event.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
-          >
-            {VENDOR_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+      </section>
+
+      {/* 1 to 3 Vendor Professions Selection */}
+      <section className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-white/80" />
+              <span className="text-sm font-semibold text-white">Vendor Directory Skills (1–3 Skills)</span>
+            </div>
+            <p className="text-xs text-white/60">
+              Select 1 to 3 skills to identify your trade in search engines and publish your listing on the directory.
+            </p>
+          </div>
+          <span className="text-xs text-white/80 border border-white/20 bg-white/5 px-2.5 py-1 rounded-md self-start sm:self-auto">
+            {(profile.vendorSkills ?? []).length}/3 Skills Selected
+          </span>
+        </div>
+
+        {/* Selected skills */}
+        {(profile.vendorSkills ?? []).length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            {(profile.vendorSkills ?? []).map((skill) => (
+              <span
+                key={skill}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1 text-xs text-white"
+              >
+                <span>{skill}</span>
+                <button
+                  type="button"
+                  onClick={() => toggleSkill(skill)}
+                  className="text-white/60 hover:text-white"
+                  aria-label={`Remove ${skill}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
             ))}
-          </select>
-        </label>
+          </div>
+        )}
+
+        {/* Filter input */}
+        <input
+          type="text"
+          placeholder="Filter 38 certified professions..."
+          value={skillsSearch}
+          onChange={(e) => setSkillsSearch(e.target.value)}
+          className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs text-white placeholder:text-white/40"
+        />
+
+        {/* Grid */}
+        <div className="max-h-48 overflow-y-auto rounded-lg border border-white/10 bg-black/40 p-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5">
+            {filteredProfessions.map((prof) => {
+              const isSelected = (profile.vendorSkills ?? []).includes(prof);
+              const isDisabled = !isSelected && (profile.vendorSkills ?? []).length >= 3;
+              return (
+                <button
+                  key={prof}
+                  type="button"
+                  disabled={isDisabled}
+                  onClick={() => toggleSkill(prof)}
+                  className={`flex items-center justify-between text-left px-2.5 py-1.5 text-xs rounded-lg transition ${
+                    isSelected
+                      ? 'border border-white/40 bg-white/20 text-white font-semibold'
+                      : isDisabled
+                        ? 'border border-transparent text-white/30 cursor-not-allowed opacity-40'
+                        : 'border border-white/5 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <span className="truncate">{prof}</span>
+                  {isSelected ? <Check className="h-3 w-3 text-white shrink-0 ml-1" /> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       <label className="block text-sm">

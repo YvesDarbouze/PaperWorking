@@ -19,6 +19,7 @@ import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin'
 import { verifyAppCheckHeader } from '@/lib/firebase/app-check-server';
 import { sendGridService } from '@/lib/email/sendgrid-service';
 import { ticketStore } from '@/lib/tickets/ticket-store';
+import { secureRandomCode, secureRandomHex } from '@/lib/utils/secure-id';
 
 export interface FeedbackRequestBody {
   kind: 'idea' | 'bug' | 'feature_request';
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
 
   // Generate clean tracking Ticket ID if not provided
   const prefix = kind === 'bug' ? 'PW-BUG' : kind === 'feature_request' ? 'PW-FEAT' : 'PW-IDEA';
-  const ticketId = body.ticketId || `${prefix}-${Math.floor(10000 + Math.random() * 90000)}`;
+  const ticketId = body.ticketId || `${prefix}-${secureRandomCode(10)}`;
 
   // 3. Authenticate and determine true server-side tier
   let cookieStore = null;
@@ -86,7 +87,7 @@ export async function POST(request: NextRequest) {
   } catch {
     // Outside request store (e.g. testing)
   }
-  const session = cookieStore?.get(SESSION_COOKIE)?.value || request.cookies.get(SESSION_COOKIE)?.value;
+  const session = cookieStore?.get(SESSION_COOKIE)?.value || (request as any).cookies?.get(SESSION_COOKIE)?.value;
   let isAuthenticated = false;
   let uid: string | undefined;
   let verifiedAccountType = 'guest';
@@ -99,10 +100,10 @@ export async function POST(request: NextRequest) {
       uid = verified.uid;
       verifiedAccountType =
         cookieStore?.get(ACCT_COOKIE)?.value ??
-        request.cookies.get(ACCT_COOKIE)?.value ??
+        (request as any).cookies?.get(ACCT_COOKIE)?.value ??
         verified.accountType ??
         'investor';
-      const sub = decodeSubCookie(cookieStore?.get(SUB_COOKIE)?.value || request.cookies.get(SUB_COOKIE)?.value);
+      const sub = decodeSubCookie(cookieStore?.get(SUB_COOKIE)?.value || (request as any).cookies?.get(SUB_COOKIE)?.value);
       const isInvestorOrTeam =
         verifiedAccountType === 'investor' ||
         verifiedAccountType === 'investment_team' ||
@@ -146,7 +147,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 5. Persist to Firestore /feedback collection via Firebase Admin SDK
-  let feedbackDocId = `fb-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  let feedbackDocId = `fb-${Date.now()}-${secureRandomHex(8)}`;
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();

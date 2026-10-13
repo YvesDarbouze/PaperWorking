@@ -24,3 +24,4 @@ export * from './TransactionNotificationEmails';
 export * from './TrialSummaryEmail';
 export * from './UserComposedEmail';
 export * from './WelcomeEmail';
+export * from './projectInvitationEmail';

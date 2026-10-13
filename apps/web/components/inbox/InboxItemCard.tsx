@@ -1,27 +1,45 @@
 'use client';
 
+import React from 'react';
 import type { InboxItemType, InboxThread } from '@/lib/dashboard/shell-seed';
+import {
+  ArrowsLeftRight,
+  Clock,
+  Hammer,
+  Receipt,
+  UserPlus,
+  CheckCircle,
+  Bank,
+  FileText,
+  Bell,
+  Archive,
+  Trash,
+} from '@phosphor-icons/react';
 
-function categoryInfo(type: InboxItemType): { label: string; icon: string; color: string } {
+function categoryInfo(type: InboxItemType): {
+  label: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
+  color: string;
+} {
   switch (type) {
     case 'PHASE_TRANSITION':
-      return { label: 'Phase Change', icon: 'swap_horiz', color: 'text-emerald-400' };
+      return { label: 'Phase Change', Icon: ArrowsLeftRight, color: 'text-primary' };
     case 'DEADLINE_ALERT':
-      return { label: 'Deadline', icon: 'alarm', color: 'text-amber-400' };
+      return { label: 'Deadline', Icon: Clock, color: 'text-amber-400' };
     case 'VENDOR_BID':
-      return { label: 'Vendor Bid', icon: 'engineering', color: 'text-[#ebbf85]' };
+      return { label: 'Vendor Bid', Icon: Hammer, color: 'text-foreground' };
     case 'RECEIPT_APPROVAL':
-      return { label: 'Receipt Approval', icon: 'receipt_long', color: 'text-[#7A9EAA]' };
+      return { label: 'Receipt Approval', Icon: Receipt, color: 'text-foreground' };
     case 'TEAM_INVITE':
-      return { label: 'Team', icon: 'group_add', color: 'text-[#9E9DA0]' };
+      return { label: 'Team', Icon: UserPlus, color: 'text-muted-foreground' };
     case 'TASK_COMPLETE':
-      return { label: 'Task', icon: 'check_circle', color: 'text-emerald-400' };
+      return { label: 'Task', Icon: CheckCircle, color: 'text-primary' };
     case 'INVEST_INVITE':
-      return { label: 'Investment', icon: 'account_balance', color: 'text-[#7A9EAA]' };
+      return { label: 'Investment', Icon: Bank, color: 'text-foreground' };
     case 'DOCUMENT_SIGNED':
-      return { label: 'Document', icon: 'description', color: 'text-[#7A9EAA]' };
+      return { label: 'Document', Icon: FileText, color: 'text-foreground' };
     default:
-      return { label: 'System', icon: 'notifications', color: 'text-[#9E9DA0]' };
+      return { label: 'System', Icon: Bell, color: 'text-muted-foreground' };
   }
 }
 
@@ -51,12 +69,13 @@ export default function InboxItemCard({
   onDelete: () => void;
 }) {
   const cat = categoryInfo(item.type);
+  const Icon = cat.Icon;
 
   return (
     <div
       role="button"
       tabIndex={0}
-      data-testid={`inbox-item-${item.id}`}
+      data-testid={`inbox-thread-${item.id}`}
       onClick={onSelect}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -64,43 +83,43 @@ export default function InboxItemCard({
           onSelect();
         }
       }}
-      className={`group cursor-pointer border-b border-white/5 px-4 py-3.5 transition-colors ${
-        isActive ? 'bg-white/[0.07]' : 'hover:bg-white/[0.03]'
+      className={`group cursor-pointer border-b border-border px-4 py-3.5 transition-colors ${
+        isActive ? 'bg-muted/60' : 'hover:bg-muted/30'
       }`}
     >
       <div className="flex items-start gap-3">
         <div
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#0d0a0b]/60 ${cat.color}`}
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-none border border-border bg-muted ${cat.color}`}
         >
-          <span className="material-symbols-outlined text-[18px]">{cat.icon}</span>
+          <Icon size={18} />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex items-center gap-2">
             {isUnread ? (
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-none bg-primary" />
             ) : (
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-transparent" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-none bg-transparent" />
             )}
-            <span className="truncate text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            <span className="truncate text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               {cat.label} · {item.project}
             </span>
-            <span className="ml-auto shrink-0 font-mono text-[10px] text-white/35">
+            <span className="ml-auto shrink-0 font-mono text-[10px] text-muted-foreground">
               {relativeTime(item.receivedAt)}
             </span>
           </div>
 
           <p
             className={`truncate text-sm ${
-              isUnread ? 'font-semibold text-white' : 'font-medium text-white/75'
+              isUnread ? 'font-semibold text-foreground' : 'font-medium text-foreground/80'
             }`}
           >
             {item.subject}
           </p>
-          <p className="mt-0.5 truncate text-xs text-white/45">{item.preview}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{item.preview}</p>
         </div>
 
-        <div className="flex shrink-0 gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             type="button"
             title="Archive"
@@ -108,9 +127,9 @@ export default function InboxItemCard({
               e.stopPropagation();
               onArchive();
             }}
-            className="cursor-pointer rounded-lg p-1.5 text-[#9E9DA0] hover:bg-white/10 hover:text-white"
+            className="cursor-pointer rounded-none p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground min-h-[36px] min-w-[36px] flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-[16px]">archive</span>
+            <Archive size={16} />
           </button>
           <button
             type="button"
@@ -119,9 +138,9 @@ export default function InboxItemCard({
               e.stopPropagation();
               onDelete();
             }}
-            className="cursor-pointer rounded-lg p-1.5 text-[#9E9DA0] hover:bg-white/10 hover:text-red-400"
+            className="cursor-pointer rounded-none p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive min-h-[36px] min-w-[36px] flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-[16px]">delete</span>
+            <Trash size={16} />
           </button>
         </div>
       </div>

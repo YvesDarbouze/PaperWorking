@@ -1,4 +1,5 @@
 'use client';
+import { Lock, Timer, FileText } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -62,9 +63,9 @@ export default function RateLockCard({
       expirationDate: expDate.toISOString(),
       lockPeriodDays: Number(formDays),
       pointsOrFeeAmount: Number(formPoints),
-      lenderConfirmationNumber: formConfNum.trim() || `RL-${Math.floor(10000 + Math.random() * 90000)}`,
-      agreementDocumentName: formAgreementName.trim() || 'Lender_Rate_Lock_Agreement.pdf',
-      agreementDocumentUrl: '/documents/rate_lock_agreement.pdf',
+      lenderConfirmationNumber: formConfNum.trim() || undefined,
+      agreementDocumentName: formAgreementName.trim() || undefined,
+      agreementDocumentUrl: undefined,
     };
 
     setRateLock(updated);
@@ -125,9 +126,7 @@ export default function RateLockCard({
               onClick={() => setIsEditing(true)}
               data-testid="toggle-rate-lock-btn"
             >
-              <span className="material-symbols-outlined text-[16px] mr-1.5">
-                {isLocked ? 'edit' : 'lock'}
-              </span>
+              <Lock size={16} className="mr-1.5" />
               {isLocked ? 'Modify Lock Terms' : 'Freeze & Lock Rate'}
             </Button>
           )}
@@ -145,7 +144,7 @@ export default function RateLockCard({
           }`}
         >
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">timer</span>
+            <Timer size={18} />
             <span>
               <strong>Rate Freeze Active:</strong> {countdown.daysLeft} days, {countdown.hoursLeft} hours remaining until lock expires.
             </span>
@@ -292,7 +291,7 @@ export default function RateLockCard({
             <p className="font-semibold text-white mt-0.5 flex items-center gap-1.5 truncate">
               {rateLock.agreementDocumentName ? (
                 <>
-                  <span className="material-symbols-outlined text-[14px] text-emerald-400">description</span>
+                  <FileText size={14} className="text-emerald-400" />
                   <span className="truncate">{rateLock.agreementDocumentName}</span>
                 </>
               ) : (

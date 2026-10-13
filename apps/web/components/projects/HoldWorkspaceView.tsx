@@ -29,6 +29,7 @@ import type {
 import { formatCurrency, formatPercent } from '@/lib/projects/phase-utils';
 import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
 import PropertyImageGallery from '@/components/projects/PropertyImageGallery';
+import { SlidersHorizontal, Wrench, Hammer, Bank, Megaphone, Buildings } from '@phosphor-icons/react';
 import type { AssigneeOption } from './AssignOrInviteModal';
 import {
   HoldConversationalEngine,
@@ -968,7 +969,7 @@ export default function HoldWorkspaceView({
       {/* Mode Switcher Toggle Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-neutral-800 bg-neutral-950 p-3 rounded-none">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-neutral-400 text-base">tune</span>
+          <SlidersHorizontal size={16} className="text-neutral-400" />
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
             Hold Phase Mode
           </span>
@@ -1018,7 +1019,7 @@ export default function HoldWorkspaceView({
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex items-start gap-3.5">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center border border-neutral-700 bg-neutral-900 text-white rounded-none">
-                  <span className="material-symbols-outlined text-[22px]">construction</span>
+                  <Wrench size={22} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -1112,7 +1113,7 @@ export default function HoldWorkspaceView({
                   : 'border border-transparent text-neutral-400 hover:text-white hover:bg-neutral-900/50'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">engineering</span>
+              <Hammer size={16} />
               <span>1. Renovation & Scope Tiers (SOW & Draws)</span>
             </button>
 
@@ -1126,7 +1127,7 @@ export default function HoldWorkspaceView({
                   : 'border border-transparent text-neutral-400 hover:text-white hover:bg-neutral-900/50'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">account_balance</span>
+              <Bank size={16} />
               <span>2. Carrying Costs & The 8 Pillars</span>
             </button>
 
@@ -1140,7 +1141,7 @@ export default function HoldWorkspaceView({
                   : 'border border-transparent text-neutral-400 hover:text-white hover:bg-neutral-900/50'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">campaign</span>
+              <Megaphone size={16} />
               <span>3. Marketing & Advertising Log</span>
             </button>
 
@@ -1154,7 +1155,7 @@ export default function HoldWorkspaceView({
                   : 'border border-transparent text-neutral-400 hover:text-white hover:bg-neutral-900/50'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">apartment</span>
+              <Buildings size={16} />
               <span>4. Asset Management & Permits</span>
             </button>
           </div>

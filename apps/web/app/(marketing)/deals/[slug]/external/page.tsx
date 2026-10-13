@@ -6,6 +6,15 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { decodeBroadcastToken, type BroadcastTokenPayload } from '@/lib/deals/token';
 import PrivateDealAccessGate from '@/components/marketplace/PrivateDealAccessGate';
 import { isUserSubscribed } from '@/lib/marketplace/seed-data';
+import {
+  CircleNotch,
+  Megaphone,
+  EnvelopeSimple,
+  Note,
+  CheckCircle,
+  PaperPlaneTilt,
+  ArrowRight,
+} from '@phosphor-icons/react';
 
 interface ExternalDealData {
   id: string;
@@ -187,22 +196,22 @@ export default function ExternalDealPage() {
       <main className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 pt-6 pb-12 sm:pt-8 sm:pb-14 md:pt-10 md:pb-16">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/50">
-            <span className="material-symbols-outlined animate-spin text-3xl text-foreground">
-              progress_activity
-            </span>
+            <CircleNotch className="h-8 w-8 animate-spin text-foreground" />
             <p className="mt-3 text-sm">Loading deal preview…</p>
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-center text-sm text-red-200">
+          <div className="rounded-none border border-red-500/20 bg-red-500/10 p-6 text-center text-sm text-red-200">
             {error}
           </div>
         ) : (
           <div className="space-y-6">
             {/* Broadcast or Invite Notice Banner */}
-            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs text-white/70">
-              <span className="material-symbols-outlined text-[18px] text-foreground">
-                {isBroadcast ? 'campaign' : 'mail'}
-              </span>
+            <div className="flex items-center gap-2 rounded-none border border-neutral-800 bg-neutral-900/60 px-4 py-3 text-xs text-white/70">
+              {isBroadcast ? (
+                <Megaphone className="h-4 w-4 text-foreground shrink-0" />
+              ) : (
+                <EnvelopeSimple className="h-4 w-4 text-foreground shrink-0" />
+              )}
               <span>
                 {isBroadcast
                   ? `External Deal Broadcast shared by ${senderName}`
@@ -211,7 +220,7 @@ export default function ExternalDealPage() {
             </div>
 
             {/* Deal Overview Card */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md space-y-6">
+            <div className="rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-sm space-y-6">
               <div>
                 <div className="text-xs font-bold uppercase tracking-wider text-foreground">
                   Deal Underwriting Preview
@@ -225,7 +234,7 @@ export default function ExternalDealPage() {
               </div>
 
               {/* Key Metrics Grid */}
-              <div className="grid grid-cols-2 gap-4 rounded-xl border border-white/5 bg-black/30 p-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-4 rounded-none border border-neutral-800 bg-neutral-900/40 p-4 sm:grid-cols-3">
                 <div>
                   <div className="text-[11px] font-semibold uppercase text-white/50">Purchase Price</div>
                   <div className="mt-1 text-lg font-bold text-white">{formattedPrice}</div>
@@ -242,9 +251,9 @@ export default function ExternalDealPage() {
 
               {/* Sender Note Glass Card */}
               {senderMessage && (
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-sm text-white/80">
+                <div className="rounded-none border border-neutral-800 bg-neutral-900/50 p-4 text-sm text-white/80">
                   <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-foreground mb-1.5">
-                    <span className="material-symbols-outlined text-[16px]">notes</span>
+                    <Note className="h-4 w-4" />
                     Note from {senderName}
                   </div>
                   <p className="leading-relaxed text-white/90">{senderMessage}</p>
@@ -255,7 +264,7 @@ export default function ExternalDealPage() {
               {businessCard && (
                 <div
                   data-testid="sender-business-card"
-                  className="rounded-xl border border-white/10 bg-black/40 p-4 text-xs space-y-2"
+                  className="rounded-none border border-neutral-800 bg-neutral-900/40 p-4 text-xs space-y-2"
                 >
                   <div className="font-semibold uppercase tracking-wider text-white/50 text-[10px]">
                     Lead Investor Business Card
@@ -288,7 +297,7 @@ export default function ExternalDealPage() {
               /* BROADCAST MODE: Reply Composer & Subscribe CTA (NO Decline or I'm Interested buttons) */
               <div className="space-y-6">
                 {/* Reply Composer Card */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md space-y-4">
+                <div className="rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-sm space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-base font-semibold text-white">
                       Reply to {senderName}
@@ -297,10 +306,8 @@ export default function ExternalDealPage() {
                   </div>
 
                   {replySuccess ? (
-                    <div className="rounded-xl border border-border bg-card p-4 text-center space-y-2">
-                      <span className="material-symbols-outlined text-2xl text-foreground">
-                        check_circle
-                      </span>
+                    <div className="rounded-none border border-neutral-800 bg-neutral-900/60 p-4 text-center space-y-2">
+                      <CheckCircle className="h-8 w-8 text-foreground mx-auto" />
                       <p className="text-sm font-semibold text-white">
                         Your message has been sent to {senderName}!
                       </p>
@@ -310,7 +317,7 @@ export default function ExternalDealPage() {
                       <button
                         type="button"
                         onClick={() => setReplySuccess(false)}
-                        className="mt-2 text-xs text-foreground underline hover:text-foreground/80"
+                        className="mt-2 text-xs text-foreground underline hover:text-foreground/80 min-h-[44px]"
                       >
                         Send another reply
                       </button>
@@ -318,7 +325,7 @@ export default function ExternalDealPage() {
                   ) : (
                     <form onSubmit={handleSendReply} className="space-y-4">
                       {replyError && (
-                        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">
+                        <div className="rounded-none border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">
                           {replyError}
                         </div>
                       )}
@@ -336,7 +343,7 @@ export default function ExternalDealPage() {
                           value={replySenderEmail}
                           onChange={(e) => setReplySenderEmail(e.target.value)}
                           placeholder="investor@partnerfund.com"
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white placeholder:text-white/30 focus:border-ring focus:outline-none"
+                          className="w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-base md:text-xs text-white placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none min-h-[44px]"
                         />
                       </div>
 
@@ -354,7 +361,7 @@ export default function ExternalDealPage() {
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder={`Hi ${senderName}, I saw your broadcast for ${deal.name || 'this deal'}. We would like to learn more about...`}
                           required
-                          className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 focus:border-ring focus:outline-none"
+                          className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-3 text-base md:text-xs text-white placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none"
                         />
                       </div>
 
@@ -362,18 +369,16 @@ export default function ExternalDealPage() {
                         <button
                           type="submit"
                           disabled={sendingReply || !replyText.trim()}
-                          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2 text-xs font-medium text-primary-foreground transition hover:bg-primary/80 disabled:opacity-50"
+                          className="inline-flex items-center gap-2 rounded-none bg-neutral-100 px-5 py-2 text-xs font-medium text-neutral-900 transition hover:bg-neutral-200 disabled:opacity-50 min-h-[44px]"
                         >
                           {sendingReply ? (
                             <>
-                              <span className="material-symbols-outlined animate-spin text-[16px]">
-                                progress_activity
-                              </span>
+                              <CircleNotch className="h-4 w-4 animate-spin" />
                               Sending…
                             </>
                           ) : (
                             <>
-                              <span className="material-symbols-outlined text-[16px]">send</span>
+                              <PaperPlaneTilt className="h-4 w-4" />
                               Send reply
                             </>
                           )}
@@ -384,39 +389,39 @@ export default function ExternalDealPage() {
                 </div>
 
                 {/* Subscribe CTA Block */}
-                <div className="rounded-2xl border border-border bg-card p-6 text-center space-y-3">
+                <div className="rounded-none border border-neutral-800 bg-neutral-950 p-6 text-center space-y-3 shadow-sm">
                   <h3 className="text-base font-bold text-white">
                     Unlock Full Financial Modeling &amp; Underwriting
                   </h3>
-                  <p className="text-xs text-white/70 max-w-lg mx-auto">
+                  <p className="text-xs text-neutral-400 max-w-lg mx-auto">
                     Subscribe to PaperWorking to access granular pro formas, rent roll sensitivity,
                     milestone budgets, and direct investment syndications.
                   </p>
                   <div className="pt-2">
                     <Link
                       href={`/signup?redirect=/deals/${slug}`}
-                      className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-primary-foreground transition hover:bg-primary/80 shadow-sm"
+                      className="inline-flex items-center gap-2 rounded-none bg-neutral-100 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-900 transition hover:bg-neutral-200 shadow-sm min-h-[44px]"
                     >
                       Subscribe to view full deal analysis and invest
-                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 </div>
               </div>
             ) : (
               /* INVITATION MODE: Show Decline and I'm Interested buttons */
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md space-y-4">
+              <div className="rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-sm space-y-4">
                 <h2 className="text-base font-semibold text-white">Investment Invitation Response</h2>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-neutral-400">
                   Indicate your allocation interest to {senderName} for {deal.name}.
                 </p>
 
                 {inviteStatus === 'accepted' ? (
-                  <div className="rounded-xl border border-border bg-card p-4 text-center text-sm font-semibold text-foreground">
+                  <div className="rounded-none border border-neutral-800 bg-neutral-900 p-4 text-center text-sm font-semibold text-foreground">
                     Thank you! Your interest has been submitted to {senderName}.
                   </div>
                 ) : inviteStatus === 'declined' ? (
-                  <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-white/60">
+                  <div className="rounded-none border border-neutral-800 bg-neutral-900 p-4 text-center text-sm text-neutral-400">
                     You have declined this investment invitation.
                   </div>
                 ) : (
@@ -424,14 +429,14 @@ export default function ExternalDealPage() {
                     <button
                       type="button"
                       onClick={() => setInviteStatus('declined')}
-                      className="w-full sm:w-auto rounded-xl border border-white/10 px-5 py-2.5 text-xs font-semibold text-white/70 hover:bg-white/5 transition"
+                      className="w-full sm:w-auto rounded-none border border-neutral-800 px-5 py-2.5 text-xs font-semibold text-neutral-300 hover:bg-neutral-900 transition min-h-[44px]"
                     >
                       Decline
                     </button>
                     <button
                       type="button"
                       onClick={() => setInviteStatus('accepted')}
-                      className="w-full sm:w-auto rounded-xl bg-primary px-6 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/80 transition"
+                      className="w-full sm:w-auto rounded-none bg-neutral-100 px-6 py-2 text-xs font-semibold text-neutral-900 hover:bg-neutral-200 transition min-h-[44px]"
                     >
                       I&apos;m Interested
                     </button>

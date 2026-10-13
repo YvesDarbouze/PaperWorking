@@ -42,9 +42,9 @@ test.describe('Pricing & Network & Permissions E2E tests', () => {
     const heading = page.locator('h2', { hasText: 'Come for the Tools. Stay for the Network.' });
     await expect(heading).toBeVisible();
     
-    // Assert presence of Deal Marketplace and Vendor Marketplace content
+    // Assert presence of Deal Marketplace and Vendor Directory content
     await expect(page.locator('h3', { hasText: 'The Deal Marketplace' })).toBeVisible();
-    await expect(page.locator('h3', { hasText: 'The Vendor Marketplace' })).toBeVisible();
+    await expect(page.locator('h3', { hasText: 'The Vendor Directory' })).toBeVisible();
     
     // Assert CTAs
     await expect(page.locator('text=Browse Deal Marketplace')).toBeVisible();
@@ -92,5 +92,15 @@ test.describe('Pricing & Network & Permissions E2E tests', () => {
     expect(teamBox!.y).toBeGreaterThan(investorBox!.y + investorBox!.height - 15);
     // vendorCard should be below teamCard
     expect(vendorBox!.y).toBeGreaterThan(teamBox!.y + teamBox!.height - 15);
+  });
+
+  test('should display common supported roles under Vendor tier', async ({ page }) => {
+    const vendorCard = page.locator('#plan-vendor');
+    await expect(vendorCard).toBeVisible();
+    await expect(vendorCard.locator('text=Common Most Needed Roles:')).toBeVisible();
+    await expect(vendorCard.locator('text=Real Estate Broker / Agent')).toBeVisible();
+    await expect(vendorCard.locator('text=General Contractor')).toBeVisible();
+    await expect(vendorCard.locator('text=Real Estate Attorney')).toBeVisible();
+    await expect(vendorCard.locator('text=Home Inspector')).toBeVisible();
   });
 });

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { CheckCircle, Sliders, Check, Warning, XCircle } from '@phosphor-icons/react';
 import type { PurchaseCriteriaResult, PurchaseCriteriaInputs } from '@paperworking/financial-engine';
 
 interface PurchaseCriteriaCardProps {
@@ -40,14 +41,12 @@ export default function PurchaseCriteriaCard({
   return (
     <div
       data-testid="purchase-criteria-card"
-      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+      className="rounded-none border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-3">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-white/70 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-emerald-400">
-              verified
-            </span>
+            <CheckCircle className="h-4 w-4 text-emerald-400" />
             <span>Purchase Criteria Screening (Buy Box Scorecard)</span>
           </h2>
           <p className="text-[11px] text-white/50 mt-0.5">
@@ -57,18 +56,16 @@ export default function PurchaseCriteriaCard({
         <button
           type="button"
           onClick={() => setShowConfig(!showConfig)}
-          className="text-xs font-semibold text-[color:var(--color-primary)] hover:underline flex items-center gap-1"
+          className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 min-h-[44px]"
         >
           <span>{showConfig ? 'Done' : 'Edit Criteria'}</span>
-          <span className="material-symbols-outlined text-[14px]">
-            {showConfig ? 'check' : 'tune'}
-          </span>
+          {showConfig ? <Check className="h-3.5 w-3.5" /> : <Sliders className="h-3.5 w-3.5" />}
         </button>
       </div>
 
       {/* Threshold Configuration Drawer */}
       {showConfig && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/30 text-xs animate-in fade-in duration-150">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-3.5 rounded-none border border-white/10 bg-black/30 text-xs animate-in fade-in duration-150">
           <div>
             <label htmlFor="criteria-min-coc-pct" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Min CoC (%)
@@ -79,7 +76,7 @@ export default function PurchaseCriteriaCard({
               step="0.5"
               value={criteria.minCashOnCashPct ?? 8.0}
               onChange={(e) => handleUpdate('minCashOnCashPct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold text-base md:text-xs focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -92,7 +89,7 @@ export default function PurchaseCriteriaCard({
               step="0.05"
               value={criteria.minDscr ?? 1.25}
               onChange={(e) => handleUpdate('minDscr', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold text-base md:text-xs focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -105,7 +102,7 @@ export default function PurchaseCriteriaCard({
               step="0.25"
               value={criteria.minCapRatePct ?? 6.0}
               onChange={(e) => handleUpdate('minCapRatePct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold text-base md:text-xs focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -118,7 +115,7 @@ export default function PurchaseCriteriaCard({
               step="5000"
               value={criteria.minFlipProfit ?? 30000}
               onChange={(e) => handleUpdate('minFlipProfit', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold text-base md:text-xs focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -131,7 +128,7 @@ export default function PurchaseCriteriaCard({
               step="5"
               value={criteria.maxLtvPct ?? 80.0}
               onChange={(e) => handleUpdate('maxLtvPct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-white font-mono font-semibold text-base md:text-xs focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
@@ -140,15 +137,15 @@ export default function PurchaseCriteriaCard({
       {/* Overall Status Badge */}
       {result && (
         <div className="space-y-3">
-          <div className={`flex items-center justify-between rounded-xl border p-3.5 ${statusColor}`}>
+          <div className={`flex items-center justify-between rounded-none border p-3.5 ${statusColor}`}>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px]">
-                {result.overallStatus === 'GREEN_LIGHT'
-                  ? 'check_circle'
-                  : result.overallStatus === 'YELLOW_WARNING'
-                    ? 'warning'
-                    : 'cancel'}
-              </span>
+              {result.overallStatus === 'GREEN_LIGHT' ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : result.overallStatus === 'YELLOW_WARNING' ? (
+                <Warning className="h-5 w-5" />
+              ) : (
+                <XCircle className="h-5 w-5" />
+              )}
               <span className="text-xs font-extrabold tracking-wider">{statusLabel}</span>
             </div>
             <span className="text-[11px] font-mono font-bold">
@@ -165,8 +162,6 @@ export default function PurchaseCriteriaCard({
                   : item.status === 'warn'
                     ? 'border-amber-500/20 bg-amber-500/5'
                     : 'border-red-500/20 bg-red-500/5';
-              const itemIcon =
-                item.status === 'pass' ? 'check_circle' : item.status === 'warn' ? 'error' : 'cancel';
               const itemIconColor =
                 item.status === 'pass' ? 'text-emerald-400' : item.status === 'warn' ? 'text-amber-400' : 'text-red-400';
 
@@ -174,13 +169,17 @@ export default function PurchaseCriteriaCard({
                 <div
                   key={item.id}
                   data-testid="criteria-status-chip"
-                  className={`rounded-xl border p-3 flex flex-col justify-between ${itemBorder}`}
+                  className={`rounded-none border p-3 flex flex-col justify-between ${itemBorder}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className="font-semibold text-white/90">{item.name}</span>
-                    <span className={`material-symbols-outlined text-[16px] ${itemIconColor}`}>
-                      {itemIcon}
-                    </span>
+                    {item.status === 'pass' ? (
+                      <CheckCircle className={`h-4 w-4 shrink-0 ${itemIconColor}`} />
+                    ) : item.status === 'warn' ? (
+                      <Warning className={`h-4 w-4 shrink-0 ${itemIconColor}`} />
+                    ) : (
+                      <XCircle className={`h-4 w-4 shrink-0 ${itemIconColor}`} />
+                    )}
                   </div>
                   <div className="mt-1 flex items-center justify-between text-[11px] text-white/60 font-mono">
                     <span>Actual: <strong className="text-white">{item.actual}</strong></span>

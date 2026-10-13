@@ -2,6 +2,27 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Archive,
+  ArrowBendUpLeft,
+  ArrowLeft,
+  ArrowUpRight,
+  Checks,
+  DotsThreeVertical,
+  DownloadSimple,
+  EnvelopeOpen,
+  EnvelopeSimple,
+  EnvelopeSimpleOpen,
+  FileText,
+  Gavel,
+  MagnifyingGlass,
+  PencilSimple,
+  Plus,
+  Storefront,
+  Trash,
+  Tray,
+  Wrench,
+} from '@phosphor-icons/react';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import InboxItemCard from '@/components/inbox/InboxItemCard';
 import InboxTabs from '@/components/inbox/InboxTabs';
@@ -55,17 +76,17 @@ function NotifMoreMenu({
         type="button"
         id="notif-more-menu-trigger"
         onClick={() => setOpen((v) => !v)}
-        className="cursor-pointer rounded-lg p-2 text-[#9E9DA0] transition-colors hover:bg-white/5"
+        className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
         aria-label="Notification actions"
         aria-expanded={open}
       >
-        <span className="material-symbols-outlined">more_vert</span>
+        <DotsThreeVertical weight="bold" className="h-4 w-4" />
       </button>
       {open ? (
         <div
           id="notif-more-menu"
           role="menu"
-          className="absolute right-0 top-full z-50 mt-1 w-52 overflow-hidden rounded-xl border border-white/10 bg-[#161318] py-1 shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)]"
+          className="absolute right-0 top-full z-50 mt-1 w-52 overflow-hidden rounded-none border border-border bg-popover py-1 text-popover-foreground shadow-sm ring-1 ring-foreground/10"
         >
           <button
             type="button"
@@ -74,14 +95,16 @@ function NotifMoreMenu({
               onMarkUnreadToggle();
               setOpen(false);
             }}
-            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-[#9E9DA0] transition-colors hover:bg-white/5 hover:text-white"
+            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            <span className="material-symbols-outlined text-base">
-              {isUnread ? 'drafts' : 'mark_email_unread'}
-            </span>
+            {isUnread ? (
+              <EnvelopeSimpleOpen weight="regular" className="h-4 w-4 shrink-0" />
+            ) : (
+              <EnvelopeSimple weight="regular" className="h-4 w-4 shrink-0" />
+            )}
             {isUnread ? 'Mark as Read' : 'Mark as Unread'}
           </button>
-          <div className="my-1 border-t border-white/5" />
+          <div className="my-1 border-t border-border" />
           <button
             type="button"
             role="menuitem"
@@ -89,9 +112,9 @@ function NotifMoreMenu({
               onArchive();
               setOpen(false);
             }}
-            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-[#9E9DA0] transition-colors hover:bg-white/5 hover:text-white"
+            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            <span className="material-symbols-outlined text-base">archive</span>
+            <Archive weight="regular" className="h-4 w-4 shrink-0" />
             Archive
           </button>
           <button
@@ -101,9 +124,9 @@ function NotifMoreMenu({
               onDelete();
               setOpen(false);
             }}
-            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-red-400/80 transition-colors hover:bg-white/5 hover:text-red-400"
+            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm text-destructive transition-colors hover:bg-destructive/10"
           >
-            <span className="material-symbols-outlined text-base">delete</span>
+            <Trash weight="regular" className="h-4 w-4 shrink-0" />
             Delete
           </button>
         </div>
@@ -250,21 +273,21 @@ export default function InboxNotificationCenter() {
   return (
     <>
       <div
-        className="-mb-24 flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#0d0a0b] text-[#9E9DA0] md:-mb-8"
+        className="-mb-24 flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-background text-foreground md:-mb-8"
         data-testid="inbox-notification-center"
       >
         {/* List pane */}
         <section
-          className={`w-full shrink-0 flex-col border-r border-white/10 bg-[#161318]/50 md:flex md:w-[420px] ${
+          className={`w-full shrink-0 flex-col border-r border-border bg-card md:flex md:w-[420px] ${
             showDetail ? 'hidden md:flex' : 'flex'
           }`}
         >
           <div className="space-y-4 p-6">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-[#fdfffc]">Inbox</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">Inbox</h1>
               <div className="flex items-center gap-2">
                 {unreadTotal > 0 ? (
-                  <span className="rounded border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+                  <span className="rounded-none border border-primary/25 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-foreground">
                     {unreadTotal} UNREAD
                   </span>
                 ) : null}
@@ -272,33 +295,31 @@ export default function InboxNotificationCenter() {
                   <button
                     type="button"
                     onClick={markAllRead}
-                    className="cursor-pointer rounded-lg p-1.5 text-[#9E9DA0] transition-colors hover:bg-white/5 hover:text-emerald-300"
+                    className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
                     title="Mark all as read"
                   >
-                    <span className="material-symbols-outlined text-[18px]">done_all</span>
+                    <Checks weight="bold" className="h-4 w-4" />
                   </button>
                 ) : null}
                 <button
                   type="button"
                   onClick={() => setComposeOpen(true)}
-                  className="cursor-pointer rounded-lg p-1.5 text-[#9E9DA0] transition-colors hover:bg-white/5 hover:text-emerald-300"
+                  className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
                   title="Compose email"
                 >
-                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  <Plus weight="bold" className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-[#9E9DA0]">
-                search
-              </span>
+              <MagnifyingGlass weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search logs..."
-                className="w-full rounded-lg border border-[#3c4a46] bg-[#0d0a0b] py-2 pl-10 pr-4 text-sm text-[#9E9DA0] outline-none transition-all placeholder:text-[#9E9DA0]/40 focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/30"
+                className="w-full rounded-none border border-input bg-background py-2 pl-10 pr-4 text-base md:text-xs text-foreground outline-none transition-all placeholder:text-muted-foreground/60 focus:border-ring focus:ring-1 focus:ring-ring min-h-[44px]"
               />
             </div>
           </div>
@@ -315,9 +336,9 @@ export default function InboxNotificationCenter() {
           <div className="relative flex-1 overflow-y-auto">
             {visibleItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-                <span className="material-symbols-outlined mb-3 text-5xl opacity-20">inbox</span>
-                <p className="text-sm font-medium text-white/60">No items in this view</p>
-                <p className="mt-1 text-xs text-white/35">
+                <Tray weight="thin" className="mb-3 h-12 w-12 text-muted-foreground/40" />
+                <p className="text-sm font-medium text-foreground">No items in this view</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   {searchQuery
                     ? 'Try a different search.'
                     : 'You’re caught up — new alerts will land here.'}
@@ -341,33 +362,30 @@ export default function InboxNotificationCenter() {
 
         {/* Reading pane */}
         <section
-          className={`relative flex flex-1 flex-col overflow-hidden bg-[#0d0a0b] ${
+          className={`relative flex flex-1 flex-col overflow-hidden bg-background ${
             showDetail ? 'flex' : 'hidden md:flex'
           }`}
         >
-          <div className="pointer-events-none absolute -right-40 -top-40 h-96 w-96 rounded-full bg-[#454955]/5 blur-[100px]" />
-          <div className="pointer-events-none absolute bottom-20 left-20 h-64 w-64 rounded-full bg-[#7A9EAA]/5 blur-[80px]" />
-
           {selectedItem ? (
             <div className="z-10 flex flex-1 flex-col overflow-y-auto">
-              <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#0d0a0b]/50 px-6 py-5 backdrop-blur-sm sm:px-8 sm:py-6">
+              <div className="flex shrink-0 items-center justify-between border-b border-border bg-card/50 px-6 py-5 backdrop-blur-sm sm:px-8 sm:py-6">
                 <div className="flex min-w-0 items-center gap-4">
                   <button
                     type="button"
                     onClick={() => setSelectedId(null)}
-                    className="cursor-pointer rounded-lg p-2 text-[#9E9DA0] transition-colors hover:bg-white/5 md:hidden"
+                    className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center"
                     aria-label="Back"
                   >
-                    <span className="material-symbols-outlined">arrow_back</span>
+                    <ArrowLeft weight="bold" className="h-5 w-5" />
                   </button>
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#0d0a0b]/60 text-emerald-400 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)]">
-                    <span className="material-symbols-outlined text-[24px]">mark_email_read</span>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+                    <EnvelopeOpen weight="bold" className="h-6 w-6" />
                   </div>
                   <div className="min-w-0">
-                    <h2 className="truncate text-xl font-bold text-[#fdfffc] sm:text-2xl">
+                    <h2 className="truncate text-xl font-bold text-foreground sm:text-2xl">
                       {selectedItem.subject}
                     </h2>
-                    <p className="font-mono text-[10px] uppercase text-[#454955]">
+                    <p className="font-mono text-[10px] uppercase text-muted-foreground">
                       ID: {selectedItem.id.slice(0, 8)} · STATUS:{' '}
                       {selectedUnread ? 'UNREAD' : 'READ'}
                     </p>
@@ -377,18 +395,18 @@ export default function InboxNotificationCenter() {
                   <button
                     type="button"
                     onClick={() => archiveItem(selectedItem.id)}
-                    className="cursor-pointer rounded-lg p-2 text-[#9E9DA0] transition-colors hover:bg-white/5"
+                    className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
                     title="Archive"
                   >
-                    <span className="material-symbols-outlined">archive</span>
+                    <Archive weight="regular" className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteItem(selectedItem.id)}
-                    className="cursor-pointer rounded-lg p-2 text-[#9E9DA0] transition-colors hover:bg-white/5"
+                    className="cursor-pointer rounded-none border border-transparent p-2 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"
                     title="Delete"
                   >
-                    <span className="material-symbols-outlined">delete</span>
+                    <Trash weight="regular" className="h-4 w-4" />
                   </button>
                   <NotifMoreMenu
                     item={selectedItem}
@@ -405,48 +423,48 @@ export default function InboxNotificationCenter() {
               <div className="flex-1 overflow-y-auto p-6 sm:p-8">
                 <div className="mx-auto max-w-3xl space-y-8">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[#454955]/20 bg-[#161318] text-lg font-bold text-[#454955]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-lg font-bold text-foreground">
                       {selectedItem.from[0]}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-bold text-[#fdfffc]">{selectedItem.from}</span>
-                        <span className="font-mono text-[10px] uppercase text-[#9E9DA0]">
+                        <span className="font-bold text-foreground">{selectedItem.from}</span>
+                        <span className="font-mono text-[10px] uppercase text-muted-foreground">
                           {new Date(selectedItem.receivedAt).toLocaleString()} UTC
                         </span>
                       </div>
                       {selectedItem.fromRole ? (
-                        <p className="mb-4 text-sm text-[#454955]">{selectedItem.fromRole}</p>
+                        <p className="mb-4 text-sm text-muted-foreground">{selectedItem.fromRole}</p>
                       ) : null}
 
-                      <div className="mt-4 space-y-4 rounded-2xl border border-white/10 bg-[#0d0a0b]/60 p-6 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] backdrop-blur-xl">
-                        <p className="whitespace-pre-wrap text-base leading-relaxed text-[#c8c7c9]">
+                      <div className="mt-4 space-y-4 rounded-none border border-border bg-card p-6 shadow-sm ring-1 ring-foreground/10">
+                        <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground/90">
                           {selectedItem.body}
                         </p>
 
                         {(selectedItem.subject.toLowerCase().includes('deal') ||
                           selectedItem.subject.toLowerCase().includes('negotiation') ||
                           selectedItem.type === 'INVEST_INVITE') && (
-                          <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 space-y-2.5">
+                          <div className="mt-6 rounded-none border border-border bg-muted/40 p-4 space-y-2.5">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-[18px] text-white">storefront</span>
-                                <span className="text-xs font-bold text-white">Deal Negotiation Provenance</span>
+                                <Storefront weight="bold" className="h-4 w-4 text-foreground" />
+                                <span className="text-xs font-bold text-foreground">Deal Negotiation Provenance</span>
                               </div>
                               {selectedItem.deepLinkUrl && (
                                 <Link
                                   href={selectedItem.deepLinkUrl}
-                                  className="text-xs font-semibold text-white underline hover:text-white/80 flex items-center gap-1"
+                                  className="text-xs font-semibold text-foreground underline hover:text-foreground/80 flex items-center gap-1 min-h-[44px]"
                                 >
                                   <span>View Deal Card</span>
-                                  <span className="material-symbols-outlined text-[14px]">arrow_outward</span>
+                                  <ArrowUpRight weight="bold" className="h-3.5 w-3.5" />
                                 </Link>
                               )}
                             </div>
-                            <div className="flex items-start gap-2 text-[11px] text-white/60">
-                              <span className="material-symbols-outlined text-[15px] text-white/40 shrink-0 mt-0.5">gavel</span>
+                            <div className="flex items-start gap-2 text-[11px] text-muted-foreground">
+                              <Gavel weight="bold" className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                               <p>
-                                <strong className="text-white font-medium">Off-Platform Closing:</strong> PaperWorking provides encrypted messaging for negotiation. All final legal subscription agreements, partnership docs, accredited KYC/AML verification, and capital funding occur directly between counterparties outside of PaperWorking.
+                                <strong className="text-foreground font-medium">Off-Platform Closing:</strong> PaperWorking provides encrypted messaging for negotiation. All final legal subscription agreements, partnership docs, accredited KYC/AML verification, and capital funding occur directly between counterparties outside of PaperWorking.
                               </p>
                             </div>
                           </div>
@@ -454,51 +472,47 @@ export default function InboxNotificationCenter() {
 
                         {selectedItem.type === 'DOCUMENT_SIGNED' ||
                         selectedItem.type === 'RECEIPT_APPROVAL' ? (
-                          <div className="mt-6 flex items-center justify-between rounded-xl border border-[#3c4a46] bg-[#0d0a0b] p-4">
+                          <div className="mt-6 flex items-center justify-between rounded-none border border-border bg-muted/30 p-4">
                             <div className="flex items-center gap-3">
-                              <span className="material-symbols-outlined text-[#454955]">
-                                description
-                              </span>
+                              <FileText weight="regular" className="h-5 w-5 text-muted-foreground" />
                               <div>
-                                <p className="text-xs font-bold text-[#9E9DA0]">
+                                <p className="text-xs font-bold text-foreground">
                                   Attached_Document.pdf
                                 </p>
-                                <p className="font-mono text-[10px] text-[#9E9DA0]">
+                                <p className="font-mono text-[10px] text-muted-foreground">
                                   SECURE // PDF-DOCUMENT
                                 </p>
                               </div>
                             </div>
-                            <span className="material-symbols-outlined text-[#9E9DA0]">download</span>
+                            <DownloadSimple weight="bold" className="h-4 w-4 text-foreground" />
                           </div>
                         ) : null}
 
                         {selectedItem.type === 'VENDOR_BID' ? (
-                          <div className="mt-6 flex flex-col gap-2 rounded-xl border border-[#3c4a46] bg-[#0d0a0b] p-4">
+                          <div className="mt-6 flex flex-col gap-2 rounded-none border border-border bg-muted/30 p-4">
                             <div className="flex items-center gap-3">
-                              <span className="material-symbols-outlined text-[#454955]">
-                                engineering
-                              </span>
+                              <Wrench weight="regular" className="h-5 w-5 text-muted-foreground" />
                               <div>
-                                <p className="text-xs font-bold text-[#9E9DA0]">
+                                <p className="text-xs font-bold text-foreground">
                                   Summit Roofing Bid Summary
                                 </p>
-                                <p className="font-mono text-[10px] text-[#9E9DA0]">
+                                <p className="font-mono text-[10px] text-muted-foreground">
                                   PROPOSAL // ROOF INSPECTION
                                 </p>
                               </div>
                             </div>
-                            <div className="mt-2 grid grid-cols-2 gap-4 border-t border-white/5 pt-2 text-xs text-[#9E9DA0]">
+                            <div className="mt-2 grid grid-cols-2 gap-4 border-t border-border pt-2 text-xs text-muted-foreground">
                               <div>
-                                <p className="text-[10px] font-semibold uppercase text-[#9E9DA0]/60">
+                                <p className="text-[10px] font-semibold uppercase text-muted-foreground/80">
                                   Proposed Service Date
                                 </p>
-                                <p className="font-medium">Next Tuesday</p>
+                                <p className="font-medium text-foreground">Next Tuesday</p>
                               </div>
                               <div>
-                                <p className="text-[10px] font-semibold uppercase text-[#9E9DA0]/60">
+                                <p className="text-[10px] font-semibold uppercase text-muted-foreground/80">
                                   Payment Terms
                                 </p>
-                                <p className="font-medium">Net 15 upon completion</p>
+                                <p className="font-medium text-foreground">Net 15 upon completion</p>
                               </div>
                             </div>
                           </div>
@@ -508,7 +522,7 @@ export default function InboxNotificationCenter() {
                   </div>
 
                   {actionFlash ? (
-                    <p className="text-center text-sm font-semibold text-emerald-400">{actionFlash}</p>
+                    <p className="text-center text-sm font-semibold text-foreground">{actionFlash}</p>
                   ) : null}
 
                   <div className="flex flex-wrap items-center justify-center gap-3 py-6">
@@ -516,53 +530,53 @@ export default function InboxNotificationCenter() {
                       <button
                         type="button"
                         onClick={executeAction}
-                        className="flex cursor-pointer items-center gap-2 rounded-full bg-emerald-500 px-8 py-3 font-bold text-slate-950 transition-all hover:brightness-110"
+                        className="flex cursor-pointer items-center gap-2 rounded-none bg-primary px-8 py-3 font-mono text-xs font-bold text-primary-foreground min-h-[44px] transition-all hover:bg-primary/90"
                       >
-                        <span className="material-symbols-outlined text-[18px]">edit_square</span>
+                        <PencilSimple weight="bold" className="h-4 w-4" />
                         EXECUTE ACTION
                       </button>
                     ) : null}
                     <button
                       type="button"
                       onClick={() => setComposeOpen(true)}
-                      className="flex cursor-pointer items-center gap-2 rounded-full border border-white/10 bg-[#0d0a0b]/60 px-8 py-3 font-bold text-[#9E9DA0] shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] backdrop-blur-xl transition-all hover:bg-white/5"
+                      className="flex cursor-pointer items-center gap-2 rounded-none border border-border bg-card px-8 py-3 font-mono text-xs font-bold text-foreground min-h-[44px] shadow-sm ring-1 ring-foreground/10 transition-all hover:bg-accent"
                     >
-                      <span className="material-symbols-outlined text-[18px]">reply</span>
+                      <ArrowBendUpLeft weight="bold" className="h-4 w-4" />
                       REPLY
                     </button>
                     {selectedItem.deepLinkUrl ? (
                       <Link
                         href={selectedItem.deepLinkUrl}
-                        className="flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white/70 no-underline hover:bg-white/5"
+                        className="flex items-center gap-2 rounded-none border border-border px-6 py-3 text-sm font-semibold text-foreground no-underline min-h-[44px] hover:bg-accent"
                       >
                         Open related
-                        <span className="material-symbols-outlined text-[16px]">north_east</span>
+                        <ArrowUpRight weight="bold" className="h-4 w-4" />
                       </Link>
                     ) : null}
                   </div>
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center justify-between border-t border-white/10 bg-[#0d0a0b]/80 px-8 py-2 backdrop-blur">
+              <div className="flex shrink-0 items-center justify-between border-t border-border bg-muted/40 px-8 py-2">
                 <div className="flex gap-4">
-                  <p className="font-mono text-[10px] text-[#9E9DA0]">
-                    <span className="text-[#454955]">RUNNING:</span> inbox_handler.sh
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    <span className="text-foreground">RUNNING:</span> inbox_handler.sh
                   </p>
-                  <p className="hidden font-mono text-[10px] text-[#9E9DA0] sm:block">
-                    <span className="text-[#454955]">ENCRYPTION:</span> AES-256-GCM
+                  <p className="hidden font-mono text-[10px] text-muted-foreground sm:block">
+                    <span className="text-foreground">ENCRYPTION:</span> AES-256-GCM
                   </p>
                 </div>
-                <p className="font-mono text-[10px] text-[#9E9DA0]">LAST_SYNC: 0.2s AGO</p>
+                <p className="font-mono text-[10px] text-muted-foreground">LAST_SYNC: 0.2s AGO</p>
               </div>
             </div>
           ) : (
-            <div className="z-10 flex flex-1 flex-col items-center justify-center text-[#9E9DA0]">
-              <span className="material-symbols-outlined mb-4 text-6xl opacity-20">inbox</span>
-              <p className="text-lg font-medium">Select an item to read</p>
-              <p className="text-sm opacity-60">
+            <div className="z-10 flex flex-1 flex-col items-center justify-center text-muted-foreground">
+              <Tray weight="thin" className="mb-4 h-16 w-16 opacity-30" />
+              <p className="text-lg font-medium text-foreground">Select an item to read</p>
+              <p className="text-sm text-muted-foreground">
                 Your messages and notifications will appear here.
               </p>
-              <p className="mt-4 text-xs text-white/35">
+              <p className="mt-4 text-xs text-muted-foreground">
                 {INBOX_TABS.find((t) => t.id === activeTab)?.label} · {visibleItems.length} items
               </p>
             </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import MetricCard from '@/components/insights/MetricCard';
 import { bffFetch } from '@/lib/api/bff-fetch';
-import { scorecardEntries, scorecardSourceStatusCopy, trendStatusCopy } from '@/lib/insights/adapters';
+import { useOptionalAuth } from '@/context/AuthContext';
+import MetricCard from '@/components/insights/MetricCard';
+import { scorecardEntries } from '@/lib/insights/formatters';
 
 interface KpiTrendPoint {
   month: string;
@@ -17,17 +18,13 @@ interface KpiTrendPoint {
 
 interface ProjectKpiPayload {
   success?: boolean;
-  trendStatus?: string;
   kpis?: {
-    sourceStatus?: string;
-    scorecardTrust?: Record<string, string>;
     scorecard?: Record<
       string,
       { value: number | null; projected?: boolean; missingInputs?: string[] }
     >;
   };
   trends?: KpiTrendPoint[];
-  recentActivityStatus?: string;
   recentActivity?: Array<{
     id: string;
     payee: string | null;
@@ -43,14 +40,17 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const auth = useOptionalAuth();
+  const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
+
   useEffect(() => {
+    if (!isAuthed) return;
     let cancelled = false;
     async function load() {
       setLoading(true);
       setError(null);
       try {
         const response = await bffFetch(`/api/projects/${projectId}/kpis/current`, {
-          credentials: 'include',
           cache: 'no-store',
         });
         const body = (await response.json()) as ProjectKpiPayload & { error?: string };
@@ -72,7 +72,7 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-8 text-sm text-white/65">
+      <div className="rounded-none border border-white/10 bg-black/20 p-8 text-sm text-white/65">
         Loading project insights…
       </div>
     );
@@ -80,14 +80,14 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
 
   if (error || !payload?.kpis?.scorecard) {
     return (
-      <div className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
+      <div className="rounded-none border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
         {error ?? 'Scorecard unavailable'}
       </div>
     );
   }
 
   const scorecard = payload.kpis.scorecard as Parameters<typeof scorecardEntries>[0];
-  const cards = scorecardEntries(scorecard, payload.kpis.scorecardTrust);
+  const cards = scorecardEntries(scorecard);
 
   return (
     <div className="space-y-6">
@@ -97,7 +97,7 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
         </p>
         <h2 className="text-2xl font-semibold tracking-[-0.02em]">Project KPI engine</h2>
         <p className="mt-2 text-sm text-white/65">
-          {scorecardSourceStatusCopy(payload.kpis.sourceStatus)}
+          Derived via `deriveAllProjectMetrics()` and served through `handleProjectKpisCurrentGet`.
         </p>
       </section>
 
@@ -108,27 +108,16 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
             name={metric.label}
             value={metric.display}
             category="Scorecard"
-            projected={metric.projected}
           />
         ))}
       </section>
 
       {payload.trends?.length ? (
-        <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <h3 className="text-lg font-semibold">Six-month trend strip</h3>
-            {payload.trendStatus === 'demo' ? (
-              <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-100/90">
-                Demo data
-              </span>
-            ) : null}
-          </div>
-          {trendStatusCopy(payload.trendStatus) ? (
-            <p className="mb-4 text-xs text-white/55">{trendStatusCopy(payload.trendStatus)}</p>
-          ) : null}
+        <section className="rounded-none border border-white/10 bg-black/25 p-5">
+          <h3 className="mb-4 text-lg font-semibold">Six-month trend strip</h3>
           <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
             {payload.trends.map((point) => (
-              <article key={point.month} className="rounded-xl border border-white/8 px-3 py-3 text-sm">
+              <article key={point.month} className="rounded-none border border-white/8 px-3 py-3 text-sm">
                 <p className="text-white/45">{point.month}</p>
                 <p className="mt-1 font-medium">CoC {point.cashOnCash}%</p>
                 <p className="text-xs text-white/55">NOI {point.noi.toLocaleString()}</p>
@@ -139,18 +128,11 @@ export default function ProjectInsightsPanel({ projectId }: { projectId: string 
       ) : null}
 
       {payload.recentActivity?.length ? (
-        <section className="rounded-2xl border border-white/10 bg-black/25 p-5">
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <h3 className="text-lg font-semibold">Recent activity</h3>
-            {payload.recentActivityStatus === 'actual' ? (
-              <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/90">
-                From transactions
-              </span>
-            ) : null}
-          </div>
+        <section className="rounded-none border border-white/10 bg-black/25 p-5">
+          <h3 className="mb-4 text-lg font-semibold">Recent activity</h3>
           <div className="space-y-3">
             {payload.recentActivity.map((item) => (
-              <div key={item.id} className="rounded-xl border border-white/8 px-4 py-3 text-sm">
+              <div key={item.id} className="rounded-none border border-white/8 px-4 py-3 text-sm">
                 <p className="font-medium">{item.payee ?? item.category}</p>
                 <p className="text-xs text-white/55">{item.impactNote}</p>
               </div>

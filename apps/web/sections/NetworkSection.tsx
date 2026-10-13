@@ -40,13 +40,13 @@ export default function NetworkSection() {
             </div>
           </div>
 
-          {/* Vendor Marketplace */}
+          {/* Vendor Directory */}
           <div className="flex flex-col justify-between rounded-none border border-border bg-card p-6 md:p-8 text-card-foreground shadow-sm ring-1 ring-foreground/10 transition-colors hover:border-foreground/20">
             <div>
               <div className="mb-6 flex items-center justify-center size-10 rounded-none bg-muted text-foreground border border-border">
                 <Storefront size={20} className="text-foreground" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground mb-3">The Vendor Marketplace</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground mb-3">The Vendor Directory</h3>
               <p className="text-sm sm:text-[15px] leading-[1.65] text-muted-foreground mb-6">
                 helps real estate investors find vendors when they need them. Appraisers, contractors, lawyers, and even bankers can list their services, and PaperWorking will recommend them to investors at the moment they need them.
               </p>
@@ -64,7 +64,7 @@ export default function NetworkSection() {
 
         <div className="text-center mt-10">
           <p className="text-xs text-muted-foreground/80 font-[family-name:var(--font-jetbrains-mono)] tracking-tight">
-            Note: Automatic access included for all Investor and Investment Team accounts.
+            Note: Automatic access included for all Investor and Investment Team accounts. Both tiers can list on either marketplace.
           </p>
         </div>
       </div>

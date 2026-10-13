@@ -15,7 +15,7 @@ export default function LocalScoreboardCard({ metric, onClick }: LocalScoreboard
 
   // Regime color badges
   const regimeStyles = {
-    SELLER: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    SELLER: 'border-emerald-600/30 bg-emerald-600/10 text-emerald-600 dark:text-emerald-400',
     BALANCED: 'border-border bg-muted/30 text-muted-foreground',
     BUYER: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
     DISTRESSED: 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400',

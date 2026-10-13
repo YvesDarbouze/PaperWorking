@@ -6,6 +6,30 @@ export const projectCreateSchema = z.object({
   propertyName: z.string().optional(),
   property_address: z.string().min(1, 'Property address is required'),
   phase: z.enum(['acquisition', 'purchase', 'hold', 'exit']).default('acquisition'),
+  acquisitionStatus: z
+    .enum([
+      'lead',
+      'analyzing',
+      'offer_sent',
+      'negotiating',
+      'under_contract',
+      'due_diligence',
+      'clear_to_close',
+      'closed',
+      'dead',
+    ])
+    .default('lead'),
+  strategy: z
+    .enum([
+      'flip',
+      'brrrr',
+      'buy_and_hold_rental',
+      'short_term_rental_airbnb',
+      'commercial_value_add',
+      'wholesale',
+    ])
+    .optional()
+    .default('flip'),
   date_of_sale: z.string().optional().nullable(),
   entity_type: z.string().optional().default('Sole Proprietor'),
   purchase_price: z.number().nullable().optional(),
@@ -13,6 +37,9 @@ export const projectCreateSchema = z.object({
   exit_strategy: z.string().optional().default('Flip'),
   answers: z.record(z.string(), z.any()).optional().default({}),
   organizationId: z.string().optional(),
+  sourcing: z.record(z.string(), z.any()).optional(),
+  propertySnapshot: z.record(z.string(), z.any()).optional(),
+  underwritingSnapshot: z.record(z.string(), z.any()).optional(),
   documents: z
     .array(
       z.object({
@@ -29,6 +56,40 @@ export const projectCreateSchema = z.object({
 });
 
 export type ProjectCreateInput = z.infer<typeof projectCreateSchema>;
+
+export const projectPromoteSchema = z.object({
+  address: z.string().min(1, 'Property address is required'),
+  projectName: z.string().optional(),
+  purchasePrice: z.number().positive('Purchase price must be positive'),
+  rehabBudget: z.number().nonnegative().optional().default(0),
+  estimatedARV: z.number().positive().optional(),
+  grossRentMonthly: z.number().nonnegative().optional().default(0),
+  operatingExpenseRatioPct: z.number().nonnegative().optional().default(35),
+  targetLtvPct: z.number().nonnegative().optional().default(75),
+  interestRatePct: z.number().nonnegative().optional().default(6.5),
+  amortizationYears: z.number().positive().optional().default(30),
+  strategy: z
+    .enum([
+      'flip',
+      'brrrr',
+      'buy_and_hold_rental',
+      'short_term_rental_airbnb',
+      'commercial_value_add',
+      'wholesale',
+    ])
+    .optional()
+    .default('buy_and_hold_rental'),
+  assumptionsNotes: z.string().optional(),
+  organizationId: z.string().optional(),
+  buyerClosingCostsPct: z.number().nonnegative().optional(),
+  beds: z.number().nonnegative().optional(),
+  baths: z.number().nonnegative().optional(),
+  sqft: z.number().nonnegative().optional(),
+  yearBuilt: z.number().positive().optional(),
+  taxAssessment: z.number().nonnegative().optional(),
+});
+
+export type ProjectPromoteInput = z.infer<typeof projectPromoteSchema>;
 
 export type ProjectPhase = ProjectCreateInput['phase'];
 

@@ -1,24 +1,42 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import {
   reilPhaseOrderLabels,
   formatCurrency,
 } from '@/lib/projects/phase-utils';
 import type { ProjectDealComponent } from '@/lib/projects/types';
+import { buildProjectSchedule } from '@/lib/projects/schedule';
 import { useProjectWorkspace } from '@/components/projects/ProjectWorkspaceProvider';
 import AcquisitionWorkspaceView from '@/components/projects/AcquisitionWorkspaceView';
 import FundWorkspaceView from '@/components/projects/FundWorkspaceView';
 import HoldWorkspaceView from '@/components/projects/HoldWorkspaceView';
 import ExitWorkspaceView from '@/components/projects/ExitWorkspaceView';
 
+import { ArrowRight, TreeStructure } from '@phosphor-icons/react';
+
+// Basecamp Tool Views
+import ProjectBasecampHub from '@/components/projects/basecamp/ProjectBasecampHub';
+import InviteTeamModal from '@/components/projects/basecamp/InviteTeamModal';
+import ProjectMessageBoardView from '@/components/projects/basecamp/ProjectMessageBoardView';
+import ProjectCampfireView from '@/components/projects/basecamp/ProjectCampfireView';
+import ProjectCheckInsView from '@/components/projects/basecamp/ProjectCheckInsView';
+import ProjectTaskGroupsView from '@/components/projects/basecamp/ProjectTaskGroupsView';
+import ProjectCardTableView from '@/components/projects/basecamp/ProjectCardTableView';
+import ProjectHillChartView from '@/components/projects/basecamp/ProjectHillChartView';
+import ProjectScheduleView from '@/components/projects/basecamp/ProjectScheduleView';
+import ProjectActivityFeedView from '@/components/projects/basecamp/ProjectActivityFeedView';
+import VendorAccessControlBanner from '@/components/projects/basecamp/VendorAccessControlBanner';
+
 export default function ProjectOverviewContent() {
-  const { project, updateProject } = useProjectWorkspace();
+  const { project, updateProject, refetch } = useProjectWorkspace();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
   const phaseParam = searchParams?.get('phase')?.toLowerCase();
+  const toolParam = searchParams?.get('tool')?.toLowerCase();
   const isFundPath = pathname?.endsWith('/fund') || pathname?.includes('/fund/');
   const isHoldPath = pathname?.endsWith('/hold') || pathname?.includes('/hold/');
   const isExitPath = pathname?.endsWith('/exit') || pathname?.includes('/exit/');
@@ -30,6 +48,30 @@ export default function ProjectOverviewContent() {
     if (phaseParam === 'acquisition') return 'acquisition';
     return project?.currentPhase || project?.phase || 'acquisition';
   });
+
+  // Basecamp Project Hub Active Tool State
+  const [activeTool, setActiveTool] = useState<string | null>(() => toolParam || null);
+  const [vendorMode, setVendorMode] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (toolParam && toolParam !== activeTool) {
+      setActiveTool(toolParam);
+    }
+  }, [toolParam, activeTool]);
+
+  const handleSelectTool = useCallback((toolId: string | null) => {
+    setActiveTool(toolId);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (toolId) {
+        url.searchParams.set('tool', toolId);
+      } else {
+        url.searchParams.delete('tool');
+      }
+      router.replace(url.pathname + url.search, { scroll: false });
+    }
+  }, [router]);
 
   useEffect(() => {
     if (isFundPath || phaseParam === 'fund' || phaseParam === 'purchase') {
@@ -102,6 +144,14 @@ export default function ProjectOverviewContent() {
     ((project.currentPhase === 'purchase' || (project.currentPhase as string) === 'fund' || (project.currentPhase as any) === 2) && activeTab !== 'acquisition');
 
   const isAcqActive = !isFundActive;
+  const derivedTaskGroups = useMemo(() => {
+    return (project.taskLists ?? []).map((list) => ({
+      id: list.id,
+      title: list.title,
+      phase: list.phase,
+      tasks: (project.tasks ?? []).filter((t) => t.listId === list.id),
+    }));
+  }, [project.taskLists, project.tasks]);
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden">
@@ -155,23 +205,23 @@ export default function ProjectOverviewContent() {
               key={step.phase}
               data-testid={`reil-tab-${step.legacy}`}
               onClick={() => setActiveTab(step.legacy)}
-              className="rounded-2xl border p-4 text-left transition hover:border-white/30 focus:outline-none"
+              className="rounded-none border p-4 text-left transition hover:border-foreground/30 focus:outline-none"
               style={{
                 borderColor: highlightBorder,
                 background: highlightBg,
               }}
             >
               <div className="flex items-center justify-between">
-                <p className="text-[11px] uppercase tracking-[0.08em] font-mono text-white/50">
+                <p className="text-[11px] uppercase tracking-[0.08em] font-mono text-muted-foreground">
                   Phase {stepPhaseNumber}: {step.label}
                 </p>
                 {isCurrentProjectPhase && (
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-semibold uppercase text-white/80">
+                  <span className="rounded-none border border-border bg-muted/40 px-2 py-0.5 text-[9px] font-semibold uppercase text-foreground">
                     Active Phase
                   </span>
                 )}
               </div>
-              <p className="mt-1.5 text-sm font-bold text-white">
+              <p className="mt-1.5 text-sm font-bold text-foreground">
                 {isSelected ? 'Viewing Workspace' : isCurrentProjectPhase ? 'Current Project Stage' : 'Switch Workspace'}
               </p>
             </button>
@@ -182,25 +232,23 @@ export default function ProjectOverviewContent() {
       {/* Dedicated Project Deal Components Hub */}
       <section
         data-testid="project-deal-components-hub"
-        className="rounded-xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+        className="rounded-none border border-border bg-card p-5 space-y-4"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-neutral-300">
-                account_tree
-              </span>
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+              <TreeStructure size={20} className="text-muted-foreground" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
                 Deal Components Inside This Project
               </h3>
               <span
                 data-testid="project-deals-count-badge"
-                className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-mono font-semibold text-neutral-300"
+                className="rounded-none border border-border bg-muted/40 px-2 py-0.5 text-[11px] font-mono font-semibold text-foreground"
               >
                 {projectDeals.length} Component{projectDeals.length === 1 ? '' : 's'}
               </span>
             </div>
-            <p className="mt-1 text-xs text-neutral-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               This overarching Project governs the 4-phase lifecycle. Deals are actionable financial underwriting, syndication offerings, and debt transaction components executed inside this container.
             </p>
           </div>
@@ -209,7 +257,7 @@ export default function ProjectOverviewContent() {
             <Link
               href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice || 450000}`}
               data-testid="overview-add-deal-component-btn"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/20 transition min-h-[44px]"
+              className="inline-flex items-center gap-1.5 rounded-none border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-muted transition min-h-[44px]"
             >
               <span>+ Underwrite Deal Component</span>
             </Link>
@@ -222,11 +270,11 @@ export default function ProjectOverviewContent() {
             <div
               key={dealComp.id}
               data-testid={`deal-component-card-${dealComp.id}`}
-              className="rounded-lg border border-white/10 bg-black/30 p-4 space-y-3 flex flex-col justify-between"
+              className="rounded-none border border-border bg-muted/20 p-4 space-y-3 flex flex-col justify-between"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="rounded border px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-neutral-300 border-white/10 bg-white/5">
+                  <span className="rounded-none border px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-foreground border-border bg-card">
                     {dealComp.dealType === 'underwriting'
                       ? 'Acquisition Pro-Forma'
                       : dealComp.dealType === 'syndication'
@@ -236,65 +284,68 @@ export default function ProjectOverviewContent() {
                   <span
                     className={`text-[10px] font-mono font-semibold uppercase ${
                       dealComp.status === 'active' || dealComp.status === 'funded'
-                        ? 'text-emerald-400'
-                        : 'text-neutral-400'
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
                     }`}
                   >
                     {dealComp.status}
                   </span>
                 </div>
 
-                <h4 className="text-sm font-semibold text-white truncate" title={dealComp.name}>
+                <h4 className="text-sm font-semibold text-foreground truncate" title={dealComp.name}>
                   {dealComp.name}
                 </h4>
-                <p className="text-xs text-neutral-400 font-mono truncate" title={dealComp.address}>
+                <p className="text-xs text-muted-foreground font-mono truncate" title={dealComp.address}>
                   {dealComp.address}
                 </p>
               </div>
 
               {/* Financial Metrics Strip */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border text-xs font-mono">
                 <div>
-                  <span className="text-[10px] text-neutral-400 uppercase block">Basis / Price</span>
-                  <span className="font-bold text-white">
+                  <span className="text-[10px] text-muted-foreground uppercase block">Basis / Price</span>
+                  <span className="font-bold text-foreground">
                     {formatCurrency(dealComp.purchasePrice)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-neutral-400 uppercase block">
+                  <span className="text-[10px] text-muted-foreground uppercase block">
                     {dealComp.projectedIrr ? 'Projected IRR' : 'Cash Required'}
                   </span>
-                  <span className="font-bold text-neutral-200">
+                  <span className="font-bold text-foreground">
                     {dealComp.projectedIrr ? `${dealComp.projectedIrr.toFixed(1)}%` : formatCurrency(dealComp.cashRequired || 0)}
                   </span>
                 </div>
               </div>
 
               {/* Action Link */}
-              <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+              <div className="pt-2 border-t border-border flex items-center justify-between">
                 {dealComp.dealType === 'syndication' && dealComp.marketplaceUrl ? (
                   <Link
                     href={dealComp.marketplaceUrl}
                     data-testid={`view-syndication-${dealComp.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:underline min-h-[44px]"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:underline min-h-[44px]"
                   >
-                    <span>View Offering on Marketplace →</span>
+                    <span>View Offering on Marketplace</span>
+                    <ArrowRight size={12} />
                   </Link>
                 ) : dealComp.dealType === 'underwriting' ? (
                   <Link
                     href={`/deal-calculator?projectId=${project.id}&price=${dealComp.purchasePrice}`}
                     data-testid={`open-underwriting-${dealComp.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:underline min-h-[44px]"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:underline min-h-[44px]"
                   >
-                    <span>Open in Deal Calculator →</span>
+                    <span>Open in Deal Calculator</span>
+                    <ArrowRight size={12} />
                   </Link>
                 ) : (
                   <Link
                     href={`/project/${project.id}/fund`}
                     data-testid={`manage-debt-${dealComp.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:underline min-h-[44px]"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground hover:underline min-h-[44px]"
                   >
-                    <span>Manage Loan Terms →</span>
+                    <span>Manage Loan Terms</span>
+                    <ArrowRight size={12} />
                   </Link>
                 )}
               </div>
@@ -302,6 +353,150 @@ export default function ProjectOverviewContent() {
           ))}
         </div>
       </section>
+
+      {/* Vendor & Guest Involvement Access Banner */}
+      <VendorAccessControlBanner
+        vendorMode={vendorMode}
+        onToggleVendorMode={setVendorMode}
+      />
+
+      {/* Basecamp-Style 6-Card Project Hub */}
+      <ProjectBasecampHub
+        project={project}
+        vendorMode={vendorMode}
+        onOpenTool={(toolId) => {
+          if (toolId === 'deal-calculator') {
+            window.location.href = `/deal-calculator?projectId=${project.id}&price=${project.purchasePrice || 450000}`;
+          } else {
+            handleSelectTool(activeTool === toolId ? null : toolId);
+          }
+        }}
+        onInviteTeam={() => setInviteModalOpen(true)}
+        onRefresh={refetch}
+      />
+
+      {/* Full Tool Panel — renders when a card is expanded */}
+      {activeTool && (
+        <section
+          data-testid="basecamp-active-tool-container"
+          className="rounded-none border border-border bg-card p-5 space-y-4"
+        >
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+              {activeTool === 'messages' && 'Message Board'}
+              {activeTool === 'campfire' && 'Chat'}
+              {activeTool === 'checkins' && 'Check-Ins'}
+              {activeTool === 'todos' && 'To-Dos'}
+              {activeTool === 'card-table' && 'The REIL'}
+              {activeTool === 'hill-chart' && 'Hill Chart'}
+              {activeTool === 'schedule' && 'Schedule'}
+              {activeTool === 'docs' && 'Docs & Files'}
+              {activeTool === 'activity' && 'Activity Feed'}
+            </span>
+            <button
+              type="button"
+              onClick={() => handleSelectTool(null)}
+              className="text-xs text-muted-foreground hover:text-foreground transition px-2 py-1 rounded-none border border-border hover:bg-muted min-h-[44px]"
+            >
+              Close
+            </button>
+          </div>
+
+          {activeTool === 'messages' && (
+            <ProjectMessageBoardView
+              projectId={project.id}
+              topics={project.messageTopics || []}
+              onRefresh={refetch}
+              vendorMode={vendorMode}
+            />
+          )}
+
+          {activeTool === 'campfire' && (
+            <ProjectCampfireView
+              projectId={project.id}
+              messages={project.campfireMessages || []}
+              onRefresh={refetch}
+            />
+          )}
+
+          {activeTool === 'checkins' && (
+            <ProjectCheckInsView
+              projectId={project.id}
+              checkIns={project.checkInQuestions || []}
+              onRefresh={refetch}
+            />
+          )}
+
+          {activeTool === 'todos' && (
+            <ProjectTaskGroupsView
+              projectId={project.id}
+              taskGroups={derivedTaskGroups}
+              onRefresh={refetch}
+              vendorMode={vendorMode}
+              teamMembers={project.teamMembers || []}
+              documents={project.documents || []}
+            />
+          )}
+
+          {activeTool === 'card-table' && (
+            <ProjectCardTableView
+              projectId={project.id}
+              cardColumns={project.cardColumns || []}
+              onRefresh={refetch}
+              vendorMode={vendorMode}
+            />
+          )}
+
+          {activeTool === 'hill-chart' && (
+            <ProjectHillChartView
+              projectId={project.id}
+              items={project.hillChartItems || []}
+              onRefresh={refetch}
+            />
+          )}
+
+          {activeTool === 'schedule' && (
+            <ProjectScheduleView
+              projectId={project.id}
+              events={buildProjectSchedule(project)}
+              onRefresh={refetch}
+            />
+          )}
+
+          {activeTool === 'activity' && (
+            <ProjectActivityFeedView
+              activity={project.activity || []}
+              vendorMode={vendorMode}
+            />
+          )}
+
+          {activeTool === 'docs' && (
+            <div className="rounded-none border border-border bg-card p-6 text-center space-y-2">
+              <h4 className="text-sm font-semibold text-foreground">Centralized Project Docs & Files</h4>
+              <p className="text-xs text-muted-foreground">
+                Transaction agreements, inspection PDFs, closing statements, and escrow files.
+              </p>
+              <div className="pt-2">
+                <a
+                  href={`/project/${project.id}/documents`}
+                  className="inline-flex items-center gap-1.5 rounded-none bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
+                >
+                  Open Documents Vault
+                </a>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Invite Team / Vendor Modal */}
+      <InviteTeamModal
+        projectId={project.id}
+        isOpen={inviteModalOpen}
+        onClose={() => setInviteModalOpen(false)}
+        onSuccess={refetch}
+      />
+
 
       {/* Active REIL Phase Workspace View */}
       {isAcqActive ? (

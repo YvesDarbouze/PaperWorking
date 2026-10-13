@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { Handshake, Storefront, Users } from '@phosphor-icons/react';
 import { useAuth } from '@/context/AuthContext';
 
 export function MarketplaceSubnav() {
@@ -19,37 +20,35 @@ export function MarketplaceSubnav() {
   const isVendor = (profile?.accountType || '').toLowerCase() === 'vendor';
 
   const linkClass = (active: boolean) =>
-    `flex min-h-[44px] items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-all ${
+    `flex min-h-[44px] items-center gap-2 rounded-none border px-4 py-2 text-xs font-semibold transition-all ${
       active
-        ? 'border-[var(--accent)]/30 bg-[var(--accent-subtle)] text-[var(--accent)]'
-        : 'border-transparent text-white/55 hover:bg-white/5 hover:text-[#fdfffc]'
+        ? 'border-border bg-accent text-foreground'
+        : 'border-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
     }`;
 
   return (
-    <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+    <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
       <nav className="flex flex-wrap items-center gap-2" aria-label="Marketplace Subnavigation">
-        {!isVendor ? (
-          <Link href="/dashboard/deals" className={linkClass(isDeals)}>
-            <span className="material-symbols-outlined text-[16px]">handshake</span>
-            <span>Deal Marketplace</span>
-          </Link>
-        ) : null}
+        <Link href="/dashboard/deals" className={linkClass(isDeals)}>
+          <Handshake className="h-4 w-4 shrink-0" />
+          <span>Deal Marketplace</span>
+        </Link>
 
         <Link href="/dashboard/marketplace" className={linkClass(isVendors)}>
-          <span className="material-symbols-outlined text-[16px]">storefront</span>
-          <span>Vendor Marketplace</span>
+          <Storefront className="h-4 w-4 shrink-0" />
+          <span>Vendor Directory</span>
         </Link>
 
         {!isVendor ? (
           <Link href="/dashboard/marketplace?tab=investors" className={linkClass(isInvestors)}>
-            <span className="material-symbols-outlined text-[16px]">groups</span>
+            <Users className="h-4 w-4 shrink-0" />
             <span>Investors</span>
           </Link>
         ) : null}
       </nav>
 
-      <div className="hidden font-mono text-[11px] text-white/40 sm:block">
-        PaperWorking Marketplaces · Introductions &amp; Interest Tracking
+      <div className="hidden font-mono text-[11px] text-muted-foreground sm:block">
+        PaperWorking Directory · Introductions &amp; Interest Tracking
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { X, WarningCircle, CheckCircle, Globe, Lock, Copy } from '@phosphor-icons/react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 import { formatCurrency, formatPercent } from '@/lib/format';
 import { extractStreetAddress } from '@/lib/marketplace/address-utils';
@@ -238,13 +239,13 @@ export default function ShareDealModal({
             aria-label="Close dialog"
             className="text-neutral-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {error && (
           <div className="mb-6 p-3 bg-red-950/50 border border-red-800 text-red-300 text-xs flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px]">error</span>
+            <WarningCircle className="h-4 w-4 shrink-0" />
             {error}
           </div>
         )}
@@ -254,7 +255,7 @@ export default function ShareDealModal({
           <div className="space-y-6" data-testid="share-success-view">
             <div className="p-4 border border-emerald-800 bg-emerald-950/30 text-emerald-200 text-sm space-y-2">
               <div className="font-semibold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-emerald-400">check_circle</span>
+                <CheckCircle className="h-4 w-4 text-emerald-400" />
                 Deal Successfully Shared
               </div>
               <p className="text-xs text-neutral-300">
@@ -320,7 +321,7 @@ export default function ShareDealModal({
                   data-testid="visibility-marketplace-btn"
                 >
                   <div className="font-semibold text-sm flex items-center gap-1.5 text-white">
-                    <span className="material-symbols-outlined text-[16px]">public</span>
+                    <Globe className="h-4 w-4" />
                     Deals Marketplace
                   </div>
                   <div className="text-[11px] text-neutral-400 mt-1">
@@ -339,7 +340,7 @@ export default function ShareDealModal({
                   data-testid="visibility-private-btn"
                 >
                   <div className="font-semibold text-sm flex items-center gap-1.5 text-amber-300">
-                    <span className="material-symbols-outlined text-[16px]">lock</span>
+                    <Lock className="h-4 w-4" />
                     Private Deal
                   </div>
                   <div className="text-[11px] text-neutral-400 mt-1">
@@ -467,7 +468,7 @@ export default function ShareDealModal({
                       data-testid="copy-social-post-btn"
                       className="flex items-center justify-center gap-1.5 p-2.5 border border-neutral-700 bg-neutral-950 hover:bg-neutral-800 text-xs font-semibold text-neutral-200 transition-colors min-h-[44px]"
                     >
-                      <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                      <Copy className="h-4 w-4" />
                       <span>{socialCopied ? 'Copied!' : 'Copy Post'}</span>
                     </button>
                   </div>

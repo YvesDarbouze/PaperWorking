@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Receipt, X, Check } from '@phosphor-icons/react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 
 export interface ClosingCostLineItem {
@@ -112,13 +113,13 @@ export default function ClosingCostsModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl rounded-t-2xl sm:rounded-2xl border-t sm:border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
+        className="relative w-full max-w-2xl rounded-none border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
       >
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-4 shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-emerald-400">
+              <span className="rounded-none bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono uppercase font-bold text-emerald-400">
                 Acquisition Modeling
               </span>
               <span className="text-[10px] font-mono text-white/50">
@@ -126,9 +127,7 @@ export default function ClosingCostsModal({
               </span>
             </div>
             <h2 id="closing-costs-modal-title" className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mt-1">
-              <span className="material-symbols-outlined text-[20px] text-emerald-400">
-                receipt
-              </span>
+              <Receipt className="h-5 w-5 text-emerald-400" />
               Itemized Buyer Closing Costs Worksheet
             </h2>
             <p className="text-xs text-white/50 mt-0.5">
@@ -138,15 +137,15 @@ export default function ClosingCostsModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
             aria-label="Close closing costs editor"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Total Summary Ribbon */}
-        <div className="my-3 flex items-center justify-between rounded-xl border border-white/10 bg-black/40 p-3.5 text-xs shrink-0">
+        <div className="my-3 flex items-center justify-between rounded-none border border-white/10 bg-black/40 p-3.5 text-xs shrink-0">
           <div>
             <span className="text-[10px] uppercase font-mono text-white/50 block">Total Itemized Closing Costs</span>
             <span className="text-lg font-bold font-mono text-emerald-400">
@@ -167,7 +166,7 @@ export default function ClosingCostsModal({
             <div
               key={item.id}
               data-testid={`closing-cost-item-${item.id}`}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-none border border-white/10 bg-white/[0.02] p-3 text-xs"
             >
               <div className="min-w-0 pr-2">
                 <span className="font-semibold text-white block">{item.category}</span>
@@ -181,7 +180,7 @@ export default function ClosingCostsModal({
                   step="50"
                   value={item.amount}
                   onChange={(e) => handleAmountChange(item.id, Number(e.target.value))}
-                  className="w-28 rounded-lg border border-white/10 bg-black/50 px-2.5 py-1.5 text-right font-mono text-xs font-bold text-white focus:border-ring focus:outline-none min-h-[36px]"
+                  className="w-28 rounded-none border border-white/10 bg-black/50 px-2.5 py-1.5 text-right font-mono text-base md:text-xs font-bold text-white focus:border-ring focus:outline-none min-h-[44px]"
                 />
               </div>
             </div>
@@ -193,7 +192,7 @@ export default function ClosingCostsModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-medium text-white/70 hover:bg-white/5 hover:text-white transition min-h-[44px]"
+            className="rounded-none border border-white/10 px-4 py-2.5 text-xs font-medium text-white/70 hover:bg-white/5 hover:text-white transition min-h-[44px]"
           >
             Cancel
           </button>
@@ -201,9 +200,9 @@ export default function ClosingCostsModal({
             type="button"
             onClick={handleApply}
             data-testid="apply-closing-costs-btn"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition shadow-sm min-h-[44px]"
+            className="inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition shadow-sm min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[16px]">check</span>
+            <Check className="h-4 w-4" />
             <span>Apply Closing Costs ({formatCurrency(totalAmount)} · {computedPct.toFixed(1)}%)</span>
           </button>
         </div>

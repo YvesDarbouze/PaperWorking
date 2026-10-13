@@ -9,6 +9,7 @@
  */
 
 import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
+import { secureRandomHex } from '@/lib/utils/secure-id';
 import type {
   SeedVendorRequest,
   VendorProfileData,
@@ -99,6 +100,7 @@ const INITIAL_SEED_REQUESTS: SeedVendorRequest[] = [
 const DEFAULT_VENDOR_PROFILE: VendorProfileData = {
   companyName: 'PaperWorking Trades Co.',
   type: 'General Contractor',
+  vendorSkills: ['General Contractor'],
   specialties: ['Rehab', 'Kitchen remodel', 'Roofing'],
   licensingStates: ['TX', 'CA'],
   serviceAreas: ['Austin, TX', 'Los Angeles, CA'],
@@ -243,7 +245,7 @@ export async function createVendorRequestInStore(
 ): Promise<SeedVendorRequest> {
   ensureVendorBootstrap();
 
-  const id = payload.id || `vreq-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  const id = payload.id || `vreq-${secureRandomHex(12)}`;
   const now = new Date().toISOString();
 
   const record: SeedVendorRequest = {
@@ -254,6 +256,9 @@ export async function createVendorRequestInStore(
     message: payload.message || '',
     requestedAt: payload.requestedAt || now,
     quotedFee: payload.quotedFee,
+    ...(payload.vendorId ? { vendorId: payload.vendorId } : {}),
+    ...(payload.requesterUid ? { requesterUid: payload.requesterUid } : {}),
+    ...(payload.projectLabel ? { projectLabel: payload.projectLabel } : {}),
   };
 
   memoryRequestsCache.set(id, record);
@@ -272,6 +277,9 @@ export async function createVendorRequestInStore(
         });
     } catch (err: any) {
       console.error(`[vendor-store] Failed to create request ${id} in Firestore:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -317,29 +325,42 @@ export async function updateVendorProfileInStore(
     specialties: profile.specialties ?? existing.specialties,
     licensingStates: profile.licensingStates ?? existing.licensingStates,
     serviceAreas: profile.serviceAreas ?? existing.serviceAreas,
+    vendorSkills: profile.vendorSkills ?? existing.vendorSkills,
   };
 
   memoryProfilesCache.set(vendorUid, updated);
 
-  // Sync to marketplace vendor directory
-  const vendorRecord: Partial<VendorRecord> = {
-    id: `vendor-${vendorUid}`,
-    uid: vendorUid,
-    companyName: updated.companyName,
-    type: updated.type,
-    bio: updated.bio,
-    specialties: updated.specialties,
-    licensingStates: updated.licensingStates,
-    serviceAreas: updated.serviceAreas,
-    city: updated.serviceAreas[0]?.split(',')[0] || 'Austin',
-    location: updated.serviceAreas[0] || 'Austin, TX',
-    feeRangeLabel: updated.feeRangeLabel,
-    availability: updated.availability,
-    avgTurnaroundDays: updated.avgTurnaroundDays,
-    verified: true,
-    insuranceVerified: true,
-  };
-  await upsertMarketplaceVendorInStore(vendorRecord as VendorRecord);
+  const vendorId = `vendor-${vendorUid}`;
+  const effectiveSkills = updated.vendorSkills ?? (updated.type ? [updated.type] : []);
+  const hasSkills = Boolean(
+    effectiveSkills && effectiveSkills.length >= 1 && effectiveSkills.length <= 3,
+  );
+
+  // Sync or delist in marketplace vendor directory
+  if (hasSkills) {
+    const primarySkill = effectiveSkills[0] || updated.type || 'General Contractor';
+    const vendorRecord: Partial<VendorRecord> & { vendorSkills?: string[] } = {
+      id: vendorId,
+      uid: vendorUid,
+      companyName: updated.companyName,
+      type: primarySkill,
+      bio: updated.bio,
+      specialties: effectiveSkills || updated.specialties,
+      vendorSkills: effectiveSkills,
+      licensingStates: updated.licensingStates,
+      serviceAreas: updated.serviceAreas,
+      city: updated.serviceAreas[0]?.split(',')[0] || 'Austin',
+      location: updated.serviceAreas[0] || 'Austin, TX',
+      feeRangeLabel: updated.feeRangeLabel,
+      availability: updated.availability,
+      avgTurnaroundDays: updated.avgTurnaroundDays,
+      verified: true,
+      insuranceVerified: true,
+    };
+    await upsertMarketplaceVendorInStore(vendorRecord as VendorRecord);
+  } else if (updated.vendorSkills && updated.vendorSkills.length === 0) {
+    await deleteMarketplaceVendorFromStore(vendorId);
+  }
 
   if (shouldAttemptFirestore()) {
     try {
@@ -357,6 +378,9 @@ export async function updateVendorProfileInStore(
         );
     } catch (err: any) {
       console.error(`[vendor-store] Failed to save profile ${vendorUid} to Firestore:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -402,13 +426,52 @@ export async function listMarketplaceVendorsFromStore(filters?: {
     const needle = filters.type.toLowerCase();
     list = list.filter((v) => {
       const vendorType = String(v.type ?? '').toLowerCase();
-      if (needle === 'lawyer') return vendorType === 'lawyer' || vendorType === 'attorney';
-      if (needle === 'listing agent') return vendorType === 'listing agent' || vendorType === 'agent';
-      return vendorType === needle;
+      const rawSkills: string[] = ((v as any).vendorSkills ?? v.specialties ?? []);
+      const skills = rawSkills.map((s) => String(s).toLowerCase());
+      if (needle === 'lawyer' || needle === 'attorneys') {
+        return (
+          vendorType === 'lawyer' ||
+          vendorType === 'attorney' ||
+          skills.some((s) => s.includes('attorney') || s.includes('lawyer'))
+        );
+      }
+      if (needle === 'listing agent' || needle === 'agents') {
+        return (
+          vendorType === 'listing agent' ||
+          vendorType === 'agent' ||
+          skills.some((s) => s.includes('broker') || s.includes('agent'))
+        );
+      }
+      return vendorType === needle || skills.some((s) => s.includes(needle));
+    });
+  }
+
+  if (filters?.search) {
+    const q = filters.search.toLowerCase().trim();
+    list = list.filter((v) => {
+      const name = String(v.companyName ?? '').toLowerCase();
+      const type = String(v.type ?? '').toLowerCase();
+      const bio = String(v.bio ?? '').toLowerCase();
+      const rawSkills: string[] = ((v as any).vendorSkills ?? v.specialties ?? []);
+      const skills = rawSkills.map((s) => String(s).toLowerCase());
+      return name.includes(q) || type.includes(q) || bio.includes(q) || skills.some((s) => s.includes(q));
     });
   }
 
   return list;
+}
+
+export async function deleteMarketplaceVendorFromStore(id: string): Promise<void> {
+  ensureVendorBootstrap();
+  memoryVendorsCache.delete(id);
+  if (shouldAttemptFirestore()) {
+    try {
+      const db = getAdminFirestore();
+      await db.collection('marketplace_vendors').doc(id).delete();
+    } catch (err: any) {
+      console.warn(`[vendor-store] Firestore delete failed for vendor ${id}:`, err?.message || err);
+    }
+  }
 }
 
 export async function getMarketplaceVendorFromStore(id: string): Promise<VendorRecord | null> {
@@ -442,6 +505,9 @@ export async function upsertMarketplaceVendorInStore(
         );
     } catch (err: any) {
       console.error(`[vendor-store] Failed to save marketplace vendor ${id} in Firestore:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 

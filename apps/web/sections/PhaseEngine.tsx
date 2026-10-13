@@ -21,7 +21,7 @@ const PHASES = [
   {
     num: '03.',
     name: 'Hold',
-    focus: 'Execute rehabs, log contractor draws line-by-line, source pros via the Vendor Marketplace, and auto-collect rents.',
+    focus: 'Execute rehabs, log contractor draws line-by-line, source pros via the Vendor Directory, and auto-collect rents.',
     outputLabel: 'Live Dashboards',
     outputVal: 'Real-Time Cost Basis, Budget-vs-Actual, Daily Holding Burn, Live NOI.',
   },

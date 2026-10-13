@@ -63,7 +63,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-black/20 p-8 text-sm text-white/65">
+      <div className="rounded-none border border-white/10 bg-black/20 p-8 text-sm text-white/65">
         Loading scorecard…
       </div>
     );
@@ -71,7 +71,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
 
   if (error || !payload?.kpis?.scorecard) {
     return (
-      <div className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
+      <div className="rounded-none border border-red-400/20 bg-red-950/20 p-6 text-sm text-red-100">
         {error ?? 'Scorecard unavailable'}
       </div>
     );
@@ -95,7 +95,7 @@ export default function ProjectScorecardPanel({ projectId }: { projectId: string
         </p>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-white/10">
+      <section className="overflow-hidden rounded-none border border-white/10">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-white/[0.04] text-white/55">
             <tr>

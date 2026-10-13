@@ -1049,14 +1049,14 @@ export default function CommandCenterPanel({
               <MapPin className="h-8 w-8 text-muted-foreground/60" />
               <p className="text-sm font-medium text-foreground">Deal map preview</p>
               <p className="max-w-md text-xs text-muted-foreground">
-                Live map tiles connect when Bridge/MLS adapters are wired. Explore vendor marketplace
+                Live map tiles connect when Bridge/MLS adapters are wired. Explore vendor directory
                 for the current seed surface.
               </p>
               <Link
                 href="/dashboard/marketplace"
                 className="mt-2 inline-flex min-h-[44px] items-center text-xs font-semibold text-primary no-underline hover:underline"
               >
-                Open marketplace →
+                Open directory →
               </Link>
             </div>
           </div>

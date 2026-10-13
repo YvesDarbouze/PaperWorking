@@ -39,7 +39,8 @@ export function resolvePrimaryNav(ctx: NavigationContext): NavItem[] {
   if (isVendor) {
     return [
       { id: 'portfolio', label: 'Portfolio', href: '/dashboard', icon: 'analytics', rolesAllowed: ['vendor'] },
-      { id: 'vendor-marketplace', label: 'Vendor Marketplace', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['vendor'] },
+      { id: 'vendor-marketplace', label: 'Vendor Directory', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['vendor'] },
+      { id: 'deals', label: 'Deals Marketplace', href: '/dashboard/deals', icon: 'handshake', rolesAllowed: ['vendor'] },
       { id: 'insights', label: 'Insights', href: '/dashboard/insights', icon: 'insights', rolesAllowed: ['vendor'] },
       { id: 'reports', label: 'Reports', href: '/dashboard/reports', icon: 'description', rolesAllowed: ['vendor'] },
       { id: 'inbox', label: 'Inbox', href: '/dashboard/inbox', icon: 'inbox', rolesAllowed: ['vendor'] },
@@ -106,7 +107,8 @@ export function resolveDrawerNav(ctx?: NavigationContext | null): NavItem[] {
 
   if (isVendor) {
     return [
-      { id: 'marketplace', label: 'Vendor Marketplace', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['vendor'] },
+      { id: 'marketplace', label: 'Vendor Directory', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['vendor'] },
+      { id: 'deals', label: 'Deals Marketplace', href: '/dashboard/deals', icon: 'handshake', rolesAllowed: ['vendor'] },
       { id: 'vendor-portal', label: 'Vendor Portal / RFPs', href: '/vendor-portal', icon: 'request_quote', rolesAllowed: ['vendor'] },
       { id: 'insights', label: 'Insights', href: '/dashboard/insights', icon: 'insights', rolesAllowed: ['vendor'] },
       { id: 'reports', label: 'Reports', href: '/dashboard/reports', icon: 'description', rolesAllowed: ['vendor'] },
@@ -150,7 +152,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/team': 'Team',
   '/dashboard/reports': 'Reports',
   '/dashboard/insights': 'Insights',
-  '/dashboard/marketplace': 'Vendor Marketplace',
+  '/dashboard/marketplace': 'Vendor Directory',
   '/dashboard/profile': 'Profile',
   '/dashboard/settings': 'Settings',
   '/vendor-portal': 'Vendor Portal',

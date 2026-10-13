@@ -1,4 +1,5 @@
 'use client';
+import { Plus, UserPlus } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { formatCurrency, formatPercent } from '@/lib/projects/phase-utils';
@@ -243,7 +244,7 @@ export default function RenovationTierCard({
             onClick={() => setShowAddModal(true)}
             className="min-h-[44px] px-4 py-2 border border-neutral-700 bg-neutral-900 text-xs font-semibold text-white hover:bg-neutral-800 transition rounded-none flex items-center gap-1.5"
           >
-            <span className="material-symbols-outlined text-[15px]">add</span>
+            <Plus size={15} />
             <span>Add SOW Line Item</span>
           </button>
         </div>
@@ -331,7 +332,7 @@ export default function RenovationTierCard({
                         }
                         className="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-white transition rounded-none"
                       >
-                        <span className="material-symbols-outlined text-[15px]">person_add</span>
+                        <UserPlus size={15} />
                       </button>
                     </div>
                   </td>

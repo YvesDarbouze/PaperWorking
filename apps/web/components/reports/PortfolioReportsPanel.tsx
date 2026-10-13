@@ -3,6 +3,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import {
+  ArrowClockwise,
+  FileText,
+  FolderDashed,
+  Plus,
+  Printer,
+  Table,
+  WarningCircle,
+} from '@phosphor-icons/react';
 import Button from '@/components/ui/Button';
 import ReportCatalogGrid from '@/components/reports/ReportCatalogGrid';
 import FinancialStatementGrid from '@/components/reports/FinancialStatementGrid';
@@ -283,11 +292,11 @@ export default function PortfolioReportsPanel({
   if (projects.length === 0 || isDemoEmpty) {
     return (
       <div className="mx-auto w-full max-w-7xl px-6 py-16 text-center" data-testid="reports-empty-state">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-border-subtle bg-surface text-accent mb-6">
-          <span className="material-symbols-outlined text-[32px]">folder_off</span>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-none border border-border bg-card text-foreground mb-6 shadow-sm ring-1 ring-foreground/10">
+          <FolderDashed weight="regular" className="h-8 w-8 text-foreground" />
         </div>
-        <h2 className="text-xl font-bold tracking-tight text-text-primary">No Properties Added Yet</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">No Properties Added Yet</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
           Add your first real estate deal to generate multi-period P&amp;L statements, Balance Sheets, and CPA-ready Schedule E tax packages.
         </p>
         <div className="mt-8 flex justify-center">
@@ -297,7 +306,7 @@ export default function PortfolioReportsPanel({
             size="lg"
             roleVariant="cta"
             href="/projects/new"
-            icon={<span className="material-symbols-outlined text-[18px]">add</span>}
+            icon={<Plus weight="bold" className="h-4 w-4" />}
             data-testid="empty-create-project-btn"
           >
             Create New Project
@@ -311,10 +320,10 @@ export default function PortfolioReportsPanel({
   if (hasApiError || isDemoError) {
     return (
       <div className="mx-auto w-full max-w-7xl px-6 py-12" data-testid="reports-error-state">
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-danger/30 bg-danger/10 p-10 text-center">
-          <span className="material-symbols-outlined text-[40px] text-danger mb-3">error</span>
-          <h2 className="text-lg font-bold text-text-primary">Unable to Generate Report Data</h2>
-          <p className="mt-1 text-xs text-text-muted max-w-md">
+        <div className="flex flex-col items-center justify-center rounded-none border border-destructive/30 bg-destructive/10 p-10 text-center">
+          <WarningCircle weight="bold" className="h-10 w-10 text-destructive mb-3" />
+          <h2 className="text-lg font-bold text-foreground">Unable to Generate Report Data</h2>
+          <p className="mt-1 text-xs text-muted-foreground max-w-md">
             An error occurred communicating with the financial reporting engine.
           </p>
           <div className="mt-6">
@@ -322,7 +331,7 @@ export default function PortfolioReportsPanel({
               variant="secondary"
               size="md"
               onClick={() => setHasApiError(false)}
-              icon={<span className="material-symbols-outlined text-[16px]">refresh</span>}
+              icon={<ArrowClockwise weight="bold" className="h-4 w-4" />}
             >
               Retry Connection
             </Button>
@@ -333,18 +342,18 @@ export default function PortfolioReportsPanel({
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-8 px-6 py-8 text-text-primary" data-testid="tax-intelligence-page">
+    <div className="mx-auto w-full max-w-7xl space-y-8 px-6 py-8 text-foreground" data-testid="tax-intelligence-page">
       {/* Header: Button Constitution dictates ZERO primary buttons on populated analytics surface */}
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border-subtle pb-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1
-            className="flex items-center gap-2.5 text-2xl font-black tracking-tight text-text-primary"
+            className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-foreground"
             data-testid="tax-intelligence-title"
           >
-            <span className="material-symbols-outlined text-[28px] text-accent">description</span>
+            <FileText weight="bold" className="h-7 w-7 text-foreground" />
             Reports
           </h1>
-          <p className="mt-1.5 text-sm text-text-muted">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             P&amp;L statements and tax reporting by period
           </p>
         </div>
@@ -355,7 +364,7 @@ export default function PortfolioReportsPanel({
             variant="secondary"
             size="md"
             onClick={handleExportCsv}
-            icon={<span className="material-symbols-outlined text-[16px] text-accent">table_chart</span>}
+            icon={<Table weight="bold" className="h-4 w-4" />}
             data-testid="export-csv-btn"
           >
             Export to CSV
@@ -364,7 +373,7 @@ export default function PortfolioReportsPanel({
             variant="secondary"
             size="md"
             onClick={handleExportPdf}
-            icon={<span className="material-symbols-outlined text-[16px]">print</span>}
+            icon={<Printer weight="bold" className="h-4 w-4" />}
             data-testid="export-pdf-btn"
           >
             Export PDF
@@ -373,11 +382,11 @@ export default function PortfolioReportsPanel({
       </div>
 
       {/* Control Bar: Scope, Period Granularity, Fiscal Year, Data Source */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border-subtle bg-surface/60 p-4 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-none border border-border bg-card p-4 shadow-sm ring-1 ring-foreground/10">
         <div className="flex flex-wrap items-center gap-4">
           {/* Scope Selector */}
           <div className="flex items-center gap-2">
-            <label htmlFor="project-scope-select" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+            <label htmlFor="project-scope-select" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Scope
             </label>
             <select
@@ -385,7 +394,7 @@ export default function PortfolioReportsPanel({
               data-testid="project-filter"
               value={projectScope}
               onChange={(e) => setProjectScope(e.target.value)}
-              className="h-9 cursor-pointer rounded-lg border border-border-subtle bg-elevated px-3 text-xs font-semibold text-text-primary focus:outline-none focus:border-accent"
+              className="h-10 cursor-pointer rounded-none border border-input bg-background px-3 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
             >
               <option value={ALL_PROJECTS}>Portfolio Aggregate ({projects.length})</option>
               {projects.map((p) => (
@@ -398,7 +407,7 @@ export default function PortfolioReportsPanel({
 
           {/* Period Segmented Toggle (Oldest -> Newest) */}
           <div
-            className="flex items-center rounded-lg border border-border-subtle bg-app/40 p-1"
+            className="flex items-center rounded-none border border-border bg-muted/40 p-0.5"
             role="tablist"
             data-testid="period-tabs"
           >
@@ -413,10 +422,10 @@ export default function PortfolioReportsPanel({
                   aria-selected={isActive}
                   data-testid={`period-tab-${tab}`}
                   onClick={() => setGranularity(tab)}
-                  className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition ${
+                  className={`cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition min-h-[44px] flex items-center justify-center ${
                     isActive
-                      ? 'bg-accent text-surface shadow-md'
-                      : 'text-text-muted hover:text-text-primary'
+                      ? 'bg-primary text-primary-foreground shadow-none'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {label}
@@ -427,7 +436,7 @@ export default function PortfolioReportsPanel({
 
           {/* Fiscal Year Selector */}
           <div className="flex items-center gap-2">
-            <label htmlFor="fiscal-year-select" className="text-xs font-bold uppercase tracking-wider text-text-muted">
+            <label htmlFor="fiscal-year-select" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Fiscal Year
             </label>
             <select
@@ -435,7 +444,7 @@ export default function PortfolioReportsPanel({
               data-testid="fiscal-year-select"
               value={fiscalYear}
               onChange={(e) => setFiscalYear(Number(e.target.value))}
-              className="h-9 cursor-pointer rounded-lg border border-border-subtle bg-elevated px-3 text-xs font-semibold text-text-primary focus:outline-none"
+              className="h-10 cursor-pointer rounded-none border border-input bg-background px-3 text-base md:text-xs font-semibold text-foreground focus:outline-none min-h-[44px]"
             >
               <option value={2026}>2026</option>
               <option value={2025}>2025</option>
@@ -445,9 +454,9 @@ export default function PortfolioReportsPanel({
         </div>
 
         {/* Data Source Indicator: No dead Actual toggle per Prompt R2 */}
-        <div className="flex items-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-3 py-1.5 text-[11px] text-text-secondary">
-          <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-          <span>Data Source: <strong className="text-text-primary">Projected (underwriting model)</strong></span>
+        <div className="flex items-center gap-2 rounded-none border border-border bg-muted/50 px-3 py-1.5 text-[11px] text-muted-foreground min-h-[44px]">
+          <span className="h-2 w-2 rounded-none bg-foreground" />
+          <span>Data Source: <strong className="text-foreground">Projected (underwriting model)</strong></span>
         </div>
       </div>
 
@@ -534,7 +543,7 @@ export default function PortfolioReportsPanel({
       {/* Statutory Financial & Legal Disclaimer Banner (Review C3.4) */}
       <div
         data-testid="reports-disclaimer-bar"
-        className="rounded-xl border border-border-subtle bg-surface/50 p-4 text-center text-xs text-text-muted"
+        className="rounded-none border border-border bg-card p-4 text-center text-xs text-muted-foreground shadow-sm ring-1 ring-foreground/10"
       >
         <p>
           <strong>Notice:</strong> Hypothetical illustration based on user-supplied assumptions; not investment, legal, tax, or financial advice; not a prediction or guarantee.

@@ -1,3 +1,5 @@
+import { secureRandomHex } from '../utils/secure-id';
+
 export const SEED_MARKETPLACE_LISTINGS = [
   {
     id: 'listing-1',
@@ -1307,7 +1309,7 @@ export function updateSeedDealVisibility(
   if (!deal) return null;
   deal.visibility = visibility;
   if (visibility === 'private' && !deal.shareToken) {
-    deal.shareToken = `token_${deal.slug || deal.id}_${Date.now().toString(36)}_${Math.sin(deal.id.length).toString(36).substring(2, 8)}`;
+    deal.shareToken = `token_${deal.slug || deal.id}_${secureRandomHex(16)}`;
   }
   return deal;
 }
@@ -1326,7 +1328,7 @@ export function shareSeedDealWith(
     deal.sharedWith.push(cleanRecipient);
   }
   if (!deal.shareToken) {
-    deal.shareToken = `token_${deal.slug || deal.id}_${Date.now().toString(36)}_${Math.sin(deal.id.length).toString(36).substring(2, 8)}`;
+    deal.shareToken = `token_${deal.slug || deal.id}_${secureRandomHex(16)}`;
   }
   return {
     success: true,

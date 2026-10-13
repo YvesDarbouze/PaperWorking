@@ -1,6 +1,33 @@
 'use client';
 
 import { INBOX_TABS, type InboxTabId } from '@/lib/dashboard/shell-seed';
+import {
+  Tray,
+  TrendUp,
+  CheckSquare,
+  Briefcase,
+  Users,
+  WarningCircle,
+} from '@phosphor-icons/react';
+
+function getTabIcon(tabId: InboxTabId) {
+  switch (tabId) {
+    case 'all':
+      return Tray;
+    case 'opportunities':
+      return TrendUp;
+    case 'tasks':
+      return CheckSquare;
+    case 'vendor':
+      return Briefcase;
+    case 'team':
+      return Users;
+    case 'system':
+      return WarningCircle;
+    default:
+      return Tray;
+  }
+}
 
 export default function InboxTabs({
   activeTab,
@@ -13,13 +40,14 @@ export default function InboxTabs({
 }) {
   return (
     <div
-      className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-white/10 bg-[#0d0a0b]/50 px-4 py-3 backdrop-blur-md sm:px-6"
+      className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b border-border bg-muted/20 px-4 py-2.5 sm:px-6"
       role="tablist"
       data-testid="inbox-tabs"
     >
       {INBOX_TABS.map((tab) => {
         const isActive = activeTab === tab.id;
         const count = unreadCounts[tab.id];
+        const Icon = getTabIcon(tab.id);
 
         return (
           <button
@@ -29,25 +57,20 @@ export default function InboxTabs({
             role="tab"
             aria-selected={isActive}
             onClick={() => onTabChange(tab.id)}
-            className={`inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border px-3.5 py-2 text-[12px] font-semibold tracking-wide transition-all duration-200 sm:px-4 sm:text-sm ${
+            className={`inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-none border px-3.5 py-2 text-xs font-semibold tracking-wide transition min-h-[44px] ${
               isActive
-                ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300 shadow-[0_0_15px_-3px_rgba(16,185,129,0.25)]'
-                : 'border-white/5 bg-white/[0.02] text-[#9E9DA0] hover:border-white/10 hover:bg-white/5'
+                ? 'border-border bg-card text-foreground shadow-sm ring-1 ring-foreground/10'
+                : 'border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground'
             }`}
           >
-            <span
-              className={`material-symbols-outlined shrink-0 text-[16px] leading-none ${
-                isActive ? 'text-emerald-300' : 'text-[#9E9DA0]'
-              }`}
-              style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}
-            >
-              {tab.icon}
-            </span>
-            <span className={isActive ? 'text-emerald-300' : 'text-[#9E9DA0]'}>{tab.label}</span>
+            <Icon size={16} />
+            <span>{tab.label}</span>
             {count > 0 ? (
               <span
-                className={`inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full px-1.5 text-[9px] font-bold leading-none ${
-                  isActive ? 'bg-emerald-500 text-slate-950' : 'bg-white/10 text-[#9E9DA0]'
+                className={`inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-none px-1.5 text-[9px] font-mono font-bold leading-none ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted border border-border text-foreground'
                 }`}
               >
                 {count > 99 ? '99+' : count}

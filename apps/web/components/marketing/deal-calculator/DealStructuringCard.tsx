@@ -2,6 +2,18 @@
 
 import React from 'react';
 import type { DealStructuringMetrics } from '@paperworking/financial-engine';
+import {
+  TreeStructure,
+  Bank,
+  Money,
+  Gauge,
+  Handshake,
+  Timer,
+  User,
+  UserPlus,
+  Users,
+  ChartPie,
+} from '@phosphor-icons/react';
 
 export type FinancingModality =
   | 'cash'
@@ -75,21 +87,19 @@ export default function DealStructuringCard({
   return (
     <div
       data-testid="deal-structuring-card"
-      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-5"
+      className="rounded-none border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-5"
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-3">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-white/70 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">
-              account_tree
-            </span>
+            <TreeStructure className="h-4 w-4 text-primary" />
             <span>What Kind of Deal Do You Want to Do?</span>
           </h2>
           <p className="text-[11px] text-white/50 mt-0.5">
             Determine your capital stack, financing structure, and partner participation.
           </p>
         </div>
-        <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+        <span className="rounded-none bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
           Structure Engine
         </span>
       </div>
@@ -101,28 +111,27 @@ export default function DealStructuringCard({
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2" role="group" aria-label="Financing Modality">
           {[
-            { id: 'conventional', label: 'Conventional', icon: 'account_balance', desc: 'Bank / agency debt' },
-            { id: 'cash', label: 'All Cash', icon: 'payments', desc: '100% equity, no debt' },
-            { id: 'hard_money', label: 'Hard Money', icon: 'speed', desc: 'Short-term bridge' },
-            { id: 'owner_financing', label: 'Owner Financed', icon: 'handshake', desc: 'Seller carries note' },
-            { id: 'balloon', label: 'Balloon Note', icon: 'timer', desc: 'Fixed payoff due' },
+            { id: 'conventional', label: 'Conventional', icon: Bank, desc: 'Bank / agency debt' },
+            { id: 'cash', label: 'All Cash', icon: Money, desc: '100% equity, no debt' },
+            { id: 'hard_money', label: 'Hard Money', icon: Gauge, desc: 'Short-term bridge' },
+            { id: 'owner_financing', label: 'Owner Financed', icon: Handshake, desc: 'Seller carries note' },
+            { id: 'balloon', label: 'Balloon Note', icon: Timer, desc: 'Fixed payoff due' },
           ].map((item) => {
             const isSelected = financingModality === item.id;
+            const Icon = item.icon;
             return (
               <button
                 key={item.id}
                 type="button"
                 data-testid={`financing-modality-${item.id}`}
                 onClick={() => onSelectModality(item.id as FinancingModality)}
-                className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition min-h-[56px] ${
+                className={`flex flex-col items-center justify-center rounded-none border p-2.5 text-center transition min-h-[56px] ${
                   isSelected
-                    ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
+                    ? 'border-primary bg-primary/10 text-white'
                     : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white hover:border-white/20'
                 }`}
               >
-                <span className={`material-symbols-outlined text-[18px] mb-1 ${isSelected ? 'text-[color:var(--color-primary)]' : 'text-white/40'}`}>
-                  {item.icon}
-                </span>
+                <Icon className={`h-4 w-4 mb-1 ${isSelected ? 'text-primary' : 'text-white/40'}`} />
                 <span className="text-xs font-bold leading-tight">{item.label}</span>
                 <span className="text-[9.5px] text-white/40 mt-0.5">{item.desc}</span>
               </button>
@@ -133,7 +142,7 @@ export default function DealStructuringCard({
 
       {/* Conditional Modality Inputs */}
       {financingModality === 'hard_money' && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/20 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-none border border-white/10 bg-black/20 text-xs">
           <div>
             <label htmlFor="hard-money-points" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Origination Points (%)
@@ -144,7 +153,7 @@ export default function DealStructuringCard({
               step="0.5"
               value={hardMoneyPoints}
               onChange={(e) => onChangeHardMoneyPoints(Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -157,7 +166,7 @@ export default function DealStructuringCard({
               step="0.25"
               value={hardMoneyInterestRatePct}
               onChange={(e) => onChangeHardMoneyRate(Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -169,14 +178,14 @@ export default function DealStructuringCard({
               type="number"
               value={hardMoneyTermMonths}
               onChange={(e) => onChangeHardMoneyTerm(Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
       )}
 
       {financingModality === 'balloon' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl border border-white/10 bg-black/20 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-none border border-white/10 bg-black/20 text-xs">
           <div>
             <label htmlFor="balloon-term-months" className="block text-[10.5px] font-medium text-white/50 mb-1">
               Balloon Payoff Term (Months)
@@ -186,7 +195,7 @@ export default function DealStructuringCard({
               type="number"
               value={balloonTermMonths}
               onChange={(e) => onChangeBalloonTerm(Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div className="flex items-center text-[11px] text-white/50">
@@ -206,44 +215,43 @@ export default function DealStructuringCard({
               id: 'solo',
               title: 'Solo / Self-Funded',
               desc: '100% operator equity, keep 100% of cash flow',
-              icon: 'person',
+              icon: User,
             },
             {
               id: 'partner_down_payment',
               title: 'Partner for Down Payment',
               desc: 'Partner provides cash required for an equity share',
-              icon: 'group_add',
+              icon: UserPlus,
             },
             {
               id: 'partner_whole_deal',
               title: 'Partner for Whole Deal (JV)',
               desc: 'Joint venture split across all acquisition and operations',
-              icon: 'handshake',
+              icon: Handshake,
             },
             {
               id: 'crowdfund',
               title: 'Crowdfund / Syndication',
               desc: 'Pool multiple investors with preferred returns',
-              icon: 'diversity_3',
+              icon: Users,
             },
           ].map((item) => {
             const isSelected = capitalSeekingIntent === item.id;
+            const Icon = item.icon;
             return (
               <button
                 key={item.id}
                 type="button"
                 data-testid={`capital-intent-${item.id}`}
                 onClick={() => onSelectIntent(item.id as CapitalSeekingIntent)}
-                className={`flex flex-col text-left rounded-xl border p-3 transition min-h-[72px] ${
+                className={`flex flex-col text-left rounded-none border p-3 transition min-h-[72px] ${
                   isSelected
-                    ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-white'
+                    ? 'border-primary bg-primary/10 text-white'
                     : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white hover:border-white/20'
                 }`}
               >
                 <div className="flex items-center gap-1.5 mb-1">
-                  <span className={`material-symbols-outlined text-[16px] ${isSelected ? 'text-[color:var(--color-primary)]' : 'text-white/40'}`}>
-                    {item.icon}
-                  </span>
+                  <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-primary' : 'text-white/40'}`} />
                   <span className="text-xs font-bold text-white">{item.title}</span>
                 </div>
                 <span className="text-[10px] text-white/50 leading-relaxed">{item.desc}</span>
@@ -255,10 +263,10 @@ export default function DealStructuringCard({
 
       {/* Partner Equity Split Slider */}
       {(capitalSeekingIntent === 'partner_down_payment' || capitalSeekingIntent === 'partner_whole_deal') && (
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3">
+        <div className="rounded-none border border-white/10 bg-black/20 p-4 space-y-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-white">Equity & Cash Flow Split</span>
-            <span className="font-mono font-semibold text-[color:var(--color-primary)]">
+            <span className="font-bold text-white">Equity &amp; Cash Flow Split</span>
+            <span className="font-mono font-semibold text-primary">
               {100 - partnerEquitySplitPct}% Operator / {partnerEquitySplitPct}% Partner
             </span>
           </div>
@@ -282,7 +290,7 @@ export default function DealStructuringCard({
 
       {/* Crowdfunding / Syndication Parameters */}
       {capitalSeekingIntent === 'crowdfund' && (
-        <div className="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3 text-xs">
+        <div className="rounded-none border border-white/10 bg-black/20 p-4 space-y-3 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label htmlFor="crowdfund-target-raise" className="block text-[10.5px] font-medium text-white/50 mb-1">
@@ -293,7 +301,7 @@ export default function DealStructuringCard({
                 type="number"
                 value={targetCapitalRaise || totalCashRequired}
                 onChange={(e) => onChangeTargetCapitalRaise(Number(e.target.value))}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
               />
             </div>
             <div>
@@ -305,7 +313,7 @@ export default function DealStructuringCard({
                 type="number"
                 value={minimumInvestmentTicket}
                 onChange={(e) => onChangeMinimumTicket(Number(e.target.value))}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
               />
             </div>
             <div>
@@ -318,7 +326,7 @@ export default function DealStructuringCard({
                 step="0.5"
                 value={preferredReturnPct}
                 onChange={(e) => onChangePreferredReturn(Number(e.target.value))}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[40px]"
+                className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
               />
             </div>
           </div>
@@ -332,12 +340,12 @@ export default function DealStructuringCard({
       {structuringMetrics && (
         <div
           data-testid="structuring-live-metrics"
-          className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs space-y-3"
+          className="rounded-none border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs space-y-3"
         >
           <div className="flex items-center justify-between">
             <span className="font-bold text-emerald-300 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px]">pie_chart</span>
-              <span>Reconciled Capital Allocation & Returns</span>
+              <ChartPie className="h-4 w-4" />
+              <span>Reconciled Capital Allocation &amp; Returns</span>
             </span>
             <span className="text-[10px] font-mono text-white/40">
               Total Cash: {formatCurrency(totalCashRequired)}
@@ -345,25 +353,25 @@ export default function DealStructuringCard({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono">
-            <div className="rounded-lg bg-black/30 p-2 border border-white/5">
+            <div className="rounded-none bg-black/30 p-2 border border-white/5">
               <span className="block text-[9.5px] text-white/40 uppercase">Operator Cash</span>
               <span className="block font-bold text-white">
                 {formatCurrency(structuringMetrics.operatorCashInvested)}
               </span>
             </div>
-            <div className="rounded-lg bg-black/30 p-2 border border-white/5">
+            <div className="rounded-none bg-black/30 p-2 border border-white/5">
               <span className="block text-[9.5px] text-white/40 uppercase">Partner Cash</span>
               <span className="block font-bold text-white">
                 {formatCurrency(structuringMetrics.partnerCashInvested)}
               </span>
             </div>
-            <div className="rounded-lg bg-black/30 p-2 border border-white/5">
+            <div className="rounded-none bg-black/30 p-2 border border-white/5">
               <span className="block text-[9.5px] text-white/40 uppercase">Operator Cash Flow</span>
               <span className="block font-bold text-emerald-400">
                 {formatCurrency(structuringMetrics.operatorAnnualCashFlow)}/yr
               </span>
             </div>
-            <div className="rounded-lg bg-black/30 p-2 border border-white/5">
+            <div className="rounded-none bg-black/30 p-2 border border-white/5">
               <span className="block text-[9.5px] text-white/40 uppercase">Operator CoC %</span>
               <span className="block font-bold text-emerald-400">
                 {structuringMetrics.operatorCoCReturnPct !== null

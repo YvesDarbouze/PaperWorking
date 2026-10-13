@@ -11,6 +11,7 @@ import {
   type StepInputField,
 } from '@/lib/projects/reil-conversational-steps';
 import AssignOrInviteModal from './AssignOrInviteModal';
+import { Scales, FolderOpen, FileText } from '@phosphor-icons/react';
 
 export interface ConversationalStepWizardProps {
   project: ProjectWorkspace;
@@ -486,7 +487,7 @@ export default function ConversationalStepWizard({
         {/* Why this matters (Legal & Financial Rationale) */}
         <div className="border border-neutral-800 bg-neutral-900/60 p-4 sm:p-5 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-neutral-400">balance</span>
+            <Scales size={16} className="text-neutral-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
               Why this matters (Legal &amp; Financial Rationale)
             </span>
@@ -548,7 +549,7 @@ export default function ConversationalStepWizard({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-neutral-400">folder_open</span>
+              <FolderOpen size={16} className="text-neutral-400" />
               <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
                 Required Phase Documentation ({currentStep.requiredDocuments.length})
               </span>
@@ -568,9 +569,7 @@ export default function ConversationalStepWizard({
                 className="flex items-center justify-between border border-neutral-800 bg-neutral-950 p-2.5 text-xs"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[14px] text-neutral-400 shrink-0">
-                    description
-                  </span>
+                  <FileText size={14} className="text-neutral-400 shrink-0" />
                   <span className="truncate text-neutral-200" title={docName}>
                     {docName}
                   </span>

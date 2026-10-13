@@ -177,6 +177,7 @@ export {
   acquisitionRoleSchema,
   projectTeamMemberSchema,
   acquisitionTaskStatusSchema,
+  acquisitionSubtaskSchema,
   acquisitionTaskSchema,
   getStrategyTemplateDefaults,
   financingModalityEnum,
@@ -229,7 +230,11 @@ export {
   type ProjectTeamMember,
   type AcquisitionTaskStatus,
   type AcquisitionTask,
+  type AcquisitionSubtask,
   type StrategyTemplateDefaults,
 } from './acquisitionSchema.js';
+
+// ── Project collaboration tools (message board, to-dos, schedule, guests) ──
+export * from './projectBasecampSchema.js';
 
 

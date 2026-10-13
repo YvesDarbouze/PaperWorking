@@ -4,6 +4,29 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { REIL_PHASES, type ReilPhaseKey } from '@/lib/projects/reil-phases';
 import type { ProjectSummary } from '@/lib/projects/types';
+import {
+  Buildings,
+  Bank,
+  Wrench,
+  SignOut,
+  Plus,
+  FolderSimpleDashed,
+} from '@phosphor-icons/react';
+
+function getPhaseIcon(key: ReilPhaseKey) {
+  switch (key) {
+    case 'acquisition':
+      return Buildings;
+    case 'purchase':
+      return Bank;
+    case 'hold':
+      return Wrench;
+    case 'exit':
+      return SignOut;
+    default:
+      return Buildings;
+  }
+}
 
 function PhaseColumnHeader({
   phase,
@@ -14,66 +37,43 @@ function PhaseColumnHeader({
   count: number;
   onAdd?: () => void;
 }) {
+  const Icon = getPhaseIcon(phase.key);
+
   return (
-    <div className="flex flex-shrink-0 flex-col gap-3 pb-4">
-      <div className="h-0.5 rounded-full" style={{ background: phase.color }} />
+    <div className="flex flex-shrink-0 flex-col gap-2.5 pb-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div
-            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
-            style={{ background: `${phase.colorAlpha}0.15)` }}
-          >
-            <span
-              className="material-symbols-outlined text-[16px]"
-              style={{ color: phase.color, fontVariationSettings: "'FILL' 0" }}
-            >
-              {phase.icon}
-            </span>
+          <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+            <Icon size={16} weight="regular" />
           </div>
-          <span
-            className="text-[14px] font-bold tracking-[-0.01em]"
-            style={{ color: 'rgba(253,255,252,0.92)' }}
-          >
+          <span className="text-sm font-bold tracking-tight text-foreground">
             {phase.label}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums"
-            style={{
-              background: `${phase.colorAlpha}0.12)`,
-              color: phase.color,
-              border: `1px solid ${phase.colorAlpha}0.20)`,
-            }}
-          >
+        <div className="flex items-center gap-1.5">
+          <span className="rounded-none border border-border bg-muted px-2 py-0.5 font-mono text-[11px] font-semibold text-foreground tabular-nums">
             {count}
           </span>
           {onAdd ? (
             <button
               type="button"
               onClick={onAdd}
-              className="flex h-6 w-6 items-center justify-center rounded-md transition-opacity hover:opacity-70"
-              style={{ background: `${phase.colorAlpha}0.15)`, color: phase.color }}
+              className="flex h-6 w-6 items-center justify-center rounded-none border border-border bg-muted/60 text-foreground transition hover:bg-muted"
               aria-label={`Add project to ${phase.label}`}
             >
-              <span className="material-symbols-outlined text-[15px]">add</span>
+              <Plus size={14} weight="bold" />
             </button>
           ) : null}
         </div>
       </div>
-      <p className="text-[12px] leading-relaxed" style={{ color: 'rgba(253,255,252,0.38)' }}>
+      <p className="text-xs leading-relaxed text-muted-foreground">
         {phase.description}
       </p>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-1">
         {phase.activities.map((activity) => (
           <span
             key={activity}
-            className="rounded-full px-2 py-0.5 text-[10px]"
-            style={{
-              background: `${phase.colorAlpha}0.08)`,
-              color: `${phase.colorAlpha}0.70)`,
-              border: `1px solid ${phase.colorAlpha}0.12)`,
-            }}
+            className="rounded-none border border-border bg-muted/30 px-1.5 py-0.5 text-[10px] text-muted-foreground"
           >
             {activity}
           </span>
@@ -91,35 +91,19 @@ function EmptyLane({
   onAdd?: () => void;
 }) {
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-3 rounded-2xl py-10 text-center"
-      style={{
-        background: `${phase.colorAlpha}0.03)`,
-        border: `1px dashed ${phase.colorAlpha}0.15)`,
-      }}
-    >
-      <span
-        className="material-symbols-outlined text-[28px]"
-        style={{ color: `${phase.colorAlpha}0.25)`, fontVariationSettings: "'FILL' 0" }}
-      >
-        {phase.icon}
-      </span>
-      <p className="text-[12px]" style={{ color: 'rgba(253,255,252,0.25)' }}>
+    <div className="flex flex-col items-center justify-center gap-2 rounded-none border border-dashed border-border bg-card/50 py-10 text-center">
+      <FolderSimpleDashed size={24} className="text-muted-foreground/50" />
+      <p className="text-xs text-muted-foreground">
         No deals in {phase.label}
       </p>
       {onAdd ? (
         <button
           type="button"
           onClick={onAdd}
-          className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-opacity hover:opacity-70"
-          style={{
-            background: `${phase.colorAlpha}0.10)`,
-            color: phase.color,
-            border: `1px solid ${phase.colorAlpha}0.20)`,
-          }}
+          className="mt-1 flex items-center gap-1 rounded-none border border-border bg-muted px-2.5 py-1 text-xs font-semibold text-foreground transition hover:bg-muted/80 min-h-[32px]"
         >
-          <span className="material-symbols-outlined text-[14px]">add</span>
-          Add first deal
+          <Plus size={12} weight="bold" />
+          <span>Add first deal</span>
         </button>
       ) : null}
     </div>
@@ -138,12 +122,9 @@ function KanbanLane({
   renderCard: (project: ProjectSummary) => ReactNode;
 }) {
   return (
-    <div
-      className="flex w-[280px] min-w-[280px] flex-shrink-0 flex-col gap-3 lg:w-auto lg:flex-1"
-      style={{ borderRight: '1px solid rgba(255,255,255,0.04)', paddingRight: 16 }}
-    >
+    <div className="flex w-[290px] min-w-[290px] flex-shrink-0 flex-col gap-3 rounded-none border border-border bg-card p-3 shadow-sm lg:w-auto lg:flex-1">
       <PhaseColumnHeader phase={phase} count={projects.length} onAdd={onAdd} />
-      <div className="h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+      <div className="h-px bg-border" />
       <div className="flex flex-1 flex-col gap-3">
         {projects.length === 0 ? (
           <EmptyLane phase={phase} onAdd={onAdd} />
@@ -180,7 +161,7 @@ export default function REILKanBan({
   }, [projects]);
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-2 lg:gap-5">
+    <div className="flex gap-4 overflow-x-auto pb-4">
       {REIL_PHASES.map((phase) => (
         <KanbanLane
           key={phase.key}

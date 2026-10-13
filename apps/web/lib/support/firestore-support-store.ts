@@ -142,6 +142,9 @@ export async function upsertFaqEntry(faq: FaqEntry): Promise<FaqEntry> {
       await db.collection(FAQ_COLLECTION).doc(entry.id).set(entry, { merge: true });
     } catch (err) {
       console.warn(`[firestore-support-store] Firestore write failed for FAQ ${entry.id}:`, err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 
@@ -235,6 +238,9 @@ export async function upsertGlossaryTerm(term: GlossaryTerm): Promise<GlossaryTe
       await db.collection(GLOSSARY_COLLECTION).doc(id).set(entry, { merge: true });
     } catch (err) {
       console.warn(`[firestore-support-store] Firestore write failed for Glossary ${id}:`, err);
+      if (process.env.NODE_ENV === 'production') {
+        throw err;
+      }
     }
   }
 

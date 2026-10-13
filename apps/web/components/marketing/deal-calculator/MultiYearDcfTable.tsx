@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { DownloadSimple } from '@phosphor-icons/react';
 import type { AnnualProjectionItem } from '@paperworking/financial-engine';
 
 interface MultiYearDcfTableProps {
@@ -68,7 +69,7 @@ export default function MultiYearDcfTable({
   return (
     <div
       data-testid="dcf-projections-table"
-      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+      className="rounded-none border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
         <div>
@@ -84,15 +85,15 @@ export default function MultiYearDcfTable({
 
         <div className="flex items-center gap-2">
           {/* Quick Hold Period Selectors */}
-          <div className="flex items-center gap-1 bg-black/40 rounded-xl p-1 border border-white/10 text-xs">
+          <div className="flex items-center gap-1 bg-black/40 rounded-none p-1 border border-white/10 text-xs">
             {[3, 5, 7, 10, 15, 30].map((yrs) => (
               <button
                 key={yrs}
                 type="button"
                 onClick={() => onChangeHoldPeriod(yrs)}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold transition ${
+                className={`rounded-none px-2.5 py-1 text-[11px] font-mono font-bold transition min-h-[32px] ${
                   holdPeriodYears === yrs
-                    ? 'bg-[color:var(--color-primary)] text-[#0a0a0f]'
+                    ? 'bg-primary text-primary-foreground'
                     : 'text-white/60 hover:text-white'
                 }`}
               >
@@ -105,9 +106,9 @@ export default function MultiYearDcfTable({
             type="button"
             onClick={handleExportCsv}
             data-testid="export-dcf-csv-btn"
-            className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 transition min-h-[36px]"
+            className="flex items-center gap-1.5 rounded-none border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 transition min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[15px]">download</span>
+            <DownloadSimple className="h-4 w-4" />
             <span className="text-[11px] font-medium">Export CSV</span>
           </button>
         </div>

@@ -89,7 +89,7 @@ export default function MarketplacesClient() {
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Vendor Marketplace
+                Vendor Directory
               </button>
             </div>
           </div>

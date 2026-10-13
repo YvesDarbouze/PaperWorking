@@ -99,14 +99,14 @@ export const AVA_KNOWLEDGE_BASE: KnowledgeTopic[] = [
   {
     id: 'hold-phase-draws-vendor',
     category: 'lifecycle',
-    title: 'Hold Phase, Holding Cost Clock, Contractor Draws & Vendor Marketplace',
+    title: 'Hold Phase, Holding Cost Clock, Contractor Draws & Vendor Directory',
     summary:
       'Control rehab execution with live budget-vs-actual tracking, daily holding burn monitoring, and scoped contractor draw workflows.',
     details: [
       'The Holding Cost Clock calculates daily capital burn (interest, taxes, insurance, utilities) so delays show tangible dollar costs.',
       'Budget-vs-actual variance highlights overruns before they compound.',
       'Contractor Draw Workflow: contractors receive scoped access to submit milestone completion and invoices, without seeing overall project equity or financials. Draws remain pending until owner or authorized team member approves.',
-      'Vendor Marketplace integration connects you directly with vetted local trades and general contractors mid-rehab.',
+      'Vendor Directory integration connects you directly with vetted local trades and general contractors mid-rehab.',
     ],
     keyOutcome:
       'Keep rehab projects on schedule and budget by catching cost overruns early and executing milestone-based draw payments.',

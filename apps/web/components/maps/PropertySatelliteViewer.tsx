@@ -1,6 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import {
+  Compass,
+  MapTrifold,
+  ArrowSquareOut,
+  Stack,
+  Minus,
+  Plus,
+} from '@phosphor-icons/react';
 
 export interface PropertySatelliteViewerProps {
   address: string;
@@ -104,7 +112,7 @@ export default function PropertySatelliteViewer({
   return (
     <div
       data-testid="property-satellite-viewer"
-      className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-xl ${aspectClass} ${className}`}
+      className={`relative overflow-hidden rounded-none border border-neutral-800 bg-neutral-950 shadow-xl ${aspectClass} ${className}`}
     >
       {/* Background Image / Map Tile */}
       {tileUrl ? (
@@ -116,11 +124,9 @@ export default function PropertySatelliteViewer({
           loading="lazy"
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-[#0d120f] text-white/40">
+        <div className="flex h-full w-full items-center justify-center bg-neutral-900 text-neutral-400">
           <div className="flex flex-col items-center gap-2 text-center p-4">
-            <span className="material-symbols-outlined text-3xl text-emerald-400/60 animate-pulse">
-              satellite_alt
-            </span>
+            <Compass className="h-8 w-8 text-neutral-400 animate-pulse" />
             <span className="text-xs font-mono uppercase tracking-wider">
               {loading ? 'Resolving Satellite Imagery…' : 'Enter address to view parcel'}
             </span>
@@ -131,10 +137,12 @@ export default function PropertySatelliteViewer({
       {/* Top Banner / Overlay */}
       <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-md">
-            <span className="material-symbols-outlined text-[13px]">
-              {maptype === 'satellite' ? 'satellite_alt' : 'map'}
-            </span>
+          <span className="flex items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+            {maptype === 'satellite' ? (
+              <Compass className="h-3 w-3 text-neutral-300" />
+            ) : (
+              <MapTrifold className="h-3 w-3 text-neutral-300" />
+            )}
             <span>{maptype === 'satellite' ? 'Satellite Parcel View' : 'Roadmap View'}</span>
           </span>
           {title && (
@@ -149,11 +157,11 @@ export default function PropertySatelliteViewer({
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="pointer-events-auto flex items-center gap-1 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[11px] font-medium text-white/70 backdrop-blur-md hover:border-white/30 hover:text-white transition"
+          className="pointer-events-auto flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md hover:border-neutral-500 hover:text-white transition"
           title="Open in Google Maps"
         >
           <span>Google Maps</span>
-          <span className="material-symbols-outlined text-[12px]">open_in_new</span>
+          <ArrowSquareOut className="h-3 w-3 text-neutral-400" />
         </a>
       </div>
 
@@ -161,9 +169,9 @@ export default function PropertySatelliteViewer({
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
         <div className="flex items-center gap-2">
           {coords && (
-            <div className="rounded-lg border border-white/10 bg-black/60 px-2.5 py-1 text-[10px] font-mono text-white/60 backdrop-blur-md">
-              <span className="text-emerald-400">{coords.lat.toFixed(4)}°N</span>,{' '}
-              <span className="text-emerald-400">{coords.lng.toFixed(4)}°W</span> · z{zoom}
+            <div className="rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-mono text-neutral-300 backdrop-blur-md">
+              <span className="text-white">{coords.lat.toFixed(4)}°N</span>,{' '}
+              <span className="text-white">{coords.lng.toFixed(4)}°W</span> · z{zoom}
             </div>
           )}
         </div>
@@ -174,37 +182,37 @@ export default function PropertySatelliteViewer({
             <button
               type="button"
               onClick={() => setMaptype(maptype === 'satellite' ? 'roadmap' : 'satellite')}
-              className="flex items-center gap-1 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-semibold text-white/80 backdrop-blur-md hover:bg-white/10 transition"
+              className="flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-md hover:bg-neutral-800 transition"
               title="Toggle Satellite / Roadmap"
             >
-              <span className="material-symbols-outlined text-[13px]">layers</span>
+              <Stack className="h-3 w-3 text-neutral-400" />
               <span className="capitalize">{maptype === 'satellite' ? 'Road' : 'Satellite'}</span>
             </button>
 
             {/* Zoom Controls */}
-            <div className="flex items-center rounded-lg border border-white/10 bg-black/60 backdrop-blur-md overflow-hidden">
+            <div className="flex items-center rounded-none border border-neutral-700 bg-neutral-900/80 backdrop-blur-md overflow-hidden">
               <button
                 type="button"
                 onClick={() => setZoom((prev) => Math.max(14, prev - 1))}
                 disabled={zoom <= 14}
-                className="px-2 py-1 text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
+                className="px-2 py-1 text-neutral-300 hover:bg-neutral-800 hover:text-white disabled:opacity-30 transition"
                 title="Zoom Out"
                 aria-label="Zoom Out"
               >
-                <span className="material-symbols-outlined text-[14px]">remove</span>
+                <Minus className="h-3 w-3" />
               </button>
-              <span className="border-x border-white/10 px-1.5 py-1 text-[9px] font-mono text-white/40">
+              <span className="border-x border-neutral-700 px-1.5 py-1 text-[9px] font-mono text-neutral-400">
                 {zoom}
               </span>
               <button
                 type="button"
                 onClick={() => setZoom((prev) => Math.min(20, prev + 1))}
                 disabled={zoom >= 20}
-                className="px-2 py-1 text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-30 transition"
+                className="px-2 py-1 text-neutral-300 hover:bg-neutral-800 hover:text-white disabled:opacity-30 transition"
                 title="Zoom In"
                 aria-label="Zoom In"
               >
-                <span className="material-symbols-outlined text-[14px]">add</span>
+                <Plus className="h-3 w-3" />
               </button>
             </div>
           </div>

@@ -662,7 +662,7 @@ export default function HoldFinancialCarryingTasks({
         </div>
       </section>
 
-      {/* Vendor Marketplace Modal */}
+      {/* Vendor Directory Modal */}
       {activeVendorTrade && (
         <div
           role="dialog"

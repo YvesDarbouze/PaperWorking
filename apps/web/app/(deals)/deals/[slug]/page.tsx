@@ -11,6 +11,7 @@ import {
   X,
   FileText,
 } from '@/components/icons/PhosphorIcons';
+import { useOptionalAuth } from '@/context/AuthContext';
 
 export default function DealCreationPage() {
   const params = useParams();
@@ -32,6 +33,9 @@ export default function DealCreationPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  const auth = useOptionalAuth();
+  const isVendor = (auth?.profile?.accountType || '').toLowerCase() === 'vendor';
 
   useEffect(() => {
     if (collisionWarning === 'true') {
@@ -134,6 +138,28 @@ export default function DealCreationPage() {
           View existing deal record →
         </Link>
       </div>
+
+      {/* Vendor Posting Restriction Banner */}
+      {isVendor && (
+        <div
+          data-testid="vendor-deal-posting-blocked-banner"
+          className="rounded-none border border-amber-500/30 bg-amber-950/20 p-4 text-xs text-amber-300 space-y-2"
+        >
+          <div className="font-semibold text-sm">Vendor Posting Restriction</div>
+          <p>
+            Vendors cannot post deals on the Deals Marketplace. Deal posting is reserved for Investors and Investment Teams.
+            Vendors can search published deals and offer professional or trade services directly to deal operators.
+          </p>
+          <div className="pt-1">
+            <Link
+              href="/dashboard/deals"
+              className="inline-flex min-h-[44px] items-center gap-1 font-semibold text-neutral-100 underline hover:text-white"
+            >
+              Browse &amp; Search Deals Marketplace &rarr;
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Amber Collision Warning Banner */}
       {showWarning ? (
@@ -315,7 +341,7 @@ export default function DealCreationPage() {
               </button>
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || isVendor}
                 className="min-h-[44px] inline-flex items-center justify-center gap-2 rounded-none bg-primary px-5 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/80 transition disabled:opacity-50"
               >
                 {saving ? (

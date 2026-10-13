@@ -18,6 +18,12 @@ mock-data/
 
 # runtime calculator snapshot disk fallback
 apps/web/.data/
+.cache/
+.config/
+*.jpg
+*.png
+!apps/web/public/**/*.png
+!apps/web/public/**/*.jpg
 
 # root runtime data dirs
 .data/

@@ -1,4 +1,5 @@
 'use client';
+import { Flask } from '@phosphor-icons/react';
 
 import React from 'react';
 import { ChartFrame } from '@/lib/viz/ChartFrame';
@@ -89,7 +90,7 @@ export default function ProjectComparisonChart({
       data-testid="chart-demo-badge"
       className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300"
     >
-      <span className="material-symbols-outlined text-xs">science</span>
+      <Flask size={12} />
       ILLUSTRATIVE DEMO DATA
     </span>
   ) : null;
@@ -114,7 +115,7 @@ export default function ProjectComparisonChart({
       >
         <div
           style={{ height }}
-          className="flex items-center justify-center rounded-xl border border-dashed border-white/10 text-sm text-white/40"
+          className="flex items-center justify-center rounded-none border border-dashed border-white/10 text-sm text-white/40"
         >
           No Data Available
         </div>

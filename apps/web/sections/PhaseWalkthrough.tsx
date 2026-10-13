@@ -255,7 +255,7 @@ export default function PhaseWalkthrough() {
                 <ul className="space-y-3 pl-4 list-disc marker:text-muted-foreground/60">
                   <li>Track budget-versus-actual variance in real time to avoid cost overruns.</li>
                   <li>Log contractor draws line-by-line and monitor daily holding burn.</li>
-                  <li>Instantly connect with verified professionals near you on the Vendor Marketplace.</li>
+                  <li>Instantly connect with verified professionals near you on the Vendor Directory.</li>
                 </ul>
               </div>
             </div>

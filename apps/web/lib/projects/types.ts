@@ -47,6 +47,9 @@ export interface ProjectDocument {
   phase?: LegacyProjectPhase;
   status?: 'required' | 'uploaded' | 'verified' | 'pending';
   fileSize?: string;
+  mimeType?: string;
+  sizeBytes?: number;
+  uploadedByName?: string;
 }
 
 export interface ProjectDealComponent {
@@ -1099,6 +1102,24 @@ export interface ProjectWorkspace extends ProjectSummary {
   exitPhase?: ExitPhaseDetails;
   userTier?: string;
   propertyState?: string;
+  title?: string;
+  state?: string;
+  zip?: string;
+  coverImageUrl?: string;
+  // Basecamp Project Management Tool Collections
+  messageTopics?: ProjectMessageTopic[];
+  campfireMessages?: ProjectCampfireMessage[];
+  checkInQuestions?: ProjectCheckInQuestion[];
+  /** To-do lists. The to-dos themselves are `tasks` entries carrying `listId`. */
+  taskLists?: ProjectTaskList[];
+  cardColumns?: ProjectCardColumn[];
+  hillChartItems?: ProjectHillChartItem[];
+  scheduleEvents?: ProjectScheduleEvent[];
+  /** External guests (vendors, lenders, title, LPs) who see only items shared with guests. */
+  vendorAccess?: ProjectGuestAccess[];
+  activity?: ProjectActivityEntry[];
+  /** Shareable public links for non-authenticated external view of specific tools */
+  publicShareLinks?: ProjectPublicShareLink[];
 }
 
 export const PROJECT_SUBROUTES = [
@@ -1111,4 +1132,179 @@ export const PROJECT_SUBROUTES = [
 ] as const;
 
 export type ProjectSubrouteSlug = (typeof PROJECT_SUBROUTES)[number]['slug'];
+
+// Basecamp-Inspired Project Management Extensions
+
+export interface ProjectMessageComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorRole: string;
+  authorAvatarUrl?: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface ProjectMessageTopic {
+  id: string;
+  title: string;
+  category: 'announcement' | 'decision' | 'contractor' | 'inspection' | 'general';
+  content: string;
+  author: { id: string; name: string; role: string; avatarUrl?: string };
+  phase: LegacyProjectPhase;
+  createdAt: string;
+  updatedAt: string;
+  vendorVisible: boolean;
+  comments: ProjectMessageComment[];
+}
+
+export interface ProjectCampfireMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface ProjectCheckInResponse {
+  id: string;
+  responderId: string;
+  responderName: string;
+  responderRole: string;
+  answer: string;
+  submittedAt: string;
+}
+
+export interface ProjectCheckInQuestion {
+  id: string;
+  prompt: string;
+  frequency: 'daily' | 'weekly' | 'biweekly';
+  assignedRoles: string[];
+  createdAt: string;
+  responses: ProjectCheckInResponse[];
+}
+
+export interface ProjectTaskList {
+  id: string;
+  title: string;
+  phase: LegacyProjectPhase;
+  createdAt?: string;
+}
+
+export type ProjectTaskItem = AcquisitionTask;
+
+export interface ProjectTaskGroup {
+  id: string;
+  title: string;
+  phase: LegacyProjectPhase;
+  tasks: AcquisitionTask[];
+}
+
+/** Pre-unification to-do shape. Read only by the store migration in project-store.ts. */
+export interface LegacyProjectTaskGroup {
+  id: string;
+  title: string;
+  phase?: LegacyProjectPhase;
+  tasks?: Array<{
+    id: string;
+    title: string;
+    completed?: boolean;
+    assignee?: AssigneeOption;
+    dueDate?: string;
+    notes?: string;
+    subtasks?: Array<{ id: string; title: string; completed?: boolean }>;
+    vendorVisible?: boolean;
+  }>;
+}
+
+export interface ProjectKanbanCard {
+  id: string;
+  title: string;
+  description?: string;
+  columnId: string;
+  priority?: 'low' | 'medium' | 'high';
+  assignee?: AssigneeOption;
+  dueDate?: string;
+  vendorVisible: boolean;
+}
+
+export interface ProjectCardColumn {
+  id: string;
+  title: string;
+  cards: ProjectKanbanCard[];
+}
+
+export interface ProjectHillChartItem {
+  id: string;
+  scopeName: string;
+  position: number; // 0 to 100: 0-50 uphill ("figuring it out"), 50-100 downhill ("executing")
+  phase: LegacyProjectPhase;
+  statusNotes?: string;
+  updatedAt: string;
+}
+
+export interface ProjectScheduleEvent {
+  id: string;
+  title: string;
+  date: string;
+  category: 'contingency' | 'closing' | 'milestone' | 'meeting' | 'inspection';
+  phase: LegacyProjectPhase;
+  isHardDate: boolean;
+  notes?: string;
+  vendorVisible?: boolean;
+  /** 'manual' events are stored; 'contingency' entries are derived read-only from `contingencies`. */
+  source?: 'manual' | 'contingency';
+  status?: string;
+  responsibleParty?: string;
+  createdAt?: string;
+}
+
+export interface ProjectStack {
+  id: string;
+  name: string;
+  description?: string;
+  projectIds: string[];
+  color?: string;
+  organizationId?: string;
+  createdByUid?: string;
+  createdAt?: string;
+}
+
+// Guest access & activity
+
+export type ProjectGuestType = 'vendor' | 'lender' | 'title' | 'limited_partner' | 'other';
+
+export interface ProjectPublicShareLink {
+  token: string;
+  page: 'overview' | 'messages' | 'tasks' | 'card_table' | 'schedule' | 'docs';
+  label?: string;
+  createdAt: string;
+  createdByUid: string;
+  expiresAt?: string;
+  vendorOnly?: boolean;
+}
+
+export interface ProjectGuestAccess {
+  uid: string;
+  name: string;
+  email?: string;
+  company?: string;
+  /** Display label only; every guest sees the same "shared with guests" items. */
+  guestType?: ProjectGuestType;
+  invitedAt: string;
+  invitedByUid: string;
+  personalNote?: string;
+}
+
+export interface ProjectActivityEntry {
+  id: string;
+  at: string;
+  actorUid: string;
+  actorName: string;
+  kind: string;
+  summary: string;
+  targetId?: string;
+  vendorVisible: boolean;
+}
 

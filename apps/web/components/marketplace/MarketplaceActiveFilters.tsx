@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { X } from '@phosphor-icons/react';
 import type { MarketplaceFilterState } from './MarketplaceFilterRail';
 
 export interface MarketplaceActiveFiltersProps {
@@ -60,7 +61,7 @@ export default function MarketplaceActiveFilters({
 
       {/* Search Query Chip */}
       {searchQuery.trim() && (
-        <span className="inline-flex items-center gap-1 rounded-md border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2.5 py-1 font-medium text-[var(--accent)]">
+        <span className="inline-flex items-center gap-1 rounded-none border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-2.5 py-1 font-medium text-[var(--accent)]">
           <span>Search: &quot;{searchQuery}&quot;</span>
           <button
             type="button"
@@ -68,14 +69,14 @@ export default function MarketplaceActiveFilters({
             className="hover:text-white transition"
             aria-label="Remove search filter"
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       )}
 
       {/* Deal Type Chip */}
       {filters.dealType !== 'all' && (
-        <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
+        <span className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
           <span className="capitalize">{filters.dealType}</span>
           <button
             type="button"
@@ -83,14 +84,14 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label="Remove deal type filter"
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       )}
 
       {/* IRR Chip */}
       {filters.minIrr > 5 && (
-        <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
+        <span className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
           <span>IRR &ge; {filters.minIrr}%</span>
           <button
             type="button"
@@ -98,14 +99,14 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label="Remove IRR filter"
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       )}
 
       {/* Max Min Check Chip */}
       {filters.minInvestmentMax < 100000 && (
-        <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
+        <span className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]">
           <span>Min Check &le; ${filters.minInvestmentMax.toLocaleString()}</span>
           <button
             type="button"
@@ -113,7 +114,7 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label="Remove check size filter"
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       )}
@@ -122,7 +123,7 @@ export default function MarketplaceActiveFilters({
       {filters.assetClasses.map((ac) => (
         <span
           key={ac}
-          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
+          className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
         >
           <span>{ac}</span>
           <button
@@ -131,7 +132,7 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label={`Remove ${ac} filter`}
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       ))}
@@ -140,7 +141,7 @@ export default function MarketplaceActiveFilters({
       {filters.markets.map((m) => (
         <span
           key={m}
-          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
+          className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
         >
           <span>{m}</span>
           <button
@@ -149,7 +150,7 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label={`Remove ${m} filter`}
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       ))}
@@ -158,7 +159,7 @@ export default function MarketplaceActiveFilters({
       {filters.holdPeriods.map((hp) => (
         <span
           key={hp}
-          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
+          className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc]"
         >
           <span>Hold: {hp} Yrs</span>
           <button
@@ -167,7 +168,7 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label={`Remove hold period filter`}
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       ))}
@@ -176,7 +177,7 @@ export default function MarketplaceActiveFilters({
       {filters.statuses.map((st) => (
         <span
           key={st}
-          className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc] capitalize"
+          className="inline-flex items-center gap-1 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-[#fdfffc] capitalize"
         >
           <span>Status: {st.replace('_', ' ')}</span>
           <button
@@ -185,7 +186,7 @@ export default function MarketplaceActiveFilters({
             className="text-[#9E9DA0] hover:text-white transition"
             aria-label={`Remove status filter`}
           >
-            <span className="material-symbols-outlined text-[14px]">close</span>
+            <X className="h-3 w-3 shrink-0" />
           </button>
         </span>
       ))}

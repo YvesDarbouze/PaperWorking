@@ -1,4 +1,5 @@
 'use client';
+import { CheckCircle, Gavel } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -223,7 +224,7 @@ export default function ClosingDisclosureReconciliation({
         <div className="flex items-center gap-2">
           {isApproved ? (
             <span className="rounded-none border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px]">verified</span>
+              <CheckCircle size={16} />
               CD Reviewed & Approved
             </span>
           ) : (
@@ -235,7 +236,7 @@ export default function ClosingDisclosureReconciliation({
               onClick={handleApprove}
               data-testid="approve-cd-btn"
             >
-              <span className="material-symbols-outlined text-[16px] mr-1.5">task_alt</span>
+              <CheckCircle size={16} className="mr-1.5" />
               Acknowledge & Sign Off CD
             </Button>
           )}
@@ -249,7 +250,7 @@ export default function ClosingDisclosureReconciliation({
           className="mt-4 rounded-none border border-rose-500/40 bg-rose-500/10 p-4 text-xs text-rose-300 space-y-1"
         >
           <div className="flex items-center gap-2 font-bold text-rose-200">
-            <span className="material-symbols-outlined text-[18px]">gavel</span>
+            <Gavel size={18} />
             <span>CFPB TRID Tolerance Threshold Exceeded</span>
           </div>
           <p className="text-[11px] text-rose-300">

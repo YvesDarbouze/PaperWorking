@@ -185,8 +185,8 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
 
       const html = renderToString(<ProjectFolderCard project={projectSummary} />);
 
-      expect(html).toContain('33 Datapoints');
-      expect(html).toContain(`href="/dashboard/insights?project=${projectSummary.id}"`);
+      expect(html).toContain('data-testid="project-deal-badge"');
+      expect(html).toContain('href="/marketplace/');
       expect(html).toContain(`title="${projectSummary.dealAddress || projectSummary.address}"`);
     });
 

@@ -74,6 +74,6 @@ describe('phase B13 — B10 regression guard', () => {
   it('core deal routes unchanged', () => {
     const deals = readFileSync(join(here, '../../app/api/deals/route.ts'), 'utf8');
     expect(deals).toContain('buildDealsReadService');
-    expect(deals).toContain('buildDealsCommandService');
+    expect(deals).toContain('createDealInStore');
   });
 });

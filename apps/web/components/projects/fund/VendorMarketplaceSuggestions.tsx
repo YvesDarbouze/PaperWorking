@@ -1,4 +1,5 @@
 'use client';
+import { UserPlus } from '@phosphor-icons/react';
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
@@ -28,7 +29,9 @@ export default function VendorMarketplaceSuggestions({
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteCompany, setInviteCompany] = useState('');
   const [inviteNotes, setInviteNotes] = useState('');
+  const [inviteErrorMsg, setInviteErrorMsg] = useState<string | null>(null);
   const [inviteSuccessMsg, setInviteSuccessMsg] = useState<string | null>(null);
+  const [submittingInvite, setSubmittingInvite] = useState(false);
 
   // Filter matching vendors in property state
   const matchingVendors = useMemo(() => {
@@ -57,27 +60,73 @@ export default function VendorMarketplaceSuggestions({
     });
   }, [requiredTrade, propertyState]);
 
-  const handleSendInvite = (e: React.FormEvent) => {
+  const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail || !inviteEmail.includes('@')) return;
 
-    if (onInviteVendorToBid) {
-      onInviteVendorToBid({
-        email: inviteEmail.trim(),
-        companyName: inviteCompany.trim() || inviteEmail.split('@')[0],
-        trade: requiredTrade,
-        notes: inviteNotes.trim(),
-      });
-    }
+    setSubmittingInvite(true);
+    setInviteErrorMsg(null);
+    setInviteSuccessMsg(null);
 
-    setInviteSuccessMsg(`Bid request dispatched to ${inviteEmail}.`);
-    setTimeout(() => {
-      setIsInviteOpen(false);
-      setInviteEmail('');
-      setInviteCompany('');
-      setInviteNotes('');
-      setInviteSuccessMsg(null);
-    }, 1500);
+    const companyName = inviteCompany.trim() || inviteEmail.split('@')[0];
+    const notes = inviteNotes.trim();
+
+    try {
+      const res = await fetch('/api/invites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          name: companyName,
+          role: `${requiredTrade} (Bidder)`,
+          taskTitle,
+          notes,
+        }),
+      });
+
+      if (!res.ok) {
+        let errText = 'Failed to dispatch bid request.';
+        try {
+          const data = await res.json();
+          if (data?.error) errText = data.error;
+        } catch {
+          // ignore
+        }
+        setInviteErrorMsg(errText);
+        return;
+      }
+
+      const result = await res.json();
+
+      if (onInviteVendorToBid) {
+        onInviteVendorToBid({
+          email: inviteEmail.trim(),
+          companyName,
+          trade: requiredTrade,
+          notes,
+        });
+      }
+
+      if (result.requiresCredentials) {
+        setInviteSuccessMsg(
+          `Bid request recorded. (Email delivery unconfigured: REQUIRES CREDENTIALS: SENDGRID_API_KEY)`
+        );
+      } else {
+        setInviteSuccessMsg(`Bid request dispatched to ${inviteEmail}.`);
+      }
+
+      setTimeout(() => {
+        setIsInviteOpen(false);
+        setInviteEmail('');
+        setInviteCompany('');
+        setInviteNotes('');
+        setInviteSuccessMsg(null);
+      }, 2500);
+    } catch {
+      setInviteErrorMsg('Network error while dispatching bid request. Please check connection and try again.');
+    } finally {
+      setSubmittingInvite(false);
+    }
   };
 
   return (
@@ -170,6 +219,12 @@ export default function VendorMarketplaceSuggestions({
             />
           </div>
 
+          {inviteErrorMsg && (
+            <div className="rounded-none border border-rose-500/30 bg-rose-500/10 p-2 text-rose-300 text-[11px]">
+              {inviteErrorMsg}
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 pt-1">
             <Button
               type="button"
@@ -184,10 +239,11 @@ export default function VendorMarketplaceSuggestions({
               type="submit"
               variant="primary"
               size="sm"
+              disabled={submittingInvite}
               className="rounded-none min-h-[44px] px-4 text-xs"
               data-testid="submit-vendor-invite-btn"
             >
-              Send Request to Bid
+              {submittingInvite ? 'Dispatching...' : 'Send Request to Bid'}
             </Button>
           </div>
         </form>
@@ -211,7 +267,7 @@ export default function VendorMarketplaceSuggestions({
               onClick={() => setIsInviteOpen(true)}
               data-testid="invite-known-vendor-btn"
             >
-              <span className="material-symbols-outlined text-[16px] mr-1.5">person_add</span>
+              <UserPlus size={16} className="mr-1.5" />
               Invite a Vendor You Know to Bid
             </Button>
           </div>

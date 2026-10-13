@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { SEED_PROJECTS } from '@/lib/projects/seed-data';
 import BottomSheet from '@/components/ui/BottomSheet';
+import { CheckCircle } from '@phosphor-icons/react';
 
 export default function ComposeEmailModal({
   isOpen,
@@ -62,32 +63,16 @@ export default function ComposeEmailModal({
         }),
       });
 
-      // 2. Also dispatch to message handler if configured
-      await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: to.trim(),
-          subject: subject.trim(),
-          message: body.trim(),
-          projectId: projectId || undefined,
-        }),
-      }).catch(() => undefined);
-
-      if (inboxRes.ok) {
-        setSent(true);
-        if (onSent) onSent();
-        setTimeout(onClose, 800);
-      } else {
-        // Fallback gracefully
-        setSent(true);
-        if (onSent) onSent();
-        setTimeout(onClose, 800);
+      if (!inboxRes.ok) {
+        setErrorMsg('Message could not be saved. Please try again.');
+        return;
       }
-    } catch {
+
       setSent(true);
       if (onSent) onSent();
-      setTimeout(onClose, 800);
+      setTimeout(onClose, 1600);
+    } catch {
+      setErrorMsg('Message could not be saved. Check your connection and try again.');
     } finally {
       setSending(false);
     }
@@ -104,9 +89,12 @@ export default function ComposeEmailModal({
     >
       {sent ? (
         <div className="py-8 text-center space-y-2">
-          <span className="material-symbols-outlined text-4xl text-emerald-400">check_circle</span>
+          <CheckCircle size={36} className="text-emerald-400 mx-auto" />
           <p className="text-sm font-semibold text-emerald-400">
-            Message sent successfully.
+            Message saved to your inbox.
+          </p>
+          <p className="text-xs text-white/50">
+            Email delivery to recipients is not set up yet, so {to.trim() || 'the recipient'} was not emailed.
           </p>
         </div>
       ) : (

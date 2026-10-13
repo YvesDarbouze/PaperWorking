@@ -9,6 +9,7 @@ import { computeMonthlyPayment } from '@paperworking/financial-engine';
 import { SupersededSnapshotBadge } from '@/components/calculator/SupersededSnapshotBadge';
 import AssignOrInviteModal, { type AssigneeOption } from './AssignOrInviteModal';
 import ConversationalStepWizard from './ConversationalStepWizard';
+import { SlidersHorizontal, WarningCircle, CheckCircle, UserPlus, Storefront } from '@phosphor-icons/react';
 import {
   CapitalStackCard,
   PropertyConditionValuationCard,
@@ -865,7 +866,7 @@ export default function FundWorkspaceView({
       {/* Mode Switcher Toggle Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-neutral-800 bg-neutral-950 p-3 rounded-none">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-neutral-400 text-base">tune</span>
+          <SlidersHorizontal size={16} className="text-neutral-400" />
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-300">
             Fund Phase Mode
           </span>
@@ -972,7 +973,7 @@ export default function FundWorkspaceView({
           className="flex items-center justify-between gap-3 rounded-none border border-red-500/40 bg-red-950/40 p-4 text-xs text-red-200"
         >
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px] text-red-400">error</span>
+            <WarningCircle size={18} className="text-red-400" />
             <span>{actionError}</span>
           </div>
           <button
@@ -992,7 +993,7 @@ export default function FundWorkspaceView({
           className="flex items-center justify-between gap-3 rounded-none border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-400"
         >
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">check_circle</span>
+            <CheckCircle size={18} />
             <span>{actionSuccess}</span>
           </div>
           <button
@@ -1829,7 +1830,7 @@ export default function FundWorkspaceView({
                           }
                           className="min-h-[44px] min-w-[44px] rounded-none flex items-center justify-center p-1 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
                         >
-                          <span className="material-symbols-outlined text-[16px]">person_add</span>
+                          <UserPlus size={16} />
                         </button>
                         <button
                           type="button"
@@ -1842,7 +1843,7 @@ export default function FundWorkspaceView({
                           }
                           className="min-h-[44px] px-2.5 py-1 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 bg-emerald-500/10 rounded-none flex items-center gap-1 transition shrink-0"
                         >
-                          <span className="material-symbols-outlined text-[14px]">storefront</span>
+                          <Storefront size={14} />
                           <span>{activeVendorHelpTaskId === task.id ? 'Hide Vendors' : 'Vendor Help'}</span>
                         </button>
                       </div>

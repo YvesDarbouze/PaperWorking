@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { X, SealCheck, ShieldCheck, MapPin, Clock, ChatTeardropText } from '@phosphor-icons/react';
 import { RatingDisplay } from './RatingDisplay';
 
 export interface VendorSideSheetData {
@@ -76,40 +77,40 @@ export default function VendorSideSheet({
 
       <div
         ref={sheetRef}
-        className="relative h-full w-full max-w-md overflow-y-auto border-l border-white/[0.06] bg-[#121014]/95 shadow-2xl backdrop-blur-2xl"
+        className="relative h-full w-full max-w-md overflow-y-auto border-l border-neutral-800 bg-neutral-950 shadow-2xl"
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.06] bg-[#121014]/90 px-6 py-4 backdrop-blur-xl">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-white/45">Vendor Profile</h2>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-800 bg-neutral-950/90 px-6 py-4 backdrop-blur-xl">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-neutral-400">Vendor Profile</h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] text-white/45 hover:border-white/10 hover:text-white"
+            className="flex h-9 w-9 min-h-[44px] min-w-[44px] items-center justify-center rounded-none border border-neutral-800 text-neutral-400 hover:text-white transition"
             aria-label="Close"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="space-y-6 px-6 py-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-xl font-bold text-[#fdfffc]">
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-xl font-bold text-white">
               {vendor.companyName.charAt(0)}
             </div>
             <div className="min-w-0">
-              <h3 className="truncate text-lg font-bold leading-tight text-[#fdfffc]">
+              <h3 className="truncate text-lg font-semibold leading-tight text-white">
                 {vendor.companyName}
               </h3>
-              <p className="text-sm font-medium text-white/55">{vendor.type}</p>
+              <p className="text-sm font-medium text-neutral-400">{vendor.type}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {vendor.verified ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-[var(--status-live)]/30 bg-[var(--accent-subtle)] px-2 py-0.5 text-[9px] font-bold uppercase text-[var(--status-live)]">
-                    <span className="material-symbols-outlined text-[12px]">verified</span>
+                  <span className="inline-flex items-center gap-1 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-medium uppercase text-emerald-400">
+                    <SealCheck className="h-3 w-3 text-emerald-400" />
                     Verified
                   </span>
                 ) : null}
                 {vendor.insuranceVerified ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-bold uppercase text-blue-400">
-                    <span className="material-symbols-outlined text-[12px]">shield</span>
+                  <span className="inline-flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[9px] font-medium uppercase text-neutral-300">
+                    <ShieldCheck className="h-3 w-3 text-neutral-300" />
                     Insured
                   </span>
                 ) : null}
@@ -117,39 +118,39 @@ export default function VendorSideSheet({
             </div>
           </div>
 
-          <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3">
+          <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-3">
             <RatingDisplay rating={vendor.overallRating} totalReviews={vendor.totalReviews} />
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-center">
-              <p className="font-mono text-lg font-bold text-[#fdfffc]">{vendor.avgTurnaroundDays}d</p>
-              <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Turnaround</p>
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-3 text-center">
+              <p className="font-mono text-lg font-semibold text-white">{vendor.avgTurnaroundDays}d</p>
+              <p className="mt-1 text-[9px] uppercase tracking-wider text-neutral-400">Turnaround</p>
             </div>
-            <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-center">
-              <p className="truncate font-mono text-lg font-bold text-[#fdfffc]">
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-3 text-center">
+              <p className="truncate font-mono text-lg font-semibold text-white">
                 {vendor.feeRangeLabel.split('-')[0]?.trim() ?? 'N/A'}
               </p>
-              <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Starting Fee</p>
+              <p className="mt-1 text-[9px] uppercase tracking-wider text-neutral-400">Starting Fee</p>
             </div>
-            <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 text-center">
-              <p className="text-[10px] font-bold uppercase text-[var(--status-live)]">{availabilityLabel}</p>
-              <p className="mt-1 text-[9px] uppercase tracking-wider text-white/45">Availability</p>
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-3 text-center">
+              <p className="text-[10px] font-medium uppercase text-emerald-400">{availabilityLabel}</p>
+              <p className="mt-1 text-[9px] uppercase tracking-wider text-neutral-400">Availability</p>
             </div>
           </div>
 
           <div>
-            <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-white/45">About</h4>
-            <p className="line-clamp-4 text-sm leading-relaxed text-white/70">{vendor.bio}</p>
+            <h4 className="mb-2 text-xs font-medium uppercase tracking-widest text-neutral-400">About</h4>
+            <p className="line-clamp-4 text-sm leading-relaxed text-neutral-300">{vendor.bio}</p>
           </div>
 
           <div>
-            <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-white/45">Specialties</h4>
+            <h4 className="mb-2 text-xs font-medium uppercase tracking-widest text-neutral-400">Specialties</h4>
             <div className="flex flex-wrap gap-1.5">
               {vendor.specialties.map((s) => (
                 <span
                   key={s}
-                  className="rounded-md border border-white/[0.06] bg-white/[0.03] px-2.5 py-1 text-xs text-white/70"
+                  className="rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-300"
                 >
                   {s}
                 </span>
@@ -157,13 +158,13 @@ export default function VendorSideSheet({
             </div>
           </div>
 
-          <div className="space-y-2 text-sm text-white/70">
+          <div className="space-y-2 text-sm text-neutral-300">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-white/40">location_on</span>
+              <MapPin className="h-4 w-4 text-neutral-400" />
               <span>Licensed: {vendor.licensingStates.join(', ')}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-white/40">schedule</span>
+              <Clock className="h-4 w-4 text-neutral-400" />
               <span>{vendor.availability}</span>
             </div>
           </div>
@@ -172,14 +173,14 @@ export default function VendorSideSheet({
             <button
               type="button"
               onClick={() => onRequestQuote(vendor)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#fdfffc] py-3 text-sm font-bold text-[#0d0a0b] hover:bg-white/90"
+              className="flex w-full items-center justify-center gap-2 rounded-none bg-white py-3 text-sm font-medium text-neutral-950 hover:bg-neutral-200 min-h-[44px] transition"
             >
-              <span className="material-symbols-outlined text-[18px]">chat</span>
+              <ChatTeardropText className="h-4 w-4" />
               Request Quote
             </button>
           ) : null}
 
-          <p className="pt-2 text-center text-[9px] leading-relaxed text-white/35">
+          <p className="pt-2 text-center text-[9px] leading-relaxed text-neutral-500">
             PaperWorking does not vet vendors. You must verify credentials and references before engaging.
           </p>
         </div>

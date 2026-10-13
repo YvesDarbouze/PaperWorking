@@ -51,6 +51,7 @@ export function middleware(request: NextRequest) {
   // Explicit carve-out: never gate /login, /api/auth, Next.js assets, or static files
   if (
     pathname.startsWith('/login') ||
+    pathname.startsWith('/public') ||
     pathname.startsWith('/api/auth') ||
     isStaticAsset(pathname)
   ) {
@@ -72,7 +73,8 @@ export function middleware(request: NextRequest) {
       pathname.startsWith('/api/marketplace') ||
       pathname.startsWith('/api/places') ||
       pathname.startsWith('/api/deal-calculator') ||
-      pathname.startsWith('/api/deal-analyzer') ||
+      pathname.startsWith('/api/deal-analyzer') || // Historical alias for /api/deal-analyzer routes
+      pathname.includes('/public-view') ||
       pathname.startsWith('/api/dev')
     ) {
       return NextResponse.next();

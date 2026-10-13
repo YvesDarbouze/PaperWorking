@@ -1,4 +1,5 @@
 'use client';
+import { X, CheckCircle } from '@phosphor-icons/react';
 
 import React from 'react';
 import Link from 'next/link';
@@ -53,7 +54,7 @@ export default function TeamTierUpgradeModal({
             className="flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
             aria-label="Close dialog"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X size={20} />
           </button>
         </div>
 
@@ -69,7 +70,7 @@ export default function TeamTierUpgradeModal({
           {/* Subscribed Vendors notice */}
           <div className="rounded-none border border-emerald-500/30 bg-emerald-500/5 p-3.5 text-neutral-200">
             <div className="flex items-center gap-2 text-emerald-400 font-semibold mb-1">
-              <span className="material-symbols-outlined text-[16px]">verified</span>
+              <CheckCircle size={16} />
               <span>Subscribed Vendors Available on All Tiers</span>
             </div>
             <p className="text-[11px] text-neutral-300 leading-relaxed">

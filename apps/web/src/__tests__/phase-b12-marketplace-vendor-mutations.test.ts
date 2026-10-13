@@ -56,7 +56,7 @@ describe('phase B12 — Next route wiring', () => {
     );
 
     expect(follow).toContain('buildMarketplaceFollowCommandService');
-    expect(profile).toContain('buildVendorPortalCommandService');
+    expect(profile).toContain('updateVendorProfileInStore');
     expect(requests).toContain('buildVendorPortalCommandService');
     expect(follow).not.toContain('prisma.');
   });

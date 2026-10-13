@@ -70,13 +70,13 @@ export default function MarketplaceSection() {
             </div>
           </div>
 
-          {/* Right Card: Vendor Marketplace */}
+          {/* Right Card: Vendor Directory */}
           <div className="group/card relative flex flex-col justify-between rounded-none border border-border bg-card p-6 md:p-8 shadow-sm ring-1 ring-foreground/10 text-card-foreground transition-colors hover:border-foreground/25">
             <div>
               <div className="mb-6 inline-flex h-10 w-10 items-center justify-center rounded-none border border-border bg-muted/40 text-foreground">
                 <Handshake size={20} />
               </div>
-              <h3 className="mb-3 text-xl font-semibold text-foreground">Vendor Marketplace</h3>
+              <h3 className="mb-3 text-xl font-semibold text-foreground">Vendor Directory</h3>
               <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
                 {vendorMarketplaceDescription}
               </p>

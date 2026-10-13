@@ -11,11 +11,14 @@ import {
   isDevAuthFailure,
   requireDevSessionAuth,
 } from '@/lib/projects/dev-session-auth';
-import { addInboxThread, InboxThread } from '@/lib/dashboard/shell-seed';
+import { getDealFromStore, patchDealInStore } from '@/lib/deals/deal-store';
+import { createInboxThreadInStore } from '@/lib/inbox/inbox-store';
+import { createBroadcastToken } from '@/lib/deals/token-server';
 import {
   renderDealBroadcastHtml,
   renderDealBroadcastPlainText,
 } from '@/lib/email/dealBroadcast';
+import { secureRandomHex } from '@/lib/utils/secure-id';
 
 const ShareRequestSchema = z.object({
   channel: z.enum(['message', 'email', 'copy_link', 'social']),
@@ -44,6 +47,7 @@ export async function POST(
     const parsed = ShareRequestSchema.parse(rawBody);
 
     const deal =
+      (await getDealFromStore(id)) ||
       findSeedDeal(id) ||
       SEED_RAW_DEALS.find((d) => d.id === id || d.slug === id);
 
@@ -53,7 +57,7 @@ export async function POST(
 
     // Ensure share token exists for private sharing
     if (!deal.shareToken) {
-      deal.shareToken = `token_${deal.slug || deal.id}_${Math.random().toString(36).substring(2, 9)}`;
+      deal.shareToken = `token_${deal.slug || deal.id}_${secureRandomHex(16)}`;
     }
 
     const calcResults = getDealCalculatorResults(deal);
@@ -62,6 +66,10 @@ export async function POST(
     for (const recipient of parsed.recipients) {
       shareSeedDealWith(deal.id, recipient);
     }
+    await patchDealInStore(deal.id, {
+      shareToken: deal.shareToken,
+      sharedWith: deal.sharedWith,
+    });
 
     const shareUrl = `/deals/${deal.slug || deal.id}/external?token=${deal.shareToken}`;
 
@@ -76,12 +84,14 @@ export async function POST(
         const irrFormatted = Number(calcResults.targetIrr ?? calcResults.projectedRoi ?? 0).toFixed(1);
         const capRateFormatted = Number(calcResults.capRateOnCost ?? 0).toFixed(2);
 
-        const thread: InboxThread = {
-          id: `thread-deal-share-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        await createInboxThreadInStore({
+          id: `thread-deal-share-${Date.now()}-${secureRandomHex(8)}`,
           tab: 'opportunities',
           type: 'INVEST_INVITE',
           subject: `Private Deal Shared: ${deal.address}`,
           project: deal.address,
+          dealId: deal.id,
+          recipientEmail: recipient,
           from: (auth as any).email || 'Operating Partner',
           fromRole: 'Operator',
           preview: `Target IRR: ${irrFormatted}% · Purchase: $${purchaseFormatted} · Cash Req: $${cashReqFormatted}`,
@@ -90,8 +100,7 @@ export async function POST(
           receivedAt: new Date().toISOString(),
           deepLinkUrl: shareUrl,
           actionable: true,
-        };
-        addInboxThread(thread);
+        });
       }
     }
 

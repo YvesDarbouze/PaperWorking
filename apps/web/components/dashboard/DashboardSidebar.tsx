@@ -22,13 +22,13 @@ function SidebarLink({
 }: {
   item: NavItem;
   isActive: boolean;
-  onNavigate?: (item: NavItem, event: MouseEvent) => void;
+  onNavigate?: (item: NavItem, event: React.MouseEvent) => void;
 }) {
   return (
     <Link
       href={item.href}
       data-testid={`sidebar-link-${item.id}`}
-      onClick={(event) => onNavigate?.(item, event)}
+      onClick={(event: React.MouseEvent) => onNavigate?.(item, event)}
       className="group relative flex items-center gap-2.5 rounded-none px-3 py-2.5 min-h-[44px] md:min-h-0 transition-all duration-150"
       style={{
         background: isActive ? 'rgba(69, 73, 85, 0.25)' : 'transparent',

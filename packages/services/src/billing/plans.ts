@@ -72,6 +72,7 @@ const DISPLAY_NAME_ALIASES: Record<string, PlanId> = {
   'team/firm': 'team',
   'vendor network': 'vendor',
   'vendor marketplace': 'vendor',
+  'vendor directory': 'vendor',
   enterprise: 'team',
   'enterprise plan': 'team',
   lawyer: 'vendor',

@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { errorTracker, logger } from '@paperworking/shared';
+import { WarningCircle, ArrowsClockwise } from '@phosphor-icons/react';
 
 export default function GlobalErrorBoundary({
   error,
@@ -27,20 +28,20 @@ export default function GlobalErrorBoundary({
       data-testid="error-boundary-container"
       className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-16 text-center"
     >
-      <div className="w-16 h-16 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
-        <span className="material-symbols-outlined text-3xl">error_outline</span>
+      <div className="w-16 h-16 mb-6 rounded-none bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive">
+        <WarningCircle className="h-8 w-8" weight="bold" />
       </div>
 
-      <h1 className="text-2xl font-bold tracking-tight text-white mb-2">
+      <h1 className="text-2xl font-bold tracking-tight text-foreground mb-2">
         Something went wrong
       </h1>
 
-      <p className="text-sm text-slate-400 max-w-md mb-4 leading-relaxed">
+      <p className="text-sm text-muted-foreground max-w-md mb-4 leading-relaxed">
         An unexpected error occurred while rendering this page. Our technical team has been notified with automated telemetry.
       </p>
 
       {error.digest && (
-        <p data-testid="error-digest-code" className="text-xs text-slate-500 mb-8 font-mono">
+        <p data-testid="error-digest-code" className="text-xs text-muted-foreground mb-8 font-mono">
           Incident reference: {error.digest}
         </p>
       )}
@@ -50,16 +51,16 @@ export default function GlobalErrorBoundary({
           type="button"
           onClick={() => reset()}
           data-testid="error-retry-button"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[color:var(--color-primary)] text-slate-950 font-semibold text-sm hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-opacity min-h-[44px]"
         >
-          <span className="material-symbols-outlined text-base">refresh</span>
+          <ArrowsClockwise className="h-4 w-4" weight="bold" />
           Try again
         </button>
 
         <Link
           href="/dashboard"
           data-testid="error-dashboard-link"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border font-semibold text-sm transition-colors min-h-[44px]"
         >
           Return to Dashboard
         </Link>
@@ -67,7 +68,7 @@ export default function GlobalErrorBoundary({
         <Link
           href="/support"
           data-testid="error-support-link"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-300 font-semibold text-sm transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-none border border-border hover:bg-muted text-muted-foreground hover:text-foreground font-semibold text-sm transition-colors min-h-[44px]"
         >
           Contact Support
         </Link>

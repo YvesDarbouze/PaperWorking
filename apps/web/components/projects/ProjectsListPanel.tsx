@@ -2,16 +2,35 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useCallback, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import ProjectFolderCard from '@/components/projects/ProjectFolderCard';
 import REILKanBan from '@/components/projects/REILKanBan';
 import AcquisitionPipelineBoard from '@/components/projects/AcquisitionPipelineBoard';
+import ProjectStacksView from '@/components/projects/basecamp/ProjectStacksView';
+import ProjectLineupView from '@/components/projects/basecamp/ProjectLineupView';
+import ProjectEverythingView from '@/components/projects/basecamp/ProjectEverythingView';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { useOptionalAuth } from '@/context/AuthContext';
 import { PHASE_LABELS } from '@/lib/projects/phase-utils';
 import type { LegacyProjectPhase, ProjectSummary } from '@/lib/projects/types';
+import {
+  TreeStructure,
+  Kanban,
+  ListBullets,
+  Folder,
+  ChartLineUp,
+  Newspaper,
+  Plus,
+  MagnifyingGlass,
+  Funnel,
+  ArrowClockwise,
+  Buildings,
+  Calculator,
+  PencilSimple,
+  ArrowRight,
+} from '@phosphor-icons/react';
 
-type ViewMode = 'pipeline' | 'kanban' | 'list';
+type ViewMode = 'pipeline' | 'kanban' | 'list' | 'stacks' | 'lineup' | 'everything';
 type PhaseFilter = '' | '1' | '2' | '3' | '4';
 type StrategyFilter = '' | 'flip' | 'rental' | 'brrrr';
 type StatusFilter = 'active' | 'pending' | 'closed' | 'all';
@@ -39,19 +58,11 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-function selectStyle(active = false): CSSProperties {
-  return {
-    background: 'rgba(255,255,255,0.04)',
-    border: `1px solid ${active ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.08)'}`,
-    color: 'rgba(253,255,252,0.7)',
-  };
-}
-
 export default function ProjectsListPanel() {
   const router = useRouter();
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const auth = useOptionalAuth();
-  const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
+  const isAuthed = auth ? auth.authenticated && !auth.loading : true;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('pipeline');
@@ -78,7 +89,9 @@ export default function ProjectsListPanel() {
         city: String(row.city ?? ''),
         currentPhase: (row.currentPhase ?? 'acquisition') as LegacyProjectPhase,
         status: String(row.status ?? 'Active'),
-        dispositionType: ((row.dispositionType === 'RENT' || row.dispositionType === 'MIXED') ? row.dispositionType : 'SALE') as ProjectSummary['dispositionType'],
+        dispositionType: (row.dispositionType === 'RENT' || row.dispositionType === 'MIXED'
+          ? row.dispositionType
+          : 'SALE') as ProjectSummary['dispositionType'],
         purchasePrice: Number(row.purchasePrice ?? row.purchase_price ?? 0),
         estimatedIrr: Number(row.estimatedIrr ?? 0),
         phaseCompletionPct: Number(row.phaseCompletionPct ?? row.phase_completion_pct ?? 0),
@@ -161,16 +174,14 @@ export default function ProjectsListPanel() {
   }
 
   return (
-    <div className="min-h-full px-5 pb-28 pt-6 lg:px-8 lg:pt-7">
-      <div className="mb-8 flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+    <div className="min-h-full w-full max-w-[1400px] mx-auto px-4 py-6 sm:px-6 lg:px-8 pb-28">
+      {/* Top Header Bar */}
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h2
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
-          >
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
             Projects
-          </h2>
-          <p className="mt-1 text-sm" style={{ color: 'rgba(253,255,252,0.45)' }}>
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             {loading
               ? 'Loading projects…'
               : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''}${
@@ -178,43 +189,44 @@ export default function ProjectsListPanel() {
                     ? ' · Acquisition pipeline'
                     : viewMode === 'kanban'
                     ? ' · REIL lifecycle board'
+                    : viewMode === 'stacks'
+                    ? ' · Project stacks'
+                    : viewMode === 'lineup'
+                    ? ' · Lineup roadmap'
+                    : viewMode === 'everything'
+                    ? ' · Everything & portfolio activity'
                     : ' · list view'
                 }`}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div
-            className="flex items-center rounded-xl p-1"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
+        <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-2 flex-wrap">
+          {/* View mode switcher */}
+          <div className="flex items-center rounded-none border border-border bg-muted/40 p-1 flex-wrap gap-1">
             {(
               [
-                { mode: 'pipeline' as const, icon: 'account_tree', label: 'Pipeline' },
-                { mode: 'kanban' as const, icon: 'view_kanban', label: 'REIL Board' },
-                { mode: 'list' as const, icon: 'format_list_bulleted', label: 'List' },
+                { mode: 'pipeline' as const, Icon: TreeStructure, label: 'Pipeline' },
+                { mode: 'kanban' as const, Icon: Kanban, label: 'REIL Board' },
+                { mode: 'list' as const, Icon: ListBullets, label: 'List' },
+                { mode: 'stacks' as const, Icon: Folder, label: 'Stacks' },
+                { mode: 'lineup' as const, Icon: ChartLineUp, label: 'Lineup' },
+                { mode: 'everything' as const, Icon: Newspaper, label: 'Everything' },
               ] as const
-            ).map(({ mode, icon, label }) => {
+            ).map(({ mode, Icon, label }) => {
               const active = viewMode === mode;
               return (
                 <button
                   key={mode}
                   type="button"
                   onClick={() => setViewMode(mode)}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-all duration-150"
-                  style={{
-                    background: active ? 'rgba(69,73,85,0.25)' : 'transparent',
-                    color: active ? 'rgba(253,255,252,0.90)' : 'rgba(253,255,252,0.40)',
-                    border: active ? '1px solid rgba(255,255,255,0.10)' : '1px solid transparent',
-                  }}
+                  className={`flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-semibold transition min-h-[36px] ${
+                    active
+                      ? 'border border-border bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
-                  <span
-                    className="material-symbols-outlined text-[15px]"
-                    style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
-                  >
-                    {icon}
-                  </span>
-                  {label}
+                  <Icon size={16} weight={active ? 'fill' : 'regular'} />
+                  <span>{label}</span>
                 </button>
               );
             })}
@@ -222,39 +234,28 @@ export default function ProjectsListPanel() {
 
           <Link
             href="/projects/new"
-            className="flex items-center gap-2 rounded-none bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground min-h-[44px] transition-all hover:bg-primary/80 focus-visible:ring-1 focus-visible:ring-ring/50"
+            className="flex items-center gap-2 rounded-none bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground min-h-[44px] transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <span
-              className="material-symbols-outlined text-[18px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              add_circle
-            </span>
-            Create Project
+            <Plus size={16} weight="bold" />
+            <span>Create Project</span>
           </Link>
         </div>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3 lg:flex-row">
-        <div className="group relative flex-1">
-          <span
-            className="material-symbols-outlined pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px]"
-            style={{ color: 'rgba(253,255,252,0.35)' }}
-          >
-            search
-          </span>
+      {/* Filter and Search Bar */}
+      <div className="mb-6 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="relative col-span-1 sm:col-span-2 lg:col-span-1">
+          <MagnifyingGlass
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by address or name…"
+            placeholder="Search address or name…"
             aria-label="Search projects"
-            className="w-full rounded-xl py-2.5 pl-10 pr-4 text-sm transition-all duration-200 focus:outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(253,255,252,0.9)',
-            }}
+            className="w-full rounded-none border border-input bg-background py-2 pl-9 pr-3 text-base md:text-xs text-foreground placeholder:text-muted-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
 
@@ -262,8 +263,7 @@ export default function ProjectsListPanel() {
           value={phaseFilter}
           onChange={(event) => setPhaseFilter(event.target.value as PhaseFilter)}
           aria-label="Filter by phase"
-          className="rounded-xl px-4 py-2.5 text-sm focus:outline-none"
-          style={selectStyle(Boolean(phaseFilter))}
+          className="rounded-none border border-input bg-background px-3 py-2 text-base md:text-xs text-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="">All Phases</option>
           <option value="1">Phase 1: Acquisition</option>
@@ -276,8 +276,7 @@ export default function ProjectsListPanel() {
           value={strategyFilter}
           onChange={(event) => setStrategyFilter(event.target.value as StrategyFilter)}
           aria-label="Filter by strategy"
-          className="rounded-xl px-4 py-2.5 text-sm focus:outline-none"
-          style={selectStyle(Boolean(strategyFilter))}
+          className="rounded-none border border-input bg-background px-3 py-2 text-base md:text-xs text-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="">All Strategies</option>
           <option value="flip">Fix &amp; Flip</option>
@@ -289,8 +288,7 @@ export default function ProjectsListPanel() {
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
           aria-label="Filter by status"
-          className="rounded-xl px-4 py-2.5 text-sm focus:outline-none"
-          style={selectStyle()}
+          className="rounded-none border border-input bg-background px-3 py-2 text-base md:text-xs text-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="active">Active Deals</option>
           <option value="pending">Leads &amp; Under Contract</option>
@@ -302,8 +300,7 @@ export default function ProjectsListPanel() {
           value={sortBy}
           onChange={(event) => setSortBy(event.target.value as SortBy)}
           aria-label="Sort projects"
-          className="rounded-xl px-4 py-2.5 text-sm focus:outline-none"
-          style={selectStyle()}
+          className="rounded-none border border-input bg-background px-3 py-2 text-base md:text-xs text-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
         >
           <option value="recent">Recently Updated</option>
           <option value="name">Property Name</option>
@@ -313,13 +310,13 @@ export default function ProjectsListPanel() {
       </div>
 
       {error ? (
-        <div className="mb-6 rounded-2xl border border-red-400/20 bg-red-400/5 p-5 text-sm text-red-200">
+        <div className="mb-6 rounded-none border border-destructive/30 bg-destructive/10 p-4 text-xs sm:text-sm text-destructive">
           {error}
         </div>
       ) : null}
 
       {loading ? (
-        <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-10 text-sm text-white/55">
+        <div className="rounded-none border border-border bg-card p-10 text-center text-xs sm:text-sm text-muted-foreground shadow-sm">
           Loading REIL board…
         </div>
       ) : null}
@@ -327,12 +324,12 @@ export default function ProjectsListPanel() {
       {!loading && !error && filteredProjects.length === 0 ? (
         projects.length === 0 ? (
           /* Rich Empty State for New Investors / Fresh Workspace */
-          <div className="mb-8 rounded-none border border-neutral-800 bg-neutral-950 p-8 md:p-12 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-none border border-neutral-700 bg-neutral-900 text-white">
-              <span className="material-symbols-outlined text-[30px]">add_home_work</span>
+          <div className="mb-8 rounded-none border border-border bg-card p-8 md:p-12 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-border bg-muted text-foreground">
+              <Buildings size={28} />
             </div>
-            <h3 className="text-xl font-bold text-white">Start Your First Investment Project</h3>
-            <p className="mt-2 max-w-lg mx-auto text-xs sm:text-sm text-neutral-400 leading-relaxed">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground">Start Your First Investment Project</h2>
+            <p className="mt-2 max-w-lg mx-auto text-xs sm:text-sm text-muted-foreground leading-relaxed">
               PaperWorking structures deals around the 4-phase Real Estate Investment Lifecycle (REIL).
               Choose an entry point to launch your first deal into Acquisition:
             </p>
@@ -340,17 +337,17 @@ export default function ProjectsListPanel() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/deal-calculator"
-                className="flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground hover:bg-primary/80 transition min-h-[44px]"
+                className="flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
               >
-                <span className="material-symbols-outlined text-[18px]">calculate</span>
-                Create from Calculator
+                <Calculator size={18} />
+                <span>Create from Calculator</span>
               </Link>
               <Link
                 href="/projects/new"
-                className="flex items-center gap-2 rounded-none border border-neutral-700 bg-neutral-900 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-neutral-800 transition min-h-[44px]"
+                className="flex items-center gap-2 rounded-none border border-border bg-muted/50 px-5 py-2.5 text-xs sm:text-sm font-semibold text-foreground hover:bg-muted transition min-h-[44px]"
               >
-                <span className="material-symbols-outlined text-[18px]">edit_note</span>
-                Create Manually
+                <PencilSimple size={18} />
+                <span>Create Manually</span>
               </Link>
             </div>
 
@@ -358,68 +355,68 @@ export default function ProjectsListPanel() {
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-3xl mx-auto">
               <Link
                 href="/projects/new?strategy=flip"
-                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
+                className="group rounded-none border border-border bg-muted/20 p-4 transition hover:border-foreground/30 hover:bg-muted/40 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-white">Fix & Flip</h4>
-                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">SALE</span>
+                  <h3 className="text-sm font-bold text-foreground">Fix &amp; Flip</h3>
+                  <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">SALE</span>
                 </div>
-                <p className="mt-2 text-xs text-neutral-400">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Short 6–12 mo hold. Prefills 12% rehab ratio, 0% rehab vacancy, and 5 standard rehab categories.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
-                  Use Flip Template →
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground group-hover:underline">
+                  Use Flip Template <ArrowRight size={12} />
                 </span>
               </Link>
 
               <Link
                 href="/projects/new?strategy=brrrr"
-                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
+                className="group rounded-none border border-border bg-muted/20 p-4 transition hover:border-foreground/30 hover:bg-muted/40 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-white">BRRRR</h4>
-                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">REFINANCE</span>
+                  <h3 className="text-sm font-bold text-foreground">BRRRR</h3>
+                  <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">REFINANCE</span>
                 </div>
-                <p className="mt-2 text-xs text-neutral-400">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Buy, Rehab, Rent, Refinance. 7.0% institutional vacancy floor and post-rehab equity extraction.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
-                  Use BRRRR Template →
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground group-hover:underline">
+                  Use BRRRR Template <ArrowRight size={12} />
                 </span>
               </Link>
 
               <Link
                 href="/projects/new?strategy=buy_and_hold_rental"
-                className="group rounded-none border border-neutral-800 bg-neutral-900/50 p-4 transition hover:border-neutral-600 hover:bg-neutral-900 no-underline"
+                className="group rounded-none border border-border bg-muted/20 p-4 transition hover:border-foreground/30 hover:bg-muted/40 no-underline"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white group-hover:text-white">Buy & Hold Rental</h4>
-                  <span className="rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">CASH FLOW</span>
+                  <h3 className="text-sm font-bold text-foreground">Buy &amp; Hold Rental</h3>
+                  <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">CASH FLOW</span>
                 </div>
-                <p className="mt-2 text-xs text-neutral-400">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Durable monthly cash flow. 6.0% institutional vacancy floor, 35% opex ratio, and 30-yr amortization.
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-200">
-                  Use Rental Template →
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground group-hover:underline">
+                  Use Rental Template <ArrowRight size={12} />
                 </span>
               </Link>
             </div>
           </div>
         ) : (
           /* Filter Empty State */
-          <div className="mb-8 flex flex-col items-center justify-center rounded-2xl border border-white/8 bg-white/[0.03] px-6 py-16 text-center">
-            <span className="material-symbols-outlined mb-3 text-5xl text-white/25">filter_alt_off</span>
-            <h3 className="text-lg font-semibold text-[#fdfffc]">No projects match active filters</h3>
-            <p className="mt-2 max-w-sm text-sm text-white/50">
+          <div className="mb-8 flex flex-col items-center justify-center rounded-none border border-border bg-card px-6 py-16 text-center shadow-sm">
+            <Funnel size={36} className="mb-3 text-muted-foreground/60" />
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">No projects match active filters</h2>
+            <p className="mt-2 max-w-sm text-xs sm:text-sm text-muted-foreground">
               Adjust your search keywords or filter criteria to see your deals.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-5 flex items-center gap-1.5 rounded-lg border border-white/12 px-4 py-2 text-sm font-semibold text-white/75 hover:text-white"
+              className="mt-5 flex items-center gap-1.5 rounded-none border border-border bg-muted/40 px-4 py-2 text-xs sm:text-sm font-semibold text-foreground hover:bg-muted min-h-[44px]"
             >
-              <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-              Clear all filters
+              <ArrowClockwise size={16} />
+              <span>Clear all filters</span>
             </button>
           </div>
         )
@@ -448,21 +445,14 @@ export default function ProjectsListPanel() {
       ) : null}
 
       {!loading && !error && viewMode === 'list' ? (
-        <div
-          className="mb-8 overflow-hidden rounded-2xl"
-          style={{
-            background: 'rgba(18,16,20,0.9)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-          }}
-        >
+        <div className="mb-8 overflow-hidden rounded-none border border-border bg-card shadow-sm">
           {filteredProjects.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-              <h3 className="text-lg font-semibold text-[#fdfffc]">No projects found</h3>
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">No projects found</h2>
               <button
                 type="button"
                 onClick={clearFilters}
-                className="mt-4 text-sm font-semibold text-[#7A9EAA]"
+                className="mt-4 text-xs sm:text-sm font-semibold text-primary hover:underline min-h-[44px]"
               >
                 Clear all filters
               </button>
@@ -470,27 +460,27 @@ export default function ProjectsListPanel() {
           ) : (
             <div>
               {/* Mobile Card Stack for small screens */}
-              <div className="grid grid-cols-1 gap-3 md:hidden">
+              <div className="grid grid-cols-1 gap-2.5 p-3 md:hidden">
                 {filteredProjects.map((project) => (
                   <Link
                     key={project.id}
                     href={`/project/${project.id}`}
-                    className="flex flex-col gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] p-4 no-underline transition active:scale-[0.98] touch-press hover:border-white/20"
+                    className="flex flex-col gap-2 rounded-none border border-border bg-card p-4 no-underline transition hover:border-foreground/30 active:bg-muted/50"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-white text-base truncate">{project.propertyName}</p>
-                        <p className="text-xs text-white/50 truncate">{project.address || project.city}</p>
+                        <p className="font-semibold text-foreground text-base truncate">{project.propertyName}</p>
+                        <p className="text-xs text-muted-foreground truncate">{project.address || project.city}</p>
                       </div>
-                      <span className="rounded-full bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/30 px-2.5 py-0.5 text-[10.5px] font-semibold text-[color:var(--color-primary)] shrink-0">
+                      <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-semibold text-foreground shrink-0 uppercase tracking-wide">
                         {PHASE_LABELS[project.currentPhase]}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-2.5 text-xs">
+                    <div className="grid grid-cols-3 gap-2 border-t border-border pt-2 text-xs">
                       <div>
-                        <span className="block text-[10px] uppercase text-white/40 font-mono">Strategy</span>
-                        <span className="font-medium text-white/80">
+                        <span className="block text-[10px] uppercase text-muted-foreground font-mono">Strategy</span>
+                        <span className="font-medium text-foreground">
                           {project.dispositionType === 'SALE'
                             ? 'Fix & Flip'
                             : project.dispositionType === 'RENT'
@@ -499,12 +489,12 @@ export default function ProjectsListPanel() {
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase text-white/40 font-mono">Purchase</span>
-                        <span className="font-semibold text-white">{formatCurrency(project.purchasePrice)}</span>
+                        <span className="block text-[10px] uppercase text-muted-foreground font-mono">Purchase</span>
+                        <span className="font-semibold text-foreground">{formatCurrency(project.purchasePrice)}</span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase text-white/40 font-mono">IRR</span>
-                        <span className="font-semibold text-[color:var(--color-primary)]">
+                        <span className="block text-[10px] uppercase text-muted-foreground font-mono">IRR</span>
+                        <span className="font-semibold text-primary">
                           {project.estimatedIrr ? `${(project.estimatedIrr * 100).toFixed(1)}%` : 'N/A'}
                         </span>
                       </div>
@@ -517,50 +507,47 @@ export default function ProjectsListPanel() {
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr
-                      className="border-b border-white/5 text-xs font-bold uppercase tracking-wider"
-                      style={{ color: 'rgba(253,255,252,0.4)' }}
-                    >
-                      <th className="p-4">Deal Address / Name</th>
-                      <th className="p-4">Phase &amp; Stage</th>
-                      <th className="p-4">Disposition</th>
-                      <th className="p-4">Purchase</th>
-                      <th className="p-4">IRR</th>
-                      <th className="p-4" />
+                    <tr className="border-b border-border bg-muted/40 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <th className="p-3.5 pl-4">Deal Address / Name</th>
+                      <th className="p-3.5">Phase &amp; Stage</th>
+                      <th className="p-3.5">Disposition</th>
+                      <th className="p-3.5">Purchase</th>
+                      <th className="p-3.5">IRR</th>
+                      <th className="p-3.5 pr-4 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredProjects.map((project) => (
-                      <tr key={project.id} className="border-b border-white/5 last:border-0">
-                        <td className="p-4">
-                          <p className="font-semibold text-[#fdfffc]">{project.propertyName}</p>
-                          <p className="text-xs text-white/45">{project.address || project.city}</p>
+                      <tr key={project.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
+                        <td className="p-3.5 pl-4">
+                          <p className="font-semibold text-foreground">{project.propertyName}</p>
+                          <p className="text-xs text-muted-foreground">{project.address || project.city}</p>
                         </td>
-                        <td className="p-4 text-sm text-white/70">
+                        <td className="p-3.5 text-xs text-foreground">
                           {PHASE_LABELS[project.currentPhase]}
-                          <span className="mt-0.5 block text-xs text-white/40">{project.status}</span>
+                          <span className="mt-0.5 block text-[11px] text-muted-foreground">{project.status}</span>
                         </td>
-                        <td className="p-4 text-sm text-white/70">
+                        <td className="p-3.5 text-xs text-foreground">
                           {project.dispositionType === 'SALE'
                             ? 'Fix & Flip'
                             : project.dispositionType === 'RENT'
                               ? 'Rental'
                               : 'Mixed'}
                         </td>
-                        <td className="p-4 text-sm text-white/85">
+                        <td className="p-3.5 text-xs font-medium text-foreground">
                           {formatCurrency(project.purchasePrice)}
                         </td>
-                        <td className="p-4 text-sm text-white/85">
+                        <td className="p-3.5 text-xs font-semibold text-foreground">
                           {project.estimatedIrr
                             ? `${(project.estimatedIrr * 100).toFixed(1)}%`
                             : 'N/A'}
                         </td>
-                        <td className="p-4 text-right">
+                        <td className="p-3.5 pr-4 text-right">
                           <Link
                             href={`/project/${project.id}`}
-                            className="text-[12px] font-semibold text-[#34d399] no-underline hover:underline"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline min-h-[32px]"
                           >
-                            Open
+                            Open <ArrowRight size={12} />
                           </Link>
                         </td>
                       </tr>
@@ -571,6 +558,12 @@ export default function ProjectsListPanel() {
             </div>
           )}
         </div>
+      ) : viewMode === 'stacks' ? (
+        <ProjectStacksView projects={filteredProjects} />
+      ) : viewMode === 'lineup' ? (
+        <ProjectLineupView projects={filteredProjects} />
+      ) : viewMode === 'everything' ? (
+        <ProjectEverythingView />
       ) : null}
     </div>
   );

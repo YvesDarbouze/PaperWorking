@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Buildings, CheckCircle } from '@phosphor-icons/react';
 import { STRATEGY_LABELS, type InvestmentStrategy } from '@/lib/profile/strategies';
 
 export interface CounterpartyProfileData {
@@ -73,30 +74,28 @@ export default function CounterpartyPreviewCard({
   return (
     <div
       data-testid="counterparty-preview-card"
-      className={`relative rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-xl transition-all ${className}`}
+      className={`relative rounded-none border border-neutral-800 bg-neutral-900 p-6 shadow-xl transition-all ${className}`}
     >
       {/* Header Badge */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-3">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[var(--accent)]">
-            corporate_fare
-          </span>
-          <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
+          <Buildings className="h-4 w-4 text-white" />
+          <h3 className="text-sm font-bold uppercase tracking-wider text-white">
             Public Profile &amp; Track Record
           </h3>
         </div>
         {isLivePreview ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-[11px] font-semibold text-neutral-300">
+            <span className="h-1.5 w-1.5 rounded-none bg-emerald-400" />
             Live Counterparty View
           </span>
         ) : (
           profile.isVerified !== false && (
             <span
               data-testid="verified-operator-badge"
-              className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-400"
+              className="inline-flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-0.5 text-[11px] font-bold text-white"
             >
-              <span className="material-symbols-outlined text-[13px]">verified</span>
+              <CheckCircle className="h-3.5 w-3.5 text-white" />
               Verified Operator
             </span>
           )
@@ -109,7 +108,7 @@ export default function CounterpartyPreviewCard({
           <img
             src={profile.avatarUrl}
             alt={name}
-            className="h-14 w-14 rounded-full border border-[var(--border-subtle)] object-cover shadow"
+            className="h-14 w-14 rounded-none border border-neutral-800 object-cover shadow"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
             }}
@@ -117,7 +116,7 @@ export default function CounterpartyPreviewCard({
         ) : (
           <div
             data-testid="operator-avatar-fallback"
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-base font-bold text-[var(--text-primary)] shadow"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none border border-neutral-800 bg-neutral-800 text-base font-bold text-white shadow"
           >
             {getInitials(name)}
           </div>
@@ -125,24 +124,24 @@ export default function CounterpartyPreviewCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="truncate text-base font-bold text-[var(--text-primary)]" data-testid="preview-operator-name">
+            <h4 className="truncate text-base font-bold text-white" data-testid="preview-operator-name">
               {name}
             </h4>
             {isLivePreview && profile.isVerified !== false && (
               <span
                 data-testid="verified-operator-badge"
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400"
+                className="inline-flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-white"
               >
-                <span className="material-symbols-outlined text-[12px]">verified</span>
+                <CheckCircle className="h-3 w-3 text-white" />
                 Verified Operator
               </span>
             )}
           </div>
-          <p className="truncate text-xs font-semibold text-[var(--text-secondary)]" data-testid="preview-company-name">
+          <p className="truncate text-xs font-semibold text-neutral-400" data-testid="preview-company-name">
             {companySubtitle}
           </p>
           <p
-            className={`mt-1 line-clamp-2 text-xs ${hasBio ? 'text-[var(--text-muted)]' : 'italic text-[var(--text-muted)]/70'}`}
+            className={`mt-1 line-clamp-2 text-xs ${hasBio ? 'text-neutral-400' : 'italic text-neutral-500'}`}
             data-testid="preview-bio"
           >
             {bio}
@@ -153,37 +152,37 @@ export default function CounterpartyPreviewCard({
       {/* Track Record / 4-Metric Grid */}
       {hasAnyMetrics ? (
         <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-center">
-            <p className="font-mono text-sm font-bold text-[var(--text-primary)]">{aum}</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="rounded-none border border-neutral-800 bg-neutral-800/40 p-3 text-center">
+            <p className="font-mono text-sm font-bold text-white">{aum}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
               Assets Under Mgmt
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-center">
-            <p className="font-mono text-sm font-bold text-[var(--text-primary)]">{irr}</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="rounded-none border border-neutral-800 bg-neutral-800/40 p-3 text-center">
+            <p className="font-mono text-sm font-bold text-white">{irr}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
               Realized IRR
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-center">
-            <p className="font-mono text-sm font-bold text-[var(--text-primary)]">{multiple}</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="rounded-none border border-neutral-800 bg-neutral-800/40 p-3 text-center">
+            <p className="font-mono text-sm font-bold text-white">{multiple}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
               Equity Multiple
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-center">
-            <p className="font-mono text-sm font-bold text-[var(--text-primary)]">{exits}</p>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+          <div className="rounded-none border border-neutral-800 bg-neutral-800/40 p-3 text-center">
+            <p className="font-mono text-sm font-bold text-white">{exits}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
               Track Record
             </p>
           </div>
         </div>
       ) : (
-        <div className="mt-5 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 text-center">
-          <p className="text-xs font-semibold text-[var(--text-secondary)]">
+        <div className="mt-5 rounded-none border border-neutral-800 bg-neutral-800/40 p-4 text-center">
+          <p className="text-xs font-semibold text-neutral-300">
             Operator has not added track record yet
           </p>
-          <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
+          <p className="mt-0.5 text-[11px] text-neutral-400">
             Performance metrics will appear here once verified track record data is submitted.
           </p>
         </div>
@@ -191,11 +190,11 @@ export default function CounterpartyPreviewCard({
 
       {/* Strategies */}
       {strategies.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-1.5 pt-3 border-t border-[var(--border-subtle)]">
+        <div className="mt-4 flex flex-wrap gap-1.5 pt-3 border-t border-neutral-800">
           {strategies.map((strat) => (
             <span
               key={strat}
-              className="rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-2.5 py-1 text-[11px] font-medium text-[var(--text-secondary)]"
+              className="rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-1 text-[11px] font-medium text-neutral-300"
             >
               {STRATEGY_LABELS[strat]}
             </span>

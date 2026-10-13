@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Warning, X } from '@phosphor-icons/react';
 import DealCard, { type DealCardData } from '@/components/deals/DealCard';
 
 export interface CollisionDeal extends Partial<DealCardData> {
@@ -138,30 +139,17 @@ export default function CollisionModal({
     >
       <div
         ref={modalRef}
-        className="relative z-50 w-full max-w-[520px] rounded-t-2xl md:rounded-[16px] border-t md:border border-white/10 bg-[#0a0a0f]/95 p-5 md:p-8 backdrop-blur-[20px] shadow-[0_24px_48px_rgba(0,0,0,0.8)] pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-8 animate-in slide-in-from-bottom-6 duration-200 md:fade-in-once"
+        className="relative z-50 w-full max-w-[520px] rounded-none border-t md:border border-neutral-800 bg-neutral-900 p-5 md:p-8 shadow-2xl pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pb-8 animate-in slide-in-from-bottom-6 duration-200 md:fade-in-once text-white"
       >
         {/* Mobile Drag Handle */}
         <div className="flex justify-center pt-1 pb-3 md:hidden">
-          <div className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden="true" />
+          <div className="h-1 w-12 rounded-none bg-neutral-700" aria-hidden="true" />
         </div>
 
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.75}
-              stroke="#fbbf24"
-              className="h-6 w-6 shrink-0 text-[#fbbf24]"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-              />
-            </svg>
+            <Warning className="h-6 w-6 shrink-0 text-amber-400" />
             <h2 id="collision-title" className="text-base sm:text-lg font-medium text-white">
               A deal already exists at this address
             </h2>
@@ -171,16 +159,16 @@ export default function CollisionModal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/60 transition hover:bg-white/10 hover:text-white active:scale-95 touch-press"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-neutral-800 border border-neutral-700 text-neutral-400 transition hover:bg-neutral-700 hover:text-white touch-press"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body */}
         <div className="mt-5 space-y-3">
           <DealCard deal={dealCardData} compact={true} />
-          <p className="text-xs sm:text-sm text-white/60">
+          <p className="text-xs sm:text-sm text-neutral-400">
             Listed by <span className="font-medium text-white">{deal.creatorName || 'Lead Investor'}</span>
           </p>
         </div>
@@ -191,7 +179,7 @@ export default function CollisionModal({
             ref={primaryButtonRef}
             type="button"
             onClick={handlePrimaryClick}
-            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-white/90 active:scale-[0.98] touch-press"
+            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-none bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-neutral-200 touch-press"
           >
             {isProjectLink ? 'Link to this deal' : 'View deal'}
           </button>
@@ -199,7 +187,7 @@ export default function CollisionModal({
           <button
             type="button"
             onClick={handleSecondaryClick}
-            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-[10px] border border-white/20 px-5 py-2.5 text-sm font-medium text-white/70 transition hover:border-white/40 hover:text-white active:scale-[0.98] touch-press"
+            className="inline-flex min-h-[44px] w-full sm:w-auto items-center justify-center rounded-none border border-neutral-700 px-5 py-2.5 text-sm font-medium text-neutral-300 transition hover:border-neutral-500 hover:text-white touch-press"
           >
             {isProjectLink ? 'Create new deal for this project' : 'Create new deal anyway'}
           </button>

@@ -11,6 +11,8 @@
  * - Complies strictly with the No-Mock Contract (no dead stubs, live database store).
  */
 
+import { secureRandomCode, secureRandomHex } from '../utils/secure-id';
+
 import { getAdminFirestore, shouldAttemptFirestore } from '@/lib/firebase/admin';
 
 export type TicketKind = 'bug' | 'feature_request' | 'idea' | 'callback' | 'support' | 'question';
@@ -240,7 +242,7 @@ const SEED_REAL_TICKETS: AdminTicketRecord[] = [
   },
 ];
 
-class TicketStore {
+export class TicketStore {
   private tickets: Map<string, AdminTicketRecord> = new Map();
   private initialized = false;
 
@@ -272,8 +274,7 @@ class TicketStore {
         : kind === 'idea'
         ? 'PW-IDEA'
         : 'PW-SUP';
-    const rand = Math.floor(100000 + Math.random() * 900000);
-    return `${prefix}-${rand}`;
+    return `${prefix}-${secureRandomCode(10)}`;
   }
 
   /**
@@ -301,7 +302,7 @@ class TicketStore {
     const content = input.initialMessage || input.description;
     if (content) {
       initialHistory.push({
-        id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: `msg-${Date.now()}-${secureRandomHex(6)}`,
         author: 'user',
         authorName: input.requesterName,
         authorEmail: input.requesterEmail,
@@ -362,6 +363,9 @@ class TicketStore {
         await Promise.race([writePromise, timeoutPromise]);
       } catch (err) {
         console.error(`[TicketStore] Failed to write ticket ${id} to Firestore:`, err);
+        if (process.env.NODE_ENV === 'production') {
+          throw err;
+        }
       }
     }
 
@@ -478,7 +482,7 @@ class TicketStore {
 
     const now = message.timestamp || new Date().toISOString();
     const newMessage: TicketEngagementMessage = {
-      id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: `msg-${Date.now()}-${secureRandomHex(6)}`,
       author: message.author,
       authorName: message.authorName,
       authorEmail: message.authorEmail,
@@ -513,6 +517,9 @@ class TicketStore {
         );
       } catch (err) {
         console.error(`[TicketStore] Failed to append message to ticket ${ticketId} in Firestore:`, err);
+        if (process.env.NODE_ENV === 'production') {
+          throw err;
+        }
       }
     }
 
@@ -541,7 +548,7 @@ class TicketStore {
 
     if (updates.status && updates.status !== ticket.status) {
       historyEvents.push({
-        id: `sys-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: `sys-${Date.now()}-${secureRandomHex(6)}`,
         author: 'system',
         authorName: 'System',
         content: `Status changed from "${ticket.status}" to "${updates.status}" by ${adminActorName}.`,
@@ -552,7 +559,7 @@ class TicketStore {
 
     if (updates.priority && updates.priority !== ticket.priority) {
       historyEvents.push({
-        id: `sys-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: `sys-${Date.now()}-${secureRandomHex(6)}`,
         author: 'system',
         authorName: 'System',
         content: `Priority changed from "${ticket.priority}" to "${updates.priority}" by ${adminActorName}.`,
@@ -564,7 +571,7 @@ class TicketStore {
     if (updates.assignedTo !== undefined && updates.assignedTo !== ticket.assignedTo) {
       const assigneeLabel = updates.assignedTo ? updates.assignedTo : 'Unassigned';
       historyEvents.push({
-        id: `sys-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        id: `sys-${Date.now()}-${secureRandomHex(6)}`,
         author: 'system',
         authorName: 'System',
         content: `Assigned to ${assigneeLabel} by ${adminActorName}.`,
@@ -601,6 +608,9 @@ class TicketStore {
         );
       } catch (err) {
         console.error(`[TicketStore] Failed to update ticket ${ticketId} in Firestore:`, err);
+        if (process.env.NODE_ENV === 'production') {
+          throw err;
+        }
       }
     }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ShieldCheck, CalendarPlus, X, CurrencyDollar, Clock, CheckCircle, WarningCircle, VideoCamera, Phone, Users, CalendarCheck } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 import { formatCurrency, formatCurrencyCompact } from '@/lib/format';
 import { useOptionalAuth } from '@/context/AuthContext';
@@ -263,78 +264,89 @@ export default function ExpressInterestModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="interest-modal-title"
-        className="relative w-full max-w-lg rounded-2xl border border-white/15 bg-[#121014] p-6 shadow-2xl dropdown-entrance max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-lg rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
           <div>
-            <h2 id="interest-modal-title" className="text-lg font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-[var(--accent)]">
-                {activeTab === 'commitment' ? 'verified_user' : 'calendar_clock'}
-              </span>
+            <h2 id="interest-modal-title" className="text-lg font-semibold text-white flex items-center gap-2">
+              {activeTab === 'commitment' ? (
+                <ShieldCheck className="h-5 w-5 text-neutral-300" />
+              ) : (
+                <CalendarPlus className="h-5 w-5 text-neutral-300" />
+              )}
               {activeTab === 'commitment' ? 'Express Soft Commitment' : 'Set up a time to talk'}
             </h2>
-            <p className="text-xs text-[#9E9DA0] mt-0.5 truncate max-w-sm">
+            <p className="text-xs text-neutral-400 mt-0.5 truncate max-w-sm">
               {dealTitle}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-[#9E9DA0] hover:bg-white/10 hover:text-white"
+            className="rounded-none p-1 text-neutral-400 hover:bg-neutral-900 hover:text-white transition"
             aria-label="Close modal"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
         {!submitted && (
-          <div className="flex rounded-xl bg-white/5 p-1 mt-4 border border-white/10">
+          <div className="flex rounded-none bg-neutral-900 p-1 mt-4 border border-neutral-800">
             <button
               type="button"
               data-testid="tab-commitment"
               onClick={() => setActiveTab('commitment')}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition min-h-[40px] flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-medium rounded-none transition min-h-[40px] flex items-center justify-center gap-1.5 ${
                 activeTab === 'commitment'
-                  ? 'bg-[var(--accent)] text-black font-bold shadow'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-neutral-800 text-white font-semibold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">payments</span>
+              <CurrencyDollar className="h-4 w-4" />
               <span>Express Commitment</span>
             </button>
             <button
               type="button"
               data-testid="tab-schedule"
               onClick={() => setActiveTab('schedule')}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition min-h-[40px] flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-medium rounded-none transition min-h-[40px] flex items-center justify-center gap-1.5 ${
                 activeTab === 'schedule'
-                  ? 'bg-[var(--accent)] text-black font-bold shadow'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-neutral-800 text-white font-semibold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">schedule</span>
+              <Clock className="h-4 w-4" />
               <span>Set up a time to talk</span>
             </button>
+          </div>
+        )}
+
+        {(auth?.profile?.accountType || '').toLowerCase() === 'vendor' && !submitted && (
+          <div
+            data-testid="vendor-equity-restriction-notice"
+            className="mt-3 rounded-none border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-300"
+          >
+            <strong>Vendor Notice:</strong> Equity commitments on the Deals Marketplace are reserved for accredited Investors and Investment Teams. As a registered Vendor, please use &quot;Offer Services&quot; on the deal card to submit your trade or professional bids to this operator.
           </div>
         )}
 
         {submitted ? (
           /* Success State */
           <div className="py-8 text-center space-y-4" data-testid="interest-success-state">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent-subtle)] text-[var(--accent)]">
-              <span className="material-symbols-outlined text-3xl">check_circle</span>
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none border border-neutral-700 bg-neutral-900 text-white">
+              <CheckCircle className="h-8 w-8 text-neutral-200" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-semibold text-white">
                 {submittedType === 'meeting'
                   ? 'Meeting Invitation Dispatched'
                   : submittedType === 'both'
                     ? 'Commitment & Meeting Proposal Dispatched'
                     : 'Interest Successfully Registered'}
               </h3>
-              <p className="mt-1.5 text-xs text-[#9E9DA0] max-w-sm mx-auto leading-relaxed">
+              <p className="mt-1.5 text-xs text-neutral-400 max-w-sm mx-auto leading-relaxed">
                 {submittedType === 'meeting'
                   ? `Your request to meet on ${preferredDate} during ${timeSlotLabels[timeSlot]} has been transmitted to the operating partner.`
                   : 'A confirmation has been sent to your Inbox. The operator has been notified and will transmit subscription documents directly.'}
@@ -345,7 +357,7 @@ export default function ExpressInterestModal({
                 variant="secondary"
                 size="md"
                 onClick={onClose}
-                className="w-full justify-center min-h-[44px]"
+                className="w-full justify-center min-h-[44px] rounded-none"
               >
                 Close &amp; Return to Deal
               </Button>
@@ -357,17 +369,17 @@ export default function ExpressInterestModal({
             {error && (
               <div
                 data-testid="interest-form-error"
-                className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 flex items-center gap-2"
+                className="rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[16px] text-red-400">error</span>
+                <WarningCircle className="h-4 w-4 text-red-400 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs">
+            <div className="grid grid-cols-2 gap-3 rounded-none border border-neutral-800 bg-neutral-900/40 p-3 text-xs">
               <div>
-                <span className="text-[#9E9DA0] block text-[10px] uppercase font-bold">Min Investment</span>
-                <span className="font-mono font-bold text-white mt-0.5 block">
+                <span className="text-neutral-400 block text-[10px] uppercase font-semibold">Min Investment</span>
+                <span className="font-mono font-semibold text-white mt-0.5 block">
                   {formatCurrency(minInvestment)}
                 </span>
               </div>
@@ -380,11 +392,11 @@ export default function ExpressInterestModal({
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="commitment-amount" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label htmlFor="commitment-amount" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Indicated Investment Amount ($) *
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-[#9E9DA0]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-medium text-neutral-400">
                   $
                 </span>
                 <input
@@ -397,21 +409,21 @@ export default function ExpressInterestModal({
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   placeholder="e.g. 50000"
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)] min-h-[44px]"
+                  className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-2.5 pl-8 pr-4 font-mono text-base md:text-sm text-white placeholder:text-neutral-500 outline-none focus:border-neutral-500 min-h-[44px]"
                 />
               </div>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5 space-y-2">
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/30 p-3.5 space-y-2">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
                   data-testid="accreditation-checkbox"
                   checked={attested}
                   onChange={(e) => setAttested(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)] accent-[var(--accent)]"
+                  className="mt-0.5 h-4 w-4 rounded-none border-neutral-700 bg-neutral-900 text-neutral-100 accent-neutral-100 focus:outline-none"
                 />
-                <span className="text-xs text-[#fdfffc]/90 leading-snug">
+                <span className="text-xs text-neutral-300 leading-snug">
                   I attest that I am an <strong>Accredited Investor</strong> under Rule 506(c) of SEC
                   Regulation D (net worth &gt; $1M excluding primary residence, or income &gt; $200k/$300k).
                 </span>
@@ -419,7 +431,7 @@ export default function ExpressInterestModal({
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="commitment-notes" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label htmlFor="commitment-notes" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Notes or Entity Name (Optional)
               </label>
               <textarea
@@ -428,21 +440,21 @@ export default function ExpressInterestModal({
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="e.g. Investing via Family Trust or LLC"
-                className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-3 text-base md:text-xs text-white placeholder:text-neutral-500 outline-none focus:border-neutral-500"
               />
             </div>
 
             {/* Optional inline meeting request toggle */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 space-y-2">
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/30 p-3 space-y-2">
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
                   data-testid="schedule-call-toggle"
                   checked={alsoScheduleCall}
                   onChange={(e) => setAlsoScheduleCall(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)] accent-[var(--accent)]"
+                  className="h-4 w-4 rounded-none border-neutral-700 bg-neutral-900 text-neutral-100 accent-neutral-100 focus:outline-none"
                 />
-                <span className="text-xs font-semibold text-white">
+                <span className="text-xs font-medium text-white">
                   Also set up a time to talk with the operator
                 </span>
               </label>
@@ -450,7 +462,7 @@ export default function ExpressInterestModal({
               {alsoScheduleCall && (
                 <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">
+                    <label className="block text-[10px] uppercase font-medium text-neutral-400 mb-1">
                       Target Date
                     </label>
                     <input
@@ -458,17 +470,17 @@ export default function ExpressInterestModal({
                       min={defaultDateStr}
                       value={preferredDate}
                       onChange={(e) => setPreferredDate(e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-white/5 p-2 text-xs text-white focus:outline-none"
+                      className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-white focus:outline-none min-h-[44px]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase font-bold text-white/50 mb-1">
+                    <label className="block text-[10px] uppercase font-medium text-neutral-400 mb-1">
                       Time Slot
                     </label>
                     <select
                       value={timeSlot}
                       onChange={(e) => setTimeSlot(e.target.value as any)}
-                      className="w-full rounded-lg border border-white/10 bg-[#16141a] p-2 text-xs text-white focus:outline-none"
+                      className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2 text-base md:text-xs text-white focus:outline-none min-h-[44px]"
                     >
                       <option value="morning">Morning (9am - 12pm)</option>
                       <option value="afternoon">Afternoon (1pm - 5pm)</option>
@@ -508,17 +520,15 @@ export default function ExpressInterestModal({
             {error && (
               <div
                 data-testid="scheduler-form-error"
-                className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 flex items-center gap-2"
+                className="rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200 flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-[16px] text-red-400">error</span>
+                <WarningCircle className="h-4 w-4 text-red-400 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
-            <div className="rounded-xl border border-[var(--accent)]/20 bg-[var(--accent)]/[0.04] p-3 text-xs text-white/80 flex items-start gap-2">
-              <span className="material-symbols-outlined text-[18px] text-[var(--accent)] shrink-0">
-                event_available
-              </span>
+            <div className="rounded-none border border-neutral-800 bg-neutral-900/40 p-3 text-xs text-neutral-300 flex items-start gap-2">
+              <CalendarCheck className="h-4 w-4 text-neutral-300 shrink-0 mt-0.5" />
               <p>
                 Propose a time to speak directly with the operating partner regarding deal strategy, waterfall hurdle terms, and subscription steps.
               </p>
@@ -526,7 +536,7 @@ export default function ExpressInterestModal({
 
             {/* Date Selection */}
             <div className="space-y-1.5">
-              <label htmlFor="pref-date" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label htmlFor="pref-date" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Preferred Date *
               </label>
               <input
@@ -537,13 +547,13 @@ export default function ExpressInterestModal({
                 value={preferredDate}
                 onChange={(e) => setPreferredDate(e.target.value)}
                 required
-                className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-base md:text-xs text-white outline-none focus:border-neutral-500 min-h-[44px]"
               />
             </div>
 
             {/* Time Slot Selector */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Proposed Time Slot *
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -553,10 +563,10 @@ export default function ExpressInterestModal({
                     type="button"
                     data-testid={`time-slot-${slot}`}
                     onClick={() => setTimeSlot(slot)}
-                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] flex flex-col justify-center items-center ${
+                    className={`rounded-none border p-2.5 text-center text-xs font-medium transition min-h-[44px] flex flex-col justify-center items-center ${
                       timeSlot === slot
-                        ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
+                        ? 'border-neutral-500 bg-neutral-800 text-white font-semibold'
+                        : 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white'
                     }`}
                   >
                     <span className="capitalize">{slot}</span>
@@ -570,37 +580,40 @@ export default function ExpressInterestModal({
 
             {/* Meeting Format */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Meeting Format *
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'google_meet', label: 'Google Meet', icon: 'videocam' },
-                  { id: 'phone', label: 'Phone Call', icon: 'call' },
-                  { id: 'in_person', label: 'In-Person', icon: 'groups' },
-                ].map((fmt) => (
-                  <button
-                    key={fmt.id}
-                    type="button"
-                    data-testid={`meeting-format-${fmt.id}`}
-                    onClick={() => setMeetingFormat(fmt.id as any)}
-                    className={`rounded-xl border p-2.5 text-center text-xs font-semibold transition min-h-[44px] flex items-center justify-center gap-1.5 ${
-                      meetingFormat === fmt.id
-                        ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-white'
-                        : 'border-white/10 bg-white/[0.02] text-white/50 hover:text-white'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">{fmt.icon}</span>
-                    <span>{fmt.label}</span>
-                  </button>
-                ))}
+                  { id: 'google_meet', label: 'Google Meet', icon: VideoCamera },
+                  { id: 'phone', label: 'Phone Call', icon: Phone },
+                  { id: 'in_person', label: 'In-Person', icon: Users },
+                ].map((fmt) => {
+                  const Icon = fmt.icon;
+                  return (
+                    <button
+                      key={fmt.id}
+                      type="button"
+                      data-testid={`meeting-format-${fmt.id}`}
+                      onClick={() => setMeetingFormat(fmt.id as any)}
+                      className={`rounded-none border p-2.5 text-center text-xs font-medium transition min-h-[44px] flex items-center justify-center gap-1.5 ${
+                        meetingFormat === fmt.id
+                          ? 'border-neutral-500 bg-neutral-800 text-white font-semibold'
+                          : 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{fmt.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Contact details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label htmlFor="inv-email" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                <label htmlFor="inv-email" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                   Your Email *
                 </label>
                 <input
@@ -611,12 +624,12 @@ export default function ExpressInterestModal({
                   onChange={(e) => setInvestorEmail(e.target.value)}
                   required
                   placeholder="name@fund.com"
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+                  className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-base md:text-xs text-white outline-none focus:border-neutral-500 min-h-[44px]"
                 />
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="inv-phone" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+                <label htmlFor="inv-phone" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                   Phone (Optional)
                 </label>
                 <input
@@ -626,14 +639,14 @@ export default function ExpressInterestModal({
                   value={investorPhone}
                   onChange={(e) => setInvestorPhone(e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-2.5 text-xs text-white outline-none focus:border-[var(--accent)] min-h-[44px]"
+                  className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-base md:text-xs text-white outline-none focus:border-neutral-500 min-h-[44px]"
                 />
               </div>
             </div>
 
             {/* Agenda / Questions */}
             <div className="space-y-1.5">
-              <label htmlFor="meeting-agenda" className="block text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">
+              <label htmlFor="meeting-agenda" className="block text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Discussion Agenda / Questions
               </label>
               <textarea
@@ -643,7 +656,7 @@ export default function ExpressInterestModal({
                 onChange={(e) => setAgenda(e.target.value)}
                 rows={2}
                 placeholder="Topics you'd like to cover..."
-                className="w-full rounded-xl border border-white/15 bg-white/[0.04] p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-[var(--accent)]"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-3 text-base md:text-xs text-white placeholder:text-neutral-500 outline-none focus:border-neutral-500"
               />
             </div>
 

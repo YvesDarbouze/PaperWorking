@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { X } from '@phosphor-icons/react';
 
 export interface BottomSheetProps {
   isOpen: boolean;
@@ -66,16 +67,16 @@ export default function BottomSheet({
       {/* Sheet / Dialog Container */}
       <div
         ref={sheetRef}
-        className={`relative z-10 flex w-full flex-col overflow-hidden border-t md:border border-white/10 bg-[#121014] text-white shadow-[0_-12px_40px_rgba(0,0,0,0.8)] md:shadow-[0_24px_64px_rgba(0,0,0,0.6)] rounded-t-2xl md:rounded-2xl max-h-[90vh] md:max-h-[85vh] ${maxWidth} animate-in slide-in-from-bottom-6 duration-200 ease-out md:fade-in-once`}
+        className={`relative z-10 flex w-full flex-col overflow-hidden border-t md:border border-neutral-800 bg-neutral-900 text-white shadow-2xl rounded-none max-h-[90vh] md:max-h-[85vh] ${maxWidth} animate-in slide-in-from-bottom-6 duration-200 ease-out md:fade-in-once`}
       >
         {/* Mobile Drag Handle */}
         <div className="flex justify-center pt-2.5 pb-1 md:hidden">
-          <div className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden="true" />
+          <div className="h-1 w-12 rounded-none bg-neutral-700" aria-hidden="true" />
         </div>
 
         {/* Header */}
         {(title || description) && (
-          <div className="flex items-start justify-between border-b border-white/8 px-5 py-4">
+          <div className="flex items-start justify-between border-b border-neutral-800 px-5 py-4">
             <div className="min-w-0 flex-1 pr-3">
               {title && (
                 <h2 id="bottom-sheet-title" className="text-base sm:text-lg font-bold text-white tracking-tight">
@@ -83,7 +84,7 @@ export default function BottomSheet({
                 </h2>
               )}
               {description && (
-                <p id="bottom-sheet-description" className="text-xs text-white/55 mt-0.5">
+                <p id="bottom-sheet-description" className="text-xs text-neutral-400 mt-0.5">
                   {description}
                 </p>
               )}
@@ -92,9 +93,9 @@ export default function BottomSheet({
               type="button"
               onClick={onClose}
               aria-label="Close dialog"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition active:scale-95 touch-press"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-800 transition touch-press"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <X className="h-5 w-5" />
             </button>
           </div>
         )}

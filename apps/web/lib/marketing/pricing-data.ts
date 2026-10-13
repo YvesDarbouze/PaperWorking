@@ -7,6 +7,7 @@ export interface PricingPlan {
   monthlyPrice: number;
   annualPrice: number;
   features: string[];
+  supportedRoles?: string[];
   cta: string;
   microcopy: string;
   ctaHref: string;
@@ -31,7 +32,8 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Ledger/expense logging/budgets/Holding Cost Clock',
       'Document vault',
       'Tax-ready reports',
-      'Deal Marketplace access',
+      'List on Deal Marketplace (syndicate & raise capital)',
+      'List on Vendor Directory (showcase vendor & pro services)',
       'Solo plan: one user account',
     ],
     cta: 'Start Investor Trial',
@@ -53,7 +55,8 @@ export const PRICING_PLANS: PricingPlan[] = [
       'Up to 10 accounts included',
       'Lead Investor task assignment',
       'Role permissions (Admins, Editors, Viewers)',
-      'Represent team in marketplace',
+      'List on Deal Marketplace (firm deals & syndications)',
+      'List on Vendor Directory (firm profile & inbound leads)',
       'Google Drive provisioning',
     ],
     cta: 'Start Team Trial',
@@ -64,14 +67,36 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: 'vendor',
     stripeKey: 'Vendor',
     name: 'Vendor',
-    tagline: 'Qualified leads from active investor projects in your service area.',
+    tagline: 'For all forms of real estate vendors to list services in the Vendor Directory and receive qualified leads from active investor projects.',
     monthlyPrice: 39,
     annualPrice: 390,
     highlighted: false,
     features: [
-      'Vendor Marketplace listing by trade and geography',
-      'Access to assigned project work',
+      'List services in the Vendor Directory across your trade and geography',
+      'Direct exposure to serious real estate investors at the moment of operational need',
+      'Search active deals on Deals Marketplace and offer trade/professional services to operators',
+      'Access to assigned project work, draw requests, and milestone scopes',
       'Standard financial reports',
+    ],
+    supportedRoles: [
+      'General Contractor',
+      'Handyman',
+      'Electrician',
+      'Plumber',
+      'HVAC Technician',
+      'Roofer',
+      'Flooring Specialist',
+      'Landscaper / Lawn Care Service',
+      'Real Estate Attorney',
+      'Title Officer / Examiner',
+      'Real Estate Accountant / CPA',
+      'Mortgage Broker / Loan Originator',
+      'Insurance Broker / Agent',
+      'Property Manager',
+      'Home Inspector',
+      'Real Estate Appraiser',
+      'Real Estate Broker / Agent',
+      'Architect / Engineer',
     ],
     cta: 'Join the Marketplace',
     microcopy: '14-day trial · No charge until day 15',
@@ -125,9 +150,10 @@ export const PRICING_COMPARISON_CATEGORIES: ComparisonCategory[] = [
   {
     title: 'Marketplaces & Ecosystem',
     features: [
-      { name: 'Deal Marketplace (Co-investor soft pledges & syndication)', investor: true, team: true, vendor: false },
-      { name: 'Vendor Marketplace (Find vetted contractors, lawyers, bankers)', investor: true, team: true, vendor: false },
-      { name: 'Directory Listing & Qualified Investor Deal Leads', investor: false, team: 'Firm Profile', vendor: 'Service Directory' },
+      { name: 'Deal Marketplace Listing (Post opportunities & syndicate capital)', investor: true, team: true, vendor: false },
+      { name: 'Vendor Directory Listing (Showcase trade & professional services)', investor: true, team: true, vendor: true },
+      { name: 'Vendor Directory Sourcing (Find & hire vetted pros)', investor: true, team: true, vendor: false },
+      { name: 'Qualified Inbound Leads & Network Exposure', investor: true, team: 'Firm Leads', vendor: 'Service Directory' },
     ],
   },
   {
@@ -145,6 +171,14 @@ export const PRICING_FAQ = [
   {
     question: 'How does the 14-day free trial work?',
     answer: 'Every plan includes full access for 14 days. You can test live deals, connect bank accounts via Plaid, and use the Deal Calculator immediately. Your card will not be charged until day 15, and you can cancel anytime with one click in Settings.',
+  },
+  {
+    question: 'Can Investor and Investment Team subscribers list on both marketplaces?',
+    answer: 'Yes. Both Investor and Investment Team subscriptions include the ability to list opportunities on the Deal Marketplace (to syndicate capital and gauge partner interest) as well as list in the Vendor Directory (to offer professional or trade services and receive qualified inbound leads). Investors automatically inherit full Vendor Directory privileges.',
+  },
+  {
+    question: 'Can Vendors post on the Deals Marketplace?',
+    answer: 'No. Vendors cannot post deals on the Deals Marketplace—deal posting is reserved exclusively for Investors and Investment Teams. However, Vendors can freely search all published deals and submit direct service proposals to project operators.',
   },
   {
     question: 'Can I add or remove team members later?',

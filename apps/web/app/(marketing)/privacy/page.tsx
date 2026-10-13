@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Gavel } from '@phosphor-icons/react/dist/ssr';
 import { LEGAL_DRAFT_NOTICE, LEGAL_LAST_UPDATED, PRIVACY_SECTIONS } from '@/lib/marketing/legal-data';
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export default function PrivacyPage() {
         data-testid="legal-draft-notice"
         className="mb-8 flex items-center gap-3 rounded-none border border-border bg-muted/40 px-4 py-3 text-xs font-medium text-muted-foreground"
       >
-        <span className="material-symbols-outlined text-foreground text-sm">gavel</span>
+        <Gavel className="h-4 w-4 text-foreground shrink-0" />
         <span>
           <strong className="text-foreground">{LEGAL_DRAFT_NOTICE}:</strong> This document describes verified, active platform data
           flows and subprocessors, subject to final legal counsel certification.

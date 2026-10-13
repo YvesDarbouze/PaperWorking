@@ -20,7 +20,7 @@ export default function MetricCard({
 
   return (
     <article
-      className="rounded-2xl border p-4"
+      className="rounded-none border p-4"
       style={{
         borderColor: isWarning ? 'rgba(251,191,36,0.35)' : 'rgba(255,255,255,0.08)',
         background: isWarning ? 'rgba(251,191,36,0.06)' : 'rgba(255,255,255,0.03)',

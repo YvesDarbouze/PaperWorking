@@ -20,6 +20,6 @@ export default function NextImageMock({
   blurDataURL,
   ...rest
 }: NextImageProps & Record<string, unknown>) {
-  const resolvedSrc = typeof src === 'string' ? src : src?.src;
+  const resolvedSrc = typeof src === 'string' ? src : (src as { src?: string } | undefined)?.src;
   return <img src={resolvedSrc} alt={alt ?? ''} {...(rest as object)} />;
 }

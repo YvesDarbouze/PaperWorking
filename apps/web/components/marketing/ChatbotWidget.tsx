@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useOptionalAssistant } from '@/components/assistant/AssistantProvider';
+import { X, ChatDots } from '@phosphor-icons/react';
 
 /**
  * ChatbotWidget
@@ -33,13 +34,11 @@ export default function ChatbotWidget() {
       <button
         type="button"
         onClick={() => setIsOpenLocal((prev) => !prev)}
-        className="touch-press flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-[#141217] text-white shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:border-[color:var(--color-primary,#7A9EAA)] focus:outline-none"
+        className="touch-press flex h-14 w-14 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-neutral-100 shadow-lg hover:border-neutral-600 focus:outline-none min-h-[44px] min-w-[44px]"
         aria-label={isOpenLocal ? 'Close chat' : 'Open PaperWorking Assistant chat'}
         aria-expanded={isOpenLocal}
       >
-        <span className="material-symbols-outlined text-[24px]">
-          {isOpenLocal ? 'close' : 'chat'}
-        </span>
+        {isOpenLocal ? <X className="h-6 w-6" /> : <ChatDots className="h-6 w-6" />}
       </button>
     </div>
   );

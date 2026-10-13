@@ -1,94 +1,88 @@
 'use client';
 
+import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { BUILD_SHA, BUILT_AT } from '@/lib/build-info';
+import {
+  Gear,
+  Lock,
+  CreditCard,
+  ShieldCheck,
+  ArrowLeft,
+} from '@phosphor-icons/react';
 
 type SettingsNavItem = {
+  id: string;
   label: string;
   href: string;
-  iconName: string;
-  exact?: boolean;
-  disabled?: boolean;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
 };
 
 const NAV_ITEMS: SettingsNavItem[] = [
-  { label: 'General', href: '/dashboard/settings', iconName: 'settings', exact: true },
-  { label: 'Profile', href: '/dashboard/settings/profile', iconName: 'person' },
-  { label: 'Marketplace', href: '/dashboard/marketplace', iconName: 'storefront' },
-  { label: 'Team', href: '/dashboard/team', iconName: 'group' },
-  { label: 'Billing', href: '/dashboard/settings/billing', iconName: 'payments' },
-  {
-    label: 'Notifications',
-    href: '/dashboard/settings',
-    iconName: 'notifications',
-    disabled: true,
-  },
-  {
-    label: 'Data & Privacy',
-    href: '/dashboard/settings/profile',
-    iconName: 'security',
-  },
-  {
-    label: 'Audit Logs',
-    href: '/dashboard/settings',
-    iconName: 'manage_history',
-    disabled: true,
-  },
+  { id: 'general', label: 'General', href: '/dashboard/settings?section=general', Icon: Gear },
+  { id: 'security', label: 'Security', href: '/dashboard/settings?section=security', Icon: Lock },
+  { id: 'billing', label: 'Billing', href: '/dashboard/settings?section=billing', Icon: CreditCard },
+  { id: 'data-privacy', label: 'Data & Privacy', href: '/dashboard/settings?section=data-privacy', Icon: ShieldCheck },
 ];
 
-function isActive(pathname: string, href: string, exact?: boolean) {
-  if (exact) return pathname === href;
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-export default function SettingsLayout({ children }: { children: React.ReactNode }) {
+function SettingsNavContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || '';
+  const searchParams = useSearchParams();
+  const activeSection = searchParams.get('section') || 'general';
+
+  const isLocked =
+    typeof window !== 'undefined' &&
+    (searchParams.get('milestone') === 'locked' ||
+      document.cookie.includes('__pw_milestone=locked') ||
+      document.cookie.includes('__pw_first_deal=0'));
+
+  const isSectionActive = (itemId: string) => {
+    if (itemId === 'general') {
+      return activeSection === 'general' || (!searchParams.get('section') && pathname === '/dashboard/settings');
+    }
+    return activeSection === itemId;
+  };
 
   return (
-    <div className="min-h-screen bg-[#0d0a0b] text-[#fdfffc] antialiased">
-      <div className="w-full min-w-0 px-4 py-6 sm:px-5 sm:py-8 lg:px-6 xl:px-8">
+    <div className="min-h-screen bg-background text-foreground antialiased">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <Link
           href="/dashboard"
-          className="group mb-8 inline-flex items-center gap-2 text-sm text-white/45 no-underline transition-colors hover:text-emerald-300"
+          className="group mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground no-underline transition-colors hover:text-foreground min-h-[44px]"
         >
-          <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
-            arrow_back
-          </span>
-          Back to Dashboard
+          <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
+          <span>Back to Dashboard</span>
         </Link>
 
-        <h1 className="mb-2 text-3xl font-bold tracking-tight text-[#fdfffc]">Settings</h1>
-        <p className="mb-8 text-sm text-white/50">
-          Manage your personal profile, team seats, notification matrices, and subscription billing.
+        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">Settings</h1>
+        <p className="mb-8 text-sm text-muted-foreground">
+          Manage your personal preferences, security credentials, active subscription, and data controls.
         </p>
 
         {/* Mobile tabs */}
-        <nav className="mb-6 flex gap-2 overflow-x-auto border-b border-white/10 pb-4 sm:hidden">
+        <nav className="mb-6 flex gap-2 overflow-x-auto border-b border-border pb-4 sm:hidden">
           {NAV_ITEMS.map((item) => {
-            const active = !item.disabled && isActive(pathname, item.href, item.exact);
-            if (item.disabled) {
-              return (
-                <span
-                  key={item.label}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-transparent px-4 text-xs font-semibold text-white/25"
-                >
-                  <span className="material-symbols-outlined text-base">{item.iconName}</span>
-                  {item.label}
-                </span>
-              );
-            }
+            const active = isSectionActive(item.id);
+            const Icon = item.Icon;
             return (
               <Link
-                key={item.label}
+                key={item.id}
                 href={item.href}
-                className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-4 text-xs font-semibold no-underline transition-all ${
+                data-testid={`settings-tab-mobile-${item.id}`}
+                className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-none border px-4 text-xs font-semibold no-underline transition-all ${
                   active
-                    ? 'border-white/15 bg-white/[0.06] font-bold text-white'
-                    : 'border-transparent text-white/45 hover:bg-white/5 hover:text-white'
+                    ? 'border-border bg-card font-bold text-foreground shadow-sm ring-1 ring-foreground/10'
+                    : 'border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                 }`}
               >
-                <span className="material-symbols-outlined text-base">{item.iconName}</span>
-                {item.label}
+                <Icon size={16} />
+                <span>{item.label}</span>
+                {isLocked && item.id !== 'general' && (
+                  <span title="Milestone locked" className="inline-flex items-center">
+                    <Lock size={12} className="text-amber-400" />
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -99,48 +93,58 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             <div className="sticky top-20 flex h-full flex-col justify-between gap-6">
               <nav className="space-y-1">
                 {NAV_ITEMS.map((item, index) => {
-                  const active = !item.disabled && isActive(pathname, item.href, item.exact);
-                  if (item.disabled) {
-                    return (
-                      <span
-                        key={item.label}
-                        className="mx-2 flex h-10 items-center gap-4 rounded-lg border border-transparent px-4 text-sm text-white/25"
-                      >
-                        <span className="material-symbols-outlined text-lg">{item.iconName}</span>
-                        {item.label}
-                      </span>
-                    );
-                  }
+                  const active = isSectionActive(item.id);
+                  const Icon = item.Icon;
                   return (
                     <Link
-                      key={item.label}
+                      key={item.id}
                       id={`settings-nav-${index}`}
+                      data-testid={`settings-tab-${item.id}`}
                       href={item.href}
-                      className={`mx-2 flex h-10 items-center gap-4 rounded-lg border px-4 text-sm no-underline transition-all ${
+                      className={`mx-2 flex min-h-[44px] items-center gap-3 rounded-none border px-4 text-sm no-underline transition-all ${
                         active
-                          ? 'border-white/15 bg-white/[0.06] font-bold text-white'
-                          : 'border-transparent text-white/45 hover:bg-white/5 hover:text-white'
+                          ? 'border-border bg-card font-semibold text-foreground shadow-sm ring-1 ring-foreground/10'
+                          : 'border-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-lg">{item.iconName}</span>
-                      {item.label}
+                      <Icon size={16} />
+                      <span className="flex-1 text-xs">{item.label}</span>
+                      {isLocked && item.id !== 'general' && (
+                        <span title="Milestone locked" className="inline-flex items-center">
+                          <Lock size={12} className="text-amber-400" />
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
               </nav>
 
               <div className="px-2">
-                <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/5 p-4">
-                  <p className="mb-1 text-xs font-bold text-emerald-300">Need help?</p>
-                  <p className="mb-3 text-[11px] leading-relaxed text-white/45">
-                    Priority support is available for Team plans.
+                <div className="rounded-none border border-border bg-card p-4 shadow-sm">
+                  <p className="mb-1 text-xs font-bold text-foreground">Need help?</p>
+                  <p className="mb-3 text-[11px] leading-relaxed text-muted-foreground">
+                    Priority operator support is available for active accounts.
                   </p>
                   <Link
                     href="/support"
-                    className="flex h-10 w-full items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-sm font-medium text-white no-underline hover:bg-white/10"
+                    className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-muted/40 text-xs font-semibold text-foreground no-underline hover:bg-muted transition"
                   >
                     Contact Support
                   </Link>
+                </div>
+
+                <div className="px-2 pt-3 pb-1 text-[11px] text-muted-foreground font-mono flex items-center justify-between" data-testid="build-identity-footer">
+                  <span>Build</span>
+                  <a
+                    href="/api/health"
+                    className="text-foreground hover:underline transition-colors decoration-border underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`Built at ${BUILT_AT}`}
+                    data-testid="build-sha-link"
+                  >
+                    {BUILD_SHA === 'unknown' ? 'unknown' : BUILD_SHA.slice(0, 7)}
+                  </a>
                 </div>
               </div>
             </div>
@@ -150,5 +154,13 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="p-8 text-sm text-muted-foreground">Loading settings…</div>}>
+      <SettingsNavContent>{children}</SettingsNavContent>
+    </Suspense>
   );
 }

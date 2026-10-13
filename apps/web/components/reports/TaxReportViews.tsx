@@ -1,6 +1,5 @@
-'use client';
-
 import React from 'react';
+import { Warning } from '@phosphor-icons/react';
 import { formatCurrency } from '@/lib/viz/format';
 import { TAX_DISCLAIMER, type CapExReport, type Vendor1099Report } from '@/lib/reports/tax-reports';
 import type { ScheduleEReport } from '@/lib/reports/schedule-e-mapper';
@@ -8,17 +7,17 @@ import type { AssetDepreciationSchedule } from '@paperworking/financial-engine';
 
 export function ScheduleETable({ report }: { report: ScheduleEReport }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
+    <div className="flex flex-col rounded-none border border-border bg-card shadow-sm ring-1 ring-foreground/10 overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4 bg-card">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-text-primary">
+          <h2 className="text-sm font-bold tracking-tight text-foreground">
             IRS Form 1040 Schedule E Summary (Part I: Rental Real Estate)
           </h2>
-          <p className="mt-0.5 text-xs text-text-muted">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Authoritative 14-line tax classification for individual and entity tax preparation
           </p>
         </div>
-        <span className="rounded-full bg-elevated px-2.5 py-1 text-[11px] font-semibold text-text-secondary">
+        <span className="rounded-none border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold text-foreground">
           FY {report.fiscalYear}
         </span>
       </div>
@@ -103,17 +102,17 @@ export function DepreciationScheduleTable({
   fiscalYear: number;
 }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
+    <div className="flex flex-col rounded-none border border-border bg-card shadow-sm ring-1 ring-foreground/10 overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4 bg-card">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-text-primary">
+          <h2 className="text-sm font-bold tracking-tight text-foreground">
             MACRS Straight-Line Depreciation Schedule
           </h2>
-          <p className="mt-0.5 text-xs text-text-muted">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             IRS Form 4562 compliant straight-line recovery with land value separation and mid-month convention
           </p>
         </div>
-        <span className="rounded-full bg-elevated px-2.5 py-1 text-[11px] font-semibold text-text-secondary">
+        <span className="rounded-none border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold text-foreground">
           FY {fiscalYear}
         </span>
       </div>
@@ -179,21 +178,21 @@ export function DepreciationScheduleTable({
 
 export function Vendor1099Table({ report }: { report: Vendor1099Report }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
+    <div className="flex flex-col rounded-none border border-border bg-card shadow-sm ring-1 ring-foreground/10 overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4 bg-card">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-text-primary">
+          <h2 className="text-sm font-bold tracking-tight text-foreground">
             Form 1099 Contractor & Vendor Payments
           </h2>
-          <p className="mt-0.5 text-xs text-text-muted">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Payees monitored for the $600 IRS Form 1099-NEC nonemployee compensation threshold
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-status-caution/10 border border-status-caution/20 px-2.5 py-1 text-[11px] font-bold text-status-caution">
+          <span className="rounded-none bg-destructive/10 border border-destructive/20 px-2.5 py-1 text-[11px] font-bold text-destructive">
             {report.summary.vendorsRequiring1099} Required 1099s
           </span>
-          <span className="rounded-full bg-elevated px-2.5 py-1 text-[11px] font-semibold text-text-secondary">
+          <span className="rounded-none border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold text-foreground">
             FY {report.fiscalYear}
           </span>
         </div>
@@ -203,11 +202,11 @@ export function Vendor1099Table({ report }: { report: Vendor1099Report }) {
         tabIndex={0}
         role="region"
         aria-label="1099 contractor payments table"
-        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        <table className="w-full text-left text-xs text-text-secondary border-collapse">
+        <table className="w-full text-left text-xs text-muted-foreground border-collapse">
           <thead>
-            <tr className="border-b border-border-subtle bg-app/40 text-[11px] uppercase tracking-wider text-text-muted">
+            <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
               <th scope="col" className="px-6 py-3.5 font-bold">Vendor / Contractor</th>
               <th scope="col" className="px-4 py-3.5 font-bold">Service Category</th>
               <th scope="col" className="px-4 py-3.5 font-bold">W-9 Status</th>
@@ -216,28 +215,28 @@ export function Vendor1099Table({ report }: { report: Vendor1099Report }) {
               <th scope="col" className="px-6 py-3.5 text-right font-bold">1099-NEC Filing</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-border">
             {report.vendors.map((v) => (
-              <tr key={v.vendorId} className="hover:bg-elevated/40">
-                <td className="px-6 py-3 font-semibold text-text-primary">{v.vendorName}</td>
-                <td className="px-4 py-3 text-text-secondary">{v.serviceCategory}</td>
+              <tr key={v.vendorId} className="hover:bg-muted/30">
+                <td className="px-6 py-3 font-semibold text-foreground">{v.vendorName}</td>
+                <td className="px-4 py-3 text-muted-foreground">{v.serviceCategory}</td>
                 <td className="px-4 py-3">
-                  <span className="inline-flex rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent">
+                  <span className="inline-flex rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">
                     {v.w9Status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">{v.paymentCount}</td>
-                <td className="px-4 py-3 text-right font-mono font-bold tabular-nums text-text-primary">
+                <td className="px-4 py-3 text-right font-mono tabular-nums text-muted-foreground">{v.paymentCount}</td>
+                <td className="px-4 py-3 text-right font-mono font-bold tabular-nums text-foreground">
                   {formatCurrency(v.totalPaidYtd, { decimals: 0 })}
                 </td>
                 <td className="px-6 py-3 text-right">
                   {v.requires1099Nec ? (
-                    <span className="inline-flex items-center gap-1 rounded-md border border-status-caution/30 bg-status-caution/10 px-2 py-0.5 text-[10px] font-bold text-status-caution">
-                      <span className="material-symbols-outlined text-[12px]">warning</span>
+                    <span className="inline-flex items-center gap-1 rounded-none border border-destructive/30 bg-destructive/10 px-2 py-0.5 text-[10px] font-bold text-destructive">
+                      <Warning weight="bold" className="h-3 w-3" />
                       Form 1099 Required (≥$600)
                     </span>
                   ) : (
-                    <span className="inline-flex rounded-md bg-elevated px-2 py-0.5 text-[10px] text-text-muted">
+                    <span className="inline-flex rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
                       Below $600 Threshold
                     </span>
                   )}
@@ -248,8 +247,8 @@ export function Vendor1099Table({ report }: { report: Vendor1099Report }) {
         </table>
       </div>
 
-      <div className="border-t border-border-subtle px-6 py-3 bg-surface/30">
-        <p className="text-[11px] italic text-text-muted" data-testid="tax-disclaimer">
+      <div className="border-t border-border px-6 py-3 bg-card">
+        <p className="text-[11px] italic text-muted-foreground" data-testid="tax-disclaimer">
           {TAX_DISCLAIMER}
         </p>
       </div>
@@ -259,21 +258,21 @@ export function Vendor1099Table({ report }: { report: Vendor1099Report }) {
 
 export function CapExLogTable({ report }: { report: CapExReport }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
+    <div className="flex flex-col rounded-none border border-border bg-card shadow-sm ring-1 ring-foreground/10 overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4 bg-card">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-text-primary">
+          <h2 className="text-sm font-bold tracking-tight text-foreground">
             Capital Expenditures (CapEx) & Repair Classification Log
           </h2>
-          <p className="mt-0.5 text-xs text-text-muted">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             IRS Tangible Property Regulations distinction: capitalized improvements vs. routine operating repairs
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-accent font-bold">
+          <span className="text-xs text-foreground font-bold">
             Capitalized: {formatCurrency(report.summary.capitalizedImprovements, { decimals: 0 })}
           </span>
-          <span className="text-xs text-text-muted">
+          <span className="text-xs text-muted-foreground">
             Expensed: {formatCurrency(report.summary.routineRepairsExpensed, { decimals: 0 })}
           </span>
         </div>
@@ -283,11 +282,11 @@ export function CapExLogTable({ report }: { report: CapExReport }) {
         tabIndex={0}
         role="region"
         aria-label="CapEx log table"
-        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        <table className="w-full text-left text-xs text-text-secondary border-collapse">
+        <table className="w-full text-left text-xs text-muted-foreground border-collapse">
           <thead>
-            <tr className="border-b border-border-subtle bg-app/40 text-[11px] uppercase tracking-wider text-text-muted">
+            <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
               <th scope="col" className="px-6 py-3.5 font-bold">Date</th>
               <th scope="col" className="px-4 py-3.5 font-bold">Property</th>
               <th scope="col" className="px-4 py-3.5 font-bold">Description</th>
@@ -296,19 +295,19 @@ export function CapExLogTable({ report }: { report: CapExReport }) {
               <th scope="col" className="px-6 py-3.5 text-right font-bold">Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-border">
             {report.items.map((i) => (
-              <tr key={i.id} className="hover:bg-elevated/40">
-                <td className="px-6 py-3 font-mono text-[11px] text-text-muted">{i.date}</td>
-                <td className="px-4 py-3 font-medium text-text-primary">{i.projectName}</td>
-                <td className="px-4 py-3 text-text-secondary">{i.description}</td>
+              <tr key={i.id} className="hover:bg-muted/30">
+                <td className="px-6 py-3 font-mono text-[11px] text-muted-foreground">{i.date}</td>
+                <td className="px-4 py-3 font-medium text-foreground">{i.projectName}</td>
+                <td className="px-4 py-3 text-muted-foreground">{i.description}</td>
                 <td className="px-4 py-3">
                   {i.isCapitalized ? (
-                    <span className="inline-flex rounded-full bg-accent/10 border border-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent">
+                    <span className="inline-flex rounded-none border border-border bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-foreground">
                       Capitalized Improvement
                     </span>
                   ) : (
-                    <span className="inline-flex rounded-full bg-elevated px-2 py-0.5 text-[10px] font-medium text-text-secondary">
+                    <span className="inline-flex rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                       Expensed Repair (Sched E)
                     </span>
                   )}

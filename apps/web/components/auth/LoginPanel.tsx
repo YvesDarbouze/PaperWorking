@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ADMIN_ROUTE } from '@/lib/auth/post-auth-redirect';
 import { AUTH_ROUTES } from '@/lib/auth/routes';
 import { loginSchema, registerSchema } from '@/lib/auth/schemas';
+import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { resolveLoginRedirect } from '@/lib/auth/session-client';
 import { useMockAuth } from '@/lib/data';
 
@@ -458,9 +459,11 @@ export default function LoginPanel() {
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"
                   >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {showPassword ? 'visibility_off' : 'visibility'}
-                    </span>
+                    {showPassword ? (
+                      <EyeSlash className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 <AuthFieldError message={fieldErrors.password} />
@@ -544,9 +547,11 @@ export default function LoginPanel() {
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"
                   >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {showPassword ? 'visibility_off' : 'visibility'}
-                    </span>
+                    {showPassword ? (
+                      <EyeSlash className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 <AuthFieldError message={fieldErrors.password} />
@@ -571,9 +576,11 @@ export default function LoginPanel() {
                     aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 hover:text-white"
                   >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {showConfirmPassword ? 'visibility_off' : 'visibility'}
-                    </span>
+                    {showConfirmPassword ? (
+                      <EyeSlash className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 <AuthFieldError message={fieldErrors.confirmPassword} />

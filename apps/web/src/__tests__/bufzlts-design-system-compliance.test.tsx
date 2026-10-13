@@ -26,6 +26,11 @@ describe('shadcn buFzlTs Design System & Responsive Gospel Compliance Test', () 
     'components/dashboard/ProfilePreviewPanel.tsx',
     'components/marketing/deal-calculator/PublishToMarketplaceModal.tsx',
     'components/marketing/deal-calculator/StartProjectFromCalculatorModal.tsx',
+    'components/marketing/DealCalculatorView.tsx',
+    'components/projects/ProjectsListPanel.tsx',
+    'components/projects/ProjectFolderCard.tsx',
+    'components/projects/REILKanBan.tsx',
+    'components/projects/AcquisitionPipelineBoard.tsx',
     'app/(dashboard)/projects/new/page.tsx',
   ];
 

@@ -200,18 +200,55 @@ export default function PricingSection() {
                   </p>
                 </div>
 
-                <div className="flex-grow pt-2">
-                  <p className="mb-3 text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80">
-                    Includes:
-                  </p>
-                  <ul className="space-y-2.5">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5 text-xs sm:text-[13px] leading-relaxed text-muted-foreground">
-                        <Check size={16} className="mt-0.5 shrink-0 text-foreground" weight="bold" />
-                        <span className="leading-snug">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex-grow pt-2 flex flex-col justify-between">
+                  <div>
+                    <p className="mb-3 text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80">
+                      Includes:
+                    </p>
+                    <ul className="space-y-2.5">
+                      {plan.features.map((feature) => {
+                        const isVendorReports =
+                          plan.id === 'vendor' &&
+                          feature.toLowerCase().includes('standard financial reports');
+
+                        return (
+                          <li key={feature} className="space-y-2">
+                            <div className="flex items-start gap-2.5 text-xs sm:text-[13px] leading-relaxed text-muted-foreground">
+                              <Check size={16} className="mt-0.5 shrink-0 text-foreground" weight="bold" />
+                              <span className="leading-snug">{feature}</span>
+                            </div>
+
+                            {isVendorReports && plan.supportedRoles && plan.supportedRoles.length > 0 && (
+                              <div
+                                data-testid="vendor-tier-common-professions"
+                                className="mt-2.5 ml-6 border border-border bg-muted/30 p-3"
+                              >
+                                <div className="mb-2 flex items-center justify-between border-b border-border/60 pb-1.5">
+                                  <p className="text-[10.5px] font-[family-name:var(--font-jetbrains-mono)] font-semibold uppercase tracking-wider text-foreground">
+                                    Common Directory Professions:
+                                  </p>
+                                  <span className="text-[9.5px] font-mono text-muted-foreground">
+                                    {plan.supportedRoles.length} of 38
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] leading-tight text-muted-foreground">
+                                  {plan.supportedRoles.map((role) => (
+                                    <div key={role} title={role} className="flex items-start gap-1 min-w-0">
+                                      <span className="mt-1 h-1 w-1 rounded-none bg-foreground/40 shrink-0" aria-hidden="true" />
+                                      <span className="leading-snug truncate">{role}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="mt-2 text-[10px] text-muted-foreground/75 font-[family-name:var(--font-jetbrains-mono)]">
+                                  + 20 more licensed trade & professional categories in directory
+                                </p>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 </div>
               </div>
             ))}

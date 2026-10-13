@@ -20,7 +20,7 @@
   "dependencies": {
     "@paperworking/authz": "file:../authz",
     "@paperworking/validation": "file:../validation",
-    "firebase-admin": "^13.4.0",
+    "firebase-admin": "^14.3.0",
     "pdfkit": "^0.17.1",
     "stripe": "^18.0.0"
   },

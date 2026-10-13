@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { LegacyProjectPhase, ProjectDocument, ProjectWorkspace } from '@/lib/projects/types';
 import { getSeedProjectById, updateSeedProject } from '@/lib/projects/seed-data';
 import { useProjectWorkspace } from '@/components/projects/ProjectWorkspaceProvider';
+import { PROJECT_FILE_ACCEPT } from '@/lib/projects/project-files';
 
 export type DocumentTabKey = 'all' | 'acquisition' | 'purchase' | 'hold' | 'exit';
 
@@ -559,7 +560,7 @@ export default function ProjectDocumentsPanel({ projectId }: { projectId: string
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,.png,.jpg,.jpeg"
+        accept={PROJECT_FILE_ACCEPT}
         onChange={handleFileChange}
         className="hidden"
         aria-label="Upload document file input"

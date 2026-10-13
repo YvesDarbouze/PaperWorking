@@ -90,7 +90,8 @@ export const dealMarketplaceBlurb =
   'The Deal Marketplace: Showcase your underwriting baselines to gauge co-investment demand, track soft equity pledges, and partner with verified investors, without sending unsecure attachments over email.';
 
 export const vendorMarketplaceBlurb =
-  'The Vendor Marketplace: Get matched with contractors, appraisers, title attorneys, CPAs, and hard money lenders at the exact moment of operational need. PaperWorking recommends local pros directly inside your active budget and contract workspaces.';
+  'The Vendor Directory: Get matched with contractors, appraisers, title attorneys, CPAs, and hard money lenders at the exact moment of operational need. PaperWorking recommends local pros directly inside your active budget and contract workspaces.';
+export const vendorDirectoryBlurb = vendorMarketplaceBlurb;
 
 export const legalDisclaimer =
   'PaperWorking is a project management software platform, not an investment advisor or registered broker-dealer. Marketplace listings are for operational deal organization and tracking soft interest only; they do not constitute offers to sell securities.';

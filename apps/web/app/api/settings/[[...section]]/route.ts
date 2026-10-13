@@ -51,6 +51,16 @@ function createSettingsDeps() {
           ...(patch.paymentMethods ? { paymentMethods: patch.paymentMethods as any } : {}),
         });
       }
+      if (Array.isArray(patch.vendorSkills)) {
+        try {
+          const { updateVendorProfileInStore } = await import('@/lib/vendor-portal/vendor-store');
+          await updateVendorProfileInStore(uid, {
+            vendorSkills: patch.vendorSkills as string[],
+          });
+        } catch {
+          // ignore
+        }
+      }
       return updateUserProfile(uid, patch);
     },
     loadOrg: async () => {

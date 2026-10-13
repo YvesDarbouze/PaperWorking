@@ -8,6 +8,24 @@ export const dynamic = 'force-dynamic';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+/**
+ * Collections owned by dedicated routes (validated, activity-logged). A
+ * whole-project PATCH from a stale client must not overwrite them.
+ */
+const ROUTE_OWNED_COLLECTIONS = [
+  'messageTopics',
+  'campfireMessages',
+  'checkInQuestions',
+  'taskLists',
+  'cardColumns',
+  'hillChartItems',
+  'scheduleEvents',
+  'vendorAccess',
+  'activity',
+  'documents',
+] as const;
+
+
 function parsePatchBody(body: unknown): UpdateProjectInput {
   if (!body || typeof body !== 'object') return {};
   return body as UpdateProjectInput;
@@ -52,11 +70,14 @@ export async function PATCH(request: Request, context: RouteContext) {
     body = {};
   }
 
+  const sanitizedBody: Record<string, unknown> = { ...(body as Record<string, unknown>) };
+  for (const key of ROUTE_OWNED_COLLECTIONS) delete sanitizedBody[key];
+
   try {
     const result = await buildProjectsCommandService().updateProject(
       user,
       id,
-      parsePatchBody(body),
+      parsePatchBody(sanitizedBody),
     );
     return NextResponse.json(result);
   } catch (error) {

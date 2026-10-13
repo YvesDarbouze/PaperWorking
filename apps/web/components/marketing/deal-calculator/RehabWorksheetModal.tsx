@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Hammer, X } from '@phosphor-icons/react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 
 export interface RehabLineItem {
@@ -108,15 +109,13 @@ export default function RehabWorksheetModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl rounded-t-2xl sm:rounded-2xl border-t sm:border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
+        className="relative w-full max-w-2xl rounded-none border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4 shrink-0">
           <div>
             <h2 id="rehab-worksheet-title" className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-[color:var(--color-primary)]">
-                construction
-              </span>
+              <Hammer className="h-5 w-5 text-primary" />
               Itemized Rehab Budget Worksheet
             </h2>
             <p className="text-xs text-white/50 mt-0.5">
@@ -126,10 +125,10 @@ export default function RehabWorksheetModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
             aria-label="Close worksheet"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -139,21 +138,21 @@ export default function RehabWorksheetModal({
           <button
             type="button"
             onClick={() => applyPreset('cosmetic')}
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[36px]"
+            className="rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[44px]"
           >
             Light Cosmetic (~$22k)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('medium')}
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[36px]"
+            className="rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[44px]"
           >
             Turnkey Standard (~$43k)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('gut')}
-            className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[36px]"
+            className="rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-white/80 hover:text-white hover:bg-white/10 transition min-h-[44px]"
           >
             Full Gut Rehab (~$110k)
           </button>
@@ -174,7 +173,7 @@ export default function RehabWorksheetModal({
                   value={item.amount || ''}
                   onChange={(e) => handleItemChange(item.id, Number(e.target.value))}
                   placeholder="0"
-                  className="w-28 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-right font-mono font-bold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[38px]"
+                  className="w-28 rounded-none border border-white/10 bg-black/40 px-2.5 py-1.5 text-right font-mono font-bold text-base md:text-xs text-white focus:outline-none focus:border-primary min-h-[44px]"
                 />
               </div>
             </div>
@@ -185,7 +184,7 @@ export default function RehabWorksheetModal({
         <div className="pt-4 border-t border-white/10 flex items-center justify-between shrink-0">
           <div>
             <span className="block text-[10px] uppercase font-mono text-white/40">Total Rehab Budget</span>
-            <span className="text-xl font-extrabold font-mono text-[color:var(--color-primary)]">
+            <span className="text-xl font-extrabold font-mono text-primary">
               {formatCurrency(totalCalculated)}
             </span>
           </div>
@@ -194,7 +193,7 @@ export default function RehabWorksheetModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px]"
+              className="rounded-none border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px]"
             >
               Cancel
             </button>
@@ -205,7 +204,7 @@ export default function RehabWorksheetModal({
                 onApplyTotal(totalCalculated, items);
                 onClose();
               }}
-              className="rounded-xl bg-[color:var(--color-primary)] px-5 py-2.5 text-xs font-bold text-[#0a0a0f] hover:brightness-110 shadow-[0_0_16px_rgba(0,221,148,0.25)] min-h-[44px]"
+              className="rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition shadow-sm min-h-[44px]"
             >
               Apply to Deal ({formatCurrency(totalCalculated)})
             </button>

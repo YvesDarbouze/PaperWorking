@@ -17,8 +17,12 @@ export async function getAdminCachedGeocode(
   try {
     const db = deps.getFirestore ? deps.getFirestore() : getAdminFirestore();
     const docRef = db.collection('geocodeCache').doc(key);
-    const snap = await docRef.get();
-    if (snap.exists) {
+    const snapPromise = docRef.get();
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore geocode read timeout')), 1500)
+    );
+    const snap = (await Promise.race([snapPromise, timeoutPromise])) as any;
+    if (snap?.exists) {
       return snap.data() as CachedGeocode;
     }
   } catch {
@@ -40,8 +44,12 @@ export async function setAdminCachedGeocode(
   try {
     const db = deps.getFirestore ? deps.getFirestore() : getAdminFirestore();
     const docRef = db.collection('geocodeCache').doc(key);
-    await docRef.set(data, { merge: true });
+    const setPromise = docRef.set(data, { merge: true });
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore geocode write timeout')), 1500)
+    );
+    await Promise.race([setPromise, timeoutPromise]);
   } catch (error) {
-    console.error('[geocodeCache] Admin SDK persist error:', error);
+    // Graceful degradation if Firestore is unreachable
   }
 }

@@ -1,6 +1,19 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import {
+  Lock,
+  ChartLineUp,
+  Bank,
+  Check,
+  Clock,
+  CaretDown,
+  CheckCircle,
+  UploadSimple,
+  CheckSquare,
+  CaretLeft,
+  CaretRight,
+} from '@phosphor-icons/react';
 
 interface Slide {
   id: string;
@@ -129,13 +142,13 @@ export default function HeroProductCarousel() {
 
       {/* Browser Chrome Frame */}
       <div
-        className="relative w-full rounded-2xl overflow-hidden border border-white/10 bg-[#0f111a] shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
+        className="relative w-full rounded-none overflow-hidden border border-neutral-800 bg-[#0f111a] shadow-xl"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* Browser Top Window Chrome Bar */}
-        <div className="flex items-center justify-between bg-[#141624] px-4 py-2.5 border-b border-white/[0.08] select-none">
+        <div className="flex items-center justify-between bg-[#141624] px-4 py-2.5 border-b border-neutral-800 select-none">
           {/* Window Traffic Lights */}
           <div className="flex items-center gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] opacity-85" />
@@ -144,13 +157,13 @@ export default function HeroProductCarousel() {
           </div>
 
           {/* Browser Address Bar */}
-          <div className="flex h-6 w-3/5 max-w-[280px] items-center justify-center gap-1.5 rounded-lg bg-black/40 px-3 border border-white/[0.08] text-[11px] text-white/50 font-[family-name:var(--font-jetbrains-mono)] truncate">
-            <span className="material-symbols-outlined text-[12px] text-white/30">lock</span>
+          <div className="flex h-6 w-3/5 max-w-[280px] items-center justify-center gap-1.5 rounded-none bg-black/40 px-3 border border-neutral-800 text-[11px] text-white/50 font-[family-name:var(--font-jetbrains-mono)] truncate">
+            <Lock className="h-3 w-3 text-white/30" />
             <span className="truncate">{SLIDES[currentSlide].url}</span>
           </div>
 
           {/* Discreet Sample Data Tag */}
-          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] uppercase tracking-wider text-white/30 border border-white/10 rounded px-1.5 py-0.5">
+          <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] uppercase tracking-wider text-white/30 border border-neutral-800 rounded-none px-1.5 py-0.5">
             Sample data
           </span>
         </div>
@@ -173,7 +186,7 @@ export default function HeroProductCarousel() {
               currentSlide === 0 ? 'opacity-100 relative' : 'opacity-0 absolute inset-0 pointer-events-none'
             }`}
           >
-            <div className="relative w-full overflow-hidden rounded-xl bg-[#08090d] border border-white/10 shadow-2xl">
+            <div className="relative w-full overflow-hidden rounded-none bg-[#08090d] border border-neutral-800 shadow-2xl">
               <img
                 src="/images/hero-investor-terminal.png"
                 alt="Finally, Project Management software made for serious real estate investors and Investments teams: PaperWorking investment terminal with live property underwriting, cash flow projections, and portfolio KPIs"
@@ -181,10 +194,10 @@ export default function HeroProductCarousel() {
                 height={440}
                 loading="lazy"
                 decoding="async"
-                className="h-[415px] sm:h-[435px] w-full object-cover object-center rounded-xl"
+                className="h-[415px] sm:h-[435px] w-full object-cover object-center rounded-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f]/90 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-lg border border-white/10 bg-[#0a0a0f]/90 px-3.5 py-2.5 backdrop-blur-md">
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-none border border-neutral-800 bg-[#0a0a0f]/90 px-3.5 py-2.5 backdrop-blur-md">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[color:var(--color-primary)] animate-pulse" />
                   <span className="text-[12px] font-semibold text-white">Institutional Deal Execution</span>
@@ -207,10 +220,10 @@ export default function HeroProductCarousel() {
             }`}
           >
             {/* Application Navigation / Context Header */}
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-3.5">
+            <div className="flex items-center justify-between border-b border-neutral-800 pb-3 mb-3.5">
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
-                  <span className="material-symbols-outlined text-[15px]">analytics</span>
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-none bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]">
+                  <ChartLineUp className="h-3.5 w-3.5" />
                 </span>
                 <div>
                   <h3 className="text-[12.5px] font-semibold text-white tracking-tight leading-none">
@@ -221,7 +234,7 @@ export default function HeroProductCarousel() {
                   </span>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[9.5px] font-medium text-white/60">
+              <span className="inline-flex items-center gap-1 rounded-none border border-neutral-800 bg-white/[0.03] px-2 py-0.5 text-[9.5px] font-medium text-white/60">
                 <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-primary)]" />
                 Live Actuals
               </span>
@@ -400,11 +413,11 @@ export default function HeroProductCarousel() {
             }`}
           >
             {/* Project Context & REIL Stepper Bar */}
-            <div className="flex flex-col gap-2.5 border-b border-white/[0.08] pb-3 mb-3">
+            <div className="flex flex-col gap-2.5 border-b border-neutral-800 pb-3 mb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-sky-400/10 text-sky-400">
-                    <span className="material-symbols-outlined text-[15px]">account_balance</span>
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-none bg-sky-400/10 text-sky-400">
+                    <Bank className="h-3.5 w-3.5" />
                   </span>
                   <div>
                     <h3 className="text-[12.5px] font-semibold text-white tracking-tight leading-none">
@@ -415,24 +428,24 @@ export default function HeroProductCarousel() {
                     </span>
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1 rounded-full border border-sky-400/25 bg-sky-400/10 px-2 py-0.5 text-[9.5px] font-semibold text-sky-300">
+                <span className="inline-flex items-center gap-1 rounded-none border border-sky-400/25 bg-sky-400/10 px-2 py-0.5 text-[9.5px] font-semibold text-sky-300">
                   Earnest Money: $25,000 Escrowed
                 </span>
               </div>
 
               {/* REIL 4-Phase Stepper */}
               <div className="grid grid-cols-4 gap-1.5 text-center font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider">
-                <div className="rounded-md border border-white/10 bg-white/[0.02] py-1 text-white/45 flex items-center justify-center gap-1">
-                  <span className="material-symbols-outlined text-[10px] text-emerald-400">check</span>
+                <div className="rounded-none border border-neutral-800 bg-white/[0.02] py-1 text-white/45 flex items-center justify-center gap-1">
+                  <Check className="h-2.5 w-2.5 text-emerald-400" />
                   01 Acquisition
                 </div>
-                <div className="rounded-md border border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 py-1 text-[color:var(--color-primary)] font-bold shadow-[0_0_12px_rgba(0,221,148,0.2)]">
+                <div className="rounded-none border border-neutral-600 bg-neutral-800 py-1 text-neutral-100 font-bold shadow-sm">
                   02 Fund (Active)
                 </div>
-                <div className="rounded-md border border-white/5 bg-white/[0.01] py-1 text-white/30">
+                <div className="rounded-none border border-neutral-900 bg-white/[0.01] py-1 text-white/30">
                   03 Hold
                 </div>
-                <div className="rounded-md border border-white/5 bg-white/[0.01] py-1 text-white/30">
+                <div className="rounded-none border border-neutral-900 bg-white/[0.01] py-1 text-white/30">
                   04 Exit
                 </div>
               </div>
@@ -441,10 +454,10 @@ export default function HeroProductCarousel() {
             {/* Tasks Board with Team Assignment Working */}
             <div className="space-y-1.5 mb-3">
               {/* Task 1 (With Active Team Member Assignment Dropdown Open!) */}
-              <div className="relative rounded-xl border border-[color:var(--color-primary)]/40 bg-[color:var(--color-primary)]/[0.04] p-2.5 shadow-lg">
+              <div className="relative rounded-none border border-neutral-700 bg-neutral-900/60 p-2.5 shadow-lg">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="material-symbols-outlined text-[15px] text-amber-300">schedule</span>
+                    <Clock className="h-3.5 w-3.5 text-amber-300 shrink-0" />
                     <div className="min-w-0">
                       <p className="text-[11.5px] font-semibold text-white truncate">
                         Track appraisal contingency deadline
@@ -456,36 +469,36 @@ export default function HeroProductCarousel() {
                   </div>
 
                   {/* Assignee Pill Trigger */}
-                  <div className="flex items-center gap-1.5 rounded-full border border-[color:var(--color-primary)]/40 bg-[color:var(--color-primary)]/15 px-2.5 py-1 text-[10px] font-medium text-white">
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-primary)] text-[8px] font-bold text-[#0a0a0f]">
+                  <div className="flex items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-1 text-[10px] font-medium text-white">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-none bg-neutral-700 text-[8px] font-bold text-white">
                       SR
                     </span>
                     <span>S. Reyes</span>
-                    <span className="material-symbols-outlined text-[12px] text-[color:var(--color-primary)]">expand_more</span>
+                    <CaretDown className="h-3 w-3 text-neutral-400" />
                   </div>
                 </div>
 
                 {/* Visible Team Assignment Affordance Popover */}
-                <div className="mt-2 rounded-lg border border-white/15 bg-[#161828] p-2 shadow-2xl space-y-1">
+                <div className="mt-2 rounded-none border border-neutral-700 bg-neutral-950 p-2 shadow-2xl space-y-1">
                   <div className="flex items-center justify-between px-1 text-[8.5px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-wider text-white/40">
                     <span>Assign Team Member</span>
-                    <span className="text-[color:var(--color-primary)]">3 Members</span>
+                    <span className="text-neutral-300">3 Members</span>
                   </div>
                   <div className="grid grid-cols-3 gap-1 pt-0.5">
-                    <div className="flex items-center gap-1.5 rounded-md bg-[color:var(--color-primary)]/20 border border-[color:var(--color-primary)]/50 px-2 py-1 text-[10px] font-medium text-white">
-                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[color:var(--color-primary)] text-[7.5px] font-bold text-[#0a0a0f]">
+                    <div className="flex items-center gap-1.5 rounded-none bg-neutral-800 border border-neutral-600 px-2 py-1 text-[10px] font-medium text-white">
+                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-none bg-neutral-700 text-[7.5px] font-bold text-white">
                         SR
                       </span>
                       <span className="truncate">S. Reyes (Lead)</span>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-md bg-white/[0.04] border border-white/5 px-2 py-1 text-[10px] font-medium text-white/70">
-                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-blue-500 text-[7.5px] font-bold text-white">
+                    <div className="flex items-center gap-1.5 rounded-none bg-neutral-900 border border-neutral-800 px-2 py-1 text-[10px] font-medium text-white/70">
+                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-none bg-blue-600 text-[7.5px] font-bold text-white">
                         MO
                       </span>
                       <span className="truncate">M. Okafor</span>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-md bg-white/[0.04] border border-white/5 px-2 py-1 text-[10px] font-medium text-white/70">
-                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-purple-500 text-[7.5px] font-bold text-white">
+                    <div className="flex items-center gap-1.5 rounded-none bg-neutral-900 border border-neutral-800 px-2 py-1 text-[10px] font-medium text-white/70">
+                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-none bg-purple-600 text-[7.5px] font-bold text-white">
                         JL
                       </span>
                       <span className="truncate">J. Lindqvist</span>
@@ -495,9 +508,9 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Task 2 */}
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+              <div className="flex items-center justify-between rounded-none border border-neutral-800 bg-neutral-900/40 p-2.5">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[15px] text-emerald-400">check_circle</span>
+                  <CheckCircle className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[11.5px] font-medium text-white/90 truncate">
                       Confirm earnest money deposit received
@@ -508,11 +521,11 @@ export default function HeroProductCarousel() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[8.5px] font-medium text-emerald-400">
+                  <span className="rounded-none bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[8.5px] font-medium text-emerald-400">
                     Done
                   </span>
                   <div className="flex items-center gap-1 text-[10px] text-white/70">
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[8px] font-bold text-white">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-none bg-blue-600 text-[8px] font-bold text-white">
                       MO
                     </span>
                     <span className="hidden sm:inline text-[9.5px]">M. Okafor</span>
@@ -521,9 +534,9 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Task 3 */}
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+              <div className="flex items-center justify-between rounded-none border border-neutral-800 bg-neutral-900/40 p-2.5">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[15px] text-white/40">upload_file</span>
+                  <UploadSimple className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[11.5px] font-medium text-white/90 truncate">
                       Upload executed contract to vault
@@ -534,11 +547,11 @@ export default function HeroProductCarousel() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8.5px] font-medium text-amber-300">
+                  <span className="rounded-none bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8.5px] font-medium text-amber-300">
                     In Progress
                   </span>
                   <div className="flex items-center gap-1 text-[10px] text-white/70">
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[8px] font-bold text-white">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-none bg-purple-600 text-[8px] font-bold text-white">
                       JL
                     </span>
                     <span className="hidden sm:inline text-[9.5px]">J. Lindqvist</span>
@@ -547,9 +560,9 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Task 4 */}
-              <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+              <div className="flex items-center justify-between rounded-none border border-neutral-800 bg-neutral-900/40 p-2.5">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[15px] text-white/40">checklist</span>
+                  <CheckSquare className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
                   <div className="min-w-0">
                     <p className="text-[11.5px] font-medium text-white/90 truncate">
                       Complete lender document checklist
@@ -560,11 +573,11 @@ export default function HeroProductCarousel() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-white/10 border border-white/15 px-2 py-0.5 text-[8.5px] font-medium text-white/60">
+                  <span className="rounded-none bg-white/10 border border-white/15 px-2 py-0.5 text-[8.5px] font-medium text-white/60">
                     To Do
                   </span>
                   <div className="flex items-center gap-1 text-[10px] text-white/70">
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-primary)] text-[8px] font-bold text-[#0a0a0f]">
+                    <span className="flex h-4 w-4 items-center justify-center rounded-none bg-neutral-700 text-[8px] font-bold text-white">
                       SR
                     </span>
                     <span className="hidden sm:inline text-[9.5px]">S. Reyes</span>
@@ -574,24 +587,24 @@ export default function HeroProductCarousel() {
             </div>
 
             {/* Team Roster Collaboration Bar */}
-            <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-[10px] text-white/50">
+            <div className="flex items-center justify-between pt-2 border-t border-neutral-800 text-[10px] text-white/50">
               <div className="flex items-center gap-1.5">
                 <span className="font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40">
                   Assigned Team:
                 </span>
                 <div className="flex -space-x-1.5">
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-[#0c0d15] bg-[color:var(--color-primary)] text-[7px] font-bold text-[#0a0a0f]" title="S. Reyes (Lead)">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-none bg-neutral-700 text-[7px] font-bold text-white" title="S. Reyes (Lead)">
                     SR
                   </span>
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-[#0c0d15] bg-blue-500 text-[7px] font-bold text-white" title="M. Okafor (Acquisitions)">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-none bg-blue-600 text-[7px] font-bold text-white" title="M. Okafor (Acquisitions)">
                     MO
                   </span>
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-[#0c0d15] bg-purple-500 text-[7px] font-bold text-white" title="J. Lindqvist (Legal)">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-none bg-purple-600 text-[7px] font-bold text-white" title="J. Lindqvist (Legal)">
                     JL
                   </span>
                 </div>
               </div>
-              <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] text-[color:var(--color-primary)] font-medium">
+              <span className="font-[family-name:var(--font-jetbrains-mono)] text-[9px] text-neutral-300 font-medium">
                 + Invite Collaborator
               </span>
             </div>
@@ -605,10 +618,10 @@ export default function HeroProductCarousel() {
         <button
           type="button"
           onClick={prevSlide}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 hover:text-white transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-600"
           aria-label="Previous preview"
         >
-          <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+          <CaretLeft className="h-4 w-4" />
         </button>
 
         {/* Tab / Position Indicators */}
@@ -620,17 +633,17 @@ export default function HeroProductCarousel() {
                 key={slide.id}
                 type="button"
                 onClick={() => goToSlide(index)}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-medium whitespace-nowrap shrink-0 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)] ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-none text-[10px] sm:text-[11px] font-medium whitespace-nowrap shrink-0 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-600 ${
                   isActive
-                    ? 'bg-[color:var(--color-primary)]/15 border border-[color:var(--color-primary)]/40 text-[color:var(--color-primary)]'
-                    : 'bg-white/[0.03] border border-white/10 text-white/50 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-neutral-800 border border-neutral-700 text-neutral-100'
+                    : 'bg-neutral-950 border border-neutral-850 text-neutral-400 hover:text-white hover:bg-neutral-900'
                 }`}
                 aria-label={`Go to slide ${index + 1}: ${slide.title}`}
                 aria-selected={isActive}
               >
                 <span
                   className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                    isActive ? 'bg-[color:var(--color-primary)] animate-pulse' : 'bg-white/30'
+                    isActive ? 'bg-neutral-100 animate-pulse' : 'bg-neutral-600'
                   }`}
                   aria-hidden="true"
                 />
@@ -644,10 +657,10 @@ export default function HeroProductCarousel() {
         <button
           type="button"
           onClick={nextSlide}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)]"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 hover:text-white transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-600"
           aria-label="Next preview"
         >
-          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <CaretRight className="h-4 w-4" />
         </button>
       </div>
     </div>

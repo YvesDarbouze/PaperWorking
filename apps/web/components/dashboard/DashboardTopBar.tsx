@@ -159,7 +159,7 @@ function TopBarDropdown({
           {items.map((item, idx) => (
             <Link
               key={item.href}
-              ref={(el) => {
+              ref={(el: HTMLAnchorElement | null) => {
                 itemRefs.current[idx] = el;
               }}
               href={item.href}

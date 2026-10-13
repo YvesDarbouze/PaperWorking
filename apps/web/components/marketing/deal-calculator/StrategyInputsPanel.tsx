@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Sliders } from '@phosphor-icons/react';
 import type { InvestmentStrategyType } from './StrategySelectorBar';
 
 interface StrategyInputsPanelProps {
@@ -51,13 +52,11 @@ export default function StrategyInputsPanel({
   return (
     <div
       data-testid="strategy-specific-inputs-panel"
-      className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
+      className="rounded-none border border-white/10 bg-white/[0.02] p-5 backdrop-blur-md space-y-4"
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-white/70 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] text-[color:var(--color-primary)]">
-            tune
-          </span>
+          <Sliders className="h-4 w-4 text-primary" />
           <span>
             {strategy === 'short_term_rental_airbnb' && 'Short-Term Rental (Airbnb) Assumptions'}
             {strategy === 'flip' && 'Fix & Flip Timing & Holding Assumptions'}
@@ -83,7 +82,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.averageDailyRate}
               onChange={(e) => onInputChange('averageDailyRate', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -95,7 +94,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.occupancyRatePct}
               onChange={(e) => onInputChange('occupancyRatePct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -107,7 +106,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.strFurnishingCapex}
               onChange={(e) => onInputChange('strFurnishingCapex', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -119,7 +118,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.cleaningFeePerStay}
               onChange={(e) => onInputChange('cleaningFeePerStay', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -131,7 +130,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.cleaningCostPerStay}
               onChange={(e) => onInputChange('cleaningCostPerStay', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -144,7 +143,7 @@ export default function StrategyInputsPanel({
               step="0.5"
               value={inputs.averageStayNights}
               onChange={(e) => onInputChange('averageStayNights', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
@@ -162,7 +161,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={Math.round(inputs.holdPeriodYears * 12)}
               onChange={(e) => onInputChange('holdPeriodYears', Number(e.target.value) / 12)}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -175,7 +174,7 @@ export default function StrategyInputsPanel({
               step="0.5"
               value={inputs.sellingCostsPct}
               onChange={(e) => onInputChange('sellingCostsPct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
@@ -193,7 +192,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.refinanceMonthsAfterClose}
               onChange={(e) => onInputChange('refinanceMonthsAfterClose', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -205,7 +204,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.refinanceLtvPct}
               onChange={(e) => onInputChange('refinanceLtvPct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -218,7 +217,7 @@ export default function StrategyInputsPanel({
               step="0.125"
               value={inputs.refinanceInterestRatePct}
               onChange={(e) => onInputChange('refinanceInterestRatePct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -230,7 +229,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.refinanceAmortizationYears}
               onChange={(e) => onInputChange('refinanceAmortizationYears', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -243,7 +242,7 @@ export default function StrategyInputsPanel({
               step="0.5"
               value={inputs.refinanceClosingCostsPct}
               onChange={(e) => onInputChange('refinanceClosingCostsPct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -256,7 +255,7 @@ export default function StrategyInputsPanel({
               value={inputs.postRefiGrossMonthlyRent ?? ''}
               placeholder="Leave empty to use base rent"
               onChange={(e) => onInputChange('postRefiGrossMonthlyRent', e.target.value ? Number(e.target.value) : undefined)}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
@@ -275,7 +274,7 @@ export default function StrategyInputsPanel({
               min="1"
               value={inputs.unitsCount ?? 1}
               onChange={(e) => onInputChange('unitsCount', Math.max(1, Number(e.target.value)))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -287,7 +286,7 @@ export default function StrategyInputsPanel({
               type="number"
               value={inputs.commercialSqft}
               onChange={(e) => onInputChange('commercialSqft', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
           <div>
@@ -300,7 +299,7 @@ export default function StrategyInputsPanel({
               step="0.25"
               value={inputs.marketCapRatePct}
               onChange={(e) => onInputChange('marketCapRatePct', Number(e.target.value))}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+              className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
             />
           </div>
         </div>
@@ -319,7 +318,7 @@ export default function StrategyInputsPanel({
                 type="number"
                 value={inputs.contractPurchasePrice}
                 onChange={(e) => onInputChange('contractPurchasePrice', Number(e.target.value))}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
               />
             </div>
             <div>
@@ -331,7 +330,7 @@ export default function StrategyInputsPanel({
                 type="number"
                 value={inputs.targetAssignmentFee}
                 onChange={(e) => onInputChange('targetAssignmentFee', Number(e.target.value))}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] p-2.5 text-white font-semibold focus:outline-none focus:border-[color:var(--color-primary)] min-h-[44px]"
+                className="w-full rounded-none border border-white/10 bg-white/[0.04] p-2.5 text-base md:text-sm text-white font-semibold focus:outline-none focus:border-primary min-h-[44px]"
               />
             </div>
           </div>
@@ -343,7 +342,7 @@ export default function StrategyInputsPanel({
                 type="checkbox"
                 checked={inputs.isDoubleClosing}
                 onChange={(e) => onInputChange('isDoubleClosing', e.target.checked)}
-                className="rounded accent-primary"
+                className="rounded-none accent-primary"
               />
               <span className="text-white/80 text-xs">
                 Use Double Closing (A-to-B then B-to-C simultaneous escrow)
@@ -358,7 +357,7 @@ export default function StrategyInputsPanel({
                   type="number"
                   value={inputs.doubleClosingEscrowFees}
                   onChange={(e) => onInputChange('doubleClosingEscrowFees', Number(e.target.value))}
-                  className="w-24 rounded-lg border border-white/10 bg-white/[0.04] p-1.5 text-right font-mono text-white focus:outline-none"
+                  className="w-24 rounded-none border border-white/10 bg-white/[0.04] p-1.5 text-right font-mono text-white focus:outline-none"
                 />
               </div>
             )}

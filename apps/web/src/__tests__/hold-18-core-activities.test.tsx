@@ -9,7 +9,7 @@
  * Plus:
  * - TurboTax / Clerky conversational progressive disclosure
  * - Team member assignment & subscription tier gating
- * - Licensed vendor marketplace requests
+ * - Licensed vendor directory requests
  * - Radix Lyra design compliance and strict Anti-Slop copy rules
  */
 

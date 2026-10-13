@@ -1671,5 +1671,28 @@ export {
 } from './lib/reil/acquisition-state-machine.js';
 
 
+export {
+  resolveCallerOrganization,
+  requireOrgRole,
+  recordAuthzAuditEvent,
+  type OrgAuthzResult,
+  type OrgAuthzSuccess,
+  type OrgAuthzFailure,
+  type RosterAuthzDeps,
+} from './lib/auth/require-role.js';
+
+export {
+  handleProjectTeamGet,
+  handleProjectTeamPost,
+  type ProjectTeamDeps,
+} from './routes/projects/team/handler.js';
+
+export {
+  handleProjectsPromotePost,
+  type ProjectsPromotePostDeps,
+  type GetUserForPromoteFn,
+  type CountOrgProjectsFn,
+  type CreatePromotedProjectFn,
+} from './routes/projects/promote/handler.js';
 
 export const API_APP_STATUS = 'phase-4aa' as const;

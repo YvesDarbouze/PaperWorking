@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isDevAuthFailure, requireDevSessionAuth } from '@/lib/projects/dev-session-auth';
-import { listPlaidConnections } from '@/lib/plaid/plaid-store';
+import { listPlaidConnections, markPlaidConnectionsSynced } from '@/lib/plaid/plaid-store';
 import { computePlaidStaleness } from '@/lib/plaid/staleness';
 import { assertPlaidTokenNotLeaked } from '@/lib/plaid/token-vault';
 
@@ -39,5 +39,39 @@ export async function GET() {
       { success: false, requiresCredentials: false, error: `Plaid storage unavailable: ${message}` },
       { status: 503 },
     );
+  }
+}
+
+/** POST /api/plaid/connections — sync connection timestamps for the caller. */
+export async function POST(_request: Request) {
+  const auth = await requireDevSessionAuth();
+  if (isDevAuthFailure(auth)) {
+    return NextResponse.json(auth.body, { status: auth.status });
+  }
+
+  if (!process.env.PLAID_CLIENT_ID || !process.env.PLAID_SECRET) {
+    return NextResponse.json(
+      {
+        success: false,
+        configured: false,
+        requiresCredentials: true,
+        error:
+          'Plaid banking integration is not configured. (REQUIRES CREDENTIALS: PLAID_CLIENT_ID, PLAID_SECRET)',
+      },
+      { status: 503 },
+    );
+  }
+
+  try {
+    const itemCount = await markPlaidConnectionsSynced(auth.uid);
+    return NextResponse.json({
+      success: true,
+      message: 'Transactions synchronized successfully.',
+      syncedAt: new Date().toISOString(),
+      itemCount,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown sync error';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

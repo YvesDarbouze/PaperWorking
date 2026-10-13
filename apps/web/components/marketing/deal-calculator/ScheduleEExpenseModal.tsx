@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Receipt, X } from '@phosphor-icons/react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 
 export interface ScheduleELineItem {
@@ -77,15 +78,13 @@ export default function ScheduleEExpenseModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl rounded-t-2xl sm:rounded-2xl border-t sm:border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
+        className="relative w-full max-w-2xl rounded-none border border-white/15 bg-[#0f0e13] p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4 shrink-0">
           <div>
             <h2 id="schedule-e-modal-title" className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px] text-[color:var(--color-primary)]">
-                receipt_long
-              </span>
+              <Receipt className="h-5 w-5 text-primary" />
               Schedule E Operating Expenses Editor
             </h2>
             <p className="text-xs text-white/50 mt-0.5">
@@ -95,19 +94,19 @@ export default function ScheduleEExpenseModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
             aria-label="Close operating expenses editor"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Info Banner */}
-        <div className="my-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs flex items-center justify-between shrink-0">
+        <div className="my-3 rounded-none border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs flex items-center justify-between shrink-0">
           <span className="text-white/70">
             Gross Annual Rent: <strong className="text-white font-mono">{formatCurrency(grossRentAnnual)}</strong> ({formatCurrency(Math.round(grossRentAnnual / 12))}/mo)
           </span>
-          <span className="rounded bg-black/40 px-2 py-0.5 font-mono text-[10px] text-emerald-300 border border-white/10">
+          <span className="rounded-none bg-black/40 px-2 py-0.5 font-mono text-[10px] text-emerald-300 border border-white/10">
             Computed OpEx Ratio: {computedRatioPct}%
           </span>
         </div>
@@ -118,7 +117,7 @@ export default function ScheduleEExpenseModal({
             <div key={item.id} className="pt-2 flex items-center justify-between gap-4">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] font-mono text-white/50 border border-white/10">
+                  <span className="rounded-none bg-white/5 px-1.5 py-0.5 text-[9px] font-mono text-white/50 border border-white/10">
                     {item.irsLine}
                   </span>
                   <span className="font-semibold text-white/90">{item.category}</span>
@@ -135,7 +134,7 @@ export default function ScheduleEExpenseModal({
                   value={item.annualAmount || ''}
                   onChange={(e) => handleAmountChange(item.id, Number(e.target.value))}
                   placeholder="0"
-                  className="w-28 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-right font-mono font-bold text-white focus:outline-none focus:border-[color:var(--color-primary)] min-h-[38px]"
+                  className="w-28 rounded-none border border-white/10 bg-black/40 px-2.5 py-1.5 text-right font-mono font-bold text-base md:text-xs text-white focus:outline-none focus:border-primary min-h-[44px]"
                 />
                 <span className="text-white/40 text-[10px] font-mono">/yr</span>
               </div>
@@ -148,7 +147,7 @@ export default function ScheduleEExpenseModal({
           <div>
             <span className="block text-[10px] uppercase font-mono text-white/40">Total Operating Expenses</span>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold font-mono text-[color:var(--color-primary)]">
+              <span className="text-xl font-extrabold font-mono text-primary">
                 {formatCurrency(totalAnnual)}/yr
               </span>
               <span className="text-xs text-white/50 font-mono">
@@ -161,7 +160,7 @@ export default function ScheduleEExpenseModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px]"
+              className="rounded-none border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px]"
             >
               Cancel
             </button>
@@ -172,7 +171,7 @@ export default function ScheduleEExpenseModal({
                 onApplyExpenses(totalAnnual, computedRatioPct);
                 onClose();
               }}
-              className="rounded-xl bg-[color:var(--color-primary)] px-5 py-2.5 text-xs font-bold text-[#0a0a0f] hover:brightness-110 shadow-[0_0_16px_rgba(0,221,148,0.25)] min-h-[44px]"
+              className="rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
             >
               Apply Expenses ({formatCurrency(totalAnnual)}/yr)
             </button>

@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  CheckCircle,
+  CircleNotch,
+  Laptop,
+  WarningCircle,
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/Button';
 
 interface SessionItem {
@@ -94,10 +100,8 @@ export default function SecuritySettingsPanel() {
   if (loading) {
     return (
       <div className="flex min-h-[300px] items-center justify-center p-8">
-        <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-          <span className="material-symbols-outlined animate-spin text-[var(--accent)]">
-            progress_activity
-          </span>
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <CircleNotch className="h-5 w-5 animate-spin text-foreground" />
           Loading security configuration…
         </div>
       </div>
@@ -107,14 +111,14 @@ export default function SecuritySettingsPanel() {
   return (
     <div className="w-full space-y-6" data-testid="security-settings-panel">
       <div>
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">Security &amp; Authentication</h2>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">Security &amp; Authentication</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage authentication credentials, multi-factor policies, and active sessions.
         </p>
       </div>
 
       {error && (
-        <div className="flex items-center justify-between rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">
+        <div className="flex items-center justify-between rounded-none border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
           <span>{error}</span>
           <Button type="button" variant="secondary" size="sm" onClick={fetchSecurity}>
             Retry
@@ -123,21 +127,21 @@ export default function SecuritySettingsPanel() {
       )}
 
       {saveSuccess && (
-        <div data-testid="security-save-success" className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-          <span className="material-symbols-outlined text-base">check_circle</span>
+        <div data-testid="security-save-success" className="flex items-center gap-2 rounded-none border border-border bg-card p-4 text-sm text-foreground shadow-sm ring-1 ring-foreground/10">
+          <CheckCircle weight="bold" className="h-4 w-4" />
           Security configuration saved successfully.
         </div>
       )}
 
       {saveError && (
-        <div className="flex items-center gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--danger)]/10 p-4 text-sm text-[var(--danger)]">
-          <span className="material-symbols-outlined text-base">error</span>
+        <div className="flex items-center gap-2 rounded-none border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <WarningCircle weight="bold" className="h-4 w-4" />
           {saveError}
         </div>
       )}
 
       {/* Password & Credentials Section (Honest Firebase Auth Management) */}
-      <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm">
+      <section className="rounded-none border border-border bg-card p-6 space-y-4 shadow-sm ring-1 ring-foreground/10">
         <div className="border-b border-[var(--border-subtle)] pb-2">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Password &amp; Authentication
@@ -237,12 +241,12 @@ export default function SecuritySettingsPanel() {
       </section>
 
       {/* Active Sessions Section (Honest Display-Only) */}
-      <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm" data-testid="security-active-sessions">
-        <div className="border-b border-[var(--border-subtle)] pb-2">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
+      <section className="rounded-none border border-border bg-card p-6 space-y-4 shadow-sm ring-1 ring-foreground/10" data-testid="security-active-sessions">
+        <div className="border-b border-border pb-2">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
             Active Sessions (Current Device) — Display Only
           </h3>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Multi-device session revocation across distributed clients requires enterprise directory integration.
           </p>
         </div>
@@ -251,20 +255,18 @@ export default function SecuritySettingsPanel() {
           {sessions.map((sess) => (
             <div
               key={sess.id}
-              className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3.5 text-xs"
+              className="flex items-center justify-between rounded-none border border-border bg-muted/40 p-3.5 text-xs"
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-lg text-[var(--accent)]">
-                  laptop_mac
-                </span>
+                <Laptop weight="bold" className="h-5 w-5 text-foreground" />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[var(--text-primary)]">{sess.device}</span>
-                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                    <span className="font-semibold text-foreground">{sess.device}</span>
+                    <span className="rounded-none border border-border bg-muted px-2 py-0.5 text-[10px] font-bold text-foreground">
                       Current Device
                     </span>
                   </div>
-                  <p className="text-[var(--text-muted)] mt-0.5">
+                  <p className="text-muted-foreground mt-0.5">
                     IP: {sess.ip} · {sess.lastActive}
                   </p>
                 </div>

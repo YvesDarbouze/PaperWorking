@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowsLeftRight, X, SealCheck } from '@phosphor-icons/react';
 import { useCompare } from '@/context/CompareContext';
 import { Button } from '@/components/ui/Button';
 import {
@@ -56,10 +57,10 @@ export default function CompareTray() {
       <aside
         data-testid="compare-tray"
         aria-label="Deals comparison tray"
-        className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-white/15 bg-[#161318]/95 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-200"
+        className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-none border border-neutral-800 bg-neutral-950/95 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl animate-in slide-in-from-bottom-4 duration-200"
       >
-        <div className="flex items-center gap-2 pr-2 border-r border-white/10 text-xs font-bold text-[#fdfffc]">
-          <span className="material-symbols-outlined text-[18px] text-[var(--accent)]">compare_arrows</span>
+        <div className="flex items-center gap-2 pr-2 border-r border-neutral-800 text-xs font-semibold text-neutral-100">
+          <ArrowsLeftRight className="h-4 w-4 text-neutral-300" />
           <span>Compare ({comparedDeals.length}/3)</span>
         </div>
 
@@ -68,7 +69,7 @@ export default function CompareTray() {
           {comparedDeals.map((deal) => (
             <div
               key={deal.id}
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-[#fdfffc]"
+              className="flex items-center gap-1.5 rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-200"
             >
               <span className="max-w-[110px] truncate font-medium">
                 {deal.propertyName || deal.name || deal.address}
@@ -76,10 +77,10 @@ export default function CompareTray() {
               <button
                 type="button"
                 onClick={() => removeFromCompare(deal.id)}
-                className="text-[#9E9DA0] hover:text-white transition"
+                className="text-neutral-400 hover:text-white transition"
                 aria-label={`Remove ${deal.propertyName || deal.name} from compare`}
               >
-                <span className="material-symbols-outlined text-[14px]">close</span>
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
@@ -92,13 +93,14 @@ export default function CompareTray() {
             size="sm"
             onClick={openCompareModal}
             data-testid="open-compare-modal-btn"
+            className="rounded-none min-h-[44px]"
           >
             Compare Deals
           </Button>
           <button
             type="button"
             onClick={clearCompare}
-            className="text-xs font-semibold text-[#9E9DA0] hover:text-[var(--accent)] transition"
+            className="text-xs font-medium text-neutral-400 hover:text-white transition min-h-[44px] px-2"
           >
             Clear
           </button>
@@ -116,28 +118,26 @@ export default function CompareTray() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="compare-modal-title"
-            className="relative flex max-h-[90vh] w-full max-w-5xl flex-col rounded-2xl border border-white/15 bg-[#121014] shadow-2xl overflow-hidden dropdown-entrance"
+            className="relative flex max-h-[90vh] w-full max-w-5xl flex-col rounded-none border border-neutral-800 bg-neutral-950 shadow-2xl overflow-hidden"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 bg-[#161318]">
+            <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-4 bg-neutral-900/50">
               <div>
-                <h2 id="compare-modal-title" className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[20px] text-[var(--accent)]">
-                    compare_arrows
-                  </span>
+                <h2 id="compare-modal-title" className="text-lg font-semibold text-white flex items-center gap-2">
+                  <ArrowsLeftRight className="h-5 w-5 text-neutral-300" />
                   Side-by-Side Deal Comparison
                 </h2>
-                <p className="text-xs text-[#9E9DA0] mt-0.5">
+                <p className="text-xs text-neutral-400 mt-0.5">
                   Best-in-category metrics highlighted in green for institutional screening.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={closeCompareModal}
-                className="rounded-lg p-1 text-[#9E9DA0] hover:bg-white/10 hover:text-white"
+                className="rounded-none p-1 text-neutral-400 hover:bg-neutral-800 hover:text-white transition"
                 aria-label="Close compare modal"
               >
-                <span className="material-symbols-outlined text-[20px]">close</span>
+                <X className="h-5 w-5" />
               </button>
             </div>
 
@@ -145,16 +145,16 @@ export default function CompareTray() {
             <div className="flex-1 overflow-auto p-6">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="w-1/4 pb-4 font-bold uppercase tracking-wider text-[#9E9DA0] text-[10px]">
+                  <tr className="border-b border-neutral-800">
+                    <th className="w-1/4 pb-4 font-medium uppercase tracking-wider text-neutral-400 text-[10px]">
                       Metric / Attribute
                     </th>
                     {comparedDeals.map((d) => (
                       <th key={d.id} className="pb-4 px-3 align-top">
-                        <h4 className="text-sm font-bold text-white line-clamp-1">
+                        <h4 className="text-sm font-semibold text-white line-clamp-1">
                           {d.propertyName || d.name || 'Deal'}
                         </h4>
-                        <p className="text-[11px] text-[#9E9DA0] truncate">{d.city}, {d.state}</p>
+                        <p className="text-[11px] text-neutral-400 truncate">{d.city}, {d.state}</p>
                       </th>
                     ))}
                   </tr>
@@ -279,7 +279,7 @@ export default function CompareTray() {
 
                   {/* Operator Provenance */}
                   <tr>
-                    <td className="py-3 font-semibold text-[#9E9DA0]">Operator</td>
+                    <td className="py-3 font-semibold text-neutral-400">Operator</td>
                     {comparedDeals.map((d) => (
                       <td key={d.id} className="py-3 px-3 text-white">
                         <div className="flex items-center gap-1.5">
@@ -287,9 +287,7 @@ export default function CompareTray() {
                             {d.creatorName || 'Apex Capital'}
                           </span>
                           {d.isVerifiedOperator !== false && (
-                            <span className="material-symbols-outlined text-[14px] text-[var(--accent)]">
-                              verified
-                            </span>
+                            <SealCheck className="h-4 w-4 text-neutral-300" />
                           )}
                         </div>
                       </td>

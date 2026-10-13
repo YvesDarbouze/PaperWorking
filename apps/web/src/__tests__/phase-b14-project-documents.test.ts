@@ -24,13 +24,13 @@ describe('phase B14 — browser document transport', () => {
       'utf8',
     );
     const accessRoute = readFileSync(
-      join(here, '../../app/api/projects/[id]/documents/[documentId]/route.ts'),
+      join(here, '../../app/api/projects/[id]/documents/[docId]/route.ts'),
       'utf8',
     );
 
-    expect(listRoute).toContain('buildProjectDocumentsReadService');
-    expect(listRoute).toContain('buildProjectDocumentsCommandService');
-    expect(accessRoute).toContain('getDocumentAccess');
+    expect(listRoute).toContain('resolveProjectAccess');
+    expect(listRoute).toContain('updateProjectInStore');
+    expect(accessRoute).toContain('resolveProjectAccess');
   });
 });
 

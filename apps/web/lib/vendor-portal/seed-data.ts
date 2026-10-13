@@ -16,6 +16,9 @@ export interface SeedVendorRequest {
   message?: string;
   requestedAt: string;
   quotedFee?: number;
+  vendorId?: string;
+  requesterUid?: string;
+  projectLabel?: string;
 }
 
 export interface VendorProfileData {
@@ -30,6 +33,7 @@ export interface VendorProfileData {
   availability: 'Available' | 'Busy' | 'Available in 1 week';
   logoUrl: string;
   bannerUrl: string;
+  vendorSkills?: string[];
 }
 
 const seedVendorRequests: SeedVendorRequest[] = [
@@ -81,6 +85,7 @@ let seedVendorProfile: VendorProfileData = {
   availability: 'Available',
   logoUrl: '',
   bannerUrl: '',
+  vendorSkills: ['General Contractor', 'Roofer'],
 };
 
 export function listSeedVendorRequests(_vendorUid: string): Array<Record<string, unknown>> {
@@ -149,6 +154,7 @@ export function updateSeedVendorProfile(profile: Partial<VendorProfileData>): Ve
     specialties: profile.specialties ?? seedVendorProfile.specialties,
     licensingStates: profile.licensingStates ?? seedVendorProfile.licensingStates,
     serviceAreas: profile.serviceAreas ?? seedVendorProfile.serviceAreas,
+    vendorSkills: profile.vendorSkills ?? seedVendorProfile.vendorSkills,
   };
 
   const cache = (globalThis as any).__pw_vendor_profiles_cache;

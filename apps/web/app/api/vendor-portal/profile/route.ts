@@ -1,80 +1,63 @@
 import { NextResponse } from 'next/server';
 import {
-  buildVendorPortalCommandService,
-  buildVendorPortalReadService,
-} from '@/lib/api/handler-deps';
+  type VendorProfileData,
+  updateSeedVendorProfile,
+} from '@/lib/vendor-portal/seed-data';
 import {
-  marketplaceVendorCommandErrorResponse,
-  marketplaceVendorReadErrorResponse,
-} from '@/lib/api/marketplace-route-errors';
-import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
-import type {
-  VendorPortalProfileUpdateInput,
-  VendorPortalRequestUpdateInput,
-} from '@paperworking/services';
+  getVendorProfileFromStore,
+  updateVendorProfileInStore,
+} from '@/lib/vendor-portal/vendor-store';
+import {
+  isDevAuthFailure,
+  requireDevSessionAuth,
+} from '@/lib/projects/dev-session-auth';
 
-export const dynamic = 'force-dynamic';
+import { validateVendorSkills } from '@/lib/marketplace/vendor-professions';
+import { updateUserProfile } from '@/lib/settings/settings-store';
 
-/** GET /api/vendor-portal/profile — self-scoped vendor portal profile. */
-export async function GET(request: Request) {
-  const user = await resolveAuthUserFromRequest(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function GET() {
+  const auth = await requireDevSessionAuth();
+  if (isDevAuthFailure(auth)) {
+    return NextResponse.json(auth.body, { status: auth.status });
   }
 
-  try {
-    const result = await buildVendorPortalReadService().getPortalProfile(user);
-    return NextResponse.json(result);
-  } catch (error) {
-    const mapped = marketplaceVendorReadErrorResponse(error);
-    if (mapped) return mapped;
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { error: 'Failed to fetch vendor profile', details: message },
-      { status: 500 },
-    );
-  }
+  const profile = await getVendorProfileFromStore(auth.uid);
+  return NextResponse.json({ success: true, profile });
 }
 
-function parseProfileBody(body: unknown): VendorPortalProfileUpdateInput {
-  if (!body || typeof body !== 'object') return {};
-  const record = body as Record<string, unknown>;
-  return {
-    name: typeof record.name === 'string' ? record.name : undefined,
-    companyName: typeof record.companyName === 'string' ? record.companyName : undefined,
-    type: typeof record.type === 'string' ? record.type : undefined,
-    contactPhone: typeof record.contactPhone === 'string' ? record.contactPhone : undefined,
-    organizationId: typeof record.organizationId === 'string' ? record.organizationId : undefined,
-  };
-}
-
-/** PUT /api/vendor-portal/profile — self-scoped vendor profile update. */
 export async function PUT(request: Request) {
-  const user = await resolveAuthUserFromRequest(request);
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireDevSessionAuth();
+  if (isDevAuthFailure(auth)) {
+    return NextResponse.json(auth.body, { status: auth.status });
   }
 
-  let body: unknown = {};
+  let body: Partial<VendorProfileData> = {};
   try {
-    body = await request.json();
+    body = (await request.json()) as Partial<VendorProfileData>;
   } catch {
     body = {};
   }
 
-  try {
-    const result = await buildVendorPortalCommandService().updateProfile(
-      user,
-      parseProfileBody(body),
-    );
-    return NextResponse.json(result);
-  } catch (error) {
-    const mapped = marketplaceVendorCommandErrorResponse(error);
-    if (mapped) return mapped;
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { error: 'Failed to update vendor profile', details: message },
-      { status: 500 },
-    );
+  if (body.vendorSkills !== undefined && Array.isArray(body.vendorSkills)) {
+    if (body.vendorSkills.length > 0) {
+      const validated = validateVendorSkills(body.vendorSkills);
+      if (!validated.ok) {
+        return NextResponse.json({ error: validated.error }, { status: 400 });
+      }
+      body.vendorSkills = validated.skills;
+    }
   }
+
+  updateSeedVendorProfile(body);
+  const profile = await updateVendorProfileInStore(auth.uid, body);
+
+  if (body.vendorSkills !== undefined) {
+    try {
+      await updateUserProfile(auth.uid, { vendorSkills: body.vendorSkills });
+    } catch {
+      // non-blocking
+    }
+  }
+
+  return NextResponse.json({ success: true, profile });
 }

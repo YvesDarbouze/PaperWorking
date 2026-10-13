@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Folder, Bell, DotsThree, CurrencyDollar, ChartBar } from '@phosphor-icons/react';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 import { PHASE_COLORS, PHASE_LABELS } from '@/lib/projects/phase-utils';
 import DashboardBottomNav from '@/components/dashboard/DashboardBottomNav';
@@ -30,18 +31,19 @@ export default function ProjectWorkspaceShell({
             <button
               type="button"
               onClick={() => router.push('/projects')}
-              className="flex min-h-[44px] items-center justify-center rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold hover:bg-white/15 transition active:scale-95 touch-press"
+              className="flex min-h-[44px] items-center gap-1.5 justify-center rounded-none border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold hover:bg-white/15 transition active:scale-95"
               aria-label="Back to projects"
             >
-              ← Projects
+              <Folder size={16} weight="fill" className="text-foreground shrink-0" />
+              <span>Projects</span>
             </button>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-lg sm:text-xl font-semibold truncate">{project.propertyName}</h1>
-                <span className="hidden sm:inline-block rounded px-2 py-0.5 text-[10px] font-mono uppercase bg-white/10 text-neutral-300 border border-white/10">
-                  Overarching Project
+                <span className="hidden sm:inline-block rounded-none px-2 py-0.5 text-[10px] font-mono uppercase bg-white/10 text-neutral-300 border border-white/10">
+                  Project Workspace
                 </span>
-                <span className="hidden sm:inline-block rounded px-2 py-0.5 text-[10px] font-mono uppercase bg-white/5 text-neutral-400 border border-white/5">
+                <span className="hidden sm:inline-block rounded-none px-2 py-0.5 text-[10px] font-mono uppercase bg-white/5 text-neutral-400 border border-white/5">
                   Deal Inside Project
                 </span>
               </div>
@@ -54,12 +56,12 @@ export default function ProjectWorkspaceShell({
                   <Link
                     href={`/marketplace/${project.dealSlug || project.dealId}`}
                     data-testid="workspace-deal-component-link"
-                    className="inline-flex items-center gap-1 font-medium text-white hover:text-[var(--accent)] hover:underline transition truncate max-w-[320px]"
+                    className="inline-flex items-center gap-1.5 font-medium text-white hover:text-[var(--accent)] hover:underline transition truncate max-w-[320px]"
                     title={`View Deal Component: ${project.dealAddress || project.address || 'Underwriting Deal'}`}
                   >
-                    <span className="material-symbols-outlined text-[13px] text-neutral-400">payments</span>
+                    <CurrencyDollar size={14} className="text-neutral-400" />
                     <span className="truncate">{(project.dealAddress || project.address || 'View Deal').split(',')[0]}</span>
-                    <span className="text-[10px] rounded px-1.5 py-0.2 bg-white/10 text-white/80 border border-white/10">
+                    <span className="text-[10px] rounded-none px-1.5 py-0.2 bg-white/10 text-white/80 border border-white/10">
                       Marketplace Offering →
                     </span>
                   </Link>
@@ -71,7 +73,7 @@ export default function ProjectWorkspaceShell({
               </div>
             </div>
             <span
-              className="shrink-0 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.06em]"
+              className="shrink-0 rounded-none px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.06em] border border-white/10"
               style={{ background: phaseStyle.bg, color: phaseStyle.text }}
             >
               {PHASE_LABELS[project.currentPhase]}
@@ -81,7 +83,7 @@ export default function ProjectWorkspaceShell({
             {saveStatus === 'saving' && (
               <span
                 data-testid="workspace-save-status"
-                className="shrink-0 rounded px-2 py-0.5 text-[10px] font-mono border border-amber-800/60 bg-amber-950/40 text-amber-400 animate-pulse"
+                className="shrink-0 rounded-none px-2 py-0.5 text-[10px] font-mono border border-amber-800/60 bg-amber-950/40 text-amber-400 animate-pulse"
               >
                 Saving…
               </span>
@@ -89,7 +91,7 @@ export default function ProjectWorkspaceShell({
             {saveStatus === 'saved' && (
               <span
                 data-testid="workspace-save-status"
-                className="shrink-0 rounded px-2 py-0.5 text-[10px] font-mono border border-emerald-800/60 bg-emerald-950/40 text-emerald-400"
+                className="shrink-0 rounded-none px-2 py-0.5 text-[10px] font-mono border border-emerald-800/60 bg-emerald-950/40 text-emerald-400"
               >
                 Saved
               </span>
@@ -97,7 +99,7 @@ export default function ProjectWorkspaceShell({
             {saveStatus === 'error' && (
               <span
                 data-testid="workspace-save-status"
-                className="shrink-0 rounded px-2 py-0.5 text-[10px] font-mono border border-red-800/60 bg-red-950/40 text-red-400"
+                className="shrink-0 rounded-none px-2 py-0.5 text-[10px] font-mono border border-red-800/60 bg-red-950/40 text-red-400"
               >
                 Save Error
               </span>
@@ -107,22 +109,39 @@ export default function ProjectWorkspaceShell({
           <div className="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm pt-1 lg:pt-0">
             <Link
               href={`/dashboard/insights?project=${project.id}`}
-              className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/80 hover:bg-white/10 hover:text-white transition no-underline"
+              className="inline-flex items-center gap-1.5 rounded-none border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/80 hover:bg-white/10 hover:text-white transition no-underline min-h-[36px]"
               title="Explore 33 Datapoints for this project"
             >
-              <span className="material-symbols-outlined text-[14px] text-emerald-400">analytics</span>
+              <ChartBar size={14} className="text-emerald-400" />
               <span>33 Datapoints</span>
             </Link>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
               <span className="text-white/60">Phase completion</span>
               <span className="font-semibold text-[var(--accent)]">{project.phase_completion_pct}%</span>
-              <div className="h-2 w-20 overflow-hidden rounded-full bg-black/40">
+              <div className="h-2 w-20 overflow-hidden rounded-none bg-black/40">
                 <div
                   className="h-full bg-[var(--accent)]"
                   style={{ width: `${project.phase_completion_pct}%` }}
                 />
               </div>
             </div>
+            <button
+              type="button"
+              aria-label="Project notifications"
+              title="Notifications"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none border border-white/15 bg-white/5 hover:bg-white/10 transition"
+            >
+              <Bell size={16} className="text-white/70" />
+            </button>
+            <button
+              type="button"
+              aria-label="Project settings and actions"
+              title="More actions"
+              onClick={() => router.push(`/project/${project.id}/settings`)}
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none border border-white/15 bg-white/5 hover:bg-white/10 transition"
+            >
+              <DotsThree size={18} weight="bold" className="text-white/70" />
+            </button>
           </div>
         </div>
       </header>

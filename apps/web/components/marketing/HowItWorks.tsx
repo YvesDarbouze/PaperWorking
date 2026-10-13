@@ -16,6 +16,7 @@ import {
 import { REIL_NARRATIVE_STEPS } from '@/lib/marketing/how-it-works-data';
 import ReilPhaseModules from '@/components/marketing/ReilPhaseModules';
 import ReilLifecycleCards from '@/components/marketing/ReilLifecycleCards';
+import { ArrowRight } from '@phosphor-icons/react';
 
 export default function HowItWorks() {
   return (
@@ -160,7 +161,7 @@ export default function HowItWorks() {
                 Every draw invoice is logged directly against your approved scope of work.
               </p>
               <p>
-                The Vendor Marketplace earns its keep here: find and assign vetted contractors, appraisers,
+                The Vendor Directory earns its keep here: find and assign vetted contractors, appraisers,
                 or real estate attorneys directly when project milestones demand them.
               </p>
             </div>
@@ -266,7 +267,7 @@ export default function HowItWorks() {
               className="inline-flex cursor-pointer items-center justify-center gap-2.5 rounded-none bg-primary px-8 py-3 min-h-[44px] text-xs font-semibold tracking-wide text-primary-foreground hover:bg-primary/90 transition shadow-sm"
             >
               Start Free 14-Day Trial
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <ArrowRight className="h-4 w-4" weight="bold" />
             </Link>
           </div>
         </div>

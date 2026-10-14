@@ -684,21 +684,25 @@ export default function LoginPanel() {
         {!isSignUp ? (
           <div className="mt-4 w-full border-t border-white/10 pt-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <button
-                type="button"
-                onClick={() => void handleAdminSignIn()}
-                disabled={isSubmitting || !!loadingProvider || (isAdminLogin && !mockAuthEnabled)}
-                className="auth-button-secondary flex items-center justify-center gap-2 !py-2 text-xs disabled:opacity-50 sm:w-auto sm:px-4"
-              >
-                <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
-                {mockAuthEnabled
-                  ? isAdminLogin
-                    ? 'Continue as admin (dev)'
-                    : 'Sign in as admin (dev)'
-                  : isAdminLogin
-                    ? 'Admin sign-in mode'
-                    : 'Sign in as admin'}
-              </button>
+              {isAdminLogin && !mockAuthEnabled ? (
+                <Link
+                  href="/login"
+                  className="auth-button-secondary flex items-center justify-center gap-2 !py-2 text-xs sm:w-auto sm:px-4"
+                >
+                  <span className="material-symbols-outlined text-[16px]">person</span>
+                  Sign in as investor
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void handleAdminSignIn()}
+                  disabled={isSubmitting || !!loadingProvider}
+                  className="auth-button-secondary flex items-center justify-center gap-2 !py-2 text-xs disabled:opacity-50 sm:w-auto sm:px-4"
+                >
+                  <span className="material-symbols-outlined text-[16px]">admin_panel_settings</span>
+                  {mockAuthEnabled ? 'Sign in as admin (dev)' : 'Sign in as admin'}
+                </button>
+              )}
               <p className="text-center text-xs text-white/55 sm:text-right">
                 New to PaperWorking?{' '}
                 <Link href="/pricing" className="font-semibold text-white no-underline hover:underline">

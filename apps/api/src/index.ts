@@ -1694,5 +1694,32 @@ export {
   type CountOrgProjectsFn,
   type CreatePromotedProjectFn,
 } from './routes/projects/promote/handler.js';
+export {
+  handleProjectAlertsGet,
+  type ProjectAlertsGetDeps,
+  type GetProjectForAlertsFn,
+} from './routes/projects/alerts/handler.js';
+
+export {
+  handleProjectAcquisitionStatusPatch,
+  type ProjectAcquisitionStatusPatchDeps,
+  type GetProjectForAcquisitionStatusFn,
+  type UpdateProjectAcquisitionStatusFn,
+  type AcquisitionStatusPatchBody,
+} from './routes/projects/acquisition-status/handler.js';
+
+export {
+  handleProjectOffersGet,
+  handleProjectOffersPost,
+  type ProjectOffersDeps,
+} from './routes/projects/offers/handler.js';
+
+export {
+  handleProjectUnderwritingGet,
+  handleProjectUnderwritingPut,
+  type ProjectUnderwritingDeps,
+  type GetProjectUnderwritingFn,
+  type SaveProjectUnderwritingFn,
+} from './routes/projects/underwriting/handler.js';
 
 export const API_APP_STATUS = 'phase-4aa' as const;

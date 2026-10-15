@@ -6,12 +6,14 @@ import { MarketIndicatorMetric } from '@/lib/market/types';
 
 export interface LocalScoreboardCardProps {
   metric: MarketIndicatorMetric;
+  asOfDate?: string;
   onClick?: () => void;
 }
 
-export default function LocalScoreboardCard({ metric, onClick }: LocalScoreboardCardProps) {
+export default function LocalScoreboardCard({ metric, asOfDate, onClick }: LocalScoreboardCardProps) {
   const isZero = metric.delta === 0;
   const isUp = metric.delta > 0;
+  const resolvedMarketDay = metric.asOfDate || asOfDate || '';
 
   // Regime color badges
   const regimeStyles = {
@@ -42,13 +44,14 @@ export default function LocalScoreboardCard({ metric, onClick }: LocalScoreboard
           onClick?.();
         }
       }}
-      className="group relative flex flex-col justify-between border border-border bg-card p-3.5 transition-all duration-150 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left cursor-pointer select-none rounded-none"
+      className="group relative flex h-full min-h-[108px] w-full flex-col justify-between border border-border bg-card p-3.5 transition-all duration-150 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left cursor-pointer select-none rounded-none"
     >
       <div>
         {/* Top row: Label and regime badge */}
         <div className="flex items-center justify-between gap-1 mb-1">
           <span className="font-mono text-[11px] font-bold tracking-tight text-foreground uppercase">
             {metric.id.toUpperCase()}
+            {metric.seriesSymbol ? ` · ${metric.seriesSymbol}` : ''}
           </span>
           <span className={`text-[9px] font-mono uppercase font-bold tracking-wider border px-1.5 py-0.5 ${regimeStyles}`}>
             {metric.marketRegime}
@@ -72,7 +75,7 @@ export default function LocalScoreboardCard({ metric, onClick }: LocalScoreboard
           </span>
         </div>
 
-        {/* Delta change & interpretation */}
+        {/* Delta change & real observation date */}
         <div className="mt-1.5 flex items-center justify-between gap-1 font-mono text-[11px] tabular-nums">
           <span className="inline-flex items-center gap-0.5 text-muted-foreground font-semibold">
             {isZero ? (
@@ -84,8 +87,8 @@ export default function LocalScoreboardCard({ metric, onClick }: LocalScoreboard
             )}
             {formattedDelta} ({metric.unit})
           </span>
-          <span className="text-[9px] font-sans text-muted-foreground truncate max-w-[120px]">
-            {metric.healthyThreshold}
+          <span className="text-[10px] font-mono text-muted-foreground truncate">
+            {resolvedMarketDay ? `As of ${resolvedMarketDay}` : metric.healthyThreshold}
           </span>
         </div>
       </div>

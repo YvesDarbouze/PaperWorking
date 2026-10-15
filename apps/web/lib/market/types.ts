@@ -38,6 +38,8 @@ export interface LiveTickerItem {
   formatDecimals: number;
   sparkline: number[];
   lastUpdated: string;
+  marketDate?: string; // Latest market observation / live sync date (YYYY-MM-DD)
+  realtimeDate?: string; // Official FRED/Polygon realtime_end sync date (YYYY-MM-DD)
   source: MarketDataSource;
   frequency: 'Daily' | 'Weekly' | 'Monthly' | 'RealTime';
   isPositiveGood?: boolean; // false for yields/debt rates where increase adds cost
@@ -47,6 +49,7 @@ export interface LiveTickerItem {
 
 export interface MarketIndicatorMetric {
   id: 'moi' | 'dom' | 'sale_to_list';
+  seriesSymbol?: string;
   label: string;
   value: number;
   previousValue: number;
@@ -59,6 +62,10 @@ export interface MarketIndicatorMetric {
   marketRegime: 'SELLER' | 'BALANCED' | 'BUYER' | 'DISTRESSED';
   interpretation: string;
   trend: 'UP' | 'DOWN' | 'STABLE';
+  asOfDate?: string; // Live release / market sync date (YYYY-MM-DD)
+  referencePeriod?: string; // Reference period label (e.g. Sep 2026)
+  source?: MarketDataSource;
+  frequency?: 'Daily' | 'Weekly' | 'Monthly';
   historicalSeries: Record<ScoreboardPeriod, TimeSeriesPoint[]>;
 }
 

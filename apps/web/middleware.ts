@@ -70,6 +70,7 @@ export function middleware(request: NextRequest) {
       pathname.startsWith('/api/contact') ||
       pathname.startsWith('/api/support') ||
       pathname.startsWith('/api/assistant') ||
+      pathname.startsWith('/api/market') ||
       pathname.startsWith('/api/marketplace') ||
       pathname.startsWith('/api/places') ||
       pathname.startsWith('/api/deal-calculator') ||

@@ -180,6 +180,22 @@ export default function ProjectFolderCard({ project }: { project: ProjectSummary
             <p className="text-xs font-semibold text-primary">{headline.value}</p>
           </div>
         </div>
+
+        <div className="flex items-center justify-between border-t border-border pt-2.5 text-[11px]">
+          <Link
+            href={`/dashboard/insights?project=${project.id}`}
+            onClick={(event: MouseEvent) => event.stopPropagation()}
+            data-testid="project-card-33-datapoints-link"
+            className="inline-flex items-center gap-1 font-semibold text-muted-foreground no-underline hover:text-primary transition-colors"
+          >
+            <ChartLineUp size={13} />
+            <span>33 Datapoints</span>
+          </Link>
+          <span className="inline-flex items-center gap-1 font-semibold text-foreground group-hover:text-primary transition-colors">
+            <span>Workspace</span>
+            <ArrowRight size={12} />
+          </span>
+        </div>
       </div>
     </div>
   );

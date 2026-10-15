@@ -808,5 +808,20 @@ export function Minus(props: PhosphorIconProps) {
   );
 }
 
+export function Pulse(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <polyline points="24 128 56 128 96 40 160 208 200 128 232 128" />
+    </BasePhosphorIcon>
+  );
+}
 
-
+export function UserCircle(props: PhosphorIconProps) {
+  return (
+    <BasePhosphorIcon {...props}>
+      <circle cx="128" cy="128" r="96" />
+      <circle cx="128" cy="120" r="40" />
+      <path d="M63.8,199.4a72,72,0,0,1,128.4,0" />
+    </BasePhosphorIcon>
+  );
+}

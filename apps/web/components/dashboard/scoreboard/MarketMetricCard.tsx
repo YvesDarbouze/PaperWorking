@@ -12,7 +12,7 @@ export interface MarketMetricCardProps {
 export default function MarketMetricCard({ item, onClick }: MarketMetricCardProps) {
   const isZero = item.delta === 0;
   const isUp = item.delta > 0;
-  
+
   // For debt/yields, up is red/unfavorable. For equities/VNQ, up is green.
   const isGood = item.isPositiveGood ? isUp : !isUp;
   const deltaColor = isZero
@@ -29,6 +29,9 @@ export default function MarketMetricCard({ item, onClick }: MarketMetricCardProp
   const deltaSign = item.delta > 0 ? '+' : '';
   const formattedDelta = `${deltaSign}${item.delta.toFixed(item.formatDecimals)}`;
   const formattedDeltaPct = `${deltaSign}${item.deltaPct.toFixed(2)}%`;
+
+  const marketDay =
+    item.marketDate || (item.lastUpdated ? item.lastUpdated.split('T')[0] : '');
 
   // Compute mini sparkline points
   const sparklineCoords = React.useMemo(() => {
@@ -58,16 +61,16 @@ export default function MarketMetricCard({ item, onClick }: MarketMetricCardProp
           onClick?.();
         }
       }}
-      className="group relative flex flex-col justify-between border border-border bg-card p-3.5 transition-all duration-150 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left cursor-pointer select-none rounded-none"
+      className="group relative flex h-full min-h-[108px] w-full flex-col justify-between border border-border bg-card p-3.5 transition-all duration-150 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-left cursor-pointer select-none rounded-none"
     >
       <div>
-        {/* Top row: Symbol and source tag */}
+        {/* Top row: Symbol and source/frequency tag */}
         <div className="flex items-center justify-between gap-1 mb-1">
           <span className="font-mono text-[11px] font-bold tracking-tight text-foreground uppercase">
             {item.symbol}
           </span>
           <span className="text-[9px] font-mono uppercase tracking-wider text-muted-foreground border border-border px-1 py-0.2">
-            {item.frequency}
+            {item.source} · {item.frequency}
           </span>
         </div>
 
@@ -101,8 +104,8 @@ export default function MarketMetricCard({ item, onClick }: MarketMetricCardProp
           )}
         </div>
 
-        {/* Delta change */}
-        <div className="mt-1.5 flex items-center gap-1.5 font-mono text-[11px] tabular-nums">
+        {/* Delta change and Real Market Day */}
+        <div className="mt-1.5 flex items-center justify-between gap-1.5 font-mono text-[11px] tabular-nums">
           <span className={`inline-flex items-center gap-0.5 font-semibold ${deltaColor}`}>
             {isZero ? (
               <Minus className="h-3 w-3" />
@@ -113,7 +116,13 @@ export default function MarketMetricCard({ item, onClick }: MarketMetricCardProp
             )}
             {formattedDelta} ({formattedDeltaPct})
           </span>
-          <span className="text-[10px] text-muted-foreground">vs prev</span>
+          {marketDay ? (
+            <span className="text-[10px] text-muted-foreground" title={`Market observation date: ${marketDay}`}>
+              {marketDay}
+            </span>
+          ) : (
+            <span className="text-[10px] text-muted-foreground">vs prev</span>
+          )}
         </div>
       </div>
     </div>

@@ -29,6 +29,7 @@ import DealCalculatorResultModal from '@/components/marketplace/DealCalculatorRe
 import ExpressInterestModal from '@/components/marketplace/ExpressInterestModal';
 import DealOfferServicesModal from '@/components/marketplace/DealOfferServicesModal';
 import CompareTray from '@/components/marketplace/CompareTray';
+import MarketplaceSocialProfileCard from '@/components/marketplace/MarketplaceSocialProfileCard';
 import { useRovingTabindex } from '@/lib/a11y/useRovingTabindex';
 
 type SortOption = 'recommended' | 'newest' | 'highest_irr' | 'lowest_min' | 'closing_soon';
@@ -467,6 +468,9 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
           </div>
         )}
       </header>
+
+      {/* Investor Profile & Social Network Bar */}
+      <MarketplaceSocialProfileCard variant="banner" contextLabel="Deals Marketplace" />
 
       {/* 2. Full-Width Search Hero (F-03 In-Place Autocomplete) */}
       <div className="w-full">

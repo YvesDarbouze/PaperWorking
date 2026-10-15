@@ -26,6 +26,7 @@ export default function MarketTickerCrawl({
       symbol: string;
       value: string;
       deltaText: string;
+      marketDate: string;
       isUp: boolean;
       isZero: boolean;
       isGood: boolean;
@@ -38,12 +39,14 @@ export default function MarketTickerCrawl({
       const valStr = t.unit === 'usd' ? `$${t.currentValue.toFixed(2)}` : `${t.currentValue.toFixed(2)}%`;
       const deltaSign = t.delta > 0 ? '+' : '';
       const deltaStr = `${deltaSign}${t.delta.toFixed(2)} (${deltaSign}${t.deltaPct.toFixed(1)}%)`;
+      const marketDate = t.marketDate || (t.lastUpdated ? t.lastUpdated.split('T')[0] : '');
 
       list.push({
         id: t.symbol,
         symbol: t.symbol,
         value: valStr,
         deltaText: deltaStr,
+        marketDate,
         isUp,
         isZero,
         isGood,
@@ -63,12 +66,14 @@ export default function MarketTickerCrawl({
       const valStr = `${m.value.toFixed(m.formatDecimals)}${suffix}`;
       const deltaSign = m.delta > 0 ? '+' : '';
       const deltaStr = `${deltaSign}${m.delta.toFixed(m.formatDecimals)}`;
+      const marketDate = m.asOfDate || localMarket.asOfDate || '';
 
       list.push({
         id: m.id,
         symbol: id,
         value: valStr,
         deltaText: deltaStr,
+        marketDate,
         isUp,
         isZero,
         isGood: isZero ? true : !isUp,
@@ -118,6 +123,7 @@ export default function MarketTickerCrawl({
                 key={`${item.id}-${idx}`}
                 type="button"
                 onClick={() => onSelectMetric(item.id)}
+                title={`${item.symbol}: ${item.value} (${item.marketDate})`}
                 className="inline-flex items-center gap-2 hover:bg-muted/40 px-2 py-1 transition cursor-pointer"
               >
                 <span className="font-bold text-foreground">{item.symbol}</span>
@@ -132,6 +138,11 @@ export default function MarketTickerCrawl({
                   )}
                   {item.deltaText}
                 </span>
+                {item.marketDate && (
+                  <span className="text-[9px] text-muted-foreground">
+                    [{item.marketDate}]
+                  </span>
+                )}
               </button>
             );
           })}

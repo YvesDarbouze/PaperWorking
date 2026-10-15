@@ -10,6 +10,7 @@ import VendorSideSheet, {
   type VendorSideSheetData,
 } from '@/components/marketplace/VendorSideSheet';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
+import MarketplaceSocialProfileCard from '@/components/marketplace/MarketplaceSocialProfileCard';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { useOptionalAuth } from '@/context/AuthContext';
 
@@ -578,6 +579,9 @@ function MarketplaceContent() {
           <strong className="text-neutral-200">Universal Directory Privileges:</strong> Investors, Investment Teams, and Vendors are all entitled to list trade and professional services on the Vendor Directory.
         </span>
       </div>
+
+      {/* Investor Profile & Social Network Bar */}
+      <MarketplaceSocialProfileCard variant="banner" contextLabel="Vendor Directory" />
 
       {activeTab === 'deals' ? (
         <div className="space-y-4">

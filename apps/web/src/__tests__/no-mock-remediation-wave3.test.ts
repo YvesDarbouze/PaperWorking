@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach, afterEach, jest } from '@jest/globals
 import { POST as postPlaidConnections } from '../../app/api/plaid/connections/route';
 import { POST as postDealShare } from '../../app/api/deals/[id]/share/route';
 import { createVendorRequestInStore } from '../../lib/vendor-portal/vendor-store';
-import { TicketStore } from '../../lib/tickets/ticket-store';
+import { ticketStore } from '../../lib/tickets/ticket-store';
 import { SEED_RAW_DEALS } from '../../lib/marketplace/seed-data';
 
 describe('POST /api/plaid/connections honest credential handling & sync', () => {

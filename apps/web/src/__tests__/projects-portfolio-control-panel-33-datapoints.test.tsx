@@ -99,11 +99,12 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
       expect(html).toContain(`title="${fullAddress}"`);
     });
 
-    it('Quick Launch card explains that Address is Step 1 followed immediately by deal calculation', () => {
+    it('Quick Launch card explains that Address is Step 1 followed immediately by deal calculation without Address-First or Discovery brow badges', () => {
       const html = renderToString(<CommandCenterPanel />);
 
       expect(html).toContain('data-testid="quick-launch-create-project"');
-      expect(html).toContain('Address-First');
+      expect(html).not.toContain('Address-First');
+      expect(html).not.toContain('>Discovery<');
       expect(html).toContain('The first step is the property address, followed immediately by deal calculation, creating the Deal inside the Project and powering all 33 Underwriting Datapoints.');
     });
 

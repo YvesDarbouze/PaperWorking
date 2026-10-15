@@ -91,8 +91,12 @@ describe('Dashboard Modals & Followers Interaction Suite', () => {
     });
   });
 
-  describe('CommandCenterPanel triggers integration', () => {
-    it('renders interactive triggers for followers and trend expansion', () => {
+  describe('CommandCenterPanel & Relocated MarketplaceSocialProfileCard triggers integration', () => {
+    it('renders trend expansion triggers on CommandCenterPanel and followers social triggers on MarketplaceSocialProfileCard', async () => {
+      const { default: MarketplaceSocialProfileCard } = await import(
+        '../../components/marketplace/MarketplaceSocialProfileCard.js'
+      );
+
       mockUseAuth.mockReturnValue({
         loading: false,
         authenticated: true,
@@ -102,17 +106,23 @@ describe('Dashboard Modals & Followers Interaction Suite', () => {
         },
       });
 
-      const html = renderToString(<CommandCenterPanel />);
+      const dashboardHtml = renderToString(<CommandCenterPanel />);
 
-      // Followers count and heading triggers
-      expect(html).toContain('data-testid="followers-count-trigger"');
-      expect(html).toContain('data-testid="followers-heading-trigger"');
-      expect(html).toContain('data-testid="follower-row-f1"');
+      // 90-Day Trend expand triggers remain on Portfolio Dashboard
+      expect(dashboardHtml).toContain('data-testid="expand-trend-modal-trigger"');
+      expect(dashboardHtml).toContain('data-testid="trend-card-heading-trigger"');
+      expect(dashboardHtml).toContain('data-testid="trend-card-content-trigger"');
 
-      // 90-Day Trend expand triggers
-      expect(html).toContain('data-testid="expand-trend-modal-trigger"');
-      expect(html).toContain('data-testid="trend-card-heading-trigger"');
-      expect(html).toContain('data-testid="trend-card-content-trigger"');
+      // Social Profile card relocated off Portfolio Dashboard to Deals Marketplace & Vendor Directory
+      expect(dashboardHtml).not.toContain('data-testid="followers-count-trigger"');
+
+      const socialProfileHtml = renderToString(
+        <MarketplaceSocialProfileCard variant="banner" contextLabel="Deals Marketplace" />
+      );
+      expect(socialProfileHtml).toContain('data-testid="marketplace-social-profile-card"');
+      expect(socialProfileHtml).toContain('data-testid="followers-count-trigger"');
+      expect(socialProfileHtml).toContain('data-testid="followers-heading-trigger"');
+      expect(socialProfileHtml).toContain('data-testid="follower-row-f1"');
     });
   });
 });

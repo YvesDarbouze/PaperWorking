@@ -189,20 +189,20 @@ describe('CommandCenterPanel: Designed Empty States & Panel Button Constraints',
     expect(emptyHtml).toContain('check_circle');
   });
 
-  it('Operational Alerts: renders neutral icon and microcopy when empty (no mixed warning signal, no CTA)', () => {
-    const emptyHtml = renderToString(
-      <CommandCenterPanel initialAlerts={[]} />
+  it('removes Operational Alerts, Discovery brow, Address-First brow, and Profile social card while stacking Market Vitals vertically on the right rail', () => {
+    const html = renderToString(
+      <CommandCenterPanel initialAlerts={[]} initialFollowers={[]} />
     );
-    expect(emptyHtml).toContain('notifications_none');
-    expect(emptyHtml).toContain('No operational alerts. Systems running normally.');
-    expect(emptyHtml).not.toContain('text-rose-400');
-  });
-
-  it('Followers: renders muted microcopy when empty with zero CTAs', () => {
-    const emptyHtml = renderToString(
-      <CommandCenterPanel initialFollowers={[]} />
-    );
-    expect(emptyHtml).toContain('No followers yet.');
+    expect(html).not.toContain('Operational Alerts');
+    expect(html).not.toContain('No operational alerts. Systems running normally.');
+    expect(html).not.toContain('Address-First');
+    expect(html).not.toContain('>Discovery<');
+    expect(html).not.toContain('data-testid="followers-count-trigger"');
+    expect(html).toContain('data-testid="market-vitals-right-rail"');
+    expect(html).toContain('data-layout="vertical"');
+    expect(html).toContain('data-testid="portfolio-symmetric-quick-actions"');
+    expect(html).toContain('data-testid="portfolio-symmetric-kpi-strip"');
+    expect(html).toContain('data-testid="portfolio-symmetric-operations-triad"');
   });
 
   it('no-primary-in-panels assertion: exactly ONE primary button exists across the entire dashboard view', () => {

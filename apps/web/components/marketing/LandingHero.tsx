@@ -35,7 +35,8 @@ export default function LandingHero() {
             {/* CTA row */}
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:w-auto pt-2">
               <Button
-                href="/pricing"
+                href="/signup"
+                data-testid="hero-get-started-cta"
                 variant="default"
                 size="default"
                 className="min-h-[44px] sm:min-h-0 h-9 px-4 text-xs font-medium"
@@ -43,7 +44,8 @@ export default function LandingHero() {
                 Get started
               </Button>
               <Button
-                href="#deal-calculator"
+                href="/how-it-works"
+                data-testid="hero-how-it-works-cta"
                 variant="outline"
                 size="default"
                 className="min-h-[44px] sm:min-h-0 h-9 px-4 text-xs font-medium"

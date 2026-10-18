@@ -162,9 +162,8 @@ describe('phase B5 — Next GET /api/marketplace/profile route adapter', () => {
   it('route resolves AuthUser and delegates to shared service', () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const source = readFileSync(join(here, '../../app/api/marketplace/profile/route.ts'), 'utf8');
-    expect(source).toContain('resolveAuthUserFromRequest');
-    expect(source).toMatch(/if \(!user\)[\s\S]*401/);
-    expect(source).toContain('buildMarketplaceProfileReadService');
-    expect(source).toContain('getMarketplaceProfile');
+    expect(source).toContain('requireDevSessionAuth');
+    expect(source).toContain('handleMarketplaceProfileGet');
+    expect(source).toContain('getUserProfile');
   });
 });

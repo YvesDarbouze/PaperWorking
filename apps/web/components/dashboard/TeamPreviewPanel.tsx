@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import DashboardPageHeader from '@/components/dashboard/DashboardPageHeader';
 import { TEAM_MEMBERS, TEAM_SEATS, type TeamMember } from '@/lib/dashboard/shell-seed';
-import { UserPlus } from '@/components/icons/PhosphorIcons';
+import { UserPlus, X } from '@/components/icons/PhosphorIcons';
 import { bffFetch } from '@/lib/api/bff-fetch';
 
 export default function TeamPreviewPanel() {
@@ -105,12 +105,32 @@ export default function TeamPreviewPanel() {
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search members by name, email, or role"
-          className="w-full min-h-[44px] rounded-none border border-border bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:max-w-md sm:text-xs"
-        />
+        <div className="relative w-full sm:max-w-md">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape' && query) {
+                event.preventDefault();
+                setQuery('');
+              }
+            }}
+            placeholder="Search members by name, email, or role"
+            data-testid="team-preview-search-input"
+            className="w-full min-h-[44px] rounded-none border border-border bg-background py-2 pl-4 pr-11 text-base text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none sm:text-xs"
+          />
+          {query.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              aria-label="Clear search"
+              data-testid="clear-team-preview-search-btn"
+              className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <X size={14} weight="bold" />
+            </button>
+          ) : null}
+        </div>
         <span className="inline-flex items-center rounded-none border border-border bg-muted/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
           {seats.used} of {seats.limit} seats used
         </span>

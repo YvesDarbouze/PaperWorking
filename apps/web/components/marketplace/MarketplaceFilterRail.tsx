@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Faders } from '@phosphor-icons/react';
+import { Faders, X } from '@phosphor-icons/react';
 import type { DealCardData } from '@/components/marketplace/DealCard';
 
 export interface MarketplaceFilterState {
@@ -276,10 +276,28 @@ export default function MarketplaceFilterRail({
             type="text"
             value={marketSearch}
             onChange={(e) => setMarketSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && marketSearch) {
+                e.preventDefault();
+                setMarketSearch('');
+              }
+            }}
             placeholder="Filter markets…"
             aria-label="Filter markets"
-            className="w-full rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-neutral-500"
+            data-testid="market-filter-search-input"
+            className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-1 pl-2.5 pr-9 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 outline-none focus:border-neutral-500"
           />
+          {marketSearch.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setMarketSearch('')}
+              aria-label="Clear market search"
+              data-testid="clear-market-filter-search-btn"
+              className="absolute right-0 top-0 bottom-0 flex min-w-[32px] cursor-pointer items-center justify-center rounded-none text-neutral-400 transition hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+            >
+              <X size={12} weight="bold" />
+            </button>
+          ) : null}
         </div>
         <div
           role="group"

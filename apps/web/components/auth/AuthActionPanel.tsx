@@ -89,6 +89,37 @@ export default function AuthActionPanel() {
     );
   }
 
+  function reconcileFieldErrors(formElement: HTMLFormElement) {
+    setErrors((prev) => {
+      const activeKeys = Object.keys(prev);
+      if (activeKeys.length === 0) return prev;
+      const formData = new FormData(formElement);
+      const password = String(formData.get('password') ?? '');
+      const confirmPassword = String(formData.get('confirmPassword') ?? '');
+      const parsed = passwordResetSchema.safeParse({ password, confirmPassword });
+      const currentErrors: Record<string, string> = {};
+      if (!parsed.success) {
+        for (const issue of parsed.error.issues) {
+          const key = String(issue.path[0] ?? 'form');
+          if (!currentErrors[key]) currentErrors[key] = issue.message;
+        }
+      }
+      if (!currentErrors.confirmPassword && confirmPassword.length > 0 && password !== confirmPassword) {
+        currentErrors.confirmPassword = 'Passwords do not match';
+      }
+      const next: Record<string, string> = {};
+      let changed = false;
+      for (const key of activeKeys) {
+        if (currentErrors[key]) {
+          next[key] = prev[key];
+        } else {
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }
+
   return (
     <AuthCard>
       <div className="mb-6 text-center">
@@ -96,15 +127,47 @@ export default function AuthActionPanel() {
         <p className="text-sm text-[rgba(253,255,252,0.65)]">Choose a new password for your account.</p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleResetSubmit}>
+      <form
+        className="space-y-4"
+        noValidate
+        onSubmit={handleResetSubmit}
+        onInput={(event) => reconcileFieldErrors(event.currentTarget)}
+        onChange={(event) => reconcileFieldErrors(event.currentTarget)}
+      >
         <div>
-          <label className="auth-label" htmlFor="password">New password</label>
-          <input id="password" name="password" type="password" className="auth-input" autoComplete="new-password" />
+          <label className="auth-label" htmlFor="password">
+            New password{' '}
+            <span className="text-red-400" aria-hidden="true" data-testid="required-asterisk">
+              *
+            </span>
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            aria-required="true"
+            className="auth-input min-h-[44px]"
+            autoComplete="new-password"
+          />
           <AuthFieldError message={errors.password} />
         </div>
         <div>
-          <label className="auth-label" htmlFor="confirmPassword">Confirm password</label>
-          <input id="confirmPassword" name="confirmPassword" type="password" className="auth-input" autoComplete="new-password" />
+          <label className="auth-label" htmlFor="confirmPassword">
+            Confirm password{' '}
+            <span className="text-red-400" aria-hidden="true" data-testid="required-asterisk">
+              *
+            </span>
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            required
+            aria-required="true"
+            className="auth-input min-h-[44px]"
+            autoComplete="new-password"
+          />
           <AuthFieldError message={errors.confirmPassword} />
         </div>
         <button type="submit" className="auth-button-primary">Save new password</button>

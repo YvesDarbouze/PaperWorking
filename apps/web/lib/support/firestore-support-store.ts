@@ -36,6 +36,23 @@ export function slugifyTerm(term: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+function withFirestoreTimeout<T>(promise: Promise<T>): Promise<T> {
+  const timeoutMs = Number(process.env.FIRESTORE_READ_TIMEOUT_MS) || 1500;
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Firestore read timeout')), timeoutMs);
+    promise.then(
+      (val) => {
+        clearTimeout(timer);
+        resolve(val);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      },
+    );
+  });
+}
+
 /**
  * Reads all FAQ entries from Firestore (or memory mirror).
  */
@@ -43,7 +60,7 @@ export async function getFaqEntries(): Promise<FaqEntry[]> {
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const snapshot = await db.collection(FAQ_COLLECTION).get();
+      const snapshot = await withFirestoreTimeout(db.collection(FAQ_COLLECTION).get());
       if (!snapshot.empty) {
         const list: FaqEntry[] = [];
         snapshot.forEach((doc) => {
@@ -110,7 +127,7 @@ export async function getFaqEntryById(id: string): Promise<FaqEntry | null> {
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const doc = await db.collection(FAQ_COLLECTION).doc(id).get();
+      const doc = await withFirestoreTimeout(db.collection(FAQ_COLLECTION).doc(id).get());
       if (doc.exists) {
         const data = { ...(doc.data() as FaqEntry), id: doc.id };
         faqMemoryMap.set(id, data);
@@ -158,7 +175,7 @@ export async function getGlossaryTerms(): Promise<GlossaryTerm[]> {
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const snapshot = await db.collection(GLOSSARY_COLLECTION).get();
+      const snapshot = await withFirestoreTimeout(db.collection(GLOSSARY_COLLECTION).get());
       if (!snapshot.empty) {
         const list: GlossaryTerm[] = [];
         snapshot.forEach((doc) => {

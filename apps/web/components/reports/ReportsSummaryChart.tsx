@@ -108,10 +108,10 @@ export function ReportsSummaryChart({
                 data-testid={`chart-bar-group-${pt.label.toLowerCase()}`}
               >
                 {/* Tooltip on hover */}
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none absolute -top-10 z-30 flex flex-col items-center whitespace-nowrap rounded-md bg-elevated px-2 py-1 text-[10px] text-text-primary shadow-elevation-modal border border-border-subtle">
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none absolute -top-10 z-30 flex flex-col items-center whitespace-nowrap rounded-none bg-popover px-2 py-1 text-[10px] text-popover-foreground shadow-md border border-border">
                   <span className="font-semibold">{pt.label}:</span>
-                  <span className="text-accent">NOI: {formatCurrency(pt.noi, { compact: true })}</span>
-                  <span className={isCfbtNegative ? 'text-danger' : 'text-text-secondary'}>
+                  <span className="text-foreground">NOI: {formatCurrency(pt.noi, { compact: true })}</span>
+                  <span className={isCfbtNegative ? 'text-destructive' : 'text-muted-foreground'}>
                     CFBT: {formatCurrency(pt.cfbt, { compact: true, negativeParens: true })}
                   </span>
                 </div>
@@ -120,7 +120,7 @@ export function ReportsSummaryChart({
                 <div className="relative w-full h-full flex items-end justify-center gap-0.5 sm:gap-1">
                   {/* NOI Bar (always positive in viable CRE) */}
                   <div
-                    className="w-full max-w-[14px] sm:max-w-[20px] rounded-t-xs bg-accent transition-all duration-300 hover:brightness-110"
+                    className="w-full max-w-[14px] sm:max-w-[20px] rounded-none bg-primary transition-all duration-300 hover:brightness-110"
                     style={{
                       height: `${Math.max(2, noiHeightPct)}%`,
                       marginBottom: minVal < 0 ? `${zeroPct}%` : '0',

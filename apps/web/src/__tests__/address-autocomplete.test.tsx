@@ -34,7 +34,7 @@ describe('AddressSearch Autocomplete & Accessibility Suite', () => {
 
     expect(html).toContain('custom-test-class');
     expect(html).toContain('placeholder="Search any street address');
-    expect(html).toContain('focus:border-neutral-400');
+    expect(html).toContain('focus:border-ring');
     expect(html).not.toContain('#00DD94');
   });
 

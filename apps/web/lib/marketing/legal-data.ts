@@ -106,29 +106,60 @@ export const TERMS_SECTIONS: LegalSection[] = [
   },
 ];
 
-export const COOKIES_SECTIONS: LegalSection[] = [
+export const COOKIE_SECTIONS: LegalSection[] = [
   {
-    heading: 'What Are Cookies',
-    body: 'Cookies are small text files stored on your device when you visit a website. They help us recognize your browser, remember your preferences, and keep your session secure.',
+    heading: '1. How PaperWorking Uses Cookies & Local Storage',
+    body: 'PaperWorking uses strictly necessary first-party HTTP-only cookies and browser local storage to authenticate sessions, enforce multi-tenant workspace boundaries, protect against Cross-Site Request Forgery (CSRF), and preserve underwriting calculator preferences. We do not use third-party behavioral advertising cookies or cross-site tracking pixels.',
   },
   {
-    heading: 'How We Use Cookies',
-    body: 'Essential cookies are required for authentication, session management, and security — including `__session`, `__acct`, and `__sub`. Preference cookies remember display settings and dashboard layout. Analytics cookies help us improve navigation and feature prioritization; they are optional and disabled by default in the migration preview.',
+    heading: '2. Essential First-Party Cookies (Strictly Necessary)',
+    body: 'The following first-party cookies are required for core platform authentication and security:',
+    subsections: [
+      {
+        title: '__session (Authentication & Session Integrity)',
+        content:
+          'An HTTP-only, cryptographically signed session token issued upon sign-in via Firebase Authentication and verified by PaperWorking edge middleware. Used to authenticate API requests and dashboard navigation.',
+      },
+      {
+        title: '__acct (Account Role & Workspace Routing)',
+        content:
+          'Stores the authenticated account role (Investor, Investment Team, Vendor, or Admin) so edge middleware can route requests to the appropriate workspace shell without unnecessary database round-trips.',
+      },
+      {
+        title: '__sub (Subscription & Trial Entitlement State)',
+        content:
+          'Tracks active subscription or 14-day free trial status so workspace features and marketplace permissions are enforced consistently across client and server routes.',
+      },
+    ],
   },
   {
-    heading: 'Third-Party Cookies',
-    body: 'PaperWorking uses Firebase Authentication and Stripe for payment processing. These services may set their own cookies to maintain secure sessions. We only integrate with providers that meet our security and privacy standards.',
+    heading: '3. Functional & Workspace Preference Storage',
+    body: 'PaperWorking uses first-party browser storage (localStorage and sessionStorage) to keep your workspace responsive and prevent data loss during active sessions. This includes saving in-progress Deal Calculator underwriting inputs, remembering your selected theme or table/grid view mode in the Deals Marketplace, and storing recently viewed projects.',
   },
   {
-    heading: 'Managing Your Preferences',
-    body: 'Most browsers let you block or delete cookies through their settings menu. Disabling essential cookies will prevent you from logging into PaperWorking.',
+    heading: '4. Third-Party Security & Payment Tokens',
+    body: 'When you interact with specific security or payment workflows, trusted service providers may set scoped functional cookies or tokens:',
+    subsections: [
+      {
+        title: 'Cloudflare Turnstile (Bot & Abuse Defense)',
+        content:
+          'Public forms such as Support Call-Back requests and authentication endpoints use Cloudflare Turnstile challenge tokens to block automated abuse without invasive tracking.',
+      },
+      {
+        title: 'Stripe, Inc. (Checkout & Billing Portal)',
+        content:
+          'When you start a subscription checkout or open the billing portal, Stripe sets security cookies necessary to process PCI-DSS compliant payments and detect payment fraud.',
+      },
+      {
+        title: 'Google Maps & Places (Address Autocomplete)',
+        content:
+          'Address lookup requests use short-lived session tokens to group autocomplete keystrokes with final place detail resolution.',
+      },
+    ],
+  },
+  {
+    heading: '5. Managing & Clearing Cookies',
+    body: 'Signing out of PaperWorking immediately clears your active __session, __acct, and __sub cookies. You can also clear or block cookies at any time through your browser settings. Please note that blocking strictly necessary first-party cookies will prevent you from signing in to the PaperWorking dashboard.',
   },
 ];
 
-export const ABOUT_PRINCIPLES = [
-  'Built for investors, not adapted for them. The four-phase lifecycle is the product\'s spine, not a feature.',
-  'Numbers over adjectives. We publish the 33 KPIs and their formulas; if a metric matters, you can check the math.',
-  'Your data is yours. Export everything, anytime. Cancel from Settings. No hostage negotiations.',
-  'Honest about what we do. PaperWorking tracks interest; it never moves money. It produces reports for your CPA; it doesn\'t file your taxes. It\'s project management software, not investment advice.',
-  'Community compounds. Tools bring investors here; the network of deals and professionals keeps them. Come for the tools, stay for the community.',
-] as const;

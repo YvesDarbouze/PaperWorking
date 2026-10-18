@@ -17,15 +17,28 @@ export function parseSettingsSection(sectionPath: string[] = []): {
 }
 
 export function buildProfileResponse(user: Record<string, unknown>): Record<string, unknown> {
+  const resolvedAvatar = (user.avatarUrl as string) || (user.avatar as string) || '';
   return {
     name: user.displayName || 'User',
+    displayName: user.displayName || 'User',
     email: user.email || '',
-    avatar: user.avatar || '',
+    avatar: resolvedAvatar,
+    avatarUrl: resolvedAvatar,
     role: user.role || 'Lead Investor',
     timezone: user.timezone || 'America/New_York',
+    locale: user.locale || 'en-US',
     phone: user.phone || '',
-    companyName: user.companyName || '',
+    companyName: user.companyName || user.businessName || '',
+    businessName: user.businessName || user.companyName || '',
+    headline: user.headline || '',
+    publicBio: user.publicBio || '',
+    location: user.location || '',
+    websiteUrl: user.websiteUrl || '',
+    strategies: Array.isArray(user.strategies) ? user.strategies : [],
+    isVerified: user.isVerified !== false,
+    publicProfile: user.publicProfile !== false,
     twoFaEnabled: !!user.twoFaEnabled,
+    vendorSkills: Array.isArray(user.vendorSkills) ? user.vendorSkills : [],
   };
 }
 
@@ -106,21 +119,39 @@ export function validateBillingContactUpdate(body: {
   };
 }
 
-export function buildProfileUpdate(body: {
-  firstName?: unknown;
-  lastName?: unknown;
-  phone?: unknown;
-  companyName?: unknown;
-  avatar?: unknown;
-}): { displayName: string; phone: string; companyName: string; avatar?: unknown } {
+export function buildProfileUpdate(
+  body: Record<string, unknown>,
+): Record<string, unknown> {
   const firstName = typeof body.firstName === 'string' ? body.firstName : '';
   const lastName = typeof body.lastName === 'string' ? body.lastName : '';
-  const displayName = `${firstName} ${lastName}`.trim();
+  const derivedDisplayName = `${firstName} ${lastName}`.trim();
+  const displayName =
+    typeof body.displayName === 'string' && body.displayName.trim()
+      ? body.displayName.trim()
+      : derivedDisplayName || undefined;
+  const resolvedAvatar = body.avatar ?? body.avatarUrl;
+  const resolvedCompanyName =
+    typeof body.companyName === 'string'
+      ? body.companyName
+      : typeof body.businessName === 'string'
+        ? body.businessName
+        : undefined;
+
   return {
-    displayName,
-    phone: typeof body.phone === 'string' ? body.phone : '',
-    companyName: typeof body.companyName === 'string' ? body.companyName : '',
-    avatar: body.avatar,
+    ...body,
+    ...(displayName ? { displayName } : {}),
+    ...(typeof body.phone === 'string' ? { phone: body.phone } : {}),
+    ...(resolvedCompanyName !== undefined
+      ? { companyName: resolvedCompanyName, businessName: resolvedCompanyName }
+      : {}),
+    ...(typeof body.headline === 'string' ? { headline: body.headline.trim() } : {}),
+    ...(typeof body.publicBio === 'string' ? { publicBio: body.publicBio.trim() } : {}),
+    ...(typeof body.location === 'string' ? { location: body.location.trim() } : {}),
+    ...(typeof body.websiteUrl === 'string' ? { websiteUrl: body.websiteUrl.trim() } : {}),
+    ...(Array.isArray(body.strategies) ? { strategies: body.strategies } : {}),
+    ...(typeof body.locale === 'string' ? { locale: body.locale } : {}),
+    ...(Array.isArray(body.vendorSkills) ? { vendorSkills: body.vendorSkills } : {}),
+    ...(resolvedAvatar !== undefined ? { avatar: resolvedAvatar, avatarUrl: resolvedAvatar } : {}),
   };
 }
 
@@ -152,17 +183,40 @@ export function buildSecuritySettingsResponse(org: Record<string, unknown>): Rec
 export function buildDataPrivacyExportAttachment(
   orgId: string,
   exportId: string,
+  user: Record<string, unknown> = {},
+  org: Record<string, unknown> = {},
 ): { content: string; filename: string } {
   const content = JSON.stringify(
     {
       workspaceId: orgId,
+      exportId,
       exportedAt: new Date().toISOString(),
+      account: {
+        displayName: user.displayName || 'Apex Capital Investor',
+        email: user.email || 'alex@apexcap.internal',
+        companyName: user.companyName || org.name || 'Apex Capital Partners',
+        timezone: user.timezone || org.timezone || 'America/Chicago',
+        locale: user.locale || 'en-US',
+        vendorSkills: Array.isArray(user.vendorSkills) ? user.vendorSkills : [],
+      },
+      workspace: {
+        name: org.name || user.companyName || 'Apex Capital Partners LLC',
+        timezone: org.timezone || user.timezone || 'America/Chicago',
+        targetCapRate: org.targetCapRate ?? 5.5,
+        targetCoc: org.targetCoc ?? 8.0,
+        minDscr: org.minDscr ?? 1.25,
+      },
       data: {
         properties: [
           { id: '1', address: '123 Sage Accent Way', value: '$450,000' },
           { id: '2', address: '742 Muted Green Blvd', value: '$890,000' },
         ],
-        members: [{ email: 'admin@paperworking.com', role: 'Admin' }],
+        members: [
+          {
+            email: String(user.email || 'admin@paperworking.com'),
+            role: String(user.role || 'Admin'),
+          },
+        ],
       },
     },
     null,

@@ -216,4 +216,66 @@ describe('Pepper AI Chat & Firebase AI Logic Integration (Item 4.5)', () => {
       expect(isFirebaseAiConfigured()).toBe(false);
     });
   });
+
+  describe('6. Bug_74: Operational & REIL Phase Queries Never Return Irrelevant Pricing Tiers', () => {
+    it('returns the Hold phase knowledge base answer for "How does the Hold phase track rehabilitation budgets and holding costs in real time?" instead of pricing tiers', async () => {
+      const query = 'How does the Hold phase track rehabilitation budgets and holding costs in real time?';
+      const req = new NextRequest('http://localhost:3000/api/support/pepper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: query }),
+      });
+
+      const res = await postPepper(req);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+
+      expect(text).toContain('Holding Cost Clock');
+      expect(text).toContain('Milestone-based draw schedules');
+      expect(text).toContain('budget-vs-actual variance');
+      expect(text).not.toContain('three transparent pricing plans');
+      expect(text).not.toContain('$59/mo');
+      expect(text).not.toContain('$99/mo');
+      expect(text).not.toContain('$39/mo');
+    });
+
+    it('handles paraphrased Hold, Fund, Acquisition, Exit, and operational cost queries without triggering pricing tiers', async () => {
+      const queries = [
+        {
+          q: 'How does the Hold phase track rehab budgets and holding costs?',
+          expected: 'Holding Cost Clock',
+        },
+        {
+          q: 'What happens in the Fund phase to protect earnest money and documents?',
+          expected: 'transaction vault',
+        },
+        {
+          q: 'How does the Acquisition phase streamline deal sourcing and underwriting?',
+          expected: 'Deal Calculator',
+        },
+        {
+          q: 'What disposition strategies are supported in the Exit phase?',
+          expected: '1031 exchanges',
+        },
+        {
+          q: 'What is Cap Rate on Cost?',
+          expected: 'Cap Rate on Cost',
+        },
+      ];
+
+      for (const item of queries) {
+        const req = new NextRequest('http://localhost:3000/api/support/pepper', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: item.q }),
+        });
+        const res = await postPepper(req);
+        expect(res.status).toBe(200);
+        const text = await res.text();
+        expect(text).toContain(item.expected);
+        expect(text).not.toContain('three transparent pricing plans');
+      }
+    });
+  });
 });
+

@@ -11,17 +11,20 @@ export interface BuildInfo {
 }
 
 export function resolveBuildSha(
-  env: Record<string, string | undefined> = process.env,
+  env?: Record<string, string | undefined>,
   execGit?: () => string
 ): string {
-  if (env.NEXT_PUBLIC_BUILD_SHA && env.NEXT_PUBLIC_BUILD_SHA.trim() !== '') {
-    return env.NEXT_PUBLIC_BUILD_SHA.trim();
+  const targetEnv = env ?? process.env;
+  const publicBuildSha =
+    env === undefined ? process.env.NEXT_PUBLIC_BUILD_SHA : targetEnv.NEXT_PUBLIC_BUILD_SHA;
+  if (publicBuildSha && publicBuildSha.trim() !== '') {
+    return publicBuildSha.trim();
   }
-  if (env.GITHUB_SHA && env.GITHUB_SHA.trim() !== '') {
-    return env.GITHUB_SHA.trim();
+  if (targetEnv.GITHUB_SHA && targetEnv.GITHUB_SHA.trim() !== '') {
+    return targetEnv.GITHUB_SHA.trim();
   }
-  if (env.COMMIT_SHA && env.COMMIT_SHA.trim() !== '') {
-    return env.COMMIT_SHA.trim();
+  if (targetEnv.COMMIT_SHA && targetEnv.COMMIT_SHA.trim() !== '') {
+    return targetEnv.COMMIT_SHA.trim();
   }
   if (typeof window === 'undefined') {
     if (execGit) {
@@ -49,13 +52,16 @@ export function resolveBuildSha(
 }
 
 export function resolveBuiltAt(
-  env: Record<string, string | undefined> = process.env
+  env?: Record<string, string | undefined>
 ): string {
-  if (env.NEXT_PUBLIC_BUILT_AT && env.NEXT_PUBLIC_BUILT_AT.trim() !== '') {
-    return env.NEXT_PUBLIC_BUILT_AT.trim();
+  const targetEnv = env ?? process.env;
+  const publicBuiltAt =
+    env === undefined ? process.env.NEXT_PUBLIC_BUILT_AT : targetEnv.NEXT_PUBLIC_BUILT_AT;
+  if (publicBuiltAt && publicBuiltAt.trim() !== '') {
+    return publicBuiltAt.trim();
   }
-  if (env.BUILD_TIME && env.BUILD_TIME.trim() !== '') {
-    return env.BUILD_TIME.trim();
+  if (targetEnv.BUILD_TIME && targetEnv.BUILD_TIME.trim() !== '') {
+    return targetEnv.BUILD_TIME.trim();
   }
   return new Date().toISOString();
 }

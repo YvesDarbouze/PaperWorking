@@ -24,7 +24,7 @@ const DEFAULT_FOLLOWERS: ReadonlyArray<FollowerItem> = [
 export default function MarketplaceSocialProfileCard({
   displayName = 'Avery Stone',
   company = 'Stonebridge Capital',
-  roleLabel = 'Lead Investor',
+  roleLabel = 'Lead Principal',
   followersCount = 24,
   followingCount = 8,
   followers = DEFAULT_FOLLOWERS,
@@ -33,6 +33,7 @@ export default function MarketplaceSocialProfileCard({
 }: MarketplaceSocialProfileCardProps) {
   const [isFollowersModalOpen, setIsFollowersModalOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState<FollowerItem | null>(null);
+  const [modalInitialTab, setModalInitialTab] = useState<'followers' | 'following'>('followers');
 
   const initials =
     displayName
@@ -52,33 +53,45 @@ export default function MarketplaceSocialProfileCard({
         >
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:items-center">
             {/* Identity & Role */}
-            <div className="flex items-center justify-between gap-4 lg:col-span-5">
+            <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center lg:col-span-5 lg:flex-col lg:items-stretch xl:flex-row xl:items-center">
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-sm font-bold text-foreground">
                   {initials}
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Profile
                     </span>
-                    <span className="inline-flex items-center rounded-none border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground">
+                    <span
+                      data-testid="social-profile-role-badge"
+                      className="inline-flex max-w-full items-center truncate rounded-none border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground"
+                    >
                       {roleLabel}
                     </span>
                   </div>
-                  <h2 className="mt-0.5 truncate text-base font-bold text-foreground">
+                  <h2
+                    data-testid="social-profile-display-name"
+                    className="mt-0.5 break-words text-base font-bold text-foreground"
+                  >
                     {displayName}
                   </h2>
-                  <p className="truncate text-xs text-muted-foreground">{company}</p>
+                  <p
+                    data-testid="social-profile-company"
+                    className="break-words text-xs text-muted-foreground"
+                  >
+                    {company}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="grid w-full grid-cols-2 gap-2 shrink-0 sm:flex sm:w-auto sm:items-center lg:grid lg:w-full lg:grid-cols-2 xl:flex xl:w-auto">
                 <button
                   type="button"
                   data-testid="followers-count-trigger"
                   onClick={() => {
                     setSelectedFollower(null);
+                    setModalInitialTab('followers');
                     setIsFollowersModalOpen(true);
                   }}
                   className="group flex min-h-[44px] flex-col items-center justify-center rounded-none border border-border bg-muted/20 px-3.5 py-1.5 text-left transition hover:border-foreground/40 hover:bg-muted/50 touch-target"
@@ -92,8 +105,10 @@ export default function MarketplaceSocialProfileCard({
                 </button>
                 <button
                   type="button"
+                  data-testid="following-count-trigger"
                   onClick={() => {
                     setSelectedFollower(null);
+                    setModalInitialTab('following');
                     setIsFollowersModalOpen(true);
                   }}
                   className="group flex min-h-[44px] flex-col items-center justify-center rounded-none border border-border bg-muted/20 px-3.5 py-1.5 text-left transition hover:border-foreground/40 hover:bg-muted/50 touch-target"
@@ -110,12 +125,13 @@ export default function MarketplaceSocialProfileCard({
 
             {/* Social Connections Preview */}
             <div className="border-t border-border pt-4 lg:col-span-7 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-              <div className="mb-2.5 flex items-center justify-between gap-2">
+              <div className="mb-2.5 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
                 <button
                   type="button"
                   data-testid="followers-heading-trigger"
                   onClick={() => {
                     setSelectedFollower(null);
+                    setModalInitialTab('followers');
                     setIsFollowersModalOpen(true);
                   }}
                   className="inline-flex min-h-[44px] items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground touch-target"
@@ -139,11 +155,12 @@ export default function MarketplaceSocialProfileCard({
                       data-testid={`follower-row-${follower.id}`}
                       onClick={() => {
                         setSelectedFollower(follower);
+                        setModalInitialTab('followers');
                         setIsFollowersModalOpen(true);
                       }}
                       className="flex min-h-[44px] flex-col justify-between rounded-none border border-border bg-background/60 px-3 py-2 text-left text-xs transition hover:border-foreground/30 hover:bg-muted/40 touch-target"
                     >
-                      <span className="truncate font-semibold text-foreground">
+                      <span className="break-words font-semibold text-foreground">
                         {follower.name}
                       </span>
                       {follower.dealName && (
@@ -165,6 +182,7 @@ export default function MarketplaceSocialProfileCard({
           followers={followers}
           totalCount={followersCount}
           initialSelectedFollower={selectedFollower}
+          initialTab={modalInitialTab}
         />
       </>
     );
@@ -188,9 +206,19 @@ export default function MarketplaceSocialProfileCard({
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none border border-border bg-muted text-sm font-bold text-foreground">
               {initials}
             </div>
-            <div className="min-w-0">
-              <h2 className="truncate text-base font-bold text-foreground">{displayName}</h2>
-              <p className="truncate text-xs text-muted-foreground">{company}</p>
+            <div className="min-w-0 flex-1">
+              <h2
+                data-testid="social-profile-display-name"
+                className="break-words text-base font-bold text-foreground"
+              >
+                {displayName}
+              </h2>
+              <p
+                data-testid="social-profile-company"
+                className="break-words text-xs text-muted-foreground"
+              >
+                {company}
+              </p>
             </div>
           </div>
 
@@ -210,6 +238,7 @@ export default function MarketplaceSocialProfileCard({
               data-testid="followers-count-trigger"
               onClick={() => {
                 setSelectedFollower(null);
+                setModalInitialTab('followers');
                 setIsFollowersModalOpen(true);
               }}
               className="flex min-h-[44px] flex-col items-start justify-center rounded-none border border-border bg-muted/20 px-3 py-2 text-left transition hover:border-foreground/30 hover:bg-muted/40 touch-target"
@@ -223,8 +252,10 @@ export default function MarketplaceSocialProfileCard({
             </button>
             <button
               type="button"
+              data-testid="following-count-trigger"
               onClick={() => {
                 setSelectedFollower(null);
+                setModalInitialTab('following');
                 setIsFollowersModalOpen(true);
               }}
               className="flex min-h-[44px] flex-col items-start justify-center rounded-none border border-border bg-muted/20 px-3 py-2 text-left transition hover:border-foreground/30 hover:bg-muted/40 touch-target"
@@ -246,6 +277,7 @@ export default function MarketplaceSocialProfileCard({
                 data-testid="followers-heading-trigger"
                 onClick={() => {
                   setSelectedFollower(null);
+                  setModalInitialTab('followers');
                   setIsFollowersModalOpen(true);
                 }}
                 className="inline-flex min-h-[44px] items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition hover:text-foreground touch-target"
@@ -267,11 +299,12 @@ export default function MarketplaceSocialProfileCard({
                       data-testid={`follower-row-${follower.id}`}
                       onClick={() => {
                         setSelectedFollower(follower);
+                        setModalInitialTab('followers');
                         setIsFollowersModalOpen(true);
                       }}
                       className="flex w-full min-h-[44px] items-center justify-between rounded-none border border-border bg-card px-3 py-2 text-left text-xs transition hover:border-foreground/30 hover:bg-muted/40 touch-target"
                     >
-                      <span className="truncate font-semibold text-foreground">
+                      <span className="break-words font-semibold text-foreground">
                         {follower.name}
                       </span>
                       {follower.dealName && (
@@ -294,6 +327,7 @@ export default function MarketplaceSocialProfileCard({
         followers={followers}
         totalCount={followersCount}
         initialSelectedFollower={selectedFollower}
+        initialTab={modalInitialTab}
       />
     </>
   );

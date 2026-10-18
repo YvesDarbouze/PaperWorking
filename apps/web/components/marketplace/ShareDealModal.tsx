@@ -170,20 +170,31 @@ export default function ShareDealModal({
     }
 
     try {
-      const res = await fetch(`/api/deals/${dealId || dealSlug}/share`, {
+      const res = await fetch(`/api/deals/${dealId || dealSlug || 'deal-mp-1'}/share`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           channel,
           recipients,
           message: note,
           includeBusinessCard: true,
+          dealAddress,
+          dealTitle,
+          dealSlug,
+          purchasePrice,
+          targetIrr,
+          calculatorResults,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to share deal');
+        const errorMsg =
+          typeof data.error === 'string'
+            ? data.error
+            : data.error?.message || data.message || 'Failed to share deal';
+        throw new Error(errorMsg);
       }
 
       setSuccessResult({

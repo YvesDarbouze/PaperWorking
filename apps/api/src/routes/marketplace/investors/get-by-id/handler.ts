@@ -53,18 +53,19 @@ export async function handleMarketplaceInvestorByIdGet(
       return jsonResponse(404, { error: 'Not found' });
     }
 
-    const profile = mapUserDocToInvestorProfile(userDoc!.uid, data);
-    const rawProjects = deps.listDeals ? await deps.listDeals(id) : [];
+    const resolvedUid = userDoc!.uid || id;
+    const profile = mapUserDocToInvestorProfile(resolvedUid, data);
+    const rawProjects = deps.listDeals ? await deps.listDeals(resolvedUid) : [];
     const deals = publicDealsFor(rawProjects);
     profile.dealCount = deals.length;
 
-    const activity = deps.listActivity ? await deps.listActivity(id) : [];
+    const activity = deps.listActivity ? await deps.listActivity(resolvedUid) : [];
 
     let isFollowing = false;
     if (deps.tryAuthenticate && deps.isFollowing) {
       const auth = await deps.tryAuthenticate();
       if (auth) {
-        isFollowing = await deps.isFollowing(auth.uid, id);
+        isFollowing = await deps.isFollowing(auth.uid, resolvedUid);
       }
     }
 

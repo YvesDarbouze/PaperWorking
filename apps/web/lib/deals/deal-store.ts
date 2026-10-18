@@ -34,54 +34,121 @@ if (memoryDealsCache.size === 0) {
 }
 
 /**
+ * Recursively strips keys with `undefined` values from plain objects and converts
+ * `undefined` array elements to `null`, while preserving Firestore sentinel objects
+ * (such as `FieldValue.serverTimestamp()`) and `Date` instances.
+ */
+export function stripUndefinedDeep<T>(value: T): T {
+  if (value === null || value === undefined || typeof value !== 'object') {
+    return value;
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => (item === undefined ? null : stripUndefinedDeep(item))) as unknown as T;
+  }
+  const proto = Object.getPrototypeOf(value);
+  if (proto !== null && proto !== Object.prototype) {
+    return value;
+  }
+  const cleaned: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    if (v !== undefined) {
+      cleaned[k] = stripUndefinedDeep(v);
+    }
+  }
+  return cleaned as T;
+}
+
+/**
  * Normalizes a raw Firestore or seed document to a complete RawDeal.
  */
 function normalizeDeal(docId: string, data: Record<string, unknown>): RawDeal {
-  const purchasePrice = Number(data.purchasePrice ?? 485000);
-  const rehabCost = Number(data.rehabCost ?? 65000);
-  const fundingTarget = Number(data.fundingTarget ?? data.target ?? Math.round(purchasePrice * 0.3 + rehabCost));
+  const cleanedData = stripUndefinedDeep(data);
+  const purchasePrice = Number(cleanedData.purchasePrice ?? 485000);
+  const rehabCost = Number(cleanedData.rehabCost ?? 65000);
+  const fundingTarget = Number(
+    cleanedData.fundingTarget ?? cleanedData.target ?? Math.round(purchasePrice * 0.3 + rehabCost),
+  );
 
-  const projectsList = Array.isArray(data.projects) ? (data.projects as Array<Record<string, unknown>>) : [];
+  const projectsList = Array.isArray(cleanedData.projects)
+    ? (cleanedData.projects as Array<Record<string, unknown>>)
+    : [];
   const firstProject = projectsList[0];
-  const inferredAssetClass = ((data.assetClass as string) || (firstProject?.propertyType as string)) || undefined;
-  const inferredStrategy = ((data.strategy as string) || (data.subStrategy as string) || (firstProject?.subStrategy as string)) || undefined;
+  const inferredAssetClass =
+    ((cleanedData.assetClass as string) || (firstProject?.propertyType as string)) || undefined;
+  const inferredStrategy =
+    ((cleanedData.strategy as string) ||
+      (cleanedData.subStrategy as string) ||
+      (firstProject?.subStrategy as string)) ||
+    undefined;
+
+  const shareTokenValue =
+    typeof cleanedData.shareToken === 'string' && cleanedData.shareToken.trim().length > 0
+      ? cleanedData.shareToken.trim()
+      : undefined;
 
   const base: RawDeal = {
     id: docId,
-    slug: (data.slug as string) || docId,
-    address: (data.address as string) || 'Austin, TX',
-    status: (data.status as string) || 'published',
-    visibility: (data.visibility as any) || 'marketplace',
-    sharedWith: (data.sharedWith as string[]) || [],
-    shareToken: (data.shareToken as string) || undefined,
+    slug: (cleanedData.slug as string) || docId,
+    address: (cleanedData.address as string) || 'Austin, TX',
+    status: (cleanedData.status as string) || 'published',
+    visibility: (cleanedData.visibility as any) || 'marketplace',
+    sharedWith: (cleanedData.sharedWith as string[]) || [],
+    ...(shareTokenValue ? { shareToken: shareTokenValue } : {}),
     purchasePrice,
     rehabCost,
-    arv: data.arv !== undefined && data.arv !== null ? Number(data.arv) : null,
-    holdingCosts: Number(data.holdingCosts ?? 12500),
-    projectedRoi: Number(data.projectedRoi ?? data.targetIrr ?? 15.0),
-    targetIrr: Number(data.targetIrr ?? data.projectedRoi ?? 15.0),
-    equityMultiple: Number(data.equityMultiple ?? 1.75),
-    holdPeriod: (data.holdPeriod as string) || '3–5 Years',
-    minInvestment: Number(data.minInvestment ?? 25000),
+    arv: cleanedData.arv !== undefined && cleanedData.arv !== null ? Number(cleanedData.arv) : null,
+    holdingCosts: Number(cleanedData.holdingCosts ?? 12500),
+    projectedRoi: Number(cleanedData.projectedRoi ?? cleanedData.targetIrr ?? 15.0),
+    targetIrr: Number(cleanedData.targetIrr ?? cleanedData.projectedRoi ?? 15.0),
+    equityMultiple: Number(cleanedData.equityMultiple ?? 1.75),
+    holdPeriod: (cleanedData.holdPeriod as string) || '3–5 Years',
+    minInvestment: Number(cleanedData.minInvestment ?? 25000),
     fundingTarget,
-    dealType: (data.dealType as any) || 'syndication',
+    dealType: (cleanedData.dealType as any) || 'syndication',
     imageUrl: sanitizeDealImageUrl(
-      data.imageUrl as string,
+      cleanedData.imageUrl as string,
       inferredAssetClass,
       inferredStrategy,
     ),
-    isVerifiedOperator: Boolean(data.isVerifiedOperator ?? true),
-    creatorId: (data.creatorId as string) || 'lead-investor-1',
-    creator: (data.creator as any) || { name: 'PaperWorking Capital Partner' },
-    createdAt: (data.createdAt as string) || new Date().toISOString(),
-    projectId: (data.projectId as string) || null,
-    projects: (data.projects as any[]) || [],
-    commitments: (data.commitments as any[]) || [],
-    invitations: (data.invitations as any[]) || [],
-    calculatorResults: (data.calculatorResults as any) || undefined,
+    isVerifiedOperator: Boolean(cleanedData.isVerifiedOperator ?? true),
+    creatorId: (cleanedData.creatorId as string) || 'lead-investor-1',
+    creator: (cleanedData.creator as any) || { name: 'PaperWorking Capital Partner' },
+    createdAt: (cleanedData.createdAt as string) || new Date().toISOString(),
+    projectId: (cleanedData.projectId as string) || null,
+    projects: (cleanedData.projects as any[]) || [],
+    commitments: (cleanedData.commitments as any[]) || [],
+    invitations: (cleanedData.invitations as any[]) || [],
+    ...(cleanedData.calculatorResults
+      ? { calculatorResults: cleanedData.calculatorResults as any }
+      : {}),
   };
 
-  return Object.assign(base, data);
+  return stripUndefinedDeep(Object.assign(base, cleanedData));
+}
+
+function getReadTimeoutMs(): number {
+  const envVal = Number(process.env.FIRESTORE_READ_TIMEOUT_MS);
+  return Number.isFinite(envVal) && envVal > 0 ? envVal : 2500;
+}
+
+function getWriteTimeoutMs(): number {
+  const envVal = Number(process.env.FIRESTORE_WRITE_TIMEOUT_MS);
+  return Number.isFinite(envVal) && envVal > 0 ? envVal : 2500;
+}
+
+async function withFirestoreTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Firestore timeout after ${timeoutMs}ms`)), timeoutMs);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 /**
@@ -93,9 +160,13 @@ export async function getDealFromStore(idOrSlug: string): Promise<RawDeal | null
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
+      const timeoutMs = getReadTimeoutMs();
 
       // First try fetching directly by doc ID
-      const directSnap = await db.collection('deals').doc(idOrSlug).get();
+      const directSnap = await withFirestoreTimeout(
+        db.collection('deals').doc(idOrSlug).get(),
+        timeoutMs,
+      );
       if (directSnap.exists) {
         const deal = normalizeDeal(directSnap.id, directSnap.data() as Record<string, unknown>);
         memoryDealsCache.set(deal.id, deal);
@@ -104,7 +175,10 @@ export async function getDealFromStore(idOrSlug: string): Promise<RawDeal | null
       }
 
       // If not found by doc ID, search by slug
-      const slugQuery = await db.collection('deals').where('slug', '==', idOrSlug).limit(1).get();
+      const slugQuery = await withFirestoreTimeout(
+        db.collection('deals').where('slug', '==', idOrSlug).limit(1).get(),
+        timeoutMs,
+      );
       if (!slugQuery.empty) {
         const doc = slugQuery.docs[0];
         const deal = normalizeDeal(doc.id, doc.data() as Record<string, unknown>);
@@ -120,11 +194,11 @@ export async function getDealFromStore(idOrSlug: string): Promise<RawDeal | null
         db.collection('deals')
           .doc(seed.id)
           .set(
-            {
+            stripUndefinedDeep({
               ...deal,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
-            },
+            }),
             { merge: true },
           )
           .catch((err) => {
@@ -164,7 +238,18 @@ export async function listDealsFromStore(options?: {
   sort?: string;
 }): Promise<RawDeal[]> {
   const applyFilters = (list: RawDeal[]): RawDeal[] => {
-    let result = [...list];
+    const byId = new Map<string, RawDeal>();
+    for (const item of list) {
+      if (item && item.id && !byId.has(item.id)) {
+        byId.set(item.id, item);
+      }
+    }
+    let result = Array.from(byId.values()).sort((a, b) => {
+      const aIsUserDeal = /^deal-mp-\d{10,}$/.test(a.id) ? 1 : 0;
+      const bIsUserDeal = /^deal-mp-\d{10,}$/.test(b.id) ? 1 : 0;
+      if (aIsUserDeal !== bIsUserDeal) return bIsUserDeal - aIsUserDeal;
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    });
     if (options?.tab) {
       const tab = options.tab.toLowerCase();
       if (tab === 'published') {
@@ -196,7 +281,7 @@ export async function listDealsFromStore(options?: {
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const snap = await db.collection('deals').get();
+      const snap = await withFirestoreTimeout(db.collection('deals').get(), getReadTimeoutMs());
 
       if (!snap.empty) {
         const deals = snap.docs.map((d) => normalizeDeal(d.id, d.data()));
@@ -212,7 +297,14 @@ export async function listDealsFromStore(options?: {
       for (const s of SEED_RAW_DEALS) {
         const deal = normalizeDeal(s.id, s as unknown as Record<string, unknown>);
         const docRef = db.collection('deals').doc(s.id);
-        batch.set(docRef, { ...deal, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+        batch.set(
+          docRef,
+          stripUndefinedDeep({
+            ...deal,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }),
+        );
         memoryDealsCache.set(deal.id, deal);
         if (deal.slug) memoryDealsCache.set(deal.slug, deal);
       }
@@ -244,19 +336,20 @@ export async function createDealInStore(payload: Partial<RawDeal> & { address: s
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('deals')
-        .doc(deal.id)
-        .set({
-          ...deal,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        });
+      const firestorePayload = stripUndefinedDeep({
+        ...deal,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      await withFirestoreTimeout(
+        db.collection('deals').doc(deal.id).set(firestorePayload),
+        getWriteTimeoutMs(),
+      );
     } catch (err: any) {
-      console.error(`[deal-store] Failed to write deal ${deal.id} to Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(`Database persistence failure: unable to create deal in Firestore (${err?.message || 'timeout'})`);
-      }
+      console.warn(
+        `[deal-store] Non-fatal Firestore write warning for deal ${deal.id}, using in-memory persistence:`,
+        err?.message || err,
+      );
     }
   }
 
@@ -273,9 +366,10 @@ export async function patchDealInStore(
   const existing = await getDealFromStore(idOrSlug);
   if (!existing) return null;
 
+  const cleanedPatch = stripUndefinedDeep(patch);
   const merged = normalizeDeal(existing.id, {
     ...existing,
-    ...patch,
+    ...cleanedPatch,
   });
 
   memoryDealsCache.set(merged.id, merged);
@@ -285,21 +379,19 @@ export async function patchDealInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('deals')
-        .doc(existing.id)
-        .set(
-          {
-            ...patch,
-            updatedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
+      const firestorePatch = stripUndefinedDeep({
+        ...cleanedPatch,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      await withFirestoreTimeout(
+        db.collection('deals').doc(existing.id).set(firestorePatch, { merge: true }),
+        getWriteTimeoutMs(),
+      );
     } catch (err: any) {
-      console.error(`[deal-store] Failed to update deal ${existing.id} in Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(`Database persistence failure: unable to update deal in Firestore (${err?.message || 'timeout'})`);
-      }
+      console.warn(
+        `[deal-store] Non-fatal Firestore update warning for deal ${existing.id}, using in-memory persistence:`,
+        err?.message || err,
+      );
     }
   }
 

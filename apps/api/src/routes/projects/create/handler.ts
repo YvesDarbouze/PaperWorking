@@ -3,6 +3,7 @@ import type { RequireAuthFn } from '../../../lib/auth/auth-types.js';
 import { isAuthFailure } from '../../../lib/auth/auth-types.js';
 import {
   calculateStorageQuotaBytes,
+  formatValidationFieldErrors,
   isVendorAccount,
   phaseToCurrentPhase,
   projectCreateSchema,
@@ -64,9 +65,11 @@ export async function handleProjectsCreatePost(
 
     const validation = projectCreateSchema.safeParse(body);
     if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
       return jsonResponse(400, {
         error: 'Validation failed',
-        details: validation.error.flatten().fieldErrors,
+        message: formatValidationFieldErrors(fieldErrors),
+        details: fieldErrors,
       });
     }
 

@@ -90,6 +90,7 @@ const DOMAIN_KEYWORDS = [
   'contractor',
   'vendor',
   'rehab',
+  'rehabilitation',
   'budget',
   'holding cost',
   'draw',
@@ -114,6 +115,48 @@ const DOMAIN_KEYWORDS = [
   'email',
   'call',
   'help',
+  'plaid',
+  'bank',
+  'ledger',
+  'reclassify',
+  'liability',
+  'expense',
+  'revenue',
+  '1031',
+  'exchange',
+  'depreciation',
+  'disposition',
+  'refinance',
+  'phase gate',
+  'hurdle',
+  'override',
+  'blocked',
+  'spreadsheet',
+  'csv',
+  'import',
+  'llc',
+  'entity',
+  'vault',
+  'document',
+  'escrow',
+  'inspection',
+  'appraisal',
+  'title',
+  'closing',
+  'contract',
+  'capex',
+  'ltv',
+  'moic',
+  'equity multiple',
+  'yield',
+  'cash flow',
+  'burn',
+  'variance',
+  'milestone',
+  'invoice',
+  'lien',
+  'waiver',
+  'directory',
 ];
 
 // Jailbreak / injection detection regexes
@@ -170,43 +213,169 @@ function isAdviceSeekingQuery(text: string): boolean {
   return ADVICE_DETECTION_PATTERNS.some((pattern) => pattern.test(text));
 }
 
+const QUERY_STOPWORDS = new Set([
+  'how',
+  'does',
+  'the',
+  'what',
+  'is',
+  'are',
+  'in',
+  'on',
+  'at',
+  'to',
+  'for',
+  'of',
+  'and',
+  'or',
+  'a',
+  'an',
+  'with',
+  'by',
+  'from',
+  'can',
+  'i',
+  'my',
+  'your',
+  'do',
+  'you',
+  'it',
+  'this',
+  'that',
+  'be',
+  'as',
+]);
+
+function normalizeToken(token: string): string {
+  if (token === 'rehabilitation' || token === 'rehabbing') return 'rehab';
+  if (token.endsWith('ies') && token.length > 4) return `${token.slice(0, -3)}y`;
+  if (token.endsWith('s') && !token.endsWith('ss') && token.length > 3) return token.slice(0, -1);
+  return token;
+}
+
+function tokenizeForMatch(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 3 && !QUERY_STOPWORDS.has(t))
+    .map(normalizeToken);
+}
+
+const HIGH_SIGNAL_PHRASES = [
+  'hold phase',
+  'holding cost',
+  'rehab budget',
+  'rehabilitation budget',
+  'fund phase',
+  'acquisition phase',
+  'exit phase',
+  'earnest money',
+  'contingency deadline',
+  'deal calculator',
+  'portfolio insights',
+  'deal marketplace',
+  'schedule e',
+  'form 4797',
+  'free trial',
+  '14-day',
+  'project workspace',
+  'offline',
+  'outside collaborators',
+  'disposition strategies',
+];
+
 async function retrieveDomainContext(query: string) {
-  const lower = query.toLowerCase();
+  const lower = query.toLowerCase().trim();
   const allFaqs = await getFaqEntries();
   const allTerms = await getGlossaryTerms();
 
-  // Match FAQs if question or answer shares content with query
-  const matchedFaqs = allFaqs.filter((faq) => {
-    const qLower = faq.question.toLowerCase();
-    return (
-      lower.includes(qLower) ||
-      qLower.includes(lower) ||
-      faq.answer.toLowerCase().includes(lower)
-    );
-  });
+  const queryTokens = tokenizeForMatch(lower);
 
-  // Match Terms if query mentions the term or abbreviation
+  // Score and rank FAQs by exact match, phrase match, and normalized token overlap
+  const scoredFaqs = allFaqs
+    .map((faq) => {
+      const qLower = faq.question.toLowerCase();
+      const aLower = faq.answer.toLowerCase();
+      const combined = `${qLower} ${aLower}`;
+      let score = 0;
+
+      if (
+        lower.includes(qLower) ||
+        (lower.length >= 6 && (qLower.includes(lower) || aLower.includes(lower)))
+      ) {
+        score += 100;
+      }
+
+      for (const phrase of HIGH_SIGNAL_PHRASES) {
+        if (lower.includes(phrase) && combined.includes(phrase)) {
+          score += 20;
+        }
+      }
+
+      if (lower.includes('rehab') && lower.includes('budget') && combined.includes('budget')) {
+        score += 20;
+      }
+
+      if (lower.includes('hold phase') && faq.id === 'faq-hold') score += 35;
+      if (lower.includes('fund phase') && faq.id === 'faq-fund') score += 35;
+      if (lower.includes('acquisition phase') && faq.id === 'faq-acquisition') score += 35;
+      if (lower.includes('exit phase') && faq.id === 'faq-exit') score += 35;
+
+      const qTokens = new Set(tokenizeForMatch(qLower));
+      const aTokens = new Set(tokenizeForMatch(aLower));
+
+      for (const token of queryTokens) {
+        if (qTokens.has(token)) {
+          score += 5;
+        } else if (aTokens.has(token)) {
+          score += 1.5;
+        }
+      }
+
+      return { faq, score };
+    })
+    .filter((entry) => entry.score >= 8)
+    .sort((a, b) => b.score - a.score);
+
+  const matchedFaqs = scoredFaqs.map((entry) => entry.faq);
+
+  // Match Terms if query mentions the term or abbreviation, ranked by specificity
   const queryWords = lower.split(/[^a-z0-9_-]+/);
-  const matchedTerms = allTerms.filter((term) => {
-    const termLower = term.term.toLowerCase();
-    const simpleTerm = termLower.replace(/\s*\([^)]*\)/g, '').trim();
-    const acronymMatch = termLower.match(/\(([^)]+)\)/);
-    const acronym = acronymMatch ? acronymMatch[1].trim().toLowerCase() : '';
-    return (
-      lower.includes(termLower) ||
-      (simpleTerm.length >= 3 && lower.includes(simpleTerm)) ||
-      (acronym.length >= 2 && (queryWords.includes(acronym) || lower.includes(acronym))) ||
-      (term.id && lower.includes(term.id)) ||
-      termLower.includes(lower)
-    );
-  });
+  const matchedTerms = allTerms
+    .map((term) => {
+      const termLower = term.term.toLowerCase();
+      const simpleTerm = termLower.replace(/\s*\([^)]*\)/g, '').trim();
+      const acronymMatch = termLower.match(/\(([^)]+)\)/);
+      const acronym = acronymMatch ? acronymMatch[1].trim().toLowerCase() : '';
+      const matched =
+        lower.includes(termLower) ||
+        (simpleTerm.length >= 3 && lower.includes(simpleTerm)) ||
+        (acronym.length >= 2 && (queryWords.includes(acronym) || lower.includes(acronym))) ||
+        (term.id && lower.includes(term.id)) ||
+        (lower.length >= 4 && termLower.includes(lower));
+      if (!matched) return null;
+      let score = simpleTerm.length;
+      if (lower.includes(termLower)) score += 60;
+      else if (simpleTerm.length >= 8 && lower.includes(simpleTerm)) score += 40;
+      return { term, score };
+    })
+    .filter((item): item is { term: (typeof allTerms)[number]; score: number } => item !== null)
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.term);
 
   const matchedCopy: string[] = [];
   if (lower.includes('deal calculator') || lower.includes('calculator')) {
     matchedCopy.push(siteCopy.dealCalculatorSectionBody);
     matchedCopy.push(siteCopy.dealCalculatorSectionSub);
   }
-  if (lower.includes('reil') || lower.includes('lifecycle')) {
+  if (
+    lower.includes('reil') ||
+    lower.includes('lifecycle') ||
+    lower.includes('acquisition') ||
+    lower.includes('fund') ||
+    lower.includes('hold') ||
+    lower.includes('exit')
+  ) {
     matchedCopy.push(siteCopy.reilNarrativeLead);
     matchedCopy.push(siteCopy.reilNarrativeAcquisitionFull);
     matchedCopy.push(siteCopy.reilNarrativeFundFull);
@@ -230,6 +399,7 @@ async function retrieveDomainContext(query: string) {
     matchedCopy,
   };
 }
+
 
 import {
   streamPepperResponse,

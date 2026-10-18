@@ -4,6 +4,7 @@ export function validateVendorPortalQuoteBody(body: {
   quotedFee?: unknown;
   message?: unknown;
   status?: unknown;
+  targetStatus?: unknown;
 }): {
   ok: true;
   requestId: string;
@@ -12,9 +13,15 @@ export function validateVendorPortalQuoteBody(body: {
   quotedFee?: number;
   message?: string;
 } | { ok: false; error: string; status: number } {
-  const requestId = typeof body.requestId === 'string' ? body.requestId : '';
-  const projectId = typeof body.projectId === 'string' ? body.projectId : '';
-  const targetStatus = body.status === 'DECLINED' ? 'DECLINED' : 'QUOTED';
+  const requestId = typeof body.requestId === 'string' ? body.requestId.trim() : '';
+  const projectId =
+    typeof body.projectId === 'string' && body.projectId.trim()
+      ? body.projectId.trim()
+      : requestId
+        ? 'general-rfp'
+        : '';
+  const targetStatus =
+    body.status === 'DECLINED' || body.targetStatus === 'DECLINED' ? 'DECLINED' : 'QUOTED';
   if (!requestId || !projectId) {
     return { ok: false, error: 'Missing required fields', status: 400 };
   }
@@ -59,10 +66,23 @@ export function enrichVendorPortalRequests(
       const project = projectsMap[String(req.projectId)] || {};
       return {
         ...req,
-        dealName: project.propertyName || 'Unknown Project',
-        location: project.address || 'Unknown Location',
-        dealPhase: project.status || 'Sourcing',
-        investor: project.leadEmail || 'Lead Investor',
+        dealName:
+          project.propertyName ||
+          (typeof req.projectLabel === 'string' && req.projectLabel.trim()) ||
+          (typeof req.dealName === 'string' && req.dealName.trim()) ||
+          'General RFP',
+        location:
+          project.address ||
+          (typeof req.location === 'string' && req.location.trim()) ||
+          'Austin, TX',
+        dealPhase:
+          project.status ||
+          (typeof req.dealPhase === 'string' && req.dealPhase.trim()) ||
+          'Sourcing',
+        investor:
+          project.leadEmail ||
+          (typeof req.investor === 'string' && req.investor.trim()) ||
+          'Lead Investor',
         actionItems: project.actionItems || [],
       } as Record<string, unknown>;
     })
@@ -71,3 +91,4 @@ export function enrichVendorPortalRequests(
         new Date(String(b.requestedAt)).getTime() - new Date(String(a.requestedAt)).getTime(),
     );
 }
+

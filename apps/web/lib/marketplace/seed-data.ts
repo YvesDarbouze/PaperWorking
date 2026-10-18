@@ -792,7 +792,7 @@ export const SEED_MARKETPLACE_VENDORS: Array<{
   },
 ];
 
-export const SEED_INVESTOR_PROFILES: Array<{ uid: string; data: Record<string, unknown> }> = [
+const INITIAL_SEED_INVESTOR_PROFILES: Array<{ uid: string; data: Record<string, unknown> }> = [
   {
     uid: 'inv-1',
     data: {
@@ -836,6 +836,17 @@ export const SEED_INVESTOR_PROFILES: Array<{ uid: string; data: Record<string, u
   },
 ];
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __pw_seed_investor_profiles: Array<{ uid: string; data: Record<string, unknown> }> | undefined;
+  // eslint-disable-next-line no-var
+  var __pw_marketplace_following_state: Set<string> | undefined;
+}
+
+export const SEED_INVESTOR_PROFILES: Array<{ uid: string; data: Record<string, unknown> }> =
+  globalThis.__pw_seed_investor_profiles ??
+  (globalThis.__pw_seed_investor_profiles = INITIAL_SEED_INVESTOR_PROFILES);
+
 export const SEED_DEV_USER_PROFILE: Record<string, unknown> = {
   displayName: 'Dev Investor',
   publicProfile: true,
@@ -847,7 +858,9 @@ export const SEED_DEV_USER_PROFILE: Record<string, unknown> = {
   followingCount: 3,
 };
 
-const followingState = new Set<string>(['dev-user-1:inv-1']);
+const followingState: Set<string> =
+  globalThis.__pw_marketplace_following_state ??
+  (globalThis.__pw_marketplace_following_state = new Set<string>(['dev-user-1:inv-1']));
 
 function followKey(followerUid: string, targetUid: string): string {
   return `${followerUid}:${targetUid}`;
@@ -869,10 +882,22 @@ export function updateSeedFollowState(
   const wasFollowing = followingState.has(key);
   if (follow && !wasFollowing) {
     followingState.add(key);
+    const targetProfile = SEED_INVESTOR_PROFILES.find((p) => p.uid === targetUid);
+    if (targetProfile) {
+      const currentCount =
+        typeof targetProfile.data.followerCount === 'number' ? targetProfile.data.followerCount : 0;
+      targetProfile.data.followerCount = currentCount + 1;
+    }
     return { following: true, changed: true };
   }
   if (!follow && wasFollowing) {
     followingState.delete(key);
+    const targetProfile = SEED_INVESTOR_PROFILES.find((p) => p.uid === targetUid);
+    if (targetProfile) {
+      const currentCount =
+        typeof targetProfile.data.followerCount === 'number' ? targetProfile.data.followerCount : 0;
+      targetProfile.data.followerCount = Math.max(0, currentCount - 1);
+    }
     return { following: false, changed: true };
   }
   return { following: follow, changed: false };

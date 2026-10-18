@@ -131,5 +131,18 @@ describe('Mission Verification — Deal Calculator Top Nav, Auth Gate & Project 
       expect(html).toContain('Cap Rate');
       expect(html).toContain('Projected IRR');
     });
+
+    it('Bug_64: recognizes active client session cookies (__session_id / __sub / __acct) immediately in DealCalculatorView and MarketingHeader without rendering sign-in-gate-modal', async () => {
+      const { hasClientSessionCookie, getClientSubscriptionStatus } = await import(
+        '../../lib/auth/session-cookies.js'
+      );
+      expect(hasClientSessionCookie('')).toBe(false);
+      expect(hasClientSessionCookie('__session_id=active; __acct=investor')).toBe(true);
+      expect(
+        getClientSubscriptionStatus(
+          `__sub=${Buffer.from(JSON.stringify({ plan: 'Individual', status: 'active' })).toString('base64')}`,
+        ),
+      ).toBe('active');
+    });
   });
 });

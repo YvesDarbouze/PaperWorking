@@ -73,6 +73,16 @@ export default function ForgotPasswordPanel() {
     );
   }
 
+  function reconcileFieldErrors(formElement: HTMLFormElement) {
+    setErrors((prev) => {
+      if (!prev.email) return prev;
+      const formData = new FormData(formElement);
+      const email = String(formData.get('email') ?? '');
+      const parsed = forgotPasswordSchema.safeParse({ email });
+      return parsed.success ? {} : prev;
+    });
+  }
+
   return (
     <AuthCard>
       <div className="mb-6 text-center">
@@ -82,10 +92,29 @@ export default function ForgotPasswordPanel() {
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form
+        className="space-y-4"
+        noValidate
+        onSubmit={handleSubmit}
+        onInput={(event) => reconcileFieldErrors(event.currentTarget)}
+        onChange={(event) => reconcileFieldErrors(event.currentTarget)}
+      >
         <div>
-          <label className="auth-label" htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" className="auth-input" autoComplete="email" />
+          <label className="auth-label" htmlFor="email">
+            Email{' '}
+            <span className="text-red-400" aria-hidden="true" data-testid="required-asterisk">
+              *
+            </span>
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            aria-required="true"
+            className="auth-input min-h-[44px]"
+            autoComplete="email"
+          />
           <AuthFieldError message={errors.email} />
         </div>
         <button type="submit" className="auth-button-primary" disabled={submitting}>

@@ -4,6 +4,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AddressSearch from '@/components/deals/AddressSearch';
+import {
+  parseAddressComponents,
+  type ParsedPlaceDetails,
+} from '@/lib/maps/address-parser';
 import PropertySatelliteViewer from '@/components/maps/PropertySatelliteViewer';
 import { useOptionalAuth } from '@/context/AuthContext';
 import {
@@ -33,6 +37,117 @@ import {
 } from '@/components/icons/PhosphorIcons';
 
 const STORAGE_KEY = 'pw_new_project_draft_v1';
+
+const MAX_CURRENCY_VALUE = 999_999_999_999;
+
+function clampCurrencyInput(raw: number): number {
+  if (!Number.isFinite(raw) || Number.isNaN(raw) || raw < 0) return 0;
+  return Math.min(Math.round(raw), MAX_CURRENCY_VALUE);
+}
+
+function blockInvalidCurrencyKeys(e: React.KeyboardEvent<HTMLInputElement>): void {
+  if (['e', 'E', '+', '-'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
+function clampAndSyncCurrencyDom(inputEl: HTMLInputElement, allowEmpty = false): number | null {
+  const raw = inputEl.value.trim();
+  if (raw === '') {
+    return allowEmpty ? null : 0;
+  }
+  const parsed = Number(raw.replace(/[$,\s]/g, ''));
+  const clamped = clampCurrencyInput(parsed);
+  const canonicalStr = clamped > 0 ? String(clamped) : raw === '0' ? '0' : '';
+  if (inputEl.value !== canonicalStr) {
+    inputEl.value = canonicalStr;
+  }
+  return allowEmpty && canonicalStr === '' ? null : clamped;
+}
+
+function formatSignedCurrency(amount: number): string {
+  const rounded = Math.round(amount);
+  if (rounded < 0) {
+    return `-$${Math.abs(rounded).toLocaleString()}`;
+  }
+  return `$${rounded.toLocaleString()}`;
+}
+
+function validateStep4Date(
+  rawValue: string,
+  hasBadInput: boolean,
+  fieldLabel: string,
+): string | null {
+  if (hasBadInput) {
+    return `Enter a valid ${fieldLabel} (valid calendar date required).`;
+  }
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return `Enter a valid ${fieldLabel} in YYYY-MM-DD format.`;
+  }
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (year < 2000 || year > 2100) {
+    return `${fieldLabel} year must be between 2000 and 2100.`;
+  }
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return `Enter a valid calendar date for ${fieldLabel}.`;
+  }
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    return `Enter a valid calendar date for ${fieldLabel}.`;
+  }
+  return null;
+}
+
+function normalizeWizardStrategy(raw: string | null | undefined): StrategyTemplateType {
+  if (!raw) return 'flip';
+  const normalized = raw.trim().toLowerCase();
+  if (
+    normalized === 'brrrr' ||
+    normalized === 'value-add / brrrr' ||
+    normalized === 'value-add' ||
+    normalized === 'value_add'
+  ) {
+    return 'brrrr';
+  }
+  if (
+    normalized === 'buy_and_hold_rental' ||
+    normalized === 'buy & hold rental' ||
+    normalized === 'buy & hold' ||
+    normalized === 'buy_and_hold' ||
+    normalized === 'rental'
+  ) {
+    return 'buy_and_hold_rental';
+  }
+  if (
+    normalized === 'short_term_rental_airbnb' ||
+    normalized === 'short-term / airbnb' ||
+    normalized === 'short-term' ||
+    normalized === 'str' ||
+    normalized === 'airbnb'
+  ) {
+    return 'short_term_rental_airbnb';
+  }
+  if (
+    normalized === 'commercial_value_add' ||
+    normalized === 'commercial value-add' ||
+    normalized === 'commercial'
+  ) {
+    return 'commercial_value_add';
+  }
+  return 'flip';
+}
+
 
 const STRATEGY_OPTIONS: Array<{
   id: StrategyTemplateType;
@@ -138,16 +253,38 @@ export default function NewProjectPage() {
   const searchParams = useSearchParams();
   const auth = useOptionalAuth();
 
-  const queryAddress = searchParams.get('address') ?? '';
-  const queryPrice = searchParams.get('price') ? Number(searchParams.get('price')) : 0;
-  const queryRehab = searchParams.get('rehab') ? Number(searchParams.get('rehab')) : 0;
-  const queryArv = searchParams.get('arv') ? Number(searchParams.get('arv')) : 0;
-  const queryRent = searchParams.get('rent') ? Number(searchParams.get('rent')) : 0;
-  const queryStrategy = (searchParams.get('strategy') as StrategyTemplateType) ?? 'flip';
   const fromCalculator = searchParams.get('fromCalculator') === 'true';
+  const rawQueryAddress = searchParams.get('address') ?? '';
+  const queryAddress =
+    rawQueryAddress.trim() ||
+    (fromCalculator
+      ? searchParams.get('name')?.trim() || '1247 Elm Street, Austin, TX 78702'
+      : '');
+  const queryPrice = searchParams.get('price')
+    ? clampCurrencyInput(Number(searchParams.get('price')))
+    : 0;
+  const queryRehab = searchParams.get('rehab')
+    ? clampCurrencyInput(Number(searchParams.get('rehab')))
+    : 0;
+  const queryArv = searchParams.get('arv')
+    ? clampCurrencyInput(Number(searchParams.get('arv')))
+    : 0;
+  const queryRent = searchParams.get('rent')
+    ? clampCurrencyInput(Number(searchParams.get('rent')))
+    : 0;
+  const rawStrategy = searchParams.get('strategy');
+  const queryStrategy: StrategyTemplateType = normalizeWizardStrategy(rawStrategy);
+  const initialTemplateDefaults = getStrategyTemplateDefaults(queryStrategy);
+  const initialBasePrice = queryPrice || 485000;
+  const queryStep = Number(searchParams.get('step'));
+  const initialStep: 1 | 2 | 3 | 4 | 5 = fromCalculator
+    ? 5
+    : queryStep === 2 || queryStep === 3 || queryStep === 4 || queryStep === 5
+      ? queryStep
+      : 1;
 
   // Wizard Navigation
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(fromCalculator ? 5 : 1);
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(initialStep);
   const [hasDraftResumePrompt, setHasDraftResumePrompt] = useState(false);
   const [draftLoadedAddress, setDraftLoadedAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -174,15 +311,29 @@ export default function NewProjectPage() {
   const [strategy, setStrategy] = useState<StrategyTemplateType>(queryStrategy);
 
   // Step 3: Numbers (Underwriting)
-  const [purchasePrice, setPurchasePrice] = useState<number>(queryPrice || 485000);
-  const [rehabBudget, setRehabBudget] = useState<number>(queryRehab || 50000);
+  const [purchasePrice, setPurchasePrice] = useState<number>(initialBasePrice);
+  const [rehabBudget, setRehabBudget] = useState<number>(() => {
+    if (queryRehab) return queryRehab;
+    if (queryStrategy === 'flip') return Math.round(initialBasePrice * 0.12);
+    if (queryStrategy === 'brrrr') return Math.round(initialBasePrice * 0.15);
+    if (queryStrategy === 'short_term_rental_airbnb') return Math.round(initialBasePrice * 0.08);
+    return Math.round(initialBasePrice * 0.05);
+  });
   const [estimatedARV, setEstimatedARV] = useState<number | null>(queryArv || null);
-  const [grossRentMonthly, setGrossRentMonthly] = useState<number>(queryRent || 3800);
-  const [targetLtvPct, setTargetLtvPct] = useState<number>(75);
-  const [interestRatePct, setInterestRatePct] = useState<number>(6.5);
-  const [amortizationYears, setAmortizationYears] = useState<number>(30);
-  const [operatingExpenseRatioPct, setOperatingExpenseRatioPct] = useState<number>(35);
-  const [vacancyRatePct, setVacancyRatePct] = useState<number>(6.0);
+  const [grossRentMonthly, setGrossRentMonthly] = useState<number>(() => {
+    if (queryRent) return queryRent;
+    if (queryStrategy === 'flip') return 0;
+    if (queryStrategy === 'brrrr') return Math.round(initialBasePrice * 0.009);
+    if (queryStrategy === 'short_term_rental_airbnb') return Math.round(initialBasePrice * 0.014);
+    return Math.round(initialBasePrice * 0.008);
+  });
+  const [targetLtvPct, setTargetLtvPct] = useState<number>(initialTemplateDefaults.targetLtvPct);
+  const [interestRatePct, setInterestRatePct] = useState<number>(initialTemplateDefaults.interestRatePct);
+  const [amortizationYears, setAmortizationYears] = useState<number>(initialTemplateDefaults.amortizationYears);
+  const [operatingExpenseRatioPct, setOperatingExpenseRatioPct] = useState<number>(
+    initialTemplateDefaults.operatingExpenseRatioPct,
+  );
+  const [vacancyRatePct, setVacancyRatePct] = useState<number>(initialTemplateDefaults.vacancyRatePct);
   const [buyerClosingCostsPct, setBuyerClosingCostsPct] = useState<number>(2.0);
   const [capExReservePct, setCapExReservePct] = useState<number>(5.0);
   const [exitCapRatePct, setExitCapRatePct] = useState<number>(6.5);
@@ -199,6 +350,9 @@ export default function NewProjectPage() {
     d.setDate(d.getDate() + 30);
     return d.toISOString().split('T')[0] ?? '';
   });
+  const [targetContractDateBadInput, setTargetContractDateBadInput] = useState(false);
+  const [targetClosingDateBadInput, setTargetClosingDateBadInput] = useState(false);
+  const [hasVisitedStep4, setHasVisitedStep4] = useState<boolean>(() => initialStep >= 4);
   const [inspectionDays, setInspectionDays] = useState<number>(10);
   const [financingDays, setFinancingDays] = useState<number>(21);
   const [teamMembers, setTeamMembers] = useState(DEFAULT_TEAM_MEMBERS);
@@ -210,9 +364,16 @@ export default function NewProjectPage() {
   // Validation States (On-Blur)
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    if (currentStep === 4) {
+      setHasVisitedStep4(true);
+    }
+  }, [currentStep]);
+
   const handleBlur = (field: string) => {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
+
 
   // Strategy Template Defaults Application
   const applyStrategyDefaults = useCallback(
@@ -247,6 +408,16 @@ export default function NewProjectPage() {
     setStrategy(newStrategy);
     applyStrategyDefaults(newStrategy, purchasePrice);
   };
+
+  useEffect(() => {
+    setStrategy(queryStrategy);
+    if (!queryRehab && !queryRent) {
+      applyStrategyDefaults(queryStrategy, initialBasePrice);
+    }
+  }, [queryStrategy, queryRehab, queryRent, initialBasePrice, applyStrategyDefaults]);
+
+  const selectedStrategyOption =
+    STRATEGY_OPTIONS.find((opt) => opt.id === strategy) ?? STRATEGY_OPTIONS[0];
 
   // Check for Saved Draft on Mount (Server API first, fallback to localStorage)
   useEffect(() => {
@@ -417,6 +588,16 @@ export default function NewProjectPage() {
 
     if (!draft) return;
 
+    const toFinitePositive = (val: unknown, fallback: number): number => {
+      const n = typeof val === 'string' ? Number(val.replace(/[$,%\s]/g, '')) : Number(val);
+      return Number.isFinite(n) && n > 0 ? n : fallback;
+    };
+    const toFiniteNonNegative = (val: unknown, fallback: number): number => {
+      if (val === undefined || val === null || val === '') return fallback;
+      const n = typeof val === 'string' ? Number(val.replace(/[$,%\s]/g, '')) : Number(val);
+      return Number.isFinite(n) && n >= 0 ? n : fallback;
+    };
+
     setAddress(draft.address || '');
     setUnit(draft.unit || '');
     setCity(draft.city || 'Austin');
@@ -426,31 +607,38 @@ export default function NewProjectPage() {
     setSourceContactName(draft.sourceContactName || '');
     setSourceContactPhone(draft.sourceContactPhone || '');
     setPropertyType(draft.propertyType || 'single_family');
-    setBeds(draft.beds ?? 3);
-    setBaths(draft.baths ?? 2);
-    setSquareFeet(draft.squareFeet ?? 1850);
-    setYearBuilt(draft.yearBuilt ?? 1995);
-    setStrategy(draft.strategy || 'flip');
-    setPurchasePrice(draft.purchasePrice || 485000);
-    setRehabBudget(draft.rehabBudget ?? 50000);
-    setEstimatedARV(draft.estimatedARV ?? null);
-    setGrossRentMonthly(draft.grossRentMonthly ?? 3800);
-    setTargetLtvPct(draft.targetLtvPct ?? 75);
-    setInterestRatePct(draft.interestRatePct ?? 6.5);
-    setAmortizationYears(draft.amortizationYears ?? 30);
-    setOperatingExpenseRatioPct(draft.operatingExpenseRatioPct ?? 35);
-    setVacancyRatePct(draft.vacancyRatePct ?? 6.0);
-    setBuyerClosingCostsPct(draft.buyerClosingCostsPct ?? 2.0);
-    setCapExReservePct(draft.capExReservePct ?? 5.0);
-    setExitCapRatePct(draft.exitCapRatePct ?? 6.5);
+    setBeds(toFiniteNonNegative(draft.beds, 3));
+    setBaths(toFiniteNonNegative(draft.baths, 2));
+    setSquareFeet(toFiniteNonNegative(draft.squareFeet, 1850));
+    setYearBuilt(toFinitePositive(draft.yearBuilt, 1995));
+    setStrategy(normalizeWizardStrategy(draft.strategy));
+    setPurchasePrice(clampCurrencyInput(toFinitePositive(draft.purchasePrice, 485000)));
+    setRehabBudget(clampCurrencyInput(toFiniteNonNegative(draft.rehabBudget, 50000)));
+    const parsedArv = draft.estimatedARV !== undefined && draft.estimatedARV !== null
+      ? toFinitePositive(draft.estimatedARV, 0)
+      : 0;
+    setEstimatedARV(parsedArv > 0 ? clampCurrencyInput(parsedArv) : null);
+    setGrossRentMonthly(clampCurrencyInput(toFiniteNonNegative(draft.grossRentMonthly, 3800)));
+    setTargetLtvPct(toFiniteNonNegative(draft.targetLtvPct, 75));
+    setInterestRatePct(toFiniteNonNegative(draft.interestRatePct, 6.5));
+    setAmortizationYears(toFinitePositive(draft.amortizationYears, 30));
+    setOperatingExpenseRatioPct(toFiniteNonNegative(draft.operatingExpenseRatioPct, 35));
+    setVacancyRatePct(toFiniteNonNegative(draft.vacancyRatePct, 6.0));
+    setBuyerClosingCostsPct(toFiniteNonNegative(draft.buyerClosingCostsPct, 2.0));
+    setCapExReservePct(toFiniteNonNegative(draft.capExReservePct, 5.0));
+    setExitCapRatePct(toFinitePositive(draft.exitCapRatePct, 6.5));
     if (draft.targetContractDate) setTargetContractDate(draft.targetContractDate);
     if (draft.targetClosingDate) setTargetClosingDate(draft.targetClosingDate);
-    if (draft.inspectionDays) setInspectionDays(draft.inspectionDays);
-    if (draft.financingDays) setFinancingDays(draft.financingDays);
+    setTargetContractDateBadInput(false);
+    setTargetClosingDateBadInput(false);
+    if (draft.inspectionDays) setInspectionDays(toFinitePositive(draft.inspectionDays, 10));
+    if (draft.financingDays) setFinancingDays(toFinitePositive(draft.financingDays, 21));
     if (draft.teamMembers && draft.teamMembers.length > 0) setTeamMembers(draft.teamMembers as any);
     if (draft.dealNotes) setDealNotes(draft.dealNotes);
 
     const targetStep = (draft.step as 1 | 2 | 3 | 4 | 5) || 1;
+    setSubmissionError(null);
+    setTouchedFields({});
     setCurrentStep(targetStep);
     setHasDraftResumePrompt(false);
   };
@@ -464,6 +652,8 @@ export default function NewProjectPage() {
     } catch {
       // ignore
     }
+    setSubmissionError(null);
+    setTouchedFields({});
     setHasDraftResumePrompt(false);
   };
 
@@ -539,16 +729,213 @@ export default function NewProjectPage() {
     }
   }, [estimatedARV, rehabBudget, purchasePrice, buyerClosingCostsPct]);
 
+  const expectedNetMargin =
+    estimatedARV && metrics ? Math.round(estimatedARV * 0.95 - metrics.totalCostBasis) : null;
+  const hasNegativeKpiValue = Boolean(
+    (maoCalc && maoCalc.mao < 0) ||
+      (metrics && metrics.cashRequired < 0) ||
+      (strategy === 'flip'
+        ? expectedNetMargin !== null && expectedNetMargin < 0
+        : metrics && metrics.cashOnCashReturnPct < 0) ||
+      (metrics && metrics.capRateOnCost < 0),
+  );
+
   // Validation Checks (Low-Friction Rule)
   const isAddressValid = address.trim().length > 0;
+  const unitTrimmed = unit.trim();
+  const unitError = useMemo(() => {
+    if (!unitTrimmed) return null;
+    if (/^(?=.*[A-Za-z0-9])[A-Za-z0-9\s#./-]+$/.test(unitTrimmed)) {
+      return null;
+    }
+    return 'Unit / Suite can only contain letters, numbers, #, and hyphens.';
+  }, [unitTrimmed]);
+  const isUnitValid = !unitError;
+
+  const cityTrimmed = city.trim();
+  const cityError = useMemo(() => {
+    if (!cityTrimmed) return null;
+    if (cityTrimmed.length >= 2 && /^[A-Za-z][A-Za-z\s.'-]*[A-Za-z.]$/.test(cityTrimmed)) {
+      return null;
+    }
+    return 'Enter a valid city name (letters, spaces, and hyphens only).';
+  }, [cityTrimmed]);
+  const isCityValid = !cityError;
+
+  const stateTrimmed = state.trim().toUpperCase();
+  const stateError = useMemo(() => {
+    if (!stateTrimmed) return null;
+    const validStates = new Set([
+      'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL',
+      'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME',
+      'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH',
+      'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'PR',
+      'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'VI', 'WA',
+      'WV', 'WI', 'WY', 'GU', 'AS', 'MP',
+    ]);
+    if (/^[A-Z]{2}$/.test(stateTrimmed) && validStates.has(stateTrimmed)) {
+      return null;
+    }
+    return 'Enter a valid 2-letter US state code (e.g. TX).';
+  }, [stateTrimmed]);
+  const isStateValid = !stateError;
+
+  const zipTrimmed = zipCode.trim();
+  const zipError = useMemo(() => {
+    if (!zipTrimmed) return null;
+    if (/^\d{5}(-\d{4})?$/.test(zipTrimmed)) {
+      return null;
+    }
+    return 'Enter a valid 5-digit ZIP code (digits only, e.g. 78702).';
+  }, [zipTrimmed]);
+  const isZipValid = !zipError;
+
+  const sourceContactPhoneTrimmed = sourceContactPhone.trim();
+  const sourceContactPhoneError = useMemo(() => {
+    if (!sourceContactPhoneTrimmed) return null;
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(sourceContactPhoneTrimmed);
+    if (isValidEmail) return null;
+    const isPhoneCharsOnly = /^[+]?[\d\s().-]+$/.test(sourceContactPhoneTrimmed);
+    const digitCount = sourceContactPhoneTrimmed.replace(/\D/g, '').length;
+    if (isPhoneCharsOnly && digitCount >= 7 && digitCount <= 15) {
+      return null;
+    }
+    return 'Enter a valid phone number (e.g. 512-555-0199) or email address.';
+  }, [sourceContactPhoneTrimmed]);
+  const isSourceContactPhoneValid = !sourceContactPhoneError;
   const isStrategyValid = !!strategy;
   const isPriceValid = purchasePrice > 0;
 
-  const isStep1Valid = isAddressValid;
+  const targetContractDateError = useMemo(
+    () =>
+      validateStep4Date(
+        targetContractDate,
+        targetContractDateBadInput,
+        'Target Contract (PSA) Date',
+      ),
+    [targetContractDate, targetContractDateBadInput],
+  );
+  const isTargetContractDateValid = !targetContractDateError;
+
+  const targetClosingDateError = useMemo(() => {
+    const baseErr = validateStep4Date(
+      targetClosingDate,
+      targetClosingDateBadInput,
+      'Target Closing Date',
+    );
+    if (baseErr) return baseErr;
+    if (
+      !targetContractDateError &&
+      targetClosingDate.trim() &&
+      targetContractDate.trim() &&
+      targetClosingDate < targetContractDate
+    ) {
+      return 'Target Closing Date must be on or after the Target Contract (PSA) Date.';
+    }
+    return null;
+  }, [targetClosingDate, targetClosingDateBadInput, targetContractDate, targetContractDateError]);
+  const isTargetClosingDateValid = !targetClosingDateError;
+
+  const inspectionDaysError = useMemo(() => {
+    if (Number.isNaN(inspectionDays)) return null;
+    if (
+      !Number.isFinite(inspectionDays) ||
+      !Number.isInteger(inspectionDays) ||
+      inspectionDays < 1 ||
+      inspectionDays > 365
+    ) {
+      return 'Inspection Period must be between 1 and 365 whole days.';
+    }
+    return null;
+  }, [inspectionDays]);
+  const isInspectionDaysValid = !inspectionDaysError;
+
+  const financingDaysError = useMemo(() => {
+    if (Number.isNaN(financingDays)) return null;
+    if (
+      !Number.isFinite(financingDays) ||
+      !Number.isInteger(financingDays) ||
+      financingDays < 1 ||
+      financingDays > 365
+    ) {
+      return 'Financing Contingency must be between 1 and 365 whole days.';
+    }
+    return null;
+  }, [financingDays]);
+  const isFinancingDaysValid = !financingDaysError;
+
+  const isStep1Valid =
+    isAddressValid &&
+    isUnitValid &&
+    isCityValid &&
+    isStateValid &&
+    isZipValid &&
+    isSourceContactPhoneValid;
   const isStep2Valid = isStrategyValid && isPriceValid;
   const isStep3Valid = true;
-  const isStep4Valid = true; // sensible defaults
-  const isReadyToLaunch = isStep1Valid && isStep2Valid;
+  const isStep4Valid =
+    isTargetContractDateValid &&
+    isTargetClosingDateValid &&
+    isInspectionDaysValid &&
+    isFinancingDaysValid;
+  const isReadyToLaunch = isStep1Valid && isStep2Valid && isStep4Valid;
+
+  const activeSubmissionError =
+    submissionError &&
+    !(
+      (isAddressValid &&
+        submissionError.toLowerCase().includes('property address')) ||
+      (isSourceContactPhoneValid &&
+        submissionError.toLowerCase().includes('contact phone / email')) ||
+      (isStep1Valid && currentStep === 1) ||
+      (isPriceValid &&
+        (submissionError.toLowerCase().includes('purchase price') || currentStep === 2)) ||
+      (isStep4Valid && currentStep === 4)
+    )
+      ? submissionError
+      : null;
+
+  useEffect(() => {
+    if (!submissionError) return;
+    if (
+      (isAddressValid && submissionError.toLowerCase().includes('property address')) ||
+      (isSourceContactPhoneValid && submissionError.toLowerCase().includes('contact phone / email')) ||
+      (isStep1Valid && currentStep === 1)
+    ) {
+      setSubmissionError(null);
+    } else if (
+      isPriceValid &&
+      (submissionError.toLowerCase().includes('purchase price') || currentStep === 2)
+    ) {
+      setSubmissionError(null);
+    } else if (isStep4Valid && currentStep === 4) {
+      setSubmissionError(null);
+    }
+  }, [
+    isAddressValid,
+    isSourceContactPhoneValid,
+    isStep1Valid,
+    isPriceValid,
+    isStep4Valid,
+    submissionError,
+    currentStep,
+  ]);
+
+  const applyParsedAddressComponents = useCallback(
+    (rawAddress: string, details?: ParsedPlaceDetails) => {
+      const parsed = parseAddressComponents(rawAddress, details);
+      if (parsed.city) {
+        setCity(parsed.city);
+      }
+      if (parsed.state) {
+        setState(parsed.state.toUpperCase());
+      }
+      if (parsed.zipCode) {
+        setZipCode(parsed.zipCode);
+      }
+    },
+    [],
+  );
 
   // Step Progression Handler
   const handleContinue = () => {
@@ -556,20 +943,74 @@ export default function NewProjectPage() {
     if (currentStep === 1) {
       if (!isAddressValid) {
         setTouchedFields((prev) => ({ ...prev, address: true }));
-        setSubmissionError('Property address is required to locate the deal.');
+        setSubmissionError('Validation failed: Property Address (address): Property address is required to locate the deal.');
         return;
       }
+      if (!isUnitValid && unitError) {
+        setTouchedFields((prev) => ({ ...prev, unit: true }));
+        setSubmissionError(`Validation failed: Unit / Suite (unit): ${unitError}`);
+        return;
+      }
+      if (!isCityValid && cityError) {
+        setTouchedFields((prev) => ({ ...prev, city: true }));
+        setSubmissionError(`Validation failed: City (city): ${cityError}`);
+        return;
+      }
+      if (!isStateValid && stateError) {
+        setTouchedFields((prev) => ({ ...prev, state: true }));
+        setSubmissionError(`Validation failed: State (state): ${stateError}`);
+        return;
+      }
+      if (!isZipValid && zipError) {
+        setTouchedFields((prev) => ({ ...prev, zipCode: true }));
+        setSubmissionError(`Validation failed: Zip Code (zip): ${zipError}`);
+        return;
+      }
+      if (!isSourceContactPhoneValid && sourceContactPhoneError) {
+        setTouchedFields((prev) => ({ ...prev, sourceContactPhone: true }));
+        setSubmissionError(`Validation failed: Contact Phone / Email (sourceContactPhone): ${sourceContactPhoneError}`);
+        return;
+      }
+      setHasDraftResumePrompt(false);
       setCurrentStep(2);
     } else if (currentStep === 2) {
       if (!isPriceValid) {
         setTouchedFields((prev) => ({ ...prev, purchasePrice: true }));
-        setSubmissionError('Target purchase price must be greater than $0.');
+        setSubmissionError('Validation failed: Purchase Price (purchasePrice): Target purchase price must be greater than $0.');
         return;
       }
       setCurrentStep(3);
     } else if (currentStep === 3) {
       setCurrentStep(4);
     } else if (currentStep === 4) {
+      if (!isTargetContractDateValid && targetContractDateError) {
+        setTouchedFields((prev) => ({ ...prev, targetContractDate: true }));
+        setSubmissionError(
+          `Validation failed: Target Contract (PSA) Date (targetContractDate): ${targetContractDateError}`,
+        );
+        return;
+      }
+      if (!isTargetClosingDateValid && targetClosingDateError) {
+        setTouchedFields((prev) => ({ ...prev, targetClosingDate: true }));
+        setSubmissionError(
+          `Validation failed: Target Closing Date (targetClosingDate): ${targetClosingDateError}`,
+        );
+        return;
+      }
+      if (!isInspectionDaysValid && inspectionDaysError) {
+        setTouchedFields((prev) => ({ ...prev, inspectionDays: true }));
+        setSubmissionError(
+          `Validation failed: Inspection Period (Days) (inspectionDays): ${inspectionDaysError}`,
+        );
+        return;
+      }
+      if (!isFinancingDaysValid && financingDaysError) {
+        setTouchedFields((prev) => ({ ...prev, financingDays: true }));
+        setSubmissionError(
+          `Validation failed: Financing Contingency (Days) (financingDays): ${financingDaysError}`,
+        );
+        return;
+      }
       setCurrentStep(5);
     }
   };
@@ -578,89 +1019,197 @@ export default function NewProjectPage() {
   const handleCreateProject = async () => {
     if (!isAddressValid) {
       setCurrentStep(1);
-      setSubmissionError('Property address is required.');
+      setSubmissionError('Validation failed: Property Address (address): Property address is required.');
+      return;
+    }
+    if (!isUnitValid && unitError) {
+      setCurrentStep(1);
+      setSubmissionError(`Validation failed: Unit / Suite (unit): ${unitError}`);
+      return;
+    }
+    if (!isCityValid && cityError) {
+      setCurrentStep(1);
+      setSubmissionError(`Validation failed: City (city): ${cityError}`);
+      return;
+    }
+    if (!isStateValid && stateError) {
+      setCurrentStep(1);
+      setSubmissionError(`Validation failed: State (state): ${stateError}`);
+      return;
+    }
+    if (!isZipValid && zipError) {
+      setCurrentStep(1);
+      setSubmissionError(`Validation failed: Zip Code (zip): ${zipError}`);
+      return;
+    }
+    if (!isSourceContactPhoneValid && sourceContactPhoneError) {
+      setCurrentStep(1);
+      setSubmissionError(`Validation failed: Contact Phone / Email (sourceContactPhone): ${sourceContactPhoneError}`);
       return;
     }
     if (!isPriceValid) {
       setCurrentStep(2);
-      setSubmissionError('Target purchase price must be greater than zero.');
+      setSubmissionError('Validation failed: Purchase Price (purchasePrice): Purchase price must be greater than zero.');
+      return;
+    }
+    if (!isTargetContractDateValid && targetContractDateError) {
+      setCurrentStep(4);
+      setSubmissionError(
+        `Validation failed: Target Contract (PSA) Date (targetContractDate): ${targetContractDateError}`,
+      );
+      return;
+    }
+    if (!isTargetClosingDateValid && targetClosingDateError) {
+      setCurrentStep(4);
+      setSubmissionError(
+        `Validation failed: Target Closing Date (targetClosingDate): ${targetClosingDateError}`,
+      );
+      return;
+    }
+    if (!isInspectionDaysValid && inspectionDaysError) {
+      setCurrentStep(4);
+      setSubmissionError(
+        `Validation failed: Inspection Period (Days) (inspectionDays): ${inspectionDaysError}`,
+      );
+      return;
+    }
+    if (!isFinancingDaysValid && financingDaysError) {
+      setCurrentStep(4);
+      setSubmissionError(
+        `Validation failed: Financing Contingency (Days) (financingDays): ${financingDaysError}`,
+      );
       return;
     }
 
     setIsSubmitting(true);
     setSubmissionError(null);
 
+    const safeNonNegative = (val: number | null | undefined, fallback: number): number =>
+      typeof val === 'number' && Number.isFinite(val) && val >= 0 ? val : fallback;
+    const safePositive = (val: number | null | undefined, fallback: number): number =>
+      typeof val === 'number' && Number.isFinite(val) && val > 0 ? val : fallback;
+    const safeOptionalNonNegative = (val: number | null | undefined): number | undefined =>
+      typeof val === 'number' && Number.isFinite(val) && val >= 0 ? val : undefined;
+    const safeOptionalPositive = (val: number | null | undefined): number | undefined =>
+      typeof val === 'number' && Number.isFinite(val) && val > 0 ? val : undefined;
+
     const projectPayload = {
       address: address.trim(),
       projectName: address.split(',')[0]?.trim() || 'New Investment Project',
-      city: city.trim(),
-      state: state.trim(),
-      zip: zipCode.trim(),
-      beds,
-      baths,
-      sqft: squareFeet,
-      yearBuilt,
+      city: city.trim() || 'Austin',
+      state: state.trim().toUpperCase() || 'TX',
+      zip: zipCode.trim() || '78702',
+      beds: safeOptionalNonNegative(beds),
+      baths: safeOptionalNonNegative(baths),
+      sqft: safeOptionalNonNegative(squareFeet),
+      yearBuilt: safeOptionalPositive(yearBuilt),
       sourceType,
       sourceContactName,
       sourceContactPhone,
       propertyType,
-      purchasePrice,
-      rehabBudget,
-      estimatedARV,
-      grossRentMonthly,
-      operatingExpenseRatioPct,
-      targetLtvPct,
-      interestRatePct,
-      amortizationYears,
-      vacancyRatePct,
-      buyerClosingCostsPct,
-      capExReservePct,
-      exitCapRatePct,
+      purchasePrice: safePositive(purchasePrice, 0),
+      rehabBudget: safeNonNegative(rehabBudget, 0),
+      estimatedARV: safeOptionalPositive(estimatedARV),
+      grossRentMonthly: safeNonNegative(grossRentMonthly, 0),
+      operatingExpenseRatioPct: safeNonNegative(
+        operatingExpenseRatioPct,
+        initialTemplateDefaults.operatingExpenseRatioPct,
+      ),
+      targetLtvPct: safeNonNegative(targetLtvPct, initialTemplateDefaults.targetLtvPct),
+      interestRatePct: safeNonNegative(interestRatePct, initialTemplateDefaults.interestRatePct),
+      amortizationYears: safePositive(amortizationYears, initialTemplateDefaults.amortizationYears),
+      vacancyRatePct: safeNonNegative(vacancyRatePct, initialTemplateDefaults.vacancyRatePct),
+      buyerClosingCostsPct: safeNonNegative(buyerClosingCostsPct, 2.0),
+      capExReservePct: safeNonNegative(capExReservePct, 5.0),
+      exitCapRatePct: safePositive(exitCapRatePct, 6.5),
       strategy,
       terminalValueMethod: 'appreciation_pct',
       assumptionsNotes: dealNotes.trim() || 'Created via 5-Step Acquisition Wizard',
       teamMembers,
-      targetContractDate,
-      targetClosingDate,
-      inspectionDays,
-      financingDays,
+      targetContractDate: targetContractDate.trim() || undefined,
+      targetClosingDate: targetClosingDate.trim() || undefined,
+      inspectionDays: safePositive(inspectionDays, 10),
+      financingDays: safePositive(financingDays, 21),
     };
 
     try {
       const response = await fetch('/api/projects/promote', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(projectPayload),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create project');
+        const errorData = await response.json().catch(() => ({}));
+        const fieldLabels: Record<string, string> = {
+          address: 'Property Address',
+          property_address: 'Property Address',
+          purchasePrice: 'Purchase Price',
+          rehabBudget: 'Rehab Budget',
+          estimatedARV: 'Estimated ARV',
+          grossRentMonthly: 'Monthly Gross Rent',
+          operatingExpenseRatioPct: 'Operating Expense Ratio (%)',
+          targetLtvPct: 'Target LTV (%)',
+          interestRatePct: 'Interest Rate (%)',
+          amortizationYears: 'Amortization Period (Years)',
+          strategy: 'Investment Strategy',
+          buyerClosingCostsPct: 'Buyer Closing Costs (%)',
+          beds: 'Bedrooms',
+          baths: 'Bathrooms',
+          sqft: 'Square Footage',
+          yearBuilt: 'Year Built',
+        };
+
+        if (errorData?.details && typeof errorData.details === 'object' && !Array.isArray(errorData.details)) {
+          const detailParts = Object.entries(errorData.details as Record<string, unknown>)
+            .filter(([, msgs]) => (Array.isArray(msgs) && msgs.length > 0) || typeof msgs === 'string')
+            .map(([field, msgs]) => {
+              const label = fieldLabels[field] || field;
+              const ruleText = Array.isArray(msgs) ? msgs.join(', ') : String(msgs);
+              return `${label} (${field}): ${ruleText}`;
+            });
+          if (detailParts.length > 0) {
+            throw new Error(`Validation failed: ${detailParts.join('; ')}`);
+          }
+        }
+
+        const rawMsg =
+          (typeof errorData?.message === 'string' && errorData.message) ||
+          (typeof errorData?.error === 'string' && errorData.error) ||
+          (typeof errorData?.error?.message === 'string' && errorData.error.message) ||
+          'Failed to create project';
+
+        if (rawMsg === 'Validation failed' || rawMsg === 'Validation failed.') {
+          throw new Error(
+            'Validation failed: Property Address (Step 1) and Purchase Price greater than $0 (Step 2) are required.',
+          );
+        }
+        throw new Error(rawMsg);
       }
 
       const data = await response.json();
       const projectId = data.projectId || data.project_id;
 
-      // Seed Team Members if added
-      if (teamMembers.length > 0 && projectId) {
+      // Seed Team Members, Initial Contingency Deadlines, and Clear Drafts concurrently
+      const postCreateTasks: Promise<unknown>[] = [discardDraft()];
+
+      if (projectId) {
         for (const member of teamMembers) {
-          try {
-            await fetch(`/api/projects/${projectId}/team`, {
+          postCreateTasks.push(
+            fetch(`/api/projects/${projectId}/team`, {
               method: 'POST',
+              credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(member),
-            });
-          } catch {
-            // non-fatal
-          }
+            }),
+          );
         }
-      }
 
-      // Seed Initial Contingency Deadlines
-      if (projectId) {
-        try {
-          await fetch(`/api/projects/${projectId}/contingencies`, {
+        postCreateTasks.push(
+          fetch(`/api/projects/${projectId}/contingencies`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               type: 'inspection',
@@ -668,9 +1217,10 @@ export default function NewProjectPage() {
               deadlineDate: new Date(Date.now() + inspectionDays * 86400000).toISOString(),
               daysFromEffective: inspectionDays,
             }),
-          });
-          await fetch(`/api/projects/${projectId}/contingencies`, {
+          }),
+          fetch(`/api/projects/${projectId}/contingencies`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               type: 'financing',
@@ -678,14 +1228,11 @@ export default function NewProjectPage() {
               deadlineDate: new Date(Date.now() + financingDays * 86400000).toISOString(),
               daysFromEffective: financingDays,
             }),
-          });
-        } catch {
-          // non-fatal
-        }
+          }),
+        );
       }
 
-      // Clear Drafts
-      await discardDraft();
+      await Promise.allSettled(postCreateTasks);
 
       // Navigate to project workspace
       router.push(`/project/${projectId}`);
@@ -709,7 +1256,17 @@ export default function NewProjectPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Projects
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Create New Project</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Create New Project</h1>
+            <span
+              data-testid="selected-template-title-badge"
+              className="inline-flex items-center gap-1.5 rounded-none border border-primary/50 bg-primary/10 px-2.5 py-1 font-mono text-xs font-bold uppercase tracking-wider text-primary"
+            >
+              <span>{`${selectedStrategyOption.label} Template`}</span>
+              <span className="text-muted-foreground">·</span>
+              <span>{selectedStrategyOption.badge}</span>
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1">
             REIL Phase 01: Acquisition: define property intake, strategy templates, underwriting, and closing deadlines.
           </p>
@@ -720,6 +1277,44 @@ export default function NewProjectPage() {
           <span className="h-2 w-2 rounded-none bg-primary animate-pulse" />
           <span>Only 3 required fields to launch</span>
         </div>
+      </div>
+
+      {/* Active Strategy Template Banner (Bug_07) */}
+      <div
+        data-testid="selected-strategy-template-banner"
+        className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-none border border-border bg-card p-4 shadow-sm"
+      >
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-border bg-background text-primary">
+            <ChartLineUp className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Selected Template
+              </span>
+              <span
+                data-testid="selected-template-title"
+                className="text-sm font-bold text-foreground"
+              >
+                {selectedStrategyOption.label}
+              </span>
+              <span className="rounded-none border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-primary">
+                {selectedStrategyOption.badge}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {`${selectedStrategyOption.description} · ${selectedStrategyOption.vacancyNotice}`}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setCurrentStep(2)}
+          className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-none border border-border bg-background px-3.5 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-primary hover:text-primary cursor-pointer"
+        >
+          Change Template
+        </button>
       </div>
 
       {/* Resume Draft Banner */}
@@ -762,7 +1357,7 @@ export default function NewProjectPage() {
         {(
           [
             { step: 1, label: 'Address', sub: 'Property Intake' },
-            { step: 2, label: 'Deal Calc', sub: 'Underwriting' },
+            { step: 2, label: 'Deal Calculation', sub: 'Underwriting' },
             { step: 3, label: 'Scope', sub: 'Execution Plan' },
             { step: 4, label: 'Team', sub: 'Deadlines' },
             { step: 5, label: 'Review', sub: 'Launch' },
@@ -774,7 +1369,87 @@ export default function NewProjectPage() {
             <button
               key={step}
               type="button"
-              onClick={() => setCurrentStep(step)}
+              onClick={() => {
+                if (step > 1 && !isAddressValid) {
+                  setTouchedFields((prev) => ({ ...prev, address: true }));
+                  setSubmissionError('Validation failed: Property Address (address): Property address is required to locate the deal.');
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 1 && !isUnitValid && unitError) {
+                  setTouchedFields((prev) => ({ ...prev, unit: true }));
+                  setSubmissionError(`Validation failed: Unit / Suite (unit): ${unitError}`);
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 1 && !isCityValid && cityError) {
+                  setTouchedFields((prev) => ({ ...prev, city: true }));
+                  setSubmissionError(`Validation failed: City (city): ${cityError}`);
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 1 && !isStateValid && stateError) {
+                  setTouchedFields((prev) => ({ ...prev, state: true }));
+                  setSubmissionError(`Validation failed: State (state): ${stateError}`);
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 1 && !isZipValid && zipError) {
+                  setTouchedFields((prev) => ({ ...prev, zipCode: true }));
+                  setSubmissionError(`Validation failed: Zip Code (zip): ${zipError}`);
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 1 && !isSourceContactPhoneValid && sourceContactPhoneError) {
+                  setTouchedFields((prev) => ({ ...prev, sourceContactPhone: true }));
+                  setSubmissionError(`Validation failed: Contact Phone / Email (sourceContactPhone): ${sourceContactPhoneError}`);
+                  setCurrentStep(1);
+                  return;
+                }
+                if (step > 2 && !isPriceValid) {
+                  setTouchedFields((prev) => ({ ...prev, purchasePrice: true }));
+                  setSubmissionError('Validation failed: Purchase Price (purchasePrice): Target purchase price must be greater than $0.');
+                  setCurrentStep(2);
+                  return;
+                }
+                if (step > 4 && !isTargetContractDateValid && targetContractDateError) {
+                  setTouchedFields((prev) => ({ ...prev, targetContractDate: true }));
+                  setSubmissionError(
+                    `Validation failed: Target Contract (PSA) Date (targetContractDate): ${targetContractDateError}`,
+                  );
+                  setCurrentStep(4);
+                  return;
+                }
+                if (step > 4 && !isTargetClosingDateValid && targetClosingDateError) {
+                  setTouchedFields((prev) => ({ ...prev, targetClosingDate: true }));
+                  setSubmissionError(
+                    `Validation failed: Target Closing Date (targetClosingDate): ${targetClosingDateError}`,
+                  );
+                  setCurrentStep(4);
+                  return;
+                }
+                if (step > 4 && !isInspectionDaysValid && inspectionDaysError) {
+                  setTouchedFields((prev) => ({ ...prev, inspectionDays: true }));
+                  setSubmissionError(
+                    `Validation failed: Inspection Period (Days) (inspectionDays): ${inspectionDaysError}`,
+                  );
+                  setCurrentStep(4);
+                  return;
+                }
+                if (step > 4 && !isFinancingDaysValid && financingDaysError) {
+                  setTouchedFields((prev) => ({ ...prev, financingDays: true }));
+                  setSubmissionError(
+                    `Validation failed: Financing Contingency (Days) (financingDays): ${financingDaysError}`,
+                  );
+                  setCurrentStep(4);
+                  return;
+                }
+                setSubmissionError(null);
+                if (step > 1) {
+                  setHasDraftResumePrompt(false);
+                }
+                setCurrentStep(step);
+              }}
               className={`flex min-h-[44px] items-center gap-2.5 rounded-none p-2.5 text-left transition-all border ${
                 isActive
                   ? 'border-primary bg-primary/10 text-white shadow-sm'
@@ -836,14 +1511,15 @@ export default function NewProjectPage() {
       </div>
 
       {/* Submission / Validation Error Notice */}
-      {submissionError && (
+      {activeSubmissionError && (
         <div
           role="alert"
+          data-testid="error-banner"
           className="mb-6 rounded-none border border-destructive/40 bg-destructive/10 p-4 text-xs sm:text-sm text-destructive-foreground shadow-lg"
         >
           <div className="flex items-center gap-2 font-semibold">
             <WarningCircle className="h-5 w-5 text-destructive" />
-            {submissionError}
+            {activeSubmissionError}
           </div>
         </div>
       )}
@@ -885,19 +1561,28 @@ export default function NewProjectPage() {
                     placeholder="Search Google Places or type street address…"
                     onSearchChange={(val) => {
                       setAddress(val);
-                      const parts = val.split(',').map((s) => s.trim());
-                      if (parts.length >= 2 && parts[1]) setCity(parts[1]);
+                      if (val.trim().length > 0) {
+                        setSubmissionError(null);
+                        setHasDraftResumePrompt(false);
+                      }
+                      applyParsedAddressComponents(val);
                     }}
-                    onSelectAddress={(selected) => {
+                    onSelectPlaceDetails={(details) => {
+                      applyParsedAddressComponents(address, details);
+                    }}
+                    onSelectAddress={(selected, details) => {
                       setAddress(selected);
-                      const parts = selected.split(',').map((s) => s.trim());
-                      if (parts.length >= 2 && parts[1]) setCity(parts[1]);
+                      if (selected.trim().length > 0) {
+                        setSubmissionError(null);
+                        setHasDraftResumePrompt(false);
+                      }
+                      applyParsedAddressComponents(selected, details);
                     }}
                   />
                 </div>
 
                 {touchedFields.address && !isAddressValid && (
-                  <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
+                  <p data-testid="address-field-error" className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
                     <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
                     Property address is required to locate the deal and pull comps.
                   </p>
@@ -910,41 +1595,118 @@ export default function NewProjectPage() {
                   <input
                     id="unit-input"
                     type="text"
+                    maxLength={20}
                     placeholder="e.g. Apt 4B"
                     value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                    onChange={(e) => {
+                      setUnit(e.target.value.slice(0, 20));
+                      setTouchedFields((prev) => ({ ...prev, unit: true }));
+                    }}
+                    aria-invalid={Boolean(unitError)}
+                    aria-describedby={unitError ? 'unit-field-error' : undefined}
+                    className={`w-full min-h-[44px] rounded-none border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none ${
+                      unitError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-ring'
+                    }`}
                   />
+                  {unitError && (
+                    <p
+                      id="unit-field-error"
+                      data-testid="unit-field-error"
+                      role="alert"
+                      className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                    >
+                      <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                      {unitError}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="city-input" className="block text-xs font-semibold text-white/70 mb-1">City</label>
                   <input
                     id="city-input"
                     type="text"
+                    maxLength={60}
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                    onChange={(e) => {
+                      setCity(e.target.value.slice(0, 60));
+                      setTouchedFields((prev) => ({ ...prev, city: true }));
+                    }}
+                    aria-invalid={Boolean(cityError)}
+                    aria-describedby={cityError ? 'city-field-error' : undefined}
+                    className={`w-full min-h-[44px] rounded-none border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none ${
+                      cityError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-ring'
+                    }`}
                   />
+                  {cityError && (
+                    <p
+                      id="city-field-error"
+                      data-testid="city-field-error"
+                      role="alert"
+                      className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                    >
+                      <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                      {cityError}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="state-input" className="block text-xs font-semibold text-white/70 mb-1">State</label>
                   <input
                     id="state-input"
                     type="text"
+                    maxLength={2}
                     value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                    onChange={(e) => {
+                      setState(e.target.value.toUpperCase().slice(0, 2));
+                      setTouchedFields((prev) => ({ ...prev, state: true }));
+                    }}
+                    aria-invalid={Boolean(stateError)}
+                    aria-describedby={stateError ? 'state-field-error' : undefined}
+                    className={`w-full min-h-[44px] rounded-none border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none ${
+                      stateError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-ring'
+                    }`}
                   />
+                  {stateError && (
+                    <p
+                      id="state-field-error"
+                      data-testid="state-field-error"
+                      role="alert"
+                      className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                    >
+                      <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                      {stateError}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="zip-input" className="block text-xs font-semibold text-white/70 mb-1">Zip Code</label>
                   <input
                     id="zip-input"
                     type="text"
+                    inputMode="numeric"
+                    maxLength={10}
                     value={zipCode}
-                    onChange={(e) => setZipCode(e.target.value)}
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                    onChange={(e) => {
+                      setZipCode(e.target.value.slice(0, 10));
+                      setTouchedFields((prev) => ({ ...prev, zipCode: true }));
+                    }}
+                    aria-invalid={Boolean(zipError)}
+                    aria-describedby={zipError ? 'zip-field-error' : undefined}
+                    className={`w-full min-h-[44px] rounded-none border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none ${
+                      zipError ? 'border-destructive focus:border-destructive' : 'border-border focus:border-ring'
+                    }`}
                   />
+                  {zipError && (
+                    <p
+                      id="zip-field-error"
+                      data-testid="zip-field-error"
+                      role="alert"
+                      className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                    >
+                      <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                      {zipError}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1008,9 +1770,29 @@ export default function NewProjectPage() {
                   type="text"
                   placeholder="e.g. 512-555-0199"
                   value={sourceContactPhone}
-                  onChange={(e) => setSourceContactPhone(e.target.value)}
-                  className="w-full min-h-[44px] rounded-none border border-border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                  onChange={(e) => {
+                    setSourceContactPhone(e.target.value);
+                    setTouchedFields((prev) => ({ ...prev, sourceContactPhone: true }));
+                  }}
+                  aria-invalid={Boolean(sourceContactPhoneError)}
+                  aria-describedby={sourceContactPhoneError ? 'source-contact-phone-error' : undefined}
+                  className={`w-full min-h-[44px] rounded-none border bg-background px-3 py-2 text-base sm:text-xs text-foreground focus:outline-none ${
+                    sourceContactPhoneError
+                      ? 'border-destructive focus:border-destructive'
+                      : 'border-border focus:border-ring'
+                  }`}
                 />
+                {sourceContactPhoneError && (
+                  <p
+                    id="source-contact-phone-error"
+                    data-testid="source-contact-phone-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
+                    <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                    <span>{sourceContactPhoneError}</span>
+                  </p>
+                )}
               </div>
             </div>
 
@@ -1122,7 +1904,11 @@ export default function NewProjectPage() {
               <span className="block text-xs font-semibold text-white/70 mb-2">
                 Investment Strategy Template <span className="text-foreground">*</span>
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2.5" role="group" aria-label="Investment Strategy Template">
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+                role="group"
+                aria-label="Investment Strategy Template"
+              >
                 {STRATEGY_OPTIONS.map((opt) => {
                   const isSelected = strategy === opt.id;
                   return (
@@ -1130,41 +1916,58 @@ export default function NewProjectPage() {
                       key={opt.id}
                       type="button"
                       onClick={() => handleStrategyChange(opt.id)}
-                      className={`min-h-[44px] rounded-none border p-3 text-left transition-all ${
+                      className={`min-h-[44px] flex flex-col justify-between rounded-none border p-3.5 text-left transition-all ${
                         isSelected
                           ? 'border-primary bg-primary/10 shadow-sm text-foreground'
                           : 'border-border bg-card/40 text-muted-foreground hover:text-foreground hover:border-border'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-xs font-bold truncate">{opt.label}</span>
-                        <span className="text-[9px] uppercase px-1.5 py-0.5 rounded-none border border-border font-mono">
+                      <div className="flex flex-wrap items-start justify-between gap-1.5 mb-1.5">
+                        <span
+                          data-testid={`strategy-card-title-${opt.id}`}
+                          className="text-xs font-bold leading-snug"
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="shrink-0 text-[9px] uppercase px-1.5 py-0.5 rounded-none border border-border font-mono">
                           {opt.badge}
                         </span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed">{opt.description}</p>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">{opt.description}</p>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
               <div>
-                <label htmlFor="purchase-price-input" className="block text-xs font-semibold text-white/70 mb-1">
-                  Target Purchase Price <span className="text-foreground">*</span>
-                </label>
+                <div className="flex items-center justify-between gap-2 mb-1.5 min-h-[20px]">
+                  <label htmlFor="purchase-price-input" className="block text-xs font-semibold text-white/70">
+                    Target Purchase Price <span className="text-foreground">*</span>
+                  </label>
+                </div>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
                   <input
                     id="purchase-price-input"
                     type="number"
                     inputMode="decimal"
+                    min={0}
+                    max={MAX_CURRENCY_VALUE}
+                    maxLength={12}
                     value={purchasePrice || ''}
-                    onChange={(e) => setPurchasePrice(Number(e.target.value))}
+                    onKeyDown={blockInvalidCurrencyKeys}
+                    onChange={(e) => {
+                      const nextPrice = clampAndSyncCurrencyDom(e.target, false) ?? 0;
+                      setPurchasePrice(nextPrice);
+                      if (nextPrice > 0) {
+                        setSubmissionError(null);
+                      }
+                    }}
                     onBlur={() => handleBlur('purchasePrice')}
                     placeholder="450000"
-                    className={`w-full min-h-[44px] rounded-none border bg-background py-2.5 pl-8 pr-3.5 text-base sm:text-xs font-semibold text-foreground focus:outline-none ${
+                    className={`w-full min-h-[44px] rounded-none border bg-background py-2.5 pl-8 pr-3.5 font-mono tabular-nums text-base sm:text-xs font-semibold text-foreground focus:outline-none ${
                       touchedFields.purchasePrice && !isPriceValid
                         ? 'border-destructive focus:border-destructive'
                         : 'border-border focus:border-ring'
@@ -1180,27 +1983,36 @@ export default function NewProjectPage() {
               </div>
 
               <div>
-                <label htmlFor="rehab-budget-input" className="block text-xs font-semibold text-white/70 mb-1">Estimated Rehab Budget</label>
+                <div className="flex items-center justify-between gap-2 mb-1.5 min-h-[20px]">
+                  <label htmlFor="rehab-budget-input" className="block text-xs font-semibold text-white/70">
+                    Estimated Rehab Budget
+                  </label>
+                </div>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
                   <input
                     id="rehab-budget-input"
                     type="number"
                     inputMode="decimal"
+                    min={0}
+                    max={MAX_CURRENCY_VALUE}
+                    maxLength={12}
                     value={rehabBudget || ''}
-                    onChange={(e) => setRehabBudget(Number(e.target.value))}
+                    onKeyDown={blockInvalidCurrencyKeys}
+                    onChange={(e) =>
+                      setRehabBudget(clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                    }
                     placeholder="50000"
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none"
+                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 font-mono tabular-nums text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label htmlFor="arv-input" className="block text-xs font-semibold text-white/70">Estimated ARV (After Repair Value)</label>
-                  {!estimatedARV && (
-                    <span className="text-[10px] font-medium text-amber-400">ARV not provided: enter ARV to compute equity/MAO.</span>
-                  )}
+                <div className="flex items-center justify-between gap-2 mb-1.5 min-h-[20px]">
+                  <label htmlFor="arv-input" className="block text-xs font-semibold text-white/70">
+                    Estimated ARV (After Repair Value)
+                  </label>
                 </div>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
@@ -1208,29 +2020,62 @@ export default function NewProjectPage() {
                     id="arv-input"
                     type="number"
                     inputMode="decimal"
+                    min={0}
+                    max={MAX_CURRENCY_VALUE}
+                    maxLength={12}
                     value={estimatedARV ?? ''}
-                    onChange={(e) => setEstimatedARV(e.target.value === '' ? null : Number(e.target.value))}
+                    aria-describedby={!estimatedARV ? 'arv-helper-text' : undefined}
+                    onKeyDown={blockInvalidCurrencyKeys}
+                    onChange={(e) =>
+                      setEstimatedARV(clampAndSyncCurrencyDom(e.target, true))
+                    }
                     placeholder="Enter explicit ARV"
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none"
+                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 font-mono tabular-nums text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none"
                   />
                 </div>
+                {!estimatedARV ? (
+                  <p
+                    id="arv-helper-text"
+                    data-testid="arv-helper-text"
+                    className="mt-1.5 text-[11px] font-medium leading-snug text-amber-400"
+                  >
+                    ARV not provided: enter ARV to compute equity/MAO.
+                  </p>
+                ) : (
+                  <p
+                    data-testid="arv-formatted-preview"
+                    className="mt-1.5 text-[11px] font-mono leading-snug text-muted-foreground tabular-nums"
+                  >
+                    {estimatedARV >= MAX_CURRENCY_VALUE
+                      ? `Formatted: ${formatSignedCurrency(estimatedARV)} (Maximum limit reached)`
+                      : `Formatted: ${formatSignedCurrency(estimatedARV)}`}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="gross-rent-input" className="block text-xs font-semibold text-white/70 mb-1">
-                  Gross Monthly Rent {strategy === 'flip' ? '(N/A for flip)' : ''}
-                </label>
+                <div className="flex items-center justify-between gap-2 mb-1.5 min-h-[20px]">
+                  <label htmlFor="gross-rent-input" className="block text-xs font-semibold text-white/70">
+                    Gross Monthly Rent {strategy === 'flip' ? '(N/A for flip)' : ''}
+                  </label>
+                </div>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
                   <input
                     id="gross-rent-input"
                     type="number"
                     inputMode="decimal"
+                    min={0}
+                    max={MAX_CURRENCY_VALUE}
+                    maxLength={12}
                     disabled={strategy === 'flip'}
                     value={grossRentMonthly || ''}
-                    onChange={(e) => setGrossRentMonthly(Number(e.target.value))}
+                    onKeyDown={blockInvalidCurrencyKeys}
+                    onChange={(e) =>
+                      setGrossRentMonthly(clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                    }
                     placeholder="3800"
-                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none disabled:opacity-40"
+                    className="w-full min-h-[44px] rounded-none border border-border bg-background py-2.5 pl-8 pr-3.5 font-mono tabular-nums text-base sm:text-xs font-semibold text-foreground focus:border-ring focus:outline-none disabled:opacity-40"
                   />
                 </div>
               </div>
@@ -1356,7 +2201,7 @@ export default function NewProjectPage() {
 
           {/* Live Financial Engine Strip */}
           {metrics && (
-            <div className="rounded-none border border-border bg-card p-5 sm:p-6 shadow-sm">
+            <div className="rounded-none border border-border bg-card p-5 sm:p-6 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between mb-4 border-b border-border pb-3">
                 <div className="flex items-center gap-2">
                   <ChartLineUp className="h-4.5 w-4.5 text-foreground" />
@@ -1368,12 +2213,19 @@ export default function NewProjectPage() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-none border border-border bg-background/50 p-3">
-                  <span className="block text-[10px] uppercase text-muted-foreground">MAO (70% Rule)</span>
-                  <span className="text-base font-bold text-foreground">
-                    {maoCalc ? `$${maoCalc.mao.toLocaleString()}` : 'N/A'}
+                <div
+                  data-testid="underwriting-kpi-card"
+                  className="min-w-0 overflow-hidden rounded-none border border-border bg-background/50 p-3"
+                >
+                  <span className="block truncate text-[10px] uppercase text-muted-foreground">MAO (70% Rule)</span>
+                  <span
+                    data-testid="underwriting-kpi-mao"
+                    className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-foreground"
+                    title={maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
+                  >
+                    {maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
                   </span>
-                  <span className="block text-[9.5px] text-muted-foreground mt-0.5">
+                  <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">
                     {maoCalc
                       ? purchasePrice <= maoCalc.mao
                         ? '✓ Within MAO threshold'
@@ -1381,42 +2233,74 @@ export default function NewProjectPage() {
                       : 'ARV not provided: enter ARV to compute equity/MAO.'}
                   </span>
                 </div>
-                <div className="rounded-none border border-border bg-background/50 p-3">
-                  <span className="block text-[10px] uppercase text-muted-foreground">Cash Required</span>
-                  <span className="text-base font-bold text-white">
-                    {metrics ? `$${metrics.cashRequired.toLocaleString()}` : 'N/A'}
+                <div
+                  data-testid="underwriting-kpi-card"
+                  className="min-w-0 overflow-hidden rounded-none border border-border bg-background/50 p-3"
+                >
+                  <span className="block truncate text-[10px] uppercase text-muted-foreground">Cash Required</span>
+                  <span
+                    data-testid="underwriting-kpi-cash-required"
+                    className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-white"
+                    title={metrics ? formatSignedCurrency(metrics.cashRequired) : 'N/A'}
+                  >
+                    {metrics ? formatSignedCurrency(metrics.cashRequired) : 'N/A'}
                   </span>
-                  <span className="block text-[9.5px] text-muted-foreground mt-0.5">Down pmt + rehab + closing</span>
+                  <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">Down pmt + rehab + closing</span>
                 </div>
-                <div className="rounded-none border border-border bg-background/50 p-3">
-                  <span className="block text-[10px] uppercase text-muted-foreground">
+                <div
+                  data-testid="underwriting-kpi-card"
+                  className="min-w-0 overflow-hidden rounded-none border border-border bg-background/50 p-3"
+                >
+                  <span className="block truncate text-[10px] uppercase text-muted-foreground">
                     {strategy === 'flip' ? 'Expected Net Margin' : 'Cash-on-Cash Return'}
                   </span>
-                  <span className="text-base font-bold text-foreground">
+                  <span
+                    data-testid="underwriting-kpi-net-margin"
+                    className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-foreground"
+                    title={
+                      strategy === 'flip'
+                        ? estimatedARV && metrics
+                          ? formatSignedCurrency(Math.round(estimatedARV * 0.95 - metrics.totalCostBasis))
+                          : 'N/A'
+                        : metrics
+                          ? `${metrics.cashOnCashReturnPct.toFixed(1)}%`
+                          : 'N/A'
+                    }
+                  >
                     {strategy === 'flip'
                       ? estimatedARV && metrics
-                        ? `$${Math.round(estimatedARV * 0.95 - metrics.totalCostBasis).toLocaleString()}`
+                        ? formatSignedCurrency(Math.round(estimatedARV * 0.95 - metrics.totalCostBasis))
                         : 'N/A'
                       : metrics
                         ? `${metrics.cashOnCashReturnPct.toFixed(1)}%`
                         : 'N/A'}
                   </span>
-                  <span className="block text-[9.5px] text-muted-foreground mt-0.5">
+                  <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">
                     {strategy === 'flip' ? 'Net profit on sale' : 'Annual cash yield'}
                   </span>
                 </div>
-                <div className="rounded-none border border-border bg-background/50 p-3">
-                  <span className="block text-[10px] uppercase text-muted-foreground">Cap Rate on Cost</span>
-                  <span className="text-base font-bold text-white">
+                <div
+                  data-testid="underwriting-kpi-card"
+                  className="min-w-0 overflow-hidden rounded-none border border-border bg-background/50 p-3"
+                >
+                  <span className="block truncate text-[10px] uppercase text-muted-foreground">Cap Rate on Cost</span>
+                  <span
+                    data-testid="underwriting-kpi-cap-rate"
+                    className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-white"
+                    title={metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : 'N/A'}
+                  >
                     {metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : 'N/A'}
                   </span>
-                  <span className="block text-[9.5px] text-muted-foreground mt-0.5">NOI / Total Cost Basis</span>
+                  <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">NOI / Total Cost Basis</span>
                 </div>
               </div>
-              {metrics?.isNegativeLeverage && (
-                <div className="mt-3 flex items-center justify-between rounded-none border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-200">
+              {metrics?.isNegativeLeverage && hasNegativeKpiValue && (
+                <div
+                  data-testid="negative-leverage-banner"
+                  className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-none border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-200"
+                >
                   <span className="font-semibold">Negative Leverage Detected</span>
-                  <span className="text-[11px] text-amber-300/80">
+                  <span className="text-[11px] font-mono tabular-nums text-amber-300/80">
                     Debt Constant ({metrics.loanConstantPct.toFixed(2)}%) &gt; Yield on Cost ({metrics.yieldOnCostPct.toFixed(1)}%)
                   </span>
                 </div>
@@ -1510,8 +2394,12 @@ export default function NewProjectPage() {
       )}
 
       {/* Step 4: Team and Deadlines */}
-      {currentStep === 4 && (
-        <div className="space-y-6">
+      {(currentStep === 4 || hasVisitedStep4) && (
+        <div
+          className={currentStep === 4 ? 'space-y-6' : 'hidden'}
+          aria-hidden={currentStep !== 4}
+          data-testid="step-4-team-deadlines"
+        >
           <div className="rounded-none border border-border bg-card p-5 sm:p-7 shadow-sm space-y-5">
             <div>
               <h2 className="text-lg font-bold text-white">4. Transaction Deadlines & Closing Team</h2>
@@ -1522,51 +2410,177 @@ export default function NewProjectPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="target-psa-date" className="block text-xs font-semibold text-white/70 mb-1">Target Contract (PSA) Date</label>
+                <label htmlFor="target-psa-date" className="block text-xs font-semibold text-white/70 mb-1">
+                  Target Contract (PSA) Date <span className="text-foreground">*</span>
+                </label>
                 <input
                   id="target-psa-date"
                   type="date"
+                  min="2000-01-01"
+                  max="2100-12-31"
                   value={targetContractDate}
-                  onChange={(e) => setTargetContractDate(e.target.value)}
-                  className="w-full min-h-[44px] rounded-none border border-border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                  onChange={(e) => {
+                    setTargetContractDate(e.target.value);
+                    setTargetContractDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                    setTouchedFields((prev) => ({ ...prev, targetContractDate: true }));
+                  }}
+                  onInput={(e) => {
+                    setTargetContractDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                  }}
+                  onKeyUp={(e) => {
+                    setTargetContractDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                  }}
+                  onBlur={(e) => {
+                    setTargetContractDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                    handleBlur('targetContractDate');
+                  }}
+                  aria-invalid={Boolean(targetContractDateError)}
+                  aria-describedby={targetContractDateError ? 'target-psa-date-error' : undefined}
+                  className={`w-full min-h-[44px] rounded-none border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none ${
+                    targetContractDateError
+                      ? 'border-destructive focus:border-destructive'
+                      : 'border-border focus:border-ring'
+                  }`}
                 />
+                {targetContractDateError && (
+                  <p
+                    id="target-psa-date-error"
+                    role="alert"
+                    data-testid="target-psa-date-error"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
+                    <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                    <span>{targetContractDateError}</span>
+                  </p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="target-closing-date" className="block text-xs font-semibold text-white/70 mb-1">Target Closing Date</label>
+                <label htmlFor="target-closing-date" className="block text-xs font-semibold text-white/70 mb-1">
+                  Target Closing Date <span className="text-foreground">*</span>
+                </label>
                 <input
                   id="target-closing-date"
                   type="date"
+                  min="2000-01-01"
+                  max="2100-12-31"
                   value={targetClosingDate}
-                  onChange={(e) => setTargetClosingDate(e.target.value)}
-                  className="w-full min-h-[44px] rounded-none border border-border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                  onChange={(e) => {
+                    setTargetClosingDate(e.target.value);
+                    setTargetClosingDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                    setTouchedFields((prev) => ({ ...prev, targetClosingDate: true }));
+                  }}
+                  onInput={(e) => {
+                    setTargetClosingDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                  }}
+                  onKeyUp={(e) => {
+                    setTargetClosingDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                  }}
+                  onBlur={(e) => {
+                    setTargetClosingDateBadInput(Boolean(e.currentTarget.validity?.badInput));
+                    handleBlur('targetClosingDate');
+                  }}
+                  aria-invalid={Boolean(targetClosingDateError)}
+                  aria-describedby={targetClosingDateError ? 'target-closing-date-error' : undefined}
+                  className={`w-full min-h-[44px] rounded-none border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none ${
+                    targetClosingDateError
+                      ? 'border-destructive focus:border-destructive'
+                      : 'border-border focus:border-ring'
+                  }`}
                 />
+                {targetClosingDateError && (
+                  <p
+                    id="target-closing-date-error"
+                    role="alert"
+                    data-testid="target-closing-date-error"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
+                    <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                    <span>{targetClosingDateError}</span>
+                  </p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="inspection-days-input" className="block text-xs font-semibold text-white/70 mb-1">Inspection Period (Days)</label>
+                <label htmlFor="inspection-days-input" className="block text-xs font-semibold text-white/70 mb-1">
+                  Inspection Period (Days)
+                </label>
                 <input
                   id="inspection-days-input"
                   type="number"
+                  min={1}
+                  max={365}
                   inputMode="decimal"
-                  value={inspectionDays}
-                  onChange={(e) => setInspectionDays(Number(e.target.value))}
-                  className="w-full min-h-[44px] rounded-none border border-border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                  value={Number.isNaN(inspectionDays) ? '' : inspectionDays}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) => {
+                    const raw = e.target.value.trim();
+                    setInspectionDays(raw === '' ? NaN : Number(raw));
+                    setTouchedFields((prev) => ({ ...prev, inspectionDays: true }));
+                  }}
+                  onBlur={() => handleBlur('inspectionDays')}
+                  aria-invalid={Boolean(inspectionDaysError)}
+                  aria-describedby={inspectionDaysError ? 'inspection-days-error' : undefined}
+                  className={`w-full min-h-[44px] rounded-none border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none ${
+                    inspectionDaysError
+                      ? 'border-destructive focus:border-destructive'
+                      : 'border-border focus:border-ring'
+                  }`}
                 />
-                <p className="mt-1 text-[10px] text-muted-foreground">Standard 10-day physical inspection</p>
+                {inspectionDaysError ? (
+                  <p
+                    id="inspection-days-error"
+                    role="alert"
+                    data-testid="inspection-days-error"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
+                    <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                    <span>{inspectionDaysError}</span>
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[10px] text-muted-foreground">Standard 10-day physical inspection</p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="financing-days-input" className="block text-xs font-semibold text-white/70 mb-1">Financing Contingency (Days)</label>
+                <label htmlFor="financing-days-input" className="block text-xs font-semibold text-white/70 mb-1">
+                  Financing Contingency (Days)
+                </label>
                 <input
                   id="financing-days-input"
                   type="number"
+                  min={1}
+                  max={365}
                   inputMode="decimal"
-                  value={financingDays}
-                  onChange={(e) => setFinancingDays(Number(e.target.value))}
-                  className="w-full min-h-[44px] rounded-none border border-border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:border-ring focus:outline-none"
+                  value={Number.isNaN(financingDays) ? '' : financingDays}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) => {
+                    const raw = e.target.value.trim();
+                    setFinancingDays(raw === '' ? NaN : Number(raw));
+                    setTouchedFields((prev) => ({ ...prev, financingDays: true }));
+                  }}
+                  onBlur={() => handleBlur('financingDays')}
+                  aria-invalid={Boolean(financingDaysError)}
+                  aria-describedby={financingDaysError ? 'financing-days-error' : undefined}
+                  className={`w-full min-h-[44px] rounded-none border bg-background px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none ${
+                    financingDaysError
+                      ? 'border-destructive focus:border-destructive'
+                      : 'border-border focus:border-ring'
+                  }`}
                 />
-                <p className="mt-1 text-[10px] text-muted-foreground">Standard 21-day loan approval window</p>
+                {financingDaysError ? (
+                  <p
+                    id="financing-days-error"
+                    role="alert"
+                    data-testid="financing-days-error"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
+                    <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                    <span>{financingDaysError}</span>
+                  </p>
+                ) : (
+                  <p className="mt-1 text-[10px] text-muted-foreground">Standard 21-day loan approval window</p>
+                )}
               </div>
             </div>
 
@@ -1673,22 +2687,24 @@ export default function NewProjectPage() {
             </div>
 
             {/* Readiness & Zero-Surprise Checklist */}
-            <div className="rounded-none border border-border bg-muted/20 p-4 text-xs">
+            <div className="rounded-none border border-border bg-muted/20 p-4 text-xs overflow-hidden">
               <h3 className="font-bold text-white mb-2 uppercase tracking-wider text-[11px]">
                 Pre-Flight Validation Check (Zero Surprises)
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div className="flex items-center gap-2 text-neutral-300">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Address: <strong className="text-white">{address || 'Missing'}</strong></span>
+                <div className="flex min-w-0 items-center gap-2 text-neutral-300 overflow-hidden">
+                  <span className="text-primary font-bold shrink-0">✓</span>
+                  <span className="truncate">Address: <strong className="text-white">{address || 'Missing'}</strong></span>
                 </div>
-                <div className="flex items-center gap-2 text-neutral-300">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Strategy: <strong className="text-white">{STRATEGY_OPTIONS.find((s) => s.id === strategy)?.label}</strong></span>
+                <div className="flex min-w-0 items-center gap-2 text-neutral-300 overflow-hidden">
+                  <span className="text-primary font-bold shrink-0">✓</span>
+                  <span className="truncate">Strategy: <strong className="text-white">{STRATEGY_OPTIONS.find((s) => s.id === strategy)?.label}</strong></span>
                 </div>
-                <div className="flex items-center gap-2 text-neutral-300">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Purchase Price: <strong className="text-white">${purchasePrice.toLocaleString()}</strong></span>
+                <div className="flex min-w-0 items-center gap-2 text-neutral-300 overflow-hidden">
+                  <span className="text-primary font-bold shrink-0">✓</span>
+                  <span className="truncate" title={formatSignedCurrency(purchasePrice)}>
+                    Purchase Price: <strong className="text-white">{formatSignedCurrency(purchasePrice)}</strong>
+                  </span>
                 </div>
               </div>
             </div>
@@ -1696,12 +2712,12 @@ export default function NewProjectPage() {
             {/* Comprehensive Scorecard */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Property & Strategy Card */}
-              <div className="rounded-none border border-border bg-card/40 p-4 text-xs space-y-2">
+              <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card/40 p-4 text-xs space-y-2">
                 <h4 className="font-bold text-white text-[12px] border-b border-border pb-1.5 mb-2">
                   Property & Strategy
                 </h4>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Address:</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-muted-foreground shrink-0">Address:</span>
                   <input
                     type="text"
                     required
@@ -1711,70 +2727,83 @@ export default function NewProjectPage() {
                     aria-label="Confirmed Property Address"
                   />
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Deal Inside Project:</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-muted-foreground shrink-0">Deal Inside Project:</span>
                   <span className="font-semibold text-white truncate max-w-[220px]">
                     {address ? address.split(',')[0] : 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Deal Serial Number:</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-muted-foreground shrink-0">Deal Serial Number:</span>
                   <span className="font-mono text-[11px] text-neutral-300 truncate max-w-[220px]" title={address}>
                     {address || 'Missing Address'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">33 Underwriting KPIs:</span>
-                  <span className="text-foreground font-semibold">Ready for Analysis</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-muted-foreground shrink-0">33 Underwriting KPIs:</span>
+                  <span className="text-foreground font-semibold truncate">Ready for Analysis</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Type & Specs:</span>
-                  <span className="text-neutral-300">{propertyType} · {beds}b/{baths}ba · {squareFeet} sqft</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Type & Specs:</span>
+                  <span className="text-neutral-300 truncate">{propertyType} · {beds}b/{baths}ba · {squareFeet} sqft</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sourcing Channel:</span>
-                  <span className="text-neutral-300">{sourceType}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Sourcing Channel:</span>
+                  <span className="text-neutral-300 truncate">{sourceType}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Disposition:</span>
-                  <span className="text-foreground font-semibold">
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Disposition:</span>
+                  <span className="text-foreground font-semibold truncate">
                     {STRATEGY_OPTIONS.find((s) => s.id === strategy)?.disposition}
                   </span>
                 </div>
               </div>
 
               {/* Financial & Underwriting Card */}
-              <div className="rounded-none border border-border bg-card/40 p-4 text-xs space-y-2">
+              <div className="min-w-0 overflow-hidden rounded-none border border-border bg-card/40 p-4 text-xs space-y-2">
                 <h4 className="font-bold text-white text-[12px] border-b border-border pb-1.5 mb-2">
                   Underwriting Highlights
                 </h4>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Purchase Price:</span>
-                  <span className="font-semibold text-white">${purchasePrice.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Rehab Budget:</span>
-                  <span className="text-neutral-300">${rehabBudget.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Estimated ARV:</span>
-                  <span className="text-neutral-300">
-                    {estimatedARV ? `$${estimatedARV.toLocaleString()}` : 'N/A'}
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Purchase Price:</span>
+                  <span className="font-semibold text-white truncate" title={formatSignedCurrency(purchasePrice)}>
+                    {formatSignedCurrency(purchasePrice)}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">MAO (70% Rule):</span>
-                  <span className="text-foreground font-semibold">
-                    {maoCalc ? `$${maoCalc.mao.toLocaleString()}` : 'N/A'}
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Rehab Budget:</span>
+                  <span className="text-neutral-300 truncate" title={formatSignedCurrency(rehabBudget)}>
+                    {formatSignedCurrency(rehabBudget)}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">Estimated ARV:</span>
+                  <span
+                    className="text-neutral-300 truncate"
+                    title={estimatedARV ? formatSignedCurrency(estimatedARV) : 'N/A'}
+                  >
+                    {estimatedARV ? formatSignedCurrency(estimatedARV) : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground shrink-0">MAO (70% Rule):</span>
+                  <span
+                    className="text-foreground font-semibold truncate"
+                    title={maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
+                  >
+                    {maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
                   </span>
                 </div>
                 {metrics && (
-                  <div className="flex justify-between border-t border-border pt-1">
-                    <span className="text-muted-foreground">Projected Return:</span>
-                    <span className="text-foreground font-bold">
+                  <div className="flex justify-between gap-2 border-t border-border pt-1">
+                    <span className="text-muted-foreground shrink-0">Projected Return:</span>
+                    <span
+                      data-testid="step5-projected-return"
+                      className="text-foreground font-bold truncate"
+                    >
                       {strategy === 'flip'
                         ? estimatedARV
-                          ? `$${Math.round(estimatedARV * 0.95 - metrics.totalCostBasis).toLocaleString()} Net Profit`
+                          ? `${formatSignedCurrency(Math.max(0, Math.round(estimatedARV - purchasePrice - rehabBudget)))} Net Profit`
                           : 'N/A'
                         : `${metrics.cashOnCashReturnPct.toFixed(1)}% CoC Return`}
                     </span>
@@ -1822,13 +2851,19 @@ export default function NewProjectPage() {
         </div>
       )}
 
-      {/* Sticky Bottom Actions Bar (Desktop & Mobile) */}
-      <div className="fixed bottom-0 left-0 right-0 z-[60] border-t border-border bg-background/95 p-4 backdrop-blur-md">
+      {/* Bottom Actions Bar (Desktop & Mobile) */}
+      <div
+        data-testid="create-project-actions-bar"
+        className="mt-6 rounded-none border border-border bg-card p-4 shadow-sm"
+      >
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
           <button
             type="button"
             disabled={currentStep === 1 || isSubmitting}
-            onClick={() => setCurrentStep((prev) => (Math.max(1, prev - 1) as any))}
+            onClick={() => {
+              setSubmissionError(null);
+              setCurrentStep((prev) => Math.max(1, prev - 1) as any);
+            }}
             className="flex min-h-[44px] items-center gap-1.5 rounded-none border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted/50 disabled:opacity-30 transition"
           >
             <ArrowLeft className="h-4 w-4" />

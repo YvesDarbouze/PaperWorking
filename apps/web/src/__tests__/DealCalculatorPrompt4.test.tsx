@@ -1,4 +1,6 @@
 import React from 'react';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 import { renderToString } from 'react-dom/server';
 
@@ -182,4 +184,40 @@ describe('PROMPT 4 — Top-Nav Deal Calculator Entry & Gated Lifecycle Suite', (
       expect(html).toContain('Phase 01 — Acquisition');
     });
   });
+
+  describe('5. Bug_01 — Header Action Buttons Cursor Pointer & Global Button Cursor Rule', () => {
+    it('applies cursor-pointer to the 4 Deal Calculator header action buttons and defines global button cursor rules in globals.css', () => {
+      const html = renderToString(
+        <DealCalculatorView initialAuthenticated={true} initialSubscriptionStatus="active" />
+      );
+
+      // 1. Start Project from Deal button
+      expect(html).toMatch(
+        /<button[^>]*data-testid="start-project-from-calculator-btn"[^>]*class="[^"]*cursor-pointer[^"]*"/
+      );
+
+      // 2. Share via Email button
+      expect(html).toMatch(
+        /<button[^>]*data-testid="broadcast-deal-btn"[^>]*class="[^"]*cursor-pointer[^"]*"/
+      );
+
+      // 3. Post to Marketplace button
+      expect(html).toMatch(
+        /<button[^>]*data-testid="post-marketplace-btn"[^>]*class="[^"]*cursor-pointer[^"]*"/
+      );
+
+      // 4. Calculate Deal button (with cursor-pointer and disabled:cursor-not-allowed)
+      expect(html).toMatch(
+        /<button[^>]*class="[^"]*cursor-pointer[^"]*disabled:cursor-not-allowed[^"]*"[^>]*>[\s\S]*?Calculate Deal<\/button>/
+      );
+
+      // 5. Global CSS defines cursor: pointer for button:not(:disabled)
+      const globalsCssPath = path.resolve(process.cwd(), 'app/globals.css');
+      const globalsCss = fs.readFileSync(globalsCssPath, 'utf8');
+      expect(globalsCss).toContain('button:not(:disabled)');
+      expect(globalsCss).toContain('cursor: pointer;');
+      expect(globalsCss).toContain('cursor: not-allowed;');
+    });
+  });
 });
+

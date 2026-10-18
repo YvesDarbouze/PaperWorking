@@ -109,7 +109,7 @@ export default function ClosingCostsModal({
       aria-modal="true"
       aria-labelledby="closing-costs-modal-title"
       data-testid="closing-costs-modal"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-150"
     >
       <div
         ref={modalRef}
@@ -188,11 +188,11 @@ export default function ClosingCostsModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-white/10 pt-4 flex items-center justify-between gap-3 shrink-0">
+        <div className="border-t border-white/10 pt-4 flex items-center justify-between gap-2.5 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-none border border-white/10 px-4 py-2.5 text-xs font-medium text-white/70 hover:bg-white/5 hover:text-white transition min-h-[44px]"
+            className="inline-flex items-center justify-center rounded-none border border-white/10 px-4 py-2.5 text-xs font-medium text-white/70 hover:bg-white/5 hover:text-white transition min-h-[44px] whitespace-nowrap"
           >
             Cancel
           </button>
@@ -200,9 +200,9 @@ export default function ClosingCostsModal({
             type="button"
             onClick={handleApply}
             data-testid="apply-closing-costs-btn"
-            className="inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition shadow-sm min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 rounded-none bg-primary px-3.5 sm:px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition shadow-sm min-h-[44px] whitespace-nowrap"
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4 shrink-0" />
             <span>Apply Closing Costs ({formatCurrency(totalAmount)} · {computedPct.toFixed(1)}%)</span>
           </button>
         </div>

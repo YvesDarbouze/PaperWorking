@@ -32,6 +32,7 @@ export default function MarketingFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
+                      data-testid={`footer-column-link-${link.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                       className="text-[13.5px] text-muted-foreground no-underline transition-colors hover:text-foreground"
                     >
                       {link.label}
@@ -52,6 +53,7 @@ export default function MarketingFooter() {
               <Link
                 key={link.label}
                 href={link.href}
+                data-testid={`footer-bottom-link-${link.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                 className="text-[12.5px] text-muted-foreground no-underline transition-colors hover:text-foreground"
               >
                 {link.label}

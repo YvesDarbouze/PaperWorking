@@ -234,6 +234,22 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
 
+    if (asChild && React.isValidElement(children)) {
+      const childElement = children as React.ReactElement<Record<string, unknown>>;
+      const childClassName = typeof childElement.props.className === 'string' ? childElement.props.className : '';
+      return React.cloneElement(childElement, {
+        ...props,
+        className: cn(classes, 'no-underline', childClassName),
+        'data-slot': 'button',
+        'data-variant': effectiveVariant,
+        'data-size': effectiveSize,
+        'data-role': roleVariant,
+        'aria-pressed': ariaPressedVal,
+        'aria-disabled': isAriaDisabled,
+        'aria-busy': isAriaBusy,
+      });
+    }
+
     return (
       <button
         ref={ref}

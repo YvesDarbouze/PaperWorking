@@ -13,7 +13,9 @@ import {
 } from '@/lib/projects/dev-session-auth';
 
 import { validateVendorSkills } from '@/lib/marketplace/vendor-professions';
-import { updateUserProfile } from '@/lib/settings/settings-store';
+import { getUserProfile, updateUserProfile } from '@/lib/settings/settings-store';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const auth = await requireDevSessionAuth();
@@ -22,7 +24,20 @@ export async function GET() {
   }
 
   const profile = await getVendorProfileFromStore(auth.uid);
-  return NextResponse.json({ success: true, profile });
+  const userProfile = await getUserProfile(auth.uid);
+  const mergedProfile: VendorProfileData = {
+    ...profile,
+    ...(Array.isArray(userProfile.vendorSkills) && userProfile.vendorSkills.length > 0
+      ? {
+          vendorSkills: userProfile.vendorSkills,
+          type: userProfile.vendorSkills[0] || profile.type,
+        }
+      : {}),
+    ...(typeof userProfile.companyName === 'string' && userProfile.companyName.trim()
+      ? { companyName: userProfile.companyName.trim() }
+      : {}),
+  };
+  return NextResponse.json({ success: true, profile: mergedProfile });
 }
 
 export async function PUT(request: Request) {

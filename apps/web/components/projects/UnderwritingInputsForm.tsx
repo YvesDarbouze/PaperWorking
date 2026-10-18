@@ -23,6 +23,33 @@ const INDEX_RATES: Record<'SOFR' | 'Prime', number> = {
   Prime: 8.5,
 };
 
+const MAX_CURRENCY_VALUE = 999_999_999_999;
+
+function clampCurrencyInput(raw: number): number {
+  if (!Number.isFinite(raw) || Number.isNaN(raw) || raw < 0) return 0;
+  return Math.min(Math.round(raw), MAX_CURRENCY_VALUE);
+}
+
+function blockInvalidCurrencyKeys(e: React.KeyboardEvent<HTMLInputElement>): void {
+  if (['e', 'E', '+', '-'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
+function clampAndSyncCurrencyDom(inputEl: HTMLInputElement, allowEmpty = false): number | undefined {
+  const raw = inputEl.value.trim();
+  if (raw === '') {
+    return allowEmpty ? undefined : 0;
+  }
+  const parsed = Number(raw.replace(/[$,\s]/g, ''));
+  const clamped = clampCurrencyInput(parsed);
+  const canonicalStr = clamped > 0 ? String(clamped) : raw === '0' ? '0' : '';
+  if (inputEl.value !== canonicalStr) {
+    inputEl.value = canonicalStr;
+  }
+  return allowEmpty && canonicalStr === '' ? undefined : clamped;
+}
+
 export default function UnderwritingInputsForm({
   initialValues,
   basePurchasePrice,
@@ -312,43 +339,59 @@ export default function UnderwritingInputsForm({
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">Total Basis</span>
-            <p className="mt-0.5 font-mono text-sm font-bold text-white tabular-nums">
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45">Total Basis</span>
+            <p
+              className="mt-0.5 truncate font-mono text-sm font-bold text-white tabular-nums"
+              title={`$${headlineEstimates.totalBasis.toLocaleString()}`}
+            >
               ${headlineEstimates.totalBasis.toLocaleString()}
             </p>
           </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">Est. NOI (Y1)</span>
-            <p className="mt-0.5 font-mono text-sm font-bold text-white tabular-nums">
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45">Est. NOI (Y1)</span>
+            <p
+              className="mt-0.5 truncate font-mono text-sm font-bold text-white tabular-nums"
+              title={`$${Math.round(headlineEstimates.estimatedNOI).toLocaleString()}/yr`}
+            >
               ${Math.round(headlineEstimates.estimatedNOI).toLocaleString()}/yr
             </p>
           </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45" title="Market Cap Rate: Est. NOI divided by Purchase Price">Market Cap Rate</span>
-            <p className="mt-0.5 font-mono text-sm font-bold text-emerald-400 tabular-nums">
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45" title="Market Cap Rate: Est. NOI divided by Purchase Price">Market Cap Rate</span>
+            <p
+              className="mt-0.5 truncate font-mono text-sm font-bold text-emerald-400 tabular-nums"
+              title={`${headlineEstimates.quickCapRate}%`}
+            >
               {headlineEstimates.quickCapRate}%
             </p>
           </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">Monthly Debt</span>
-            <p className="mt-0.5 font-mono text-sm font-bold text-white tabular-nums">
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45">Monthly Debt</span>
+            <p
+              className="mt-0.5 truncate font-mono text-sm font-bold text-white tabular-nums"
+              title={`$${headlineEstimates.monthlyPmt.toLocaleString()}/mo`}
+            >
               ${headlineEstimates.monthlyPmt.toLocaleString()}/mo
             </p>
           </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">Est. DSCR</span>
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45">Est. DSCR</span>
             <p
-              className={`mt-0.5 font-mono text-sm font-bold tabular-nums ${
+              className={`mt-0.5 truncate font-mono text-sm font-bold tabular-nums ${
                 Number(headlineEstimates.estimatedDSCR) >= 1.25 ? 'text-emerald-400' : 'text-amber-400'
               }`}
+              title={`${headlineEstimates.estimatedDSCR}x`}
             >
               {headlineEstimates.estimatedDSCR}x
             </p>
           </div>
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-white/45">LTV / Debt</span>
-            <p className="mt-0.5 font-mono text-sm font-bold text-white tabular-nums">
+          <div className="min-w-0 overflow-hidden">
+            <span className="block truncate text-[10px] uppercase tracking-wider text-white/45">LTV / Debt</span>
+            <p
+              className="mt-0.5 truncate font-mono text-sm font-bold text-white tabular-nums"
+              title={`${values.debt.targetLTV}% / $${values.debt.loanAmount.toLocaleString()}`}
+            >
               {values.debt.targetLTV}% / ${values.debt.loanAmount.toLocaleString()}
             </p>
           </div>
@@ -387,9 +430,14 @@ export default function UnderwritingInputsForm({
                   type="number"
                   required
                   min={1}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={1000}
                   value={values.acquisition.purchasePrice}
-                  onChange={(e) => updateField('acquisition.purchasePrice', Number(e.target.value))}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) =>
+                    updateField('acquisition.purchasePrice', clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                  }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
@@ -415,9 +463,14 @@ export default function UnderwritingInputsForm({
                 <input
                   type="number"
                   min={0}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={500}
                   value={values.acquisition.buyerClosingCosts}
-                  onChange={(e) => updateField('acquisition.buyerClosingCosts', Number(e.target.value))}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) =>
+                    updateField('acquisition.buyerClosingCosts', clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                  }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
@@ -440,9 +493,14 @@ export default function UnderwritingInputsForm({
                 <input
                   type="number"
                   min={0}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={1000}
                   value={values.acquisition.rehabBudget}
-                  onChange={(e) => updateField('acquisition.rehabBudget', Number(e.target.value))}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) =>
+                    updateField('acquisition.rehabBudget', clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                  }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
@@ -450,15 +508,10 @@ export default function UnderwritingInputsForm({
 
             {/* After Repair Value (ARV) */}
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 min-h-[16px]">
                 <label className="text-xs font-semibold text-white/80">
                   Estimated After Repair Value (ARV)
                 </label>
-                {!values.acquisition.estimatedARV && (
-                  <span className="text-[10px] font-medium text-amber-400">
-                    ARV not provided: enter ARV to compute equity/MAO.
-                  </span>
-                )}
               </div>
               <div className="relative mt-1">
                 <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-white/40">
@@ -467,18 +520,26 @@ export default function UnderwritingInputsForm({
                 <input
                   type="number"
                   min={0}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={1000}
                   value={values.acquisition.estimatedARV ?? ''}
                   placeholder="e.g. 620000"
+                  onKeyDown={blockInvalidCurrencyKeys}
                   onChange={(e) =>
                     updateField(
                       'acquisition.estimatedARV',
-                      e.target.value === '' ? undefined : Number(e.target.value),
+                      clampAndSyncCurrencyDom(e.target, true),
                     )
                   }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-4 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
               </div>
+              {!values.acquisition.estimatedARV && (
+                <p className="mt-1.5 text-[11px] font-medium leading-snug text-amber-400">
+                  ARV not provided: enter ARV to compute equity/MAO.
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -514,9 +575,14 @@ export default function UnderwritingInputsForm({
                   type="number"
                   required
                   min={0}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={100}
                   value={values.rentRoll.grossScheduledRent}
-                  onChange={(e) => updateField('rentRoll.grossScheduledRent', Number(e.target.value))}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) =>
+                    updateField('rentRoll.grossScheduledRent', clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                  }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">
@@ -540,9 +606,14 @@ export default function UnderwritingInputsForm({
                 <input
                   type="number"
                   min={0}
+                  max={MAX_CURRENCY_VALUE}
+                  maxLength={12}
                   step={50}
                   value={values.rentRoll.otherIncome ?? 0}
-                  onChange={(e) => updateField('rentRoll.otherIncome', Number(e.target.value))}
+                  onKeyDown={blockInvalidCurrencyKeys}
+                  onChange={(e) =>
+                    updateField('rentRoll.otherIncome', clampAndSyncCurrencyDom(e.target, false) ?? 0)
+                  }
                   className="w-full rounded-none border border-white/10 bg-white/[0.04] py-2.5 pl-8 pr-16 font-mono text-sm font-semibold tabular-nums text-white focus:border-ring focus:outline-none"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-white/40">

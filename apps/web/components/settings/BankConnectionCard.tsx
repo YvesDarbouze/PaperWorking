@@ -91,7 +91,7 @@ export function BankConnectionCard({
   if (disconnected) {
     return (
       <div
-        className="p-4 rounded-lg border border-border bg-muted/40 text-muted-foreground flex items-center justify-between"
+        className="p-4 rounded-none border border-border bg-muted/40 text-muted-foreground flex items-center justify-between"
         data-testid={`bank-card-disconnected-${connection.itemId}`}
       >
         <div>
@@ -105,7 +105,7 @@ export function BankConnectionCard({
 
   return (
     <div
-      className="p-4 rounded-lg border border-border bg-card shadow-xs flex flex-col gap-3"
+      className="p-4 rounded-none border border-border bg-card shadow-xs flex flex-col gap-3"
       data-testid={`bank-card-${connection.itemId}`}
     >
       <div className="flex items-start justify-between">

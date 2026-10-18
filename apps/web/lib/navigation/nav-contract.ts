@@ -32,7 +32,7 @@ export function isSubscribedInvestor(ctx?: NavigationContext | null): boolean {
   return !plan.includes('free') && !plan.includes('none') && !plan.includes('unsubscribed');
 }
 
-export function resolvePrimaryNav(ctx: NavigationContext): NavItem[] {
+export function resolvePrimaryNav(ctx?: NavigationContext | null): NavItem[] {
   const isVendor = isVendorContext(ctx);
   const isSubscribed = isSubscribedInvestor(ctx);
 
@@ -74,7 +74,7 @@ export function resolvePrimaryNav(ctx: NavigationContext): NavItem[] {
   ];
 }
 
-export function resolveAccountNav(_ctx: NavigationContext): NavItem[] {
+export function resolveAccountNav(_ctx?: NavigationContext | null): NavItem[] {
   return [
     { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: 'account_circle', rolesAllowed: ['investor', 'vendor'] },
     { id: 'settings', label: 'Settings', href: '/dashboard/settings', icon: 'settings', rolesAllowed: ['investor', 'vendor'] },
@@ -102,42 +102,12 @@ export function resolveBottomNav(ctx?: NavigationContext | null): NavItem[] {
 }
 
 export function resolveDrawerNav(ctx?: NavigationContext | null): NavItem[] {
-  const isVendor = isVendorContext(ctx);
-  const isSubscribed = isSubscribedInvestor(ctx);
-
-  if (isVendor) {
-    return [
-      { id: 'marketplace', label: 'Vendor Directory', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['vendor'] },
-      { id: 'deals', label: 'Deals Marketplace', href: '/dashboard/deals', icon: 'handshake', rolesAllowed: ['vendor'] },
-      { id: 'vendor-portal', label: 'Vendor Portal / RFPs', href: '/vendor-portal', icon: 'request_quote', rolesAllowed: ['vendor'] },
-      { id: 'insights', label: 'Insights', href: '/dashboard/insights', icon: 'insights', rolesAllowed: ['vendor'] },
-      { id: 'reports', label: 'Reports', href: '/dashboard/reports', icon: 'description', rolesAllowed: ['vendor'] },
-      { id: 'inbox', label: 'Inbox', href: '/dashboard/inbox', icon: 'inbox', rolesAllowed: ['vendor'] },
-      { id: 'team', label: 'Team', href: '/dashboard/team', icon: 'groups', rolesAllowed: ['vendor'] },
-      { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: 'account_circle', rolesAllowed: ['vendor'] },
-      { id: 'settings', label: 'Settings', href: '/dashboard/settings', icon: 'settings', rolesAllowed: ['vendor'] },
-    ];
-  }
-
-  return [
-    {
-      id: 'deals',
-      label: 'Deals Marketplace',
-      href: '/dashboard/deals',
-      icon: 'handshake',
-      requiresSubscription: true,
-      isLocked: !isSubscribed,
-      rolesAllowed: ['investor'],
-    },
-    { id: 'insights', label: 'Portfolio Insights', href: '/dashboard/insights', icon: 'insights', rolesAllowed: ['investor'] },
-    { id: 'reports', label: 'Reports & Statements', href: '/dashboard/reports', icon: 'description', rolesAllowed: ['investor'] },
-    { id: 'inbox', label: 'Inbox & Notifications', href: '/dashboard/inbox', icon: 'inbox', rolesAllowed: ['investor'] },
-    { id: 'team', label: 'Team Members', href: '/dashboard/team', icon: 'groups', rolesAllowed: ['investor'] },
-    { id: 'marketplace', label: 'Vendor Directory', href: '/dashboard/marketplace', icon: 'storefront', rolesAllowed: ['investor'] },
-    { id: 'vendor-portal', label: 'Submit RFP / Quote', href: '/vendor-portal', icon: 'request_quote', rolesAllowed: ['investor'] },
-    { id: 'profile', label: 'Profile', href: '/dashboard/profile', icon: 'account_circle', rolesAllowed: ['investor'] },
-    { id: 'settings', label: 'Settings & Billing', href: '/dashboard/settings', icon: 'settings', rolesAllowed: ['investor'] },
-  ];
+  const safeCtx: NavigationContext = ctx ?? {};
+  const primary = resolvePrimaryNav(safeCtx).map((item) =>
+    item.id === 'vendor-marketplace' ? { ...item, id: 'marketplace' } : item
+  );
+  const account = resolveAccountNav(safeCtx);
+  return [...primary, ...account];
 }
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -147,7 +117,10 @@ const ROUTE_LABELS: Record<string, string> = {
   '/dashboard/projects': 'Projects',
   '/deal-calculator': 'Deal Calculator',
   '/support': 'Support',
+  '/dashboard/support': 'Support',
+  '/help': 'Support',
   '/dashboard/deals': 'Deals Marketplace',
+  '/dashboard/calendar': 'Schedule & Calendar',
   '/dashboard/inbox': 'Inbox',
   '/dashboard/team': 'Team',
   '/dashboard/reports': 'Reports',
@@ -163,7 +136,7 @@ export function getPageLabel(pathname: string): string {
   const sorted = Object.keys(ROUTE_LABELS).sort((a, b) => b.length - a.length);
   for (const route of sorted) {
     if (route === '/dashboard') {
-      // Exact only — avoid matching every /dashboard/* child as Portfolio
+      // Exact only - avoid matching every /dashboard/* child as Portfolio
       continue;
     }
     if (pathname.startsWith(route)) return ROUTE_LABELS[route];
@@ -176,11 +149,31 @@ export function isNavItemActive(pathname: string, href: string): boolean {
   if (pathname === href) return true;
   if (href === '/dashboard') return false;
   if (href === '/projects' && pathname.startsWith('/project')) return true;
+  if (
+    href === '/support' &&
+    (pathname === '/dashboard/support' || pathname.startsWith('/dashboard/support/'))
+  ) {
+    return true;
+  }
   return pathname.startsWith(`${href}/`);
 }
 
-/** Determines whether the current route belongs to one of the mobile drawer items. */
+const DEDICATED_BOTTOM_NAV_HREFS = new Set([
+  '/dashboard',
+  '/projects',
+  '/deal-calculator',
+  '/support',
+  '/dashboard/support',
+]);
+
+/** Determines whether the current route belongs to one of the mobile drawer overflow items. */
 export function isDrawerRouteActive(pathname: string, drawerItems: NavItem[]): boolean {
-  return drawerItems.some((item) => isNavItemActive(pathname, item.href));
+  if (DEDICATED_BOTTOM_NAV_HREFS.has(pathname) || pathname.startsWith('/project')) {
+    return false;
+  }
+  return drawerItems
+    .filter((item) => !DEDICATED_BOTTOM_NAV_HREFS.has(item.href))
+    .some((item) => isNavItemActive(pathname, item.href));
 }
+
 

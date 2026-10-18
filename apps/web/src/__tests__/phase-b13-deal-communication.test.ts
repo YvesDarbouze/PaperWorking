@@ -44,7 +44,7 @@ describe('phase B13 — Next route wiring', () => {
     const broadcast = readFileSync(join(here, '../../app/api/deals/broadcast/route.ts'), 'utf8');
     const reply = readFileSync(join(here, '../../app/api/deals/reply/route.ts'), 'utf8');
 
-    expect(broadcast).toContain('buildDealBroadcastService');
+    expect(broadcast).toContain('handleDealsBroadcastPost');
     expect(reply).toContain('buildDealReplyService');
     expect(reply).toContain('deal_reply_webhook_use_nest');
     expect(broadcast).not.toContain('prisma.');

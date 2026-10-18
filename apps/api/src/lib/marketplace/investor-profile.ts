@@ -69,6 +69,7 @@ export interface InvestorProfile {
   displayName: string;
   profileType: ProfileType;
   businessName?: string;
+  headline?: string;
   avatarUrl?: string;
   teamLogoUrl?: string;
   publicBio?: string;
@@ -296,6 +297,8 @@ export function filterProfiles(
 export interface EditableProfile {
   profileType: ProfileType;
   businessName: string;
+  headline?: string;
+  avatarUrl?: string;
   teamLogoUrl: string;
   publicBio: string;
   location: string;
@@ -324,7 +327,7 @@ function str(v: unknown, max: number): string {
  * Validate and normalise a profile PUT body.
  *
  * Pure so the rules that decide what reaches Firestore are testable without a
- * database. Unknown keys are dropped rather than merged — the caller writes the
+ * database. Unknown keys are dropped rather than merged - the caller writes the
  * returned object, so anything not named here can never be persisted.
  */
 export function sanitizeProfileInput(body: unknown): SanitizeResult {
@@ -372,11 +375,16 @@ export function sanitizeProfileInput(body: unknown): SanitizeResult {
     // A row with neither an identity nor an email is noise on the public roster.
     .filter((m) => m.uid || m.invitedEmail || m.displayName);
 
+  const headline = typeof b.headline === 'string' ? str(b.headline, 200) : undefined;
+  const avatarUrl = typeof b.avatarUrl === 'string' ? b.avatarUrl.trim() : undefined;
+
   return {
     ok: true,
     value: {
       profileType,
       businessName,
+      ...(headline !== undefined ? { headline } : {}),
+      ...(avatarUrl !== undefined ? { avatarUrl } : {}),
       teamLogoUrl: str(b.teamLogoUrl, 500),
       publicBio: str(b.publicBio, MAX_BIO_LENGTH),
       location: str(b.location, 120),
@@ -390,3 +398,4 @@ export function sanitizeProfileInput(body: unknown): SanitizeResult {
     },
   };
 }
+

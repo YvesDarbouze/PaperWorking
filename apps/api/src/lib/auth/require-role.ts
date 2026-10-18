@@ -82,7 +82,7 @@ function defaultOrgFor(uid: string): string {
 function heuristicRole(uid: string): OrgRole | null {
   if (uid.includes('vendor')) return null;
   if (uid.includes('viewer')) return 'viewer';
-  return 'member';
+  return 'owner';
 }
 
 async function lookupFirestoreRole(

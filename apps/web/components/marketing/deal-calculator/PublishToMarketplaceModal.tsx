@@ -27,6 +27,12 @@ export default function PublishToMarketplaceModal({
   onSuccess,
 }: PublishToMarketplaceModalProps) {
   const [title, setTitle] = useState(address || 'New Investment Opportunity');
+  useEffect(() => {
+    if (address && address.trim()) {
+      setTitle(address.trim());
+    }
+  }, [address]);
+
   const irrText =
     typeof calculations?.projectedIrrPct === 'number' && !isNaN(calculations.projectedIrrPct)
       ? `${calculations.projectedIrrPct.toFixed(1)}%`
@@ -60,14 +66,16 @@ export default function PublishToMarketplaceModal({
     setLoading(true);
     setError(null);
 
+    const resolvedAddress = (title && title.trim()) || (address && address.trim()) || 'Austin, TX';
+
     try {
       const res = await fetch('/api/deals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectId: projectId || undefined,
-          name: title,
-          address,
+          ...(projectId ? { projectId } : {}),
+          name: title.trim() || resolvedAddress,
+          address: resolvedAddress,
           purchasePrice,
           rehabCost: (calculations as any).rehabBudget || (calculations as any).estimatedRehabBudget || 0,
           fundingTarget,
@@ -117,26 +125,26 @@ export default function PublishToMarketplaceModal({
       aria-modal="true"
       aria-labelledby="publish-deal-title"
       data-testid="publish-to-marketplace-modal"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/85 p-0 sm:p-4 backdrop-blur-md"
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg rounded-none border-t sm:border border-border bg-card p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
+        className="relative w-full max-w-lg rounded-none border-t sm:border border-neutral-800 bg-neutral-950 text-neutral-100 p-5 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:pb-6"
       >
-        <div className="flex items-center justify-between border-b border-border pb-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-neutral-800 pb-4 shrink-0">
           <div>
-            <h2 id="publish-deal-title" className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-              <Storefront size={20} className="text-primary" />
+            <h2 id="publish-deal-title" className="text-base sm:text-lg font-bold text-neutral-100 flex items-center gap-2">
+              <Storefront size={20} className="text-neutral-100" />
               Post Deal Card to Marketplace
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5">
               Publish this verified pro-forma to accredited investors on PaperWorking.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-none border border-border text-muted-foreground hover:text-foreground hover:bg-accent min-h-[44px] min-w-[44px]"
+            className="flex h-9 w-9 items-center justify-center rounded-none border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800 min-h-[44px] min-w-[44px]"
             aria-label="Close modal"
           >
             <X size={18} />
@@ -151,9 +159,9 @@ export default function PublishToMarketplaceModal({
           )}
 
           <div>
-            <label htmlFor="publish-deal-title-input" className="block text-[11px] font-medium text-muted-foreground mb-1 flex items-center justify-between">
+            <label htmlFor="publish-deal-title-input" className="block text-[11px] font-medium text-neutral-300 mb-1 flex items-center justify-between">
               <span>Deal Name · Serial Number (Full Project Address) *</span>
-              <span className="text-[10px] text-muted-foreground/60 font-mono">Unique Serial ID</span>
+              <span className="text-[10px] text-neutral-500 font-mono">Unique Serial ID</span>
             </label>
             <input
               id="publish-deal-title-input"
@@ -162,15 +170,15 @@ export default function PublishToMarketplaceModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. 1247 Elm Street, Austin, TX 78702"
-              className="w-full rounded-none border border-border bg-background p-2.5 text-foreground font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
+              className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-neutral-100 font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-neutral-400 min-h-[44px]"
             />
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-[10px] text-neutral-400">
               The deal name is the full project address, functioning as its permanent serial number. The marketplace deal card displays the street address and reveals the full address serial on hover.
             </p>
           </div>
 
           <div>
-            <label htmlFor="publish-deal-pitch-input" className="block text-[11px] font-medium text-muted-foreground mb-1">
+            <label htmlFor="publish-deal-pitch-input" className="block text-[11px] font-medium text-neutral-300 mb-1">
               Investment Thesis &amp; Strategy Pitch *
             </label>
             <textarea
@@ -179,13 +187,13 @@ export default function PublishToMarketplaceModal({
               rows={3}
               value={pitch}
               onChange={(e) => setPitch(e.target.value)}
-              className="w-full rounded-none border border-border bg-background p-2.5 text-foreground text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
+              className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-neutral-100 text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-neutral-400 min-h-[44px]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="publish-deal-target-raise" className="block text-[11px] font-medium text-muted-foreground mb-1">
+              <label htmlFor="publish-deal-target-raise" className="block text-[11px] font-medium text-neutral-300 mb-1">
                 Target Capital Raise ($) *
               </label>
               <input
@@ -195,11 +203,11 @@ export default function PublishToMarketplaceModal({
                 min={1000}
                 value={fundingTarget}
                 onChange={(e) => setFundingTarget(Number(e.target.value))}
-                className="w-full rounded-none border border-border bg-background p-2.5 text-foreground font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-neutral-100 font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-neutral-400 min-h-[44px]"
               />
             </div>
             <div>
-              <label htmlFor="publish-deal-min-ticket" className="block text-[11px] font-medium text-muted-foreground mb-1">
+              <label htmlFor="publish-deal-min-ticket" className="block text-[11px] font-medium text-neutral-300 mb-1">
                 Minimum Investment Ticket ($) *
               </label>
               <input
@@ -209,32 +217,32 @@ export default function PublishToMarketplaceModal({
                 min={1000}
                 value={minInvestment}
                 onChange={(e) => setMinInvestment(Number(e.target.value))}
-                className="w-full rounded-none border border-border bg-background p-2.5 text-foreground font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-neutral-100 font-mono text-base sm:text-xs focus:outline-none focus:ring-1 focus:ring-neutral-400 min-h-[44px]"
               />
             </div>
           </div>
 
           {/* Underwriting highlights verified from Deal Calculator */}
-          <div className="rounded-none border border-border bg-card/50 p-3 space-y-2">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+          <div className="rounded-none border border-neutral-800 bg-neutral-900/70 p-3 space-y-2">
+            <p className="text-[10px] uppercase font-bold tracking-wider text-neutral-400">
               Verified Underwriting Pro-Forma Metrics
             </p>
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="rounded-none bg-muted/40 p-2 border border-border/50">
-                <span className="text-[10px] text-muted-foreground block">Target IRR</span>
-                <span className="font-mono font-bold text-foreground text-xs block mt-0.5">
+              <div className="rounded-none bg-neutral-950 p-2 border border-neutral-800">
+                <span className="text-[10px] text-neutral-400 block">Target IRR</span>
+                <span className="font-mono font-bold text-neutral-100 text-xs block mt-0.5">
                   {calculations.projectedIrrPct !== null ? `${calculations.projectedIrrPct.toFixed(1)}%` : 'N/A'}
                 </span>
               </div>
-              <div className="rounded-none bg-muted/40 p-2 border border-border/50">
-                <span className="text-[10px] text-muted-foreground block">Year-1 NOI</span>
-                <span className="font-mono font-bold text-foreground text-xs block mt-0.5">
+              <div className="rounded-none bg-neutral-950 p-2 border border-neutral-800">
+                <span className="text-[10px] text-neutral-400 block">Year-1 NOI</span>
+                <span className="font-mono font-bold text-neutral-100 text-xs block mt-0.5">
                   {formatCurrency(calculations.netOperatingIncome)}
                 </span>
               </div>
-              <div className="rounded-none bg-muted/40 p-2 border border-border/50">
-                <span className="text-[10px] text-muted-foreground block">Purchase Price</span>
-                <span className="font-mono font-bold text-foreground text-xs block mt-0.5">
+              <div className="rounded-none bg-neutral-950 p-2 border border-neutral-800">
+                <span className="text-[10px] text-neutral-400 block">Purchase Price</span>
+                <span className="font-mono font-bold text-neutral-100 text-xs block mt-0.5">
                   {formatCurrency(purchasePrice)}
                 </span>
               </div>
@@ -243,7 +251,7 @@ export default function PublishToMarketplaceModal({
 
           {/* Placement & Visibility Mode */}
           <div>
-            <span className="block text-[11px] font-medium text-muted-foreground mb-1">
+            <span className="block text-[11px] font-medium text-neutral-300 mb-1">
               Deal Placement &amp; Visibility *
             </span>
             <div className="grid grid-cols-2 gap-2" role="group" aria-label="Deal Placement & Visibility">
@@ -253,15 +261,15 @@ export default function PublishToMarketplaceModal({
                 data-testid="modal-visibility-marketplace"
                 className={`p-2.5 rounded-none border text-left min-h-[44px] transition-colors ${
                   visibility === 'marketplace'
-                    ? 'border-foreground bg-accent text-foreground'
-                    : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                    ? 'border-neutral-200 bg-neutral-800 text-neutral-100'
+                    : 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-neutral-100'
                 }`}
               >
                 <div className="font-semibold text-xs flex items-center gap-1.5">
                   <Buildings size={14} />
                   Marketplace
                 </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">Discoverable publicly</div>
+                <div className="text-[10px] text-neutral-400 mt-0.5">Discoverable publicly</div>
               </button>
 
               <button
@@ -271,38 +279,39 @@ export default function PublishToMarketplaceModal({
                 className={`p-2.5 rounded-none border text-left min-h-[44px] transition-colors ${
                   visibility === 'private'
                     ? 'border-amber-400 bg-amber-950/40 text-amber-200'
-                    : 'border-border bg-background text-muted-foreground hover:text-foreground'
+                    : 'border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-neutral-100'
                 }`}
               >
                 <div className="font-semibold text-xs flex items-center gap-1.5">
                   <Lock size={14} />
                   Private Deal
                 </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">Hidden; share via msg/email</div>
+                <div className="text-[10px] text-neutral-400 mt-0.5">Hidden; share via msg/email</div>
               </button>
             </div>
           </div>
 
           {/* Off-Platform Closing Notice */}
-          <div className="rounded-none border border-border bg-card/50 p-3 text-[11px] text-muted-foreground flex items-start gap-2.5">
-            <ShieldCheck size={18} className="text-muted-foreground shrink-0 mt-0.5" />
+          <div className="rounded-none border border-neutral-800 bg-neutral-900/60 p-3 text-[11px] text-neutral-400 flex items-start gap-2.5">
+            <ShieldCheck size={18} className="text-neutral-400 shrink-0 mt-0.5" />
             <p>
-              <strong className="text-foreground font-semibold">Off-Platform Closing:</strong> PaperWorking provides social deal discovery, underwriting calculations, and direct message negotiation. Final subscription agreements, partner onboarding, and capital closing occur directly between counterparties off-platform.
+              <strong className="text-neutral-100 font-semibold">Off-Platform Closing:</strong> PaperWorking provides social deal discovery, underwriting calculations, and direct message negotiation. Final subscription agreements, partner onboarding, and capital closing occur directly between counterparties off-platform.
             </p>
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-800">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-none px-4 py-2.5 text-muted-foreground hover:bg-accent hover:text-foreground text-xs font-semibold min-h-[44px]"
+              className="rounded-none px-4 py-2.5 text-neutral-400 hover:bg-neutral-900 hover:text-neutral-100 text-xs font-semibold min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-none bg-primary text-primary-foreground hover:bg-primary/90 px-5 py-2.5 font-bold text-xs shadow-none transition active:scale-95 disabled:opacity-50 min-h-[44px]"
+              data-testid="publish-marketplace-submit-btn"
+              className="rounded-none bg-neutral-100 text-neutral-950 hover:bg-white px-5 py-2.5 font-bold text-xs shadow-none transition active:scale-95 disabled:opacity-50 min-h-[44px]"
             >
               {loading ? 'Publishing Deal...' : visibility === 'private' ? 'Save as Private Deal' : 'Publish to Marketplace'}
             </button>

@@ -136,6 +136,43 @@ function ensureVendorBootstrap(): void {
 // Initial bootstrap call
 ensureVendorBootstrap();
 
+export const FIRESTORE_READ_TIMEOUT_MS = Number(process.env.FIRESTORE_READ_TIMEOUT_MS ?? 800);
+export const FIRESTORE_WRITE_TIMEOUT_MS = Number(process.env.FIRESTORE_WRITE_TIMEOUT_MS ?? 1500);
+
+function withFirestoreTimeout<T>(
+  promise: Promise<T>,
+  label: string,
+  timeoutMs: number = FIRESTORE_READ_TIMEOUT_MS,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Firestore ${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function stripUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => item !== undefined)
+      .map((item) => stripUndefinedDeep(item)) as unknown as T;
+  }
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (v !== undefined) {
+        out[k] = stripUndefinedDeep(v);
+      }
+    }
+    return out as T;
+  }
+  return value;
+}
+
 /* =========================================================================
    1. VENDOR REQUESTS & BIDS
    ========================================================================= */
@@ -153,7 +190,7 @@ export async function listVendorRequestsFromStore(
       if (organizationId) {
         queryRef = queryRef.where('organizationId', '==', organizationId);
       }
-      const snap = await queryRef.get();
+      const snap = await withFirestoreTimeout(queryRef.get(), 'list vendor_requests', FIRESTORE_READ_TIMEOUT_MS);
       if (!snap.empty) {
         const records = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as SeedVendorRequest);
         for (const r of records) {
@@ -177,7 +214,11 @@ export async function getVendorRequestFromStore(
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const doc = await db.collection('vendor_requests').doc(requestId).get();
+      const doc = await withFirestoreTimeout(
+        db.collection('vendor_requests').doc(requestId).get(),
+        `read vendor_requests/${requestId}`,
+        FIRESTORE_READ_TIMEOUT_MS,
+      );
       if (doc.exists) {
         const record = { id: doc.id, ...doc.data() } as SeedVendorRequest;
         memoryRequestsCache.set(requestId, record);
@@ -209,12 +250,12 @@ export async function updateVendorRequestInStore(input: {
     throw new Error('Request not found');
   }
 
-  const updated: SeedVendorRequest = {
+  const updated: SeedVendorRequest = stripUndefinedDeep({
     ...existing,
     status: input.targetStatus,
     quotedFee: input.targetStatus === 'QUOTED' ? input.quotedFee : existing.quotedFee,
     message: input.message || existing.message,
-  };
+  });
 
   memoryRequestsCache.set(input.requestId, updated);
 
@@ -222,18 +263,22 @@ export async function updateVendorRequestInStore(input: {
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('vendor_requests')
-        .doc(input.requestId)
-        .set(
-          {
-            ...updated,
-            updatedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
+      await withFirestoreTimeout(
+        db
+          .collection('vendor_requests')
+          .doc(input.requestId)
+          .set(
+            {
+              ...updated,
+              updatedAt: FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          ),
+        `write vendor_requests/${input.requestId}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
     } catch (err: any) {
-      console.error(`[vendor-store] Failed to update request ${input.requestId} in Firestore:`, err?.message || err);
+      console.warn(`[vendor-store] Failed to update request ${input.requestId} in Firestore:`, err?.message || err);
     }
   }
 
@@ -248,7 +293,7 @@ export async function createVendorRequestInStore(
   const id = payload.id || `vreq-${secureRandomHex(12)}`;
   const now = new Date().toISOString();
 
-  const record: SeedVendorRequest = {
+  const record: SeedVendorRequest = stripUndefinedDeep({
     id,
     projectId: payload.projectId,
     status: payload.status || 'PENDING',
@@ -259,7 +304,8 @@ export async function createVendorRequestInStore(
     ...(payload.vendorId ? { vendorId: payload.vendorId } : {}),
     ...(payload.requesterUid ? { requesterUid: payload.requesterUid } : {}),
     ...(payload.projectLabel ? { projectLabel: payload.projectLabel } : {}),
-  };
+    ...(payload.location ? { location: payload.location } : {}),
+  });
 
   memoryRequestsCache.set(id, record);
 
@@ -267,19 +313,20 @@ export async function createVendorRequestInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('vendor_requests')
-        .doc(id)
-        .set({
-          ...record,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        });
+      await withFirestoreTimeout(
+        db
+          .collection('vendor_requests')
+          .doc(id)
+          .set({
+            ...record,
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          }),
+        `create vendor_requests/${id}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
     } catch (err: any) {
-      console.error(`[vendor-store] Failed to create request ${id} in Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw err;
-      }
+      console.warn(`[vendor-store] Firestore fallback for request ${id}: saved to memory cache (${err?.message || 'timeout'}).`);
     }
   }
 
@@ -298,9 +345,13 @@ export async function getVendorProfileFromStore(
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const doc = await db.collection('vendor_profiles').doc(vendorUid).get();
+      const doc = await withFirestoreTimeout(
+        db.collection('vendor_profiles').doc(vendorUid).get(),
+        `read vendor_profiles/${vendorUid}`,
+        FIRESTORE_READ_TIMEOUT_MS,
+      );
       if (doc.exists) {
-        const data = doc.data() as VendorProfileData;
+        const data = stripUndefinedDeep(doc.data() as VendorProfileData);
         memoryProfilesCache.set(vendorUid, data);
         return data;
       }
@@ -319,14 +370,15 @@ export async function updateVendorProfileInStore(
   ensureVendorBootstrap();
 
   const existing = await getVendorProfileFromStore(vendorUid);
-  const updated: VendorProfileData = {
+  const sanitizedProfile = stripUndefinedDeep(profile);
+  const updated: VendorProfileData = stripUndefinedDeep({
     ...existing,
-    ...profile,
-    specialties: profile.specialties ?? existing.specialties,
-    licensingStates: profile.licensingStates ?? existing.licensingStates,
-    serviceAreas: profile.serviceAreas ?? existing.serviceAreas,
-    vendorSkills: profile.vendorSkills ?? existing.vendorSkills,
-  };
+    ...sanitizedProfile,
+    specialties: sanitizedProfile.specialties ?? existing.specialties,
+    licensingStates: sanitizedProfile.licensingStates ?? existing.licensingStates,
+    serviceAreas: sanitizedProfile.serviceAreas ?? existing.serviceAreas,
+    vendorSkills: sanitizedProfile.vendorSkills ?? existing.vendorSkills,
+  });
 
   memoryProfilesCache.set(vendorUid, updated);
 
@@ -366,21 +418,22 @@ export async function updateVendorProfileInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('vendor_profiles')
-        .doc(vendorUid)
-        .set(
-          {
-            ...updated,
-            updatedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
+      await withFirestoreTimeout(
+        db
+          .collection('vendor_profiles')
+          .doc(vendorUid)
+          .set(
+            {
+              ...updated,
+              updatedAt: FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          ),
+        `write vendor_profiles/${vendorUid}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
     } catch (err: any) {
-      console.error(`[vendor-store] Failed to save profile ${vendorUid} to Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw err;
-      }
+      console.warn(`[vendor-store] Firestore fallback for vendor profile ${vendorUid}: saved to memory cache (${err?.message || 'timeout'}).`);
     }
   }
 
@@ -405,7 +458,11 @@ export async function listMarketplaceVendorsFromStore(filters?: {
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      const snap = await db.collection('marketplace_vendors').get();
+      const snap = await withFirestoreTimeout(
+        db.collection('marketplace_vendors').get(),
+        'list marketplace_vendors',
+        FIRESTORE_READ_TIMEOUT_MS,
+      );
       if (!snap.empty) {
         list = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as VendorRecord);
         for (const v of list) {
@@ -467,7 +524,11 @@ export async function deleteMarketplaceVendorFromStore(id: string): Promise<void
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      await db.collection('marketplace_vendors').doc(id).delete();
+      await withFirestoreTimeout(
+        db.collection('marketplace_vendors').doc(id).delete(),
+        `delete marketplace_vendors/${id}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
     } catch (err: any) {
       console.warn(`[vendor-store] Firestore delete failed for vendor ${id}:`, err?.message || err);
     }
@@ -485,7 +546,7 @@ export async function upsertMarketplaceVendorInStore(
   ensureVendorBootstrap();
 
   const id = vendor.id || `vendor-${Date.now()}`;
-  const record: VendorRecord = { ...vendor, id };
+  const record: VendorRecord = stripUndefinedDeep({ ...vendor, id });
 
   memoryVendorsCache.set(id, record);
 
@@ -493,21 +554,22 @@ export async function upsertMarketplaceVendorInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      await db
-        .collection('marketplace_vendors')
-        .doc(id)
-        .set(
-          {
-            ...record,
-            updatedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
+      await withFirestoreTimeout(
+        db
+          .collection('marketplace_vendors')
+          .doc(id)
+          .set(
+            {
+              ...record,
+              updatedAt: FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          ),
+        `write marketplace_vendors/${id}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
     } catch (err: any) {
-      console.error(`[vendor-store] Failed to save marketplace vendor ${id} in Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw err;
-      }
+      console.warn(`[vendor-store] Firestore fallback for marketplace vendor ${id}: saved to memory cache (${err?.message || 'timeout'}).`);
     }
   }
 

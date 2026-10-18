@@ -136,13 +136,17 @@ function accessBadgeClass(level: WorkspaceAccessLevel): string {
 /**
  * Team Directory & Scopes: port of PaperWorking `/dashboard/team`.
  */
-export default function TeamDirectoryPanel() {
+export default function TeamDirectoryPanel({
+  initialSearchQuery = '',
+}: {
+  initialSearchQuery?: string;
+} = {}) {
   const [members, setMembers] = useState<TeamMember[]>(() =>
     TEAM_MEMBERS.map((m) => ({ ...m })),
   );
   const [accountTier, setAccountTier] = useState<'Individual' | 'Team'>(TEAM_SEATS.tier);
   const [seatLimit, setSeatLimit] = useState(TEAM_SEATS.limit);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [bulkEmailInput, setBulkEmailInput] = useState('');
   const [selectedRole, setSelectedRole] = useState<InternalRole>('Manager');
@@ -703,11 +707,30 @@ export default function TeamDirectoryPanel() {
               <MagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
               <input
                 type="text"
+                aria-label="Search team directory"
+                data-testid="team-directory-search-input"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape' && searchQuery) {
+                    e.preventDefault();
+                    setSearchQuery('');
+                  }
+                }}
                 placeholder="Search by name, email, or role..."
-                className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-1.5 pl-9 pr-3 text-base md:text-xs text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
+                className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-900 py-1.5 pl-9 pr-11 text-base md:text-xs text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
               />
+              {searchQuery.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                  data-testid="clear-team-search-btn"
+                  className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-neutral-400 transition hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                >
+                  <X size={14} weight="bold" />
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -777,10 +800,11 @@ export default function TeamDirectoryPanel() {
                                 value={member.role}
                                 aria-label={`Role for ${member.name}`}
                                 data-testid={`role-select-${member.id}`}
+                                data-compact-select="true"
                                 onChange={(e) =>
                                   handleRoleChange(member.id, e.target.value as InternalRole)
                                 }
-                                className="cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-1 pl-2.5 pr-7 text-[11px] font-semibold uppercase tracking-wider text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
+                                className="h-7 cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-0.5 pl-2 pr-6 text-[11px] font-semibold uppercase leading-tight tracking-wider text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
                               >
                                 <optgroup label="Standard Roles">
                                   <option value="Manager" className="bg-neutral-950">Manager</option>
@@ -797,7 +821,7 @@ export default function TeamDirectoryPanel() {
                                   <option value="CEO" className="bg-neutral-950">CEO</option>
                                 </optgroup>
                               </select>
-                              <CaretDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
+                              <CaretDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
                               {hoveredRoleId === member.id ? (
                                 <div className="absolute bottom-full left-0 z-50 mb-1.5 w-64 rounded-none border border-neutral-800 bg-neutral-900 p-2.5 text-[11px] text-neutral-300 shadow-lg">
                                   <strong className="mb-0.5 block text-neutral-100">
@@ -835,13 +859,14 @@ export default function TeamDirectoryPanel() {
                                   value={currentAccess}
                                   aria-label={`Workspace access for ${member.name}`}
                                   data-testid={`access-level-select-${member.id}`}
+                                  data-compact-select="true"
                                   onChange={(e) =>
                                     handleAccessLevelChange(
                                       member.id,
                                       e.target.value as WorkspaceAccessLevel,
                                     )
                                   }
-                                  className="cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-1 pl-2.5 pr-7 text-[11px] font-semibold tracking-wide text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
+                                  className="h-7 cursor-pointer appearance-none rounded-none border border-neutral-800 bg-neutral-900 py-0.5 pl-2 pr-6 text-[11px] font-semibold leading-tight tracking-wide text-neutral-200 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600"
                                 >
                                   {WORKSPACE_ACCESS_LEVELS.map((al) => (
                                     <option key={al.level} value={al.level} className="bg-neutral-950">
@@ -849,7 +874,7 @@ export default function TeamDirectoryPanel() {
                                     </option>
                                   ))}
                                 </select>
-                                <CaretDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
+                                <CaretDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-neutral-400" />
                               </div>
                               <div>
                                 {isAccessOverridden ? (

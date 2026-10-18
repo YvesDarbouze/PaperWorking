@@ -311,11 +311,11 @@ export default function CommandCenterPanel({
         {/* Zone 1: Page header */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="mb-1 flex items-center gap-2.5">
+            <div className="mb-1 flex flex-wrap items-center gap-2.5">
               <h1 className="text-[28px] font-bold leading-none tracking-[-0.03em] text-foreground">
                 Portfolio Control Panel
               </h1>
-              <span className="mt-0.5 flex items-center gap-1">
+              <span className="mt-0.5 flex shrink-0 items-center gap-1 whitespace-nowrap">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-[var(--status-live)] opacity-60" />
                   <span className="relative inline-flex h-2 w-2 rounded-none bg-[var(--status-live)]" />
@@ -326,10 +326,10 @@ export default function CommandCenterPanel({
               </span>
               <Link
                 href="/dashboard/insights"
-                className="ml-2 flex items-center gap-1.5 rounded-none border border-border bg-card px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground no-underline hover:text-foreground transition"
+                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-none border border-border bg-card px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground no-underline transition hover:text-foreground sm:ml-2"
                 title="View 33 Underwriting Datapoints"
               >
-                <Calculator className="h-3.5 w-3.5 text-muted-foreground" />
+                <Calculator className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                 33 Datapoints
               </Link>
             </div>
@@ -495,27 +495,27 @@ export default function CommandCenterPanel({
             <div className="space-y-5">
               {/* 90-Day Portfolio Value Trend */}
               <article className={`${panel} p-5`}>
-                <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
+                <div className="mb-3 flex items-center justify-between gap-2 border-b border-border pb-3">
                   <button
                     type="button"
                     data-testid="trend-card-heading-trigger"
                     onClick={() => setShowTrendModal(true)}
-                    className="flex min-h-[44px] cursor-pointer items-center gap-2 text-left transition hover:text-foreground"
+                    className="flex min-w-0 min-h-[44px] cursor-pointer items-center gap-2 text-left transition hover:text-foreground"
                   >
-                    <ChartLineUp className="h-4.5 w-4.5 text-foreground" />
+                    <ChartLineUp className="h-4.5 w-4.5 shrink-0 text-foreground" />
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       90-Day Portfolio Value Trend
                     </span>
                   </button>
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-none border border-border bg-muted/50 px-2.5 py-1 font-mono text-xs font-semibold text-foreground">
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="shrink-0 whitespace-nowrap rounded-none border border-border bg-muted/50 px-2.5 py-1 font-mono text-xs font-semibold text-foreground">
                       {summary.sparklineGrowth} Growth
                     </span>
                     <button
                       type="button"
                       data-testid="expand-trend-modal-trigger"
                       onClick={() => setShowTrendModal(true)}
-                      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-none border border-border bg-muted/30 text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+                      className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-none border border-border bg-muted/30 text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
                       title="Expand trend details & controls"
                     >
                       <ArrowSquareOut className="h-4 w-4" />
@@ -537,7 +537,7 @@ export default function CommandCenterPanel({
                       <span className="text-xs font-medium text-muted-foreground">USD</span>
                     </p>
                   </div>
-                  <div className="relative h-[50px] w-full sm:w-[350px]">
+                  <div className="relative h-[50px] w-full sm:max-w-[350px]">
                     <svg viewBox="0 0 350 50" className="h-full w-full">
                       <path
                         d="M0,45 Q50,40 100,35 T200,20 T300,10 L350,5"
@@ -606,10 +606,10 @@ export default function CommandCenterPanel({
 
             {/* Row 4: Active Projects (Symmetric 2-Column Project Cards) */}
             <article className={`${panel} p-5`} data-testid="portfolio-active-projects-panel">
-              <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
-                <div className="flex items-center gap-2">
-                  <Folder className="h-4.5 w-4.5 text-foreground" />
-                  <div>
+              <div className="mb-4 flex items-center justify-between gap-3 border-b border-border pb-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Folder className="h-4.5 w-4.5 shrink-0 text-foreground" />
+                  <div className="min-w-0">
                     <span className="block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Active Projects ({projects.length})
                     </span>
@@ -620,7 +620,8 @@ export default function CommandCenterPanel({
                 </div>
                 <Link
                   href="/projects/new?source=dashboard"
-                  className="inline-flex min-h-[44px] items-center text-[11px] font-semibold text-muted-foreground no-underline transition hover:text-foreground"
+                  data-testid="active-projects-new-project-link"
+                  className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-[11px] font-semibold text-muted-foreground no-underline transition hover:text-foreground"
                 >
                   + New Project
                 </Link>
@@ -642,14 +643,14 @@ export default function CommandCenterPanel({
                         data-testid={`active-project-card-${project.id}`}
                       >
                         <div className="space-y-2.5">
-                          <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center justify-between gap-2 text-xs">
                             <Link
                               href={`/project/${project.id}`}
-                              className="max-w-[200px] truncate font-medium text-foreground transition hover:text-primary"
+                              className="min-w-0 flex-1 truncate font-medium text-foreground transition hover:text-primary"
                             >
                               {project.propertyName}
                             </Link>
-                            <span className="rounded-none border border-border bg-muted/40 px-2 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">
+                            <span className="shrink-0 whitespace-nowrap rounded-none border border-border bg-muted/40 px-2 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">
                               REIL Phase: {project.currentPhase}
                             </span>
                           </div>
@@ -684,24 +685,24 @@ export default function CommandCenterPanel({
                         </div>
 
                         {/* 33 Datapoints link and navigation */}
-                        <div className="flex items-center justify-between border-t border-border pt-1 text-[11px]">
+                        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-border pt-1 text-[11px]">
                           <Link
                             href={`/dashboard/insights?project=${project.id}`}
                             data-testid={`project-33-datapoints-link-${project.id}`}
-                            className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-[11px] text-muted-foreground transition hover:text-foreground"
+                            className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap font-mono text-[11px] text-muted-foreground transition hover:text-foreground"
                           >
-                            <Calculator className="h-3.5 w-3.5 text-muted-foreground" />
+                            <Calculator className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                             <span>33 Datapoints</span>
                             {estIrrPct && (
                               <span className="font-semibold text-emerald-500">({estIrrPct}% IRR)</span>
                             )}
                           </Link>
 
-                          <div className="flex items-center gap-3">
+                          <div className="flex shrink-0 items-center gap-3">
                             {project.dealSlug && (
                               <Link
                                 href={`/deals/${project.dealSlug}/detail`}
-                                className="inline-flex min-h-[44px] items-center text-muted-foreground transition hover:text-foreground"
+                                className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap text-muted-foreground transition hover:text-foreground"
                                 title="View Deal details"
                               >
                                 Deal Details →
@@ -709,7 +710,7 @@ export default function CommandCenterPanel({
                             )}
                             <Link
                               href={`/project/${project.id}`}
-                              className="inline-flex min-h-[44px] items-center font-medium text-foreground transition hover:text-primary"
+                              className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap font-medium text-foreground transition hover:text-primary"
                             >
                               Workspace →
                             </Link>
@@ -750,14 +751,14 @@ export default function CommandCenterPanel({
               {/* Assigned tasks */}
               <article className={`${panel} flex h-full flex-col justify-between p-5`}>
                 <div>
-                  <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
-                    <div className="flex items-center gap-2">
-                      <ListChecks className="h-4.5 w-4.5 text-muted-foreground" />
+                  <div className="mb-3 flex items-center justify-between gap-2 border-b border-border pb-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <ListChecks className="h-4.5 w-4.5 shrink-0 text-muted-foreground" />
                       <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                         Assigned Tasks
                       </span>
                     </div>
-                    <span className="rounded-none border border-border bg-muted/30 px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
+                    <span className="shrink-0 whitespace-nowrap rounded-none border border-border bg-muted/30 px-2 py-0.5 font-mono text-[10px] font-bold text-muted-foreground">
                       {pendingTasks} PENDING
                     </span>
                   </div>
@@ -807,16 +808,16 @@ export default function CommandCenterPanel({
               {/* Recent messages */}
               <article className={`${panel} flex h-full flex-col justify-between p-5`}>
                 <div>
-                  <div className="mb-3 flex items-center justify-between border-b border-border pb-3">
-                    <div className="flex items-center gap-2">
-                      <EnvelopeSimple className="h-4.5 w-4.5 text-muted-foreground" />
+                  <div className="mb-3 flex items-center justify-between gap-2 border-b border-border pb-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <EnvelopeSimple className="h-4.5 w-4.5 shrink-0 text-muted-foreground" />
                       <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                         Recent Messages
                       </span>
                     </div>
                     <Link
                       href="/dashboard/inbox"
-                      className="text-[11px] font-semibold text-muted-foreground no-underline hover:text-foreground"
+                      className="shrink-0 whitespace-nowrap text-[11px] font-semibold text-muted-foreground no-underline hover:text-foreground"
                     >
                       Inbox
                     </Link>

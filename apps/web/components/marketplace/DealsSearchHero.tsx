@@ -261,7 +261,8 @@ export default function DealsSearchHero({
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-7 w-7 items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-white transition focus:outline-none"
+            data-testid="clear-marketplace-search-btn"
+            className="flex min-h-[44px] min-w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-white transition focus:outline-none"
             aria-label="Clear search"
           >
             <X className="h-4 w-4" />

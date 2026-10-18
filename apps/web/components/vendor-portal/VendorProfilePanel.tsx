@@ -6,13 +6,21 @@ import { bffFetch } from '@/lib/api/bff-fetch';
 import { CANONICAL_VENDOR_PROFESSIONS } from '@/lib/marketplace/vendor-professions';
 import { Briefcase, Check, X } from '@phosphor-icons/react';
 
-export default function VendorProfilePanel() {
-  const [profile, setProfile] = useState<VendorProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function VendorProfilePanel({
+  initialProfile = null,
+  initialLoading = initialProfile === null,
+  initialSkillsSearch = '',
+}: {
+  initialProfile?: VendorProfileData | null;
+  initialLoading?: boolean;
+  initialSkillsSearch?: string;
+} = {}) {
+  const [profile, setProfile] = useState<VendorProfileData | null>(initialProfile);
+  const [loading, setLoading] = useState(initialLoading);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const [skillsSearch, setSkillsSearch] = useState('');
+  const [skillsSearch, setSkillsSearch] = useState(initialSkillsSearch);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,8 +32,15 @@ export default function VendorProfilePanel() {
         const response = await bffFetch('/api/vendor-portal/profile', {
           cache: 'no-store',
         });
-        const body = (await response.json()) as { profile?: VendorProfileData; error?: string };
-        if (!response.ok) throw new Error(body.error ?? 'Failed to load profile');
+        const body = (await response.json()) as {
+          profile?: VendorProfileData;
+          error?: string | { message?: string };
+        };
+        const errMsg =
+          typeof body.error === 'string'
+            ? body.error
+            : body.error?.message || 'Failed to load profile';
+        if (!response.ok) throw new Error(errMsg);
         if (!cancelled) setProfile(body.profile ?? null);
       } catch (loadError) {
         if (!cancelled) {
@@ -93,8 +108,15 @@ export default function VendorProfilePanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile),
       });
-      const body = (await response.json()) as { profile?: VendorProfileData; error?: string };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to save profile');
+      const body = (await response.json()) as {
+        profile?: VendorProfileData;
+        error?: string | { message?: string };
+      };
+      const errMsg =
+        typeof body.error === 'string'
+          ? body.error
+          : body.error?.message || 'Failed to save profile';
+      if (!response.ok) throw new Error(errMsg);
       setProfile(body.profile ?? profile);
       setSaved(true);
     } catch (saveError) {
@@ -107,7 +129,7 @@ export default function VendorProfilePanel() {
   if (loading) {
     return (
       <div className="mx-auto max-w-[960px] px-4 py-8 text-sm text-white/60 md:px-8">
-        Loading vendor profile…
+        Loading vendor profile...
       </div>
     );
   }
@@ -115,7 +137,7 @@ export default function VendorProfilePanel() {
   if (error && !profile) {
     return (
       <div className="mx-auto max-w-[960px] px-4 py-8 md:px-8">
-        <div className="rounded-2xl border border-red-400/20 bg-red-400/5 p-6 text-sm text-red-100">
+        <div className="rounded-none border border-red-400/20 bg-red-400/5 p-6 text-sm text-red-100">
           {error}
         </div>
       </div>
@@ -132,18 +154,18 @@ export default function VendorProfilePanel() {
         </p>
         <h2 className="text-3xl font-semibold tracking-[-0.02em]">Marketplace presence</h2>
         <p className="mt-2 text-sm text-white/65">
-          Dev profile store backed by `/api/vendor-portal/profile` for migration preview.
+          Manage your vendor directory profile, certified trade specialties, and availability for incoming quote requests.
         </p>
       </section>
 
       {error ? (
-        <div className="rounded-2xl border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-100">
+        <div className="rounded-none border border-red-400/20 bg-red-400/5 p-4 text-sm text-red-100">
           {error}
         </div>
       ) : null}
 
       {saved ? (
-        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-4 text-sm text-emerald-100">
+        <div className="rounded-none border border-emerald-400/20 bg-emerald-400/5 p-4 text-sm text-emerald-100">
           Profile saved.
         </div>
       ) : null}
@@ -154,13 +176,13 @@ export default function VendorProfilePanel() {
           <input
             value={profile.companyName}
             onChange={(event) => updateField('companyName', event.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
+            className="mt-2 w-full rounded-none border border-white/10 bg-black/30 px-3 py-2"
           />
         </label>
       </section>
 
       {/* 1 to 3 Vendor Professions Selection */}
-      <section className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
+      <section className="space-y-3 rounded-none border border-white/10 bg-black/20 p-4">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -171,7 +193,7 @@ export default function VendorProfilePanel() {
               Select 1 to 3 skills to identify your trade in search engines and publish your listing on the directory.
             </p>
           </div>
-          <span className="text-xs text-white/80 border border-white/20 bg-white/5 px-2.5 py-1 rounded-md self-start sm:self-auto">
+          <span className="text-xs text-white/80 border border-white/20 bg-white/5 px-2.5 py-1 rounded-none self-start sm:self-auto">
             {(profile.vendorSkills ?? []).length}/3 Skills Selected
           </span>
         </div>
@@ -182,7 +204,7 @@ export default function VendorProfilePanel() {
             {(profile.vendorSkills ?? []).map((skill) => (
               <span
                 key={skill}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1 text-xs text-white"
+                className="inline-flex items-center gap-1.5 rounded-none border border-white/20 bg-white/10 px-3 py-1 text-xs text-white"
               >
                 <span>{skill}</span>
                 <button
@@ -199,16 +221,37 @@ export default function VendorProfilePanel() {
         )}
 
         {/* Filter input */}
-        <input
-          type="text"
-          placeholder="Filter 38 certified professions..."
-          value={skillsSearch}
-          onChange={(e) => setSkillsSearch(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs text-white placeholder:text-white/40"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            aria-label="Search professions"
+            data-testid="vendor-profile-skills-search-input"
+            placeholder="Filter 38 certified professions..."
+            value={skillsSearch}
+            onChange={(e) => setSkillsSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && skillsSearch) {
+                e.preventDefault();
+                setSkillsSearch('');
+              }
+            }}
+            className="w-full min-h-[44px] rounded-none border border-white/10 bg-black/30 py-2 pl-3 pr-11 text-base md:text-xs text-white placeholder:text-white/40 outline-none focus:border-white/30"
+          />
+          {skillsSearch.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setSkillsSearch('')}
+              aria-label="Clear search"
+              data-testid="clear-vendor-profile-skills-search-btn"
+              className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-white/60 transition hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40"
+            >
+              <X size={14} weight="bold" />
+            </button>
+          ) : null}
+        </div>
 
         {/* Grid */}
-        <div className="max-h-48 overflow-y-auto rounded-lg border border-white/10 bg-black/40 p-2">
+        <div className="max-h-48 overflow-y-auto rounded-none border border-white/10 bg-black/40 p-2">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5">
             {filteredProfessions.map((prof) => {
               const isSelected = (profile.vendorSkills ?? []).includes(prof);
@@ -219,7 +262,7 @@ export default function VendorProfilePanel() {
                   type="button"
                   disabled={isDisabled}
                   onClick={() => toggleSkill(prof)}
-                  className={`flex items-center justify-between text-left px-2.5 py-1.5 text-xs rounded-lg transition ${
+                  className={`flex items-center justify-between text-left px-2.5 py-1.5 text-xs rounded-none transition ${
                     isSelected
                       ? 'border border-white/40 bg-white/20 text-white font-semibold'
                       : isDisabled
@@ -241,7 +284,7 @@ export default function VendorProfilePanel() {
         <textarea
           value={profile.bio}
           onChange={(event) => updateField('bio', event.target.value)}
-          className="mt-2 min-h-28 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
+          className="mt-2 min-h-28 w-full rounded-none border border-white/10 bg-black/30 px-3 py-2"
         />
       </label>
 
@@ -251,7 +294,7 @@ export default function VendorProfilePanel() {
           <input
             value={profile.feeRangeLabel}
             onChange={(event) => updateField('feeRangeLabel', event.target.value)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
+            className="mt-2 w-full rounded-none border border-white/10 bg-black/30 px-3 py-2"
           />
         </label>
         <label className="block text-sm">
@@ -261,7 +304,7 @@ export default function VendorProfilePanel() {
             min={1}
             value={profile.avgTurnaroundDays}
             onChange={(event) => updateField('avgTurnaroundDays', Number(event.target.value))}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2"
+            className="mt-2 w-full rounded-none border border-white/10 bg-black/30 px-3 py-2"
           />
         </label>
       </section>
@@ -273,7 +316,7 @@ export default function VendorProfilePanel() {
           onChange={(event) =>
             updateField('availability', event.target.value as VendorProfileData['availability'])
           }
-          className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 md:max-w-sm"
+          className="mt-2 w-full rounded-none border border-white/10 bg-black/30 px-3 py-2 md:max-w-sm"
         >
           <option value="Available">Available</option>
           <option value="Busy">Busy</option>
@@ -285,7 +328,7 @@ export default function VendorProfilePanel() {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-full bg-white px-5 py-2 text-sm text-black disabled:opacity-50"
+          className="min-h-[44px] rounded-none bg-white px-5 py-2 text-sm text-black disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Save profile'}
         </button>

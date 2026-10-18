@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import ProjectFolderCard from '@/components/projects/ProjectFolderCard';
 import REILKanBan from '@/components/projects/REILKanBan';
 import AcquisitionPipelineBoard from '@/components/projects/AcquisitionPipelineBoard';
@@ -28,6 +28,7 @@ import {
   Calculator,
   PencilSimple,
   ArrowRight,
+  X,
 } from '@phosphor-icons/react';
 
 type ViewMode = 'pipeline' | 'kanban' | 'list' | 'stacks' | 'lineup' | 'everything';
@@ -58,19 +59,47 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export default function ProjectsListPanel() {
+export interface ProjectsListPanelProps {
+  initialProjects?: ProjectSummary[];
+  initialLoading?: boolean;
+  initialViewMode?: ViewMode;
+  initialSearch?: string;
+  initialPhaseFilter?: PhaseFilter;
+  initialStrategyFilter?: StrategyFilter;
+  initialStatusFilter?: StatusFilter;
+  initialSortBy?: SortBy;
+}
+
+export default function ProjectsListPanel({
+  initialProjects = [],
+  initialLoading = true,
+  initialViewMode = 'pipeline',
+  initialSearch = '',
+  initialPhaseFilter = '',
+  initialStrategyFilter = '',
+  initialStatusFilter = 'active',
+  initialSortBy = 'recent',
+}: ProjectsListPanelProps = {}) {
   const router = useRouter();
-  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [projects, setProjects] = useState<ProjectSummary[]>(initialProjects);
   const auth = useOptionalAuth();
   const isAuthed = auth ? auth.authenticated && !auth.loading : true;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('pipeline');
-  const [search, setSearch] = useState('');
-  const [phaseFilter, setPhaseFilter] = useState<PhaseFilter>('');
-  const [strategyFilter, setStrategyFilter] = useState<StrategyFilter>('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('active');
-  const [sortBy, setSortBy] = useState<SortBy>('recent');
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
+  const [search, setSearch] = useState(initialSearch);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [phaseFilter, setPhaseFilter] = useState<PhaseFilter>(initialPhaseFilter);
+  const [strategyFilter, setStrategyFilter] = useState<StrategyFilter>(initialStrategyFilter);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialStatusFilter);
+  const [sortBy, setSortBy] = useState<SortBy>(initialSortBy);
+
+  const hasActiveFilters =
+    search.trim().length > 0 ||
+    phaseFilter !== '' ||
+    strategyFilter !== '' ||
+    statusFilter !== 'active' ||
+    sortBy !== 'recent';
 
   const loadProjects = useCallback(async (isSilent = false) => {
     if (!isSilent) setLoading(true);
@@ -79,9 +108,15 @@ export default function ProjectsListPanel() {
       const response = await bffFetch('/api/projects', { cache: 'no-store' });
       const body = (await response.json()) as {
         projects?: Array<Record<string, unknown>>;
-        error?: string;
+        error?: string | { message?: string };
       };
-      if (!response.ok) throw new Error(body.error ?? 'Failed to load projects');
+      if (!response.ok) {
+        const errorMessage =
+          typeof body.error === 'string'
+            ? body.error
+            : body.error?.message || 'Failed to load projects';
+        throw new Error(errorMessage);
+      }
       const mapped = (body.projects ?? []).map((row) => ({
         id: String(row.id ?? ''),
         propertyName: String(row.propertyName ?? row.property_address ?? 'Untitled'),
@@ -124,12 +159,37 @@ export default function ProjectsListPanel() {
     let rows = [...projects];
     if (search.trim()) {
       const q = search.toLowerCase().trim();
-      rows = rows.filter(
-        (p) =>
+      const qNumeric = q.replace(/[$,\s]/g, '');
+      rows = rows.filter((p) => {
+        const strategyLabel =
+          p.dispositionType === 'SALE'
+            ? 'fix & flip sale'
+            : p.dispositionType === 'RENT'
+              ? 'rental buy & hold rent'
+              : 'brrrr mixed refinance';
+        const phaseLabel = (PHASE_LABELS[p.currentPhase] || '').toLowerCase();
+        const formattedPurchase = formatCurrency(p.purchasePrice).toLowerCase();
+        const formattedExit = p.estimatedExitValue
+          ? formatCurrency(p.estimatedExitValue).toLowerCase()
+          : '';
+        return (
           p.propertyName.toLowerCase().includes(q) ||
           p.address.toLowerCase().includes(q) ||
-          p.city.toLowerCase().includes(q),
-      );
+          (p.dealAddress && p.dealAddress.toLowerCase().includes(q)) ||
+          p.city.toLowerCase().includes(q) ||
+          formattedPurchase.includes(q) ||
+          (qNumeric.length > 0 && String(p.purchasePrice).includes(qNumeric)) ||
+          (formattedExit && formattedExit.includes(q)) ||
+          (qNumeric.length > 0 &&
+            Boolean(p.estimatedExitValue) &&
+            String(p.estimatedExitValue).includes(qNumeric)) ||
+          strategyLabel.includes(q) ||
+          phaseLabel.includes(q) ||
+          p.currentPhase.toLowerCase().includes(q) ||
+          (p.status && p.status.toLowerCase().includes(q)) ||
+          (p.acquisitionStatus && p.acquisitionStatus.toLowerCase().replace(/_/g, ' ').includes(q))
+        );
+      });
     }
     if (phaseFilter) {
       const targetPhase = PHASE_BY_FILTER[phaseFilter];
@@ -163,10 +223,12 @@ export default function ProjectsListPanel() {
   }, [projects, search, phaseFilter, strategyFilter, statusFilter, sortBy]);
 
   function clearFilters() {
+    if (!hasActiveFilters) return;
     setSearch('');
     setPhaseFilter('');
     setStrategyFilter('');
     setStatusFilter('active');
+    setSortBy('recent');
   }
 
   function handleCreateProject() {
@@ -219,7 +281,7 @@ export default function ProjectsListPanel() {
                   key={mode}
                   type="button"
                   onClick={() => setViewMode(mode)}
-                  className={`flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-semibold transition min-h-[36px] ${
+                  className={`flex cursor-pointer items-center gap-1.5 rounded-none px-3 py-1.5 text-xs font-semibold transition min-h-[36px] ${
                     active
                       ? 'border border-border bg-card text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -250,13 +312,35 @@ export default function ProjectsListPanel() {
             className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
           />
           <input
+            ref={searchInputRef}
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape' && search) {
+                event.preventDefault();
+                setSearch('');
+              }
+            }}
             placeholder="Search address or name…"
             aria-label="Search projects"
-            className="w-full rounded-none border border-input bg-background py-2 pl-9 pr-3 text-base md:text-xs text-foreground placeholder:text-muted-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
+            data-testid="projects-search-input"
+            className="w-full rounded-none border border-input bg-background py-2 pl-9 pr-10 text-base md:text-xs text-foreground placeholder:text-muted-foreground min-h-[44px] focus:outline-none focus:ring-1 focus:ring-ring"
           />
+          {search.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                searchInputRef.current?.focus();
+              }}
+              aria-label="Clear search"
+              data-testid="clear-project-search-btn"
+              className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <X size={14} weight="bold" />
+            </button>
+          ) : null}
         </div>
 
         <select
@@ -322,7 +406,7 @@ export default function ProjectsListPanel() {
       ) : null}
 
       {!loading && !error && filteredProjects.length === 0 ? (
-        projects.length === 0 ? (
+        projects.length === 0 && !hasActiveFilters ? (
           /* Rich Empty State for New Investors / Fresh Workspace */
           <div className="mb-8 rounded-none border border-border bg-card p-8 md:p-12 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-none border border-border bg-muted text-foreground">
@@ -412,8 +496,11 @@ export default function ProjectsListPanel() {
             </p>
             <button
               type="button"
+              data-testid="clear-all-filters-btn"
               onClick={clearFilters}
-              className="mt-5 flex items-center gap-1.5 rounded-none border border-border bg-muted/40 px-4 py-2 text-xs sm:text-sm font-semibold text-foreground hover:bg-muted min-h-[44px]"
+              disabled={!hasActiveFilters}
+              aria-disabled={!hasActiveFilters}
+              className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-none border border-border bg-muted/40 px-4 py-2 text-xs sm:text-sm font-semibold text-foreground transition hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline disabled:pointer-events-none min-h-[44px]"
             >
               <ArrowClockwise size={16} />
               <span>Clear all filters</span>
@@ -451,8 +538,11 @@ export default function ProjectsListPanel() {
               <h2 className="text-base sm:text-lg font-semibold text-foreground">No projects found</h2>
               <button
                 type="button"
+                data-testid="clear-all-filters-btn"
                 onClick={clearFilters}
-                className="mt-4 text-xs sm:text-sm font-semibold text-primary hover:underline min-h-[44px]"
+                disabled={!hasActiveFilters}
+                aria-disabled={!hasActiveFilters}
+                className="mt-4 cursor-pointer text-xs sm:text-sm font-semibold text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline disabled:pointer-events-none min-h-[44px]"
               >
                 Clear all filters
               </button>
@@ -558,11 +648,11 @@ export default function ProjectsListPanel() {
             </div>
           )}
         </div>
-      ) : viewMode === 'stacks' ? (
+      ) : !loading && !error && filteredProjects.length > 0 && viewMode === 'stacks' ? (
         <ProjectStacksView projects={filteredProjects} />
-      ) : viewMode === 'lineup' ? (
+      ) : !loading && !error && filteredProjects.length > 0 && viewMode === 'lineup' ? (
         <ProjectLineupView projects={filteredProjects} />
-      ) : viewMode === 'everything' ? (
+      ) : !loading && !error && (filteredProjects.length > 0 || !hasActiveFilters) && viewMode === 'everything' ? (
         <ProjectEverythingView />
       ) : null}
     </div>

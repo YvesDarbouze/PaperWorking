@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import { useOptionalAuth } from '@/context/AuthContext';
 import { fetchSessionProfile } from '@/lib/auth/session-client';
 import type { FaqEntry, GlossaryTerm } from '@/lib/support/types';
 import { groupGlossaryByLetter } from '@/lib/support/alphabetical-grouping';
@@ -42,9 +43,16 @@ export default function SupportCenter({
   initialFaqs = CANONICAL_FAQ_SEED,
   initialGlossary = CANONICAL_GLOSSARY_SEED,
 }: SupportCenterProps) {
+  const auth = useOptionalAuth();
+  const isAuthSubscriber = Boolean(auth?.authenticated);
+
   // Session & Auth State
-  const [authenticated, setAuthenticated] = useState(false);
-  const [isSubscriber, setIsSubscriber] = useState(initialSubscriber);
+  const [authenticated, setAuthenticated] = useState(
+    () => Boolean(initialSubscriber || isAuthSubscriber),
+  );
+  const [isSubscriber, setIsSubscriber] = useState(
+    () => Boolean(initialSubscriber || isAuthSubscriber),
+  );
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
@@ -92,7 +100,7 @@ export default function SupportCenter({
     let cancelled = false;
     fetchSessionProfile().then((profile) => {
       if (cancelled) return;
-      setAuthenticated(Boolean(profile.authenticated));
+      setAuthenticated(Boolean(profile.authenticated || initialSubscriber || isAuthSubscriber));
       const status = (profile.subscriptionStatus || '').toLowerCase();
       const plan = (profile.subscriptionPlan || '').toLowerCase();
       const subscriber =
@@ -103,7 +111,7 @@ export default function SupportCenter({
         !plan.includes('free') &&
         !plan.includes('none');
 
-      setIsSubscriber(subscriber || initialSubscriber);
+      setIsSubscriber(Boolean(subscriber || initialSubscriber || isAuthSubscriber));
       const prof = profile as Record<string, unknown>;
       if (typeof prof.displayName === 'string' && prof.displayName) {
         setUserName(prof.displayName);

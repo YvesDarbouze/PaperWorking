@@ -4,6 +4,7 @@ import { X, CheckCircle, TreeStructure, DownloadSimple } from '@phosphor-icons/r
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { useModalScrollLock } from '@/components/dashboard/useModalScrollLock';
 import type { KpiDefinition } from '@/lib/insights/kpi-registry';
 import type { ProjectMetricsResult } from '@paperworking/financial-engine';
 import type { ProjectSummary } from '@/lib/projects/types';
@@ -41,6 +42,8 @@ export function KpiDetailModal({
 }: KpiDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [downloadToast, setDownloadToast] = useState<string | null>(null);
+
+  useModalScrollLock(isOpen);
 
   // Esc key closes modal & trap focus
   useEffect(() => {
@@ -248,7 +251,8 @@ export function KpiDetailModal({
   return (
     <div
       role="presentation"
-      className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/75 p-0 md:p-6 backdrop-blur-sm"
+      data-testid="kpi-detail-modal-backdrop"
+      className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/75 p-0 md:p-6 backdrop-blur-sm overscroll-contain"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -329,7 +333,10 @@ export function KpiDetailModal({
         </div>
 
         {/* MODAL BODY */}
-        <div className="flex-1 space-y-6 overflow-y-auto p-6">
+        <div
+          data-testid="kpi-detail-modal-body"
+          className="flex-1 space-y-6 overflow-y-auto overscroll-contain p-6"
+        >
           {downloadToast && (
             <div
               data-testid="modal-download-toast"

@@ -232,7 +232,7 @@ export default function DealCalculatorResultModal({
                 <span>Deal Calculator Output Engine (Institutional Underwriting)</span>
               </h3>
               <Link
-                href={`/deal-calculator?price=${purchasePrice}&arv=${arv}&rehab=${rehab}&rent=${grossMonthlyRent}&address=${encodeURIComponent(deal.address)}`}
+                href={`/deal-calculator?deal=${encodeURIComponent(deal.slug)}&price=${purchasePrice}&arv=${arv}&rehab=${rehab}&rent=${grossMonthlyRent}&address=${encodeURIComponent(deal.address)}`}
                 data-testid="modal-open-in-deal-calculator-link"
                 className="text-[11px] font-semibold text-neutral-300 hover:text-white hover:underline flex items-center gap-1"
               >

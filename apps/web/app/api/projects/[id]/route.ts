@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { buildProjectsCommandService, buildProjectsReadService } from '@/lib/api/handler-deps';
 import { projectsCommandErrorResponse, projectsReadErrorResponse } from '@/lib/api/project-route-errors';
 import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
+import { getProjectFromStore } from '@/lib/projects/project-store';
 import type { UpdateProjectInput } from '@paperworking/services';
 
 export const dynamic = 'force-dynamic';
@@ -46,6 +47,15 @@ export async function GET(request: Request, context: RouteContext) {
   } catch (error) {
     const mapped = projectsReadErrorResponse(error);
     if (mapped) return mapped;
+    // Store fallback keeps the route available when the read service is offline.
+    try {
+      const stored = await getProjectFromStore(id);
+      if (stored) {
+        return NextResponse.json({ success: true, project: stored });
+      }
+    } catch {
+      // fall through to structured error
+    }
     const message = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { error: 'Failed to fetch project', details: message },

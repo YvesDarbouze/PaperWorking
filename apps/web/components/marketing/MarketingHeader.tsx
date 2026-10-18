@@ -7,6 +7,7 @@ import Logo from '@/components/marketing/Logo';
 import UserAccountMenu from '@/components/shared/UserAccountMenu';
 import { List, X, SignOut, SquaresFour } from '@/components/icons/PhosphorIcons';
 import { destroySession, fetchSessionProfile } from '@/lib/auth/session-client';
+import { hasClientSessionCookie } from '@/lib/auth/session-cookies';
 import { PROFILE_CARD } from '@/lib/dashboard/content';
 
 const NAV_LINKS = [
@@ -22,7 +23,7 @@ export default function MarketingHeader() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(() => hasClientSessionCookie());
   const [accountType, setAccountType] = useState<string>('investor');
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function MarketingHeader() {
     let cancelled = false;
     fetchSessionProfile().then((profile) => {
       if (cancelled) return;
-      setAuthenticated(Boolean(profile.authenticated));
+      setAuthenticated(Boolean(profile.authenticated || hasClientSessionCookie()));
       setAccountType(profile.accountType ?? 'investor');
     });
     return () => {
@@ -62,7 +63,7 @@ export default function MarketingHeader() {
           aria-label="Main navigation"
         >
           {/* Left: Logo */}
-          <div className="flex w-1/4 items-center">
+          <div className="flex shrink-0 items-center md:w-1/4">
             <Logo href="/" tone="auth" size="h-6" theme="dark" className="flex items-center" />
           </div>
 
@@ -204,7 +205,15 @@ export default function MarketingHeader() {
                     Dashboard
                   </Link>
                   <Link
-                    href="/dashboard/settings/profile"
+                    href="/projects"
+                    data-testid="marketing-drawer-link-projects"
+                    className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border px-4 py-2.5 text-xs font-medium text-foreground no-underline hover:bg-muted transition"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Projects
+                  </Link>
+                  <Link
+                    href="/dashboard/profile"
                     className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border px-4 py-2.5 text-xs font-medium text-foreground no-underline hover:bg-muted transition"
                     onClick={() => setMobileOpen(false)}
                   >

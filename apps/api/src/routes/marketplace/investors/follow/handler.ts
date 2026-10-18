@@ -48,9 +48,6 @@ export async function handleMarketplaceInvestorsFollowPost(
   if (!targetUid) {
     return jsonResponse(400, { error: 'targetUid is required.' });
   }
-  if (targetUid === auth.uid) {
-    return jsonResponse(400, { error: 'You cannot follow yourself.' });
-  }
 
   if (!deps.updateFollow) {
     return jsonResponse(500, { error: 'Could not update follow state.' });

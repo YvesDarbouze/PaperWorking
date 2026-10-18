@@ -21,6 +21,52 @@ export interface PropertySatelliteViewerProps {
   title?: string;
 }
 
+export function buildInlineSatelliteFallbackDataUri(
+  lat: number,
+  lng: number,
+  zoom: number,
+  maptype: 'satellite' | 'roadmap',
+): string {
+  const isSatellite = maptype === 'satellite';
+  const bg = isSatellite ? '#0f1712' : '#141218';
+  const gridColor = isSatellite ? 'rgba(16, 185, 129, 0.14)' : 'rgba(255, 255, 255, 0.08)';
+  const roadColor = isSatellite ? 'rgba(255, 255, 255, 0.07)' : 'rgba(255, 255, 255, 0.12)';
+  const accent = '#10b981';
+  const w = 800;
+  const h = 450;
+  const cx = w / 2;
+  const cy = h / 2;
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <rect width="${w}" height="${h}" fill="${bg}" />
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="${gridColor}" stroke-width="1"/>
+      </pattern>
+      <radialGradient id="parcel-glow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="${accent}" stop-opacity="0.16"/>
+        <stop offset="100%" stop-color="${bg}" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="${w}" height="${h}" fill="url(#grid)" />
+    <line x1="0" y1="${cy - 85}" x2="${w}" y2="${cy - 85}" stroke="${roadColor}" stroke-width="10" />
+    <line x1="${cx - 140}" y1="0" x2="${cx - 140}" y2="${h}" stroke="${roadColor}" stroke-width="8" />
+    <line x1="${cx + 150}" y1="0" x2="${cx + 150}" y2="${h}" stroke="${roadColor}" stroke-width="6" />
+    <circle cx="${cx}" cy="${cy}" r="145" fill="url(#parcel-glow)" />
+    <rect x="${cx - 75}" y="${cy - 52}" width="150" height="104" fill="rgba(16,185,129,0.07)" stroke="${accent}" stroke-width="1.5" stroke-dasharray="5,4" />
+    <rect x="${cx - 38}" y="${cy - 26}" width="76" height="52" fill="rgba(16,185,129,0.12)" stroke="${accent}" stroke-width="1" />
+    <line x1="${cx}" y1="${cy - 20}" x2="${cx}" y2="${cy + 20}" stroke="${accent}" stroke-width="1.75" />
+    <line x1="${cx - 20}" y1="${cy}" x2="${cx + 20}" y2="${cy}" stroke="${accent}" stroke-width="1.75" />
+    <circle cx="${cx}" cy="${cy}" r="4" fill="${accent}" />
+    <rect x="${cx - 150}" y="${cy + 62}" width="300" height="22" fill="rgba(10,14,12,0.82)" stroke="rgba(16,185,129,0.35)" stroke-width="1" />
+    <text x="${cx}" y="${cy + 77}" text-anchor="middle" font-family="monospace" font-size="11" fill="${accent}" font-weight="bold">
+      ${isSatellite ? 'SATELLITE PARCEL' : 'ROADMAP'}: ${lat.toFixed(4)}°, ${lng.toFixed(4)}° · z${zoom}
+    </text>
+  </svg>`;
+
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 export default function PropertySatelliteViewer({
   address,
   lat: initialLat,
@@ -41,6 +87,7 @@ export default function PropertySatelliteViewer({
   const [maptype, setMaptype] = useState<'satellite' | 'roadmap'>('satellite');
   const [loading, setLoading] = useState(!coords);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   // Sync coords if props change
   useEffect(() => {
@@ -60,7 +107,8 @@ export default function PropertySatelliteViewer({
     setLoading(true);
     setError(null);
 
-    fetch(`/api/places/geocode?address=${encodeURIComponent(address.trim())}`)
+    Promise.resolve()
+      .then(() => fetch(`/api/places/geocode?address=${encodeURIComponent(address.trim())}`))
       .then((res) => {
         if (!res.ok) throw new Error('Geocode lookup failed');
         return res.json();
@@ -105,6 +153,21 @@ export default function PropertySatelliteViewer({
     ? `/api/map-tile?lat=${coords.lat}&lng=${coords.lng}&zoom=${zoom}&maptype=${maptype}&w=800&h=450`
     : null;
 
+  useEffect(() => {
+    setImageError(false);
+  }, [tileUrl]);
+
+  const inlineFallbackDataUri = coords
+    ? buildInlineSatelliteFallbackDataUri(coords.lat, coords.lng, zoom, maptype)
+    : null;
+
+  const resolvedImageSrc =
+    tileUrl && coords
+      ? imageError
+        ? inlineFallbackDataUri
+        : tileUrl
+      : null;
+
   const googleMapsUrl = coords
     ? `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -113,15 +176,27 @@ export default function PropertySatelliteViewer({
     <div
       data-testid="property-satellite-viewer"
       className={`relative overflow-hidden rounded-none border border-neutral-800 bg-neutral-950 shadow-xl ${aspectClass} ${className}`}
+      style={
+        inlineFallbackDataUri
+          ? {
+              backgroundImage: `url("${inlineFallbackDataUri}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : undefined
+      }
     >
       {/* Background Image / Map Tile */}
-      {tileUrl ? (
+      {resolvedImageSrc ? (
         <img
           data-testid="satellite-map-image"
-          src={tileUrl}
+          src={resolvedImageSrc}
           alt={`Satellite view of ${address}`}
-          className="h-full w-full object-cover transition-opacity duration-300"
-          loading="lazy"
+          className="block h-full w-full object-cover text-transparent select-none transition-opacity duration-300"
+          loading="eager"
+          onError={() => {
+            if (!imageError) setImageError(true);
+          }}
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-neutral-900 text-neutral-400">
@@ -135,9 +210,9 @@ export default function PropertySatelliteViewer({
       )}
 
       {/* Top Banner / Overlay */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="flex shrink-0 items-center gap-1.5 rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
             {maptype === 'satellite' ? (
               <Compass className="h-3 w-3 text-neutral-300" />
             ) : (
@@ -146,7 +221,7 @@ export default function PropertySatelliteViewer({
             <span>{maptype === 'satellite' ? 'Satellite Parcel View' : 'Roadmap View'}</span>
           </span>
           {title && (
-            <span className="hidden sm:inline text-xs font-medium text-white/80 truncate max-w-[200px]">
+            <span className="hidden sm:inline text-xs font-medium text-white/80 truncate max-w-[260px]">
               {title}
             </span>
           )}
@@ -157,7 +232,7 @@ export default function PropertySatelliteViewer({
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="pointer-events-auto flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md hover:border-neutral-500 hover:text-white transition"
+          className="pointer-events-auto flex shrink-0 items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-md hover:border-neutral-500 hover:text-white transition"
           title="Open in Google Maps"
         >
           <span>Google Maps</span>
@@ -166,21 +241,35 @@ export default function PropertySatelliteViewer({
       </div>
 
       {/* Bottom Bar: Coordinates, Zoom & Toggle Controls */}
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-        <div className="flex items-center gap-2">
+      <div
+        data-testid="satellite-viewer-bottom-bar"
+        className="absolute inset-x-0 bottom-0 flex items-end sm:items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+      >
+        <div className="flex min-w-0 items-center">
           {coords && (
-            <div className="rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-mono text-neutral-300 backdrop-blur-md">
-              <span className="text-white">{coords.lat.toFixed(4)}°N</span>,{' '}
-              <span className="text-white">{coords.lng.toFixed(4)}°W</span> · z{zoom}
+            <div
+              data-testid="satellite-viewer-coords-badge"
+              className="flex w-fit max-w-full flex-col sm:flex-row sm:items-center sm:gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 sm:px-2.5 py-1 text-[9.5px] sm:text-[10px] leading-tight font-mono text-neutral-300 backdrop-blur-md"
+            >
+              <span className="whitespace-nowrap">
+                <span className="text-white">{coords.lat.toFixed(4)}°N</span>,
+              </span>
+              <span className="whitespace-nowrap">
+                <span className="text-white">{coords.lng.toFixed(4)}°W</span> · z{zoom}
+              </span>
             </div>
           )}
         </div>
 
         {showControls && (
-          <div className="flex items-center gap-1.5">
+          <div
+            data-testid="satellite-viewer-controls"
+            className="flex shrink-0 items-center gap-1.5"
+          >
             {/* Map Type Switcher */}
             <button
               type="button"
+              data-testid="satellite-viewer-maptype-btn"
               onClick={() => setMaptype(maptype === 'satellite' ? 'roadmap' : 'satellite')}
               className="flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-md hover:bg-neutral-800 transition"
               title="Toggle Satellite / Roadmap"

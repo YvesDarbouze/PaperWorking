@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AuthCard, { AuthNotice } from '@/components/auth/AuthCard';
 import { buildSignupLoginUrl } from '@/lib/auth/post-auth-redirect';
-import { SIGNUP_ACCOUNT_TYPES, type SignupAccountType } from '@/lib/auth/routes';
+import { AUTH_ROUTES, SIGNUP_ACCOUNT_TYPES, type SignupAccountType } from '@/lib/auth/routes';
 
 export default function SignupAccountTypePanel() {
   const router = useRouter();
@@ -30,7 +30,8 @@ export default function SignupAccountTypePanel() {
       name: searchParams.get('name') ?? '',
       email: searchParams.get('email') ?? '',
     });
-    router.push(loginUrl);
+    const signupUrl = loginUrl.replace(/^\/login\b/, AUTH_ROUTES.signup);
+    router.push(signupUrl);
   };
 
   return (

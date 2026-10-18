@@ -65,10 +65,10 @@ function UnsubscribeContent() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#121215] border border-white/10 rounded-xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-[#121215] border border-white/10 rounded-none p-6 sm:p-8 shadow-2xl">
           {status === 'unsubscribed' ? (
             <div className="text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 mx-auto flex items-center justify-center text-xl">
+              <div className="w-12 h-12 rounded-none bg-white/5 border border-white/10 mx-auto flex items-center justify-center text-xl">
                 ✉️
               </div>
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#f4f4f5]">
@@ -77,20 +77,20 @@ function UnsubscribeContent() {
               <p className="text-sm text-zinc-400 leading-relaxed">
                 We have removed <span className="text-zinc-200 font-medium">{email}</span> from our mailing list. We sent a quick confirmation to your inbox.
               </p>
-              <div className="bg-white/[0.03] border border-white/5 rounded-lg p-4 text-xs text-zinc-400 text-left">
+              <div className="bg-white/[0.03] border border-white/5 rounded-none p-4 text-xs text-zinc-400 text-left">
                 <strong>Data preservation note:</strong> Your PaperWorking models, calculations, and account data remain secure in your workspace. You can still log in at any time.
               </div>
               <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   type="button"
                   onClick={() => setStatus('resubscribed')}
-                  className="min-h-[44px] px-4 py-2.5 rounded-md text-sm font-medium border border-white/20 text-zinc-300 hover:text-white hover:border-white/40 transition-colors"
+                  className="min-h-[44px] px-4 py-2.5 rounded-none text-sm font-medium border border-white/20 text-zinc-300 hover:text-white hover:border-white/40 transition-colors"
                 >
                   Re-subscribe this email
                 </button>
                 <Link
                   href="/"
-                  className="min-h-[44px] px-4 py-2.5 rounded-md text-sm font-medium bg-white text-zinc-950 hover:bg-zinc-200 transition-colors inline-flex items-center justify-center"
+                  className="min-h-[44px] px-4 py-2.5 rounded-none text-sm font-medium bg-white text-zinc-950 hover:bg-zinc-200 transition-colors inline-flex items-center justify-center"
                 >
                   Return to Homepage
                 </Link>
@@ -98,7 +98,7 @@ function UnsubscribeContent() {
             </div>
           ) : status === 'resubscribed' ? (
             <div className="text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 mx-auto flex items-center justify-center text-xl">
+              <div className="w-12 h-12 rounded-none bg-white/5 border border-white/10 mx-auto flex items-center justify-center text-xl">
                 ✨
               </div>
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#f4f4f5]">
@@ -110,7 +110,7 @@ function UnsubscribeContent() {
               <div className="pt-4">
                 <Link
                   href="/login"
-                  className="min-h-[44px] px-6 py-2.5 rounded-md text-sm font-medium bg-white text-zinc-950 hover:bg-zinc-200 transition-colors inline-flex items-center justify-center"
+                  className="min-h-[44px] px-6 py-2.5 rounded-none text-sm font-medium bg-white text-zinc-950 hover:bg-zinc-200 transition-colors inline-flex items-center justify-center"
                 >
                   Sign In to PaperWorking
                 </Link>
@@ -127,7 +127,7 @@ function UnsubscribeContent() {
 
               {message && (
                 <div
-                  className={`p-3 rounded-md text-xs mb-4 ${
+                  className={`p-3 rounded-none text-xs mb-4 ${
                     status === 'error'
                       ? 'bg-rose-950/40 border border-rose-800 text-rose-200'
                       : 'bg-zinc-800 border border-zinc-700 text-zinc-200'
@@ -149,7 +149,7 @@ function UnsubscribeContent() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="investor@example.com"
-                    className="w-full min-h-[44px] px-3.5 py-2.5 rounded-md bg-white/[0.04] border border-white/15 text-white placeholder-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-colors"
+                    className="w-full min-h-[44px] px-3.5 py-2.5 rounded-none bg-white/[0.04] border border-white/15 text-white placeholder-zinc-500 text-base sm:text-sm focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-colors"
                   />
                 </div>
 
@@ -157,7 +157,7 @@ function UnsubscribeContent() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full min-h-[44px] px-4 py-2.5 rounded-md text-sm font-semibold bg-white text-zinc-950 hover:bg-zinc-200 disabled:opacity-50 transition-colors touch-target"
+                    className="w-full min-h-[44px] px-4 py-2.5 rounded-none text-sm font-semibold bg-white text-zinc-950 hover:bg-zinc-200 disabled:opacity-50 transition-colors touch-target"
                   >
                     {submitting ? 'Processing…' : 'Unsubscribe from all emails'}
                   </button>

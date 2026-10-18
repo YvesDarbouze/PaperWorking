@@ -19,6 +19,7 @@ import {
   ScoreboardPeriod,
   TimeSeriesPoint,
 } from '@/lib/market/types';
+import { useModalScrollLock } from '../useModalScrollLock';
 
 export interface MarketVisualizationModalProps {
   isOpen: boolean;
@@ -85,6 +86,8 @@ export default function MarketVisualizationModal({
   const [viewMode, setViewMode] = React.useState<'chart' | 'table'>('chart');
   const [selectedSeriesIds, setSelectedSeriesIds] = React.useState<string[]>(['DGS10', 'MORTGAGE30US']);
   const [isExpanded, setIsExpanded] = React.useState(false);
+
+  useModalScrollLock(isOpen);
 
   // Focus the clicked metric whenever the modal opens or initialSelectedId changes
   React.useEffect(() => {
@@ -309,7 +312,8 @@ export default function MarketVisualizationModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="market-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md"
+      data-testid="market-visualization-modal-backdrop"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md overscroll-contain"
     >
       <div
         data-testid="market-visualization-modal"
@@ -363,7 +367,10 @@ export default function MarketVisualizationModal({
         </div>
 
         {/* Scrollable Modal Body */}
-        <div className="mt-3 flex-1 overflow-y-auto pr-1 space-y-3">
+        <div
+          data-testid="market-visualization-modal-body"
+          className="mt-3 flex-1 overflow-y-auto overscroll-contain pr-1 space-y-3"
+        >
           {/* Real-Time Market Day Snapshot Banner for Focused Metric */}
           {primaryFocusedSeries && (
             <div className="border border-border bg-muted/15 p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">

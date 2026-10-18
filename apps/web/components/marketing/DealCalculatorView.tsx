@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchSessionProfile } from '@/lib/auth/session-client';
 import {
+  getClientSubscriptionStatus,
+  hasClientSessionCookie,
+} from '@/lib/auth/session-cookies';
+import {
   canonicalDemoDeal,
   reconcileAcquisitionUnderwriting,
   type ReconciledUnderwritingMetrics,
@@ -251,8 +255,16 @@ export default function DealCalculatorView({
 
   // Auth & Subscription State
   const [authLoading, setAuthLoading] = useState(false);
-  const [authenticated, setAuthenticated] = useState(initialAuthenticated);
-  const [subscriptionStatus, setSubscriptionStatus] = useState<string>(initialSubscriptionStatus);
+  const [authenticated, setAuthenticated] = useState(() =>
+    Boolean(
+      initialAuthenticated ||
+        searchParams?.get('post') === 'true' ||
+        hasClientSessionCookie(),
+    ),
+  );
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>(
+    () => initialSubscriptionStatus || getClientSubscriptionStatus() || 'active',
+  );
 
   // Calculator State initialized from query parameters or localStorage (Agent 04 preserved state)
   const [inputs, setInputs] = useState<CalculatorInputs>(() => {
@@ -275,15 +287,42 @@ export default function DealCalculatorView({
       }
     }
 
+    const normalizeCalcStrategy = (raw: string | null | undefined): InvestmentStrategyType => {
+      if (!raw) return DEFAULT_INPUTS.strategy;
+      const lower = raw.trim().toLowerCase();
+      if (lower === 'brrrr' || lower === 'value-add / brrrr' || lower === 'value-add' || lower === 'value_add') {
+        return 'brrrr';
+      }
+      if (lower === 'buy_and_hold_rental' || lower === 'buy & hold rental' || lower === 'buy & hold' || lower === 'buy_and_hold' || lower === 'rental') {
+        return 'buy_and_hold_rental';
+      }
+      if (lower === 'short_term_rental_airbnb' || lower === 'short-term / airbnb' || lower === 'short-term' || lower === 'str' || lower === 'airbnb') {
+        return 'short_term_rental_airbnb';
+      }
+      if (lower === 'commercial_value_add' || lower === 'commercial value-add' || lower === 'commercial') {
+        return 'commercial_value_add';
+      }
+      if (lower === 'wholesale' || lower === 'wholesaling') {
+        return 'wholesale';
+      }
+      if (lower === 'flip' || lower === 'fix & flip' || lower === 'fix_and_flip') {
+        return 'flip';
+      }
+      return DEFAULT_INPUTS.strategy;
+    };
+
+    const resolvedAddress =
+      pAddress?.trim() || savedInputs.address?.trim() || DEFAULT_INPUTS.address;
+
     return {
       ...DEFAULT_INPUTS,
       ...savedInputs,
-      address: pAddress || savedInputs.address || DEFAULT_INPUTS.address,
-      strategy: pStrategy || savedInputs.strategy || DEFAULT_INPUTS.strategy,
-      purchasePrice: !isNaN(pPrice) ? pPrice : (savedInputs.purchasePrice ?? DEFAULT_INPUTS.purchasePrice),
-      arv: !isNaN(pArv) ? pArv : (savedInputs.arv ?? DEFAULT_INPUTS.arv),
-      rehabBudget: !isNaN(pRehab) ? pRehab : (savedInputs.rehabBudget ?? DEFAULT_INPUTS.rehabBudget),
-      grossRentMonthly: !isNaN(pRent) ? pRent : (savedInputs.grossRentMonthly ?? DEFAULT_INPUTS.grossRentMonthly),
+      address: resolvedAddress,
+      strategy: normalizeCalcStrategy(pStrategy || savedInputs.strategy),
+      purchasePrice: !isNaN(pPrice) && pPrice > 0 ? pPrice : (savedInputs.purchasePrice ?? DEFAULT_INPUTS.purchasePrice),
+      arv: !isNaN(pArv) && pArv > 0 ? pArv : (savedInputs.arv ?? DEFAULT_INPUTS.arv),
+      rehabBudget: !isNaN(pRehab) && pRehab >= 0 ? pRehab : (savedInputs.rehabBudget ?? DEFAULT_INPUTS.rehabBudget),
+      grossRentMonthly: !isNaN(pRent) && pRent >= 0 ? pRent : (savedInputs.grossRentMonthly ?? DEFAULT_INPUTS.grossRentMonthly),
     };
   });
 
@@ -293,6 +332,7 @@ export default function DealCalculatorView({
   const [dismissedProjectPrompt, setDismissedProjectPrompt] = useState(false);
   const [projectCreationError, setProjectCreationError] = useState<string | null>(null);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [creatingProjectTarget, setCreatingProjectTarget] = useState<'wizard' | 'workspace' | null>(null);
   const [showAssumptions, setShowAssumptions] = useState(false);
 
   // New Modals for Worksheets and Collaboration
@@ -371,8 +411,24 @@ export default function DealCalculatorView({
     let cancelled = false;
     fetchSessionProfile().then((profile) => {
       if (cancelled) return;
-      setAuthenticated(Boolean(profile.authenticated));
-      setSubscriptionStatus(profile.subscriptionStatus ?? 'active');
+      if (profile.authenticated) {
+        setAuthenticated(true);
+        setSubscriptionStatus(profile.subscriptionStatus ?? 'active');
+      } else {
+        const fallbackAuth = Boolean(
+          initialAuthenticated ||
+            searchParams?.get('post') === 'true' ||
+            hasClientSessionCookie(),
+        );
+        setAuthenticated(fallbackAuth);
+        if (fallbackAuth) {
+          setSubscriptionStatus(
+            initialSubscriptionStatus || getClientSubscriptionStatus() || 'active',
+          );
+        } else {
+          setSubscriptionStatus(profile.subscriptionStatus ?? 'active');
+        }
+      }
       setAuthLoading(false);
     });
 
@@ -655,14 +711,25 @@ export default function DealCalculatorView({
   // "Yes" path: promotes deal to Project with full mapping per Spec 5.2
   const handleAcceptProjectPrompt = async (directToWorkspace: boolean = false) => {
     setIsCreatingProject(true);
+    setCreatingProjectTarget(directToWorkspace ? 'workspace' : 'wizard');
     setProjectCreationError(null);
 
+    const resolvedAddress = inputs.address?.trim() || DEFAULT_INPUTS.address;
+    const resolvedPrice =
+      typeof inputs.purchasePrice === 'number' && Number.isFinite(inputs.purchasePrice) && inputs.purchasePrice > 0
+        ? inputs.purchasePrice
+        : DEFAULT_INPUTS.purchasePrice;
+    const resolvedArv =
+      typeof inputs.arv === 'number' && Number.isFinite(inputs.arv) && inputs.arv > 0
+        ? inputs.arv
+        : Math.round(resolvedPrice * 1.25);
+
     const promotePayload = {
-      address: inputs.address,
-      projectName: inputs.address.split(',')[0].trim() || 'New Investment Deal',
-      purchasePrice: inputs.purchasePrice,
+      address: resolvedAddress,
+      projectName: resolvedAddress.split(',')[0].trim() || 'New Investment Deal',
+      purchasePrice: resolvedPrice,
       rehabBudget: inputs.rehabBudget,
-      estimatedARV: inputs.arv,
+      estimatedARV: resolvedArv,
       grossRentMonthly: inputs.grossRentMonthly,
       otherIncomeMonthly: inputs.otherIncomeMonthly ?? 0,
       operatingExpenseRatioPct: inputs.operatingExpensePct,
@@ -703,8 +770,8 @@ export default function DealCalculatorView({
           body: JSON.stringify({
             underwritingRecord: {
               inputs: {
-                purchasePrice: inputs.purchasePrice,
-                estimatedARV: inputs.arv,
+                purchasePrice: resolvedPrice,
+                estimatedARV: resolvedArv,
                 rehabBudget: inputs.rehabBudget,
                 grossMonthlyRent: inputs.grossRentMonthly,
                 operatingExpenseRatioPct: inputs.operatingExpensePct,
@@ -745,10 +812,10 @@ export default function DealCalculatorView({
     // 2. Also seed wizard draft store at Step 5 Review
     const draftPayload = {
       step: 5,
-      address: inputs.address,
-      purchasePrice: inputs.purchasePrice,
+      address: resolvedAddress,
+      purchasePrice: resolvedPrice,
       rehabBudget: inputs.rehabBudget,
-      estimatedARV: inputs.arv,
+      estimatedARV: resolvedArv,
       grossRentMonthly: inputs.grossRentMonthly,
       operatingExpenseRatioPct: inputs.operatingExpensePct,
       targetLtvPct: inputs.ltvPct,
@@ -797,10 +864,10 @@ export default function DealCalculatorView({
     const projectCreationParams = new URLSearchParams({
       fromCalculator: 'true',
       phase: 'acquisition',
-      address: inputs.address,
-      price: String(inputs.purchasePrice),
+      address: resolvedAddress,
+      price: String(resolvedPrice),
       rehab: String(inputs.rehabBudget),
-      arv: String(inputs.arv),
+      arv: String(resolvedArv),
       rent: String(inputs.grossRentMonthly),
       strategy: inputs.strategy,
     });
@@ -891,7 +958,7 @@ export default function DealCalculatorView({
               type="button"
               data-testid="start-project-from-calculator-btn"
               onClick={() => setShowStartProjectModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
             >
               <RocketLaunch className="h-4 w-4 text-emerald-400" weight="bold" />
               <span>Start Project from Deal</span>
@@ -901,7 +968,7 @@ export default function DealCalculatorView({
               type="button"
               data-testid="broadcast-deal-btn"
               onClick={() => setShowBroadcastModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
             >
               <EnvelopeSimple className="h-4 w-4 text-foreground" weight="bold" />
               <span>Share via Email</span>
@@ -911,7 +978,7 @@ export default function DealCalculatorView({
               type="button"
               data-testid="post-marketplace-btn"
               onClick={() => setShowPublishModal(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-none border border-border bg-card px-4 py-2.5 text-xs font-semibold text-foreground transition hover:bg-muted min-h-[44px]"
             >
               <Storefront className="h-4 w-4 text-foreground" weight="bold" />
               <span>Post to Marketplace</span>
@@ -921,7 +988,7 @@ export default function DealCalculatorView({
               type="button"
               onClick={handleRunAnalysis}
               disabled={snapshotSaving}
-              className="inline-flex items-center justify-center gap-2 rounded-none bg-primary px-6 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary/90 shadow-sm touch-press min-h-[44px]"
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-none bg-primary px-6 py-2.5 text-xs font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed shadow-sm touch-press min-h-[44px]"
             >
               <Calculator className="h-4 w-4" weight="bold" />
               {snapshotSaving ? 'Calculating...' : 'Calculate Deal'}
@@ -939,7 +1006,10 @@ export default function DealCalculatorView({
 
         {/* Success Notifications for Marketplace / Broadcast */}
         {publishSuccessDealId && (
-          <div className="mb-6 flex items-center justify-between rounded-none border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in">
+          <div
+            data-testid="deal-published-success-banner"
+            className="mb-6 flex items-center justify-between rounded-none border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-200 animate-in fade-in"
+          >
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-emerald-400" weight="bold" />
               <span>
@@ -947,7 +1017,7 @@ export default function DealCalculatorView({
               </span>
             </div>
             <Link
-              href="/marketplaces"
+              href={authenticated || searchParams?.get('post') === 'true' ? '/dashboard/deals' : '/marketplaces'}
               className="font-bold underline text-emerald-300 hover:text-white"
             >
               View in Marketplace
@@ -966,7 +1036,7 @@ export default function DealCalculatorView({
             <button
               type="button"
               onClick={() => setBroadcastSuccessCount(null)}
-              className="text-xs text-emerald-300 hover:text-white"
+              className="cursor-pointer text-xs text-emerald-300 hover:text-white"
             >
               Dismiss
             </button>
@@ -1023,7 +1093,7 @@ export default function DealCalculatorView({
                   type="button"
                   onClick={() => handleLookupProperty()}
                   disabled={lookupLoading}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline disabled:opacity-50"
+                  className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {lookupLoading ? (
                     <ArrowsClockwise className="h-3.5 w-3.5 animate-spin" weight="bold" />
@@ -1080,7 +1150,7 @@ export default function DealCalculatorView({
                     data-testid="property-cache-refresh-btn"
                     onClick={() => handleLookupProperty(inputs.address, true)}
                     disabled={lookupLoading}
-                    className="inline-flex items-center gap-1 rounded-none px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-500/10 transition"
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-none px-2 py-1 text-[11px] font-semibold text-emerald-400 hover:bg-emerald-500/10 transition disabled:cursor-not-allowed"
                   >
                     <ArrowsClockwise className="h-3 w-3" weight="bold" />
                     Refresh
@@ -1227,7 +1297,7 @@ export default function DealCalculatorView({
                       type="button"
                       data-testid="open-rehab-worksheet-btn"
                       onClick={() => setShowRehabModal(true)}
-                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-primary hover:underline"
+                      className="inline-flex cursor-pointer items-center gap-1 text-[10.5px] font-semibold text-primary hover:underline"
                     >
                       <Hammer className="h-3 w-3" weight="bold" />
                       <span>Itemized Worksheet</span>
@@ -1253,7 +1323,7 @@ export default function DealCalculatorView({
                       type="button"
                       data-testid="open-closing-costs-modal-btn"
                       onClick={() => setShowClosingCostsModal(true)}
-                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
+                      className="inline-flex cursor-pointer items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
                     >
                       <Receipt className="h-3 w-3" weight="bold" />
                       <span>Itemized Worksheet</span>
@@ -1302,7 +1372,7 @@ export default function DealCalculatorView({
                       type="button"
                       data-testid="open-schedule-e-btn"
                       onClick={() => setShowScheduleEModal(true)}
-                      className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
+                      className="inline-flex cursor-pointer items-center gap-1 text-[10.5px] font-semibold text-emerald-400 hover:underline"
                     >
                       <Receipt className="h-3 w-3" weight="bold" />
                       <span>Schedule E OpEx</span>
@@ -1432,7 +1502,7 @@ export default function DealCalculatorView({
                         type="button"
                         data-testid="apply-market-rent-btn"
                         onClick={() => handleInputChange('grossRentMonthly', propertyData!.estimatedRent as number)}
-                        className="rounded-none bg-primary text-primary-foreground border border-primary px-2.5 py-1 text-[11px] font-medium hover:bg-primary/80 transition"
+                        className="cursor-pointer rounded-none bg-primary text-primary-foreground border border-primary px-2.5 py-1 text-[11px] font-medium hover:bg-primary/80 transition"
                       >
                         Apply Market Rent ({formatCurrency(propertyData!.estimatedRent as number)})
                       </button>
@@ -1485,7 +1555,7 @@ export default function DealCalculatorView({
                   type="button"
                   data-testid="toggle-assumptions-btn"
                   onClick={() => setShowAssumptions(!showAssumptions)}
-                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                  className="cursor-pointer text-xs font-semibold text-primary hover:underline flex items-center gap-1"
                 >
                   <span>{showAssumptions ? 'Collapse' : 'Refine Assumptions'}</span>
                   {showAssumptions ? (
@@ -1592,7 +1662,7 @@ export default function DealCalculatorView({
                       type="button"
                       data-testid={`loan-term-${term}yr-btn`}
                       onClick={() => handleInputChange('amortizationYears', term)}
-                      className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                      className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                         inputs.amortizationYears === term
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1619,7 +1689,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-appreciation"
                     onClick={() => handleInputChange('terminalValueMethod', 'appreciation_pct')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'appreciation_pct'
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1631,7 +1701,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-exit-cap"
                     onClick={() => handleInputChange('terminalValueMethod', 'exit_cap')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'exit_cap'
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1643,7 +1713,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="terminal-method-per-unit"
                     onClick={() => handleInputChange('terminalValueMethod', 'per_unit')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.terminalValueMethod === 'per_unit'
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1669,7 +1739,7 @@ export default function DealCalculatorView({
                           type="button"
                           data-testid="appreciation-base-purchase-price"
                           onClick={() => handleInputChange('appreciationBase', 'purchase_price')}
-                          className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                          className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                             (inputs.appreciationBase ?? 'purchase_price') === 'purchase_price'
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1681,7 +1751,7 @@ export default function DealCalculatorView({
                           type="button"
                           data-testid="appreciation-base-arv"
                           onClick={() => handleInputChange('appreciationBase', 'arv')}
-                          className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                          className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                             inputs.appreciationBase === 'arv'
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1858,7 +1928,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-amortizing"
                     onClick={() => handleInputChange('loanType', 'amortizing')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'amortizing' || !inputs.loanType
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1870,7 +1940,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-io"
                     onClick={() => handleInputChange('loanType', 'interest_only')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'interest_only'
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -1882,7 +1952,7 @@ export default function DealCalculatorView({
                     type="button"
                     data-testid="loan-type-arm"
                     onClick={() => handleInputChange('loanType', 'arm')}
-                    className={`rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2 text-center text-xs font-semibold transition min-h-[44px] ${
                       inputs.loanType === 'arm'
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-border bg-card text-muted-foreground hover:text-foreground'
@@ -2643,7 +2713,7 @@ export default function DealCalculatorView({
                         type="button"
                         data-testid={`what-if-vacancy-${v}-btn`}
                         onClick={() => setWhatIfVacancy(v)}
-                        className={`rounded-none border px-2 py-1.5 text-center text-xs font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                        className={`cursor-pointer rounded-none border px-2 py-1.5 text-center text-xs font-semibold transition min-h-[44px] sm:min-h-[36px] ${
                           whatIfVacancy === v
                             ? 'border-amber-400 bg-amber-400/10 text-amber-300'
                             : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
@@ -2678,7 +2748,7 @@ export default function DealCalculatorView({
                         type="button"
                         data-testid={`what-if-rent-delta-${delta}-btn`}
                         onClick={() => setWhatIfRentDeltaPct(delta)}
-                        className={`rounded-none border px-1.5 py-1.5 text-center text-[11px] font-semibold transition min-h-[44px] sm:min-h-[36px] ${
+                        className={`cursor-pointer rounded-none border px-1.5 py-1.5 text-center text-[11px] font-semibold transition min-h-[44px] sm:min-h-[36px] ${
                           whatIfRentDeltaPct === delta
                             ? 'border-amber-400 bg-amber-400/10 text-amber-300'
                             : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
@@ -2769,7 +2839,7 @@ export default function DealCalculatorView({
                       setExitPlanningHorizon(years);
                       handleInputChange('holdPeriodYears', years);
                     }}
-                    className={`rounded-none border p-2.5 text-center text-xs font-semibold transition min-h-[44px] ${
+                    className={`cursor-pointer rounded-none border p-2.5 text-center text-xs font-semibold transition min-h-[44px] ${
                       exitPlanningHorizon === years
                         ? 'border-cyan-400 bg-cyan-400/10 text-cyan-300 font-bold'
                         : 'border-border bg-muted/20 text-muted-foreground hover:text-foreground'
@@ -2912,7 +2982,7 @@ export default function DealCalculatorView({
                     type="button"
                     onClick={() => setShowStartProjectModal(true)}
                     disabled={isCreatingProject}
-                    className="mt-3 inline-flex items-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
+                    className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:cursor-not-allowed min-h-[44px]"
                   >
                     {isCreatingProject ? 'Opening Project...' : 'Make this deal a Project'}
                   </button>
@@ -3109,7 +3179,7 @@ export default function DealCalculatorView({
                 type="button"
                 onClick={handleDismissProjectPrompt}
                 disabled={isCreatingProject}
-                className="flex min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-6 py-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50 touch-press"
+                className="flex cursor-pointer min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-6 py-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 touch-press"
               >
                 No
               </button>
@@ -3118,7 +3188,7 @@ export default function DealCalculatorView({
                 type="button"
                 onClick={() => handleAcceptProjectPrompt(false)}
                 disabled={isCreatingProject}
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 shadow-sm touch-press"
+                className="inline-flex cursor-pointer min-h-[44px] items-center justify-center gap-2 rounded-none bg-primary px-7 py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm touch-press"
               >
                 {isCreatingProject ? (
                   <>
@@ -3148,7 +3218,7 @@ export default function DealCalculatorView({
           <button
             type="button"
             onClick={() => setShowPublishModal(true)}
-            className="flex min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-3 py-2 text-xs font-semibold text-foreground active:bg-secondary"
+            className="flex cursor-pointer min-h-[44px] items-center justify-center rounded-none border border-border bg-secondary/40 px-3 py-2 text-xs font-semibold text-foreground active:bg-secondary"
           >
             Share
           </button>
@@ -3156,7 +3226,7 @@ export default function DealCalculatorView({
             type="button"
             onClick={() => handleAcceptProjectPrompt(false)}
             disabled={isCreatingProject}
-            className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-none bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm active:opacity-90"
+            className="flex cursor-pointer min-h-[44px] items-center justify-center gap-1.5 rounded-none bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm active:opacity-90 disabled:cursor-not-allowed"
           >
             <RocketLaunch className="h-4 w-4" weight="bold" />
             <span>Make Project</span>
@@ -3209,7 +3279,13 @@ export default function DealCalculatorView({
         onClose={() => setShowBroadcastModal(false)}
         address={inputs.address}
         purchasePrice={inputs.purchasePrice}
+        rehabBudget={inputs.rehabBudget}
+        arv={inputs.arv}
+        strategy={inputs.strategy}
+        holdPeriodYears={inputs.holdPeriodYears}
         calculations={calculations}
+        dealId={publishSuccessDealId || searchParams?.get('dealId') || undefined}
+        projectId={searchParams?.get('projectId') || undefined}
         onSuccess={(recipientCount) => {
           setBroadcastSuccessCount(recipientCount);
           setShowBroadcastModal(false);
@@ -3219,7 +3295,10 @@ export default function DealCalculatorView({
       {/* 8. Start Project from Deal Modal */}
       <StartProjectFromCalculatorModal
         isOpen={showStartProjectModal}
-        onClose={() => setShowStartProjectModal(false)}
+        onClose={() => {
+          setShowStartProjectModal(false);
+          setCreatingProjectTarget(null);
+        }}
         address={inputs.address}
         strategy={inputs.strategy}
         purchasePrice={inputs.purchasePrice}
@@ -3234,6 +3313,7 @@ export default function DealCalculatorView({
         cashRequired={calculations.cashRequired}
         persistedSnapshotId={persistedSnapshotId}
         isCreatingProject={isCreatingProject}
+        creatingProjectTarget={creatingProjectTarget}
         projectCreationError={projectCreationError}
         onLaunchProjectWorkspace={() => handleAcceptProjectPrompt(true)}
         onOpenProjectWizard={() => handleAcceptProjectPrompt(false)}

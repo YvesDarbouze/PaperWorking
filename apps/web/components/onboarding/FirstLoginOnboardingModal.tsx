@@ -315,7 +315,10 @@ export function FirstLoginOnboardingModal({
             <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
               Account Identity
             </span>
-            <div className="mt-3 flex items-center gap-4">
+            <div
+              data-testid="onboarding-identity-row"
+              className="mt-3 flex flex-wrap sm:flex-nowrap items-end gap-4"
+            >
               <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-none border border-neutral-700 bg-neutral-800 text-sm font-bold text-neutral-200">
                 {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -331,19 +334,24 @@ export function FirstLoginOnboardingModal({
                   </span>
                 )}
               </div>
-              <div className="flex-1 space-y-1.5">
+              <div className="flex-1 min-w-[180px] space-y-1.5">
                 <label htmlFor="onboarding-display-name" className="text-xs text-neutral-300 block">Your Name</label>
                 <input
                   id="onboarding-display-name"
+                  data-testid="onboarding-display-name-input"
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Investor or Principal Name"
-                  className="w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none min-h-[44px]"
+                  className="h-11 min-h-[44px] w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none"
                 />
               </div>
-              <div>
-                <label htmlFor="onboarding-avatar-upload" className="cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-[11px] font-medium text-neutral-300 hover:bg-neutral-800 transition inline-flex items-center min-h-[44px]">
+              <div className="shrink-0 self-end">
+                <label
+                  htmlFor="onboarding-avatar-upload"
+                  data-testid="onboarding-change-photo-btn"
+                  className="h-11 min-h-[44px] self-end cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-[11px] font-medium text-neutral-300 hover:bg-neutral-800 transition inline-flex items-center justify-center whitespace-nowrap"
+                >
                   Change Photo
                   <input
                     id="onboarding-avatar-upload"
@@ -485,8 +493,25 @@ export function FirstLoginOnboardingModal({
                 placeholder="Search 38 certified professions (e.g. Electrician, Attorney, General Contractor)..."
                 value={skillsSearchQuery}
                 onChange={(e) => setSkillsSearchQuery(e.target.value)}
-                className="w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none min-h-[44px]"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape' && skillsSearchQuery) {
+                    e.preventDefault();
+                    setSkillsSearchQuery('');
+                  }
+                }}
+                className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-2 pl-3 pr-11 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none min-h-[44px]"
               />
+              {skillsSearchQuery.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setSkillsSearchQuery('')}
+                  aria-label="Clear search"
+                  data-testid="clear-onboarding-skills-search-btn"
+                  className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-neutral-400 transition hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                >
+                  <X size={14} weight="bold" />
+                </button>
+              ) : null}
             </div>
 
             {/* Scrollable grid of skills */}

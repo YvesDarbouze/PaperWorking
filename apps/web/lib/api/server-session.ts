@@ -60,7 +60,18 @@ export async function resolveAuthUserFromRequest(
   if (process.env.NODE_ENV !== 'production' && process.env.TEST_AUTH_UID) {
     const uid = process.env.TEST_AUTH_UID;
     if (uid === 'unauthenticated') return null;
-    return buildAuthUserForUid(uid, deps.sessionResolver.store);
+    try {
+      return await buildAuthUserForUid(uid, deps.sessionResolver.store);
+    } catch {
+      // Firestore session store unavailable in tests — synthesize a minimal user.
+      return {
+        uid,
+        email: `${uid}@paperworking.test`,
+        accountType: uid.includes('vendor') ? 'vendor' : uid.includes('admin') ? 'admin' : 'investor',
+        isAdmin: uid.includes('admin'),
+        role: 'owner',
+      };
+    }
   }
 
   const credentials = sessionCredentialsFromRequest(request);

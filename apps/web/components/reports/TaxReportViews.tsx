@@ -26,56 +26,56 @@ export function ScheduleETable({ report }: { report: ScheduleEReport }) {
         tabIndex={0}
         role="region"
         aria-label="Schedule E summary table"
-        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        <table className="w-full text-left text-xs text-text-primary border-collapse">
+        <table className="w-full text-left text-xs text-foreground border-collapse">
           <thead>
-            <tr className="border-b border-border-subtle bg-app/40 text-[11px] uppercase tracking-wider text-text-muted">
-              <th scope="col" className="sticky left-0 z-20 min-w-[100px] bg-surface px-6 py-3.5 font-bold border-r border-border-subtle/50">
+            <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <th scope="col" className="min-w-[100px] bg-card px-6 py-3.5 font-bold whitespace-nowrap border-r border-border text-foreground">
                 Line #
               </th>
-              <th scope="col" className="min-w-[240px] px-4 py-3.5 font-bold">
+              <th scope="col" className="min-w-[240px] px-4 py-3.5 font-bold whitespace-nowrap">
                 Schedule E Line Description
               </th>
               {report.properties.map((p) => (
-                <th key={p.id} scope="col" className="min-w-[140px] px-4 py-3.5 text-right font-bold">
+                <th key={p.id} scope="col" className="min-w-[140px] px-4 py-3.5 text-right font-bold whitespace-nowrap">
                   {p.name}
                 </th>
               ))}
-              <th scope="col" className="min-w-[140px] px-6 py-3.5 text-right font-bold bg-elevated/50 text-accent border-l border-border-subtle">
+              <th scope="col" className="min-w-[140px] px-6 py-3.5 text-right font-bold whitespace-nowrap bg-muted/60 text-foreground border-l border-border">
                 Portfolio Total
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-border">
             {report.lines.map((l) => {
               const isSubtotal = l.isSubtotal;
               const isTotal = l.isTotal;
               const isIncome = l.isIncome;
 
               const rowStyle = isTotal
-                ? 'bg-accent/10 font-extrabold text-text-primary border-t-2 border-b-2 border-accent/30'
+                ? 'bg-muted/60 font-extrabold text-foreground border-t-2 border-b-2 border-border'
                 : isSubtotal
-                ? 'bg-surface font-bold text-text-primary border-t border-border-subtle'
-                : 'hover:bg-elevated/40 text-text-secondary';
+                ? 'bg-card font-bold text-foreground border-t border-border'
+                : 'bg-card hover:bg-muted/30 text-muted-foreground';
 
               return (
                 <tr key={l.lineKey} className={rowStyle} data-testid={`sche-row-${l.lineKey}`}>
-                  <td className="sticky left-0 z-10 bg-surface px-6 py-2.5 font-mono text-[11px] font-bold text-text-muted border-r border-border-subtle/50">
+                  <td className="bg-card px-6 py-2.5 font-mono text-[11px] font-bold text-muted-foreground whitespace-nowrap border-r border-border">
                     {l.lineNumber}
                   </td>
-                  <td className={`px-4 py-2.5 ${isTotal || isSubtotal || isIncome ? 'font-bold text-text-primary' : ''}`}>
+                  <td className={`px-4 py-2.5 whitespace-nowrap ${isTotal || isSubtotal || isIncome ? 'font-bold text-foreground' : ''}`}>
                     {l.label}
                   </td>
                   {report.properties.map((p) => {
                     const val = l.valuesByProperty[p.id] ?? 0;
                     return (
-                      <td key={p.id} className="px-4 py-2.5 text-right font-mono tabular-nums">
+                      <td key={p.id} className="px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap">
                         {formatCurrency(val, { decimals: 0, negativeParens: true })}
                       </td>
                     );
                   })}
-                  <td className="px-6 py-2.5 text-right font-mono font-bold tabular-nums bg-elevated/50 border-l border-border-subtle text-text-primary">
+                  <td className="px-6 py-2.5 text-right font-mono font-bold tabular-nums whitespace-nowrap bg-muted/50 border-l border-border text-foreground">
                     {formatCurrency(l.portfolioTotal, { decimals: 0, negativeParens: true })}
                   </td>
                 </tr>
@@ -85,8 +85,8 @@ export function ScheduleETable({ report }: { report: ScheduleEReport }) {
         </table>
       </div>
 
-      <div className="border-t border-border-subtle px-6 py-3 bg-surface/30">
-        <p className="text-[11px] italic text-text-muted" data-testid="tax-disclaimer">
+      <div className="border-t border-border px-6 py-3 bg-card">
+        <p className="text-[11px] italic text-muted-foreground" data-testid="tax-disclaimer">
           {TAX_DISCLAIMER}
         </p>
       </div>
@@ -121,43 +121,43 @@ export function DepreciationScheduleTable({
         tabIndex={0}
         role="region"
         aria-label="Depreciation schedule table"
-        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        <table className="w-full text-left text-xs text-text-secondary border-collapse">
+        <table className="w-full text-left text-xs text-muted-foreground border-collapse">
           <thead>
-            <tr className="border-b border-border-subtle bg-app/40 text-[11px] uppercase tracking-wider text-text-muted">
-              <th scope="col" className="px-6 py-3.5 font-bold">Asset Description</th>
-              <th scope="col" className="px-4 py-3.5 font-bold">Class / Life</th>
-              <th scope="col" className="px-4 py-3.5 font-bold">In-Service Date</th>
-              <th scope="col" className="px-4 py-3.5 text-right font-bold">Total Basis</th>
-              <th scope="col" className="px-4 py-3.5 text-right font-bold">Land Value</th>
-              <th scope="col" className="px-4 py-3.5 text-right font-bold">Depreciable Basis</th>
-              <th scope="col" className="px-4 py-3.5 text-right font-bold">Annual Full-Year</th>
-              <th scope="col" className="px-4 py-3.5 text-right font-bold text-accent">FY Depreciation</th>
-              <th scope="col" className="px-6 py-3.5 text-right font-bold bg-elevated/50 border-l border-border-subtle">
+            <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <th scope="col" className="px-6 py-3.5 font-bold whitespace-nowrap">Asset Description</th>
+              <th scope="col" className="px-4 py-3.5 font-bold whitespace-nowrap">Class / Life</th>
+              <th scope="col" className="px-4 py-3.5 font-bold whitespace-nowrap">In-Service Date</th>
+              <th scope="col" className="px-4 py-3.5 text-right font-bold whitespace-nowrap">Total Basis</th>
+              <th scope="col" className="px-4 py-3.5 text-right font-bold whitespace-nowrap">Land Value</th>
+              <th scope="col" className="px-4 py-3.5 text-right font-bold whitespace-nowrap">Depreciable Basis</th>
+              <th scope="col" className="px-4 py-3.5 text-right font-bold whitespace-nowrap">Annual Full-Year</th>
+              <th scope="col" className="px-4 py-3.5 text-right font-bold whitespace-nowrap text-foreground">FY Depreciation</th>
+              <th scope="col" className="px-6 py-3.5 text-right font-bold whitespace-nowrap bg-muted/60 border-l border-border">
                 Ending Basis
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-border">
             {schedules.map((s) => {
               const currentYearRow = s.schedule.find((r) => r.year === fiscalYear) || s.schedule[0];
               const depAmount = currentYearRow?.annualDepreciation ?? s.annualStraightLineFullYear;
               const endingBasis = currentYearRow?.endingBasis ?? (s.improvementBasis - depAmount);
 
               return (
-                <tr key={s.assetId} className="hover:bg-elevated/40" data-testid={`dep-row-${s.assetId}`}>
-                  <td className="px-6 py-3 font-semibold text-text-primary">{s.name}</td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-text-secondary">
+                <tr key={s.assetId} className="hover:bg-muted/30" data-testid={`dep-row-${s.assetId}`}>
+                  <td className="px-6 py-3 font-semibold text-foreground whitespace-nowrap">{s.name}</td>
+                  <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
                     {s.recoveryPeriodYears} yrs ({s.assetClass === 'residential_27_5' ? 'Residential' : 'Commercial'})
                   </td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-text-secondary">{s.inServiceDate}</td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums">{formatCurrency(s.totalBasis, { decimals: 0 })}</td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums text-text-muted">{formatCurrency(s.landValue, { decimals: 0 })}</td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums font-semibold text-text-primary">{formatCurrency(s.improvementBasis, { decimals: 0 })}</td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">{formatCurrency(s.annualStraightLineFullYear, { decimals: 0 })}</td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums font-bold text-accent">{formatCurrency(depAmount, { decimals: 0 })}</td>
-                  <td className="px-6 py-3 text-right font-mono tabular-nums font-bold bg-elevated/50 border-l border-border-subtle text-text-primary">
+                  <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground whitespace-nowrap">{s.inServiceDate}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums whitespace-nowrap">{formatCurrency(s.totalBasis, { decimals: 0 })}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums text-muted-foreground whitespace-nowrap">{formatCurrency(s.landValue, { decimals: 0 })}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums font-semibold text-foreground whitespace-nowrap">{formatCurrency(s.improvementBasis, { decimals: 0 })}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums text-muted-foreground whitespace-nowrap">{formatCurrency(s.annualStraightLineFullYear, { decimals: 0 })}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums font-bold text-foreground whitespace-nowrap">{formatCurrency(depAmount, { decimals: 0 })}</td>
+                  <td className="px-6 py-3 text-right font-mono tabular-nums font-bold whitespace-nowrap bg-muted/50 border-l border-border text-foreground">
                     {formatCurrency(endingBasis, { decimals: 0 })}
                   </td>
                 </tr>
@@ -167,8 +167,8 @@ export function DepreciationScheduleTable({
         </table>
       </div>
 
-      <div className="border-t border-border-subtle px-6 py-3 bg-surface/30">
-        <p className="text-[11px] italic text-text-muted" data-testid="tax-disclaimer">
+      <div className="border-t border-border px-6 py-3 bg-card">
+        <p className="text-[11px] italic text-muted-foreground" data-testid="tax-disclaimer">
           {TAX_DISCLAIMER}
         </p>
       </div>
@@ -312,10 +312,10 @@ export function CapExLogTable({ report }: { report: CapExReport }) {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3 font-mono text-[11px] text-text-muted">
+                <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
                   {i.depreciationRecoveryYears > 0 ? `${i.depreciationRecoveryYears}-yr Recovery` : 'Immediate Expense'}
                 </td>
-                <td className="px-6 py-3 text-right font-mono font-bold tabular-nums text-text-primary">
+                <td className="px-6 py-3 text-right font-mono font-bold tabular-nums text-foreground whitespace-nowrap">
                   {formatCurrency(i.amount, { decimals: 0 })}
                 </td>
               </tr>
@@ -324,8 +324,8 @@ export function CapExLogTable({ report }: { report: CapExReport }) {
         </table>
       </div>
 
-      <div className="border-t border-border-subtle px-6 py-3 bg-surface/30">
-        <p className="text-[11px] italic text-text-muted" data-testid="tax-disclaimer">
+      <div className="border-t border-border px-6 py-3 bg-card">
+        <p className="text-[11px] italic text-muted-foreground" data-testid="tax-disclaimer">
           {TAX_DISCLAIMER}
         </p>
       </div>

@@ -15,6 +15,7 @@ import {
 import {
   createDealInStore,
   patchDealInStore,
+  stripUndefinedDeep,
 } from '@/lib/deals/deal-store';
 import { sanitizeDealImageUrl } from '@/lib/properties/property-image-helper';
 import { secureRandomHex } from '@/lib/utils/secure-id';
@@ -181,13 +182,13 @@ export async function POST(request: Request) {
         ? `token_${slug}_${secureRandomHex(16)}`
         : undefined;
 
-    const newDeal = {
+    const newDeal = stripUndefinedDeep({
       id: dealId,
       slug,
       address: parsed.address,
       status: parsed.status || 'published',
       visibility: parsed.visibility || 'marketplace',
-      shareToken,
+      ...(shareToken ? { shareToken } : {}),
       sharedWith: [auth.uid],
       purchasePrice: parsed.purchasePrice,
       rehabCost: parsed.rehabCost,
@@ -238,7 +239,7 @@ export async function POST(request: Request) {
         strategy: parsed.strategy || 'VALUE_ADD',
         holdPeriod: parsed.holdPeriod || '3–5 Years',
       },
-    };
+    });
 
     const created = await createDealInStore(newDeal as any);
 

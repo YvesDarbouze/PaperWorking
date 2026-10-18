@@ -69,6 +69,17 @@ export async function resolveProjectAccess(
   }
 
   const projectOrg = project.organizationId || 'org-1';
+
+  // Project owners/creators retain full access regardless of roster drift.
+  const ownerFields = project as { ownerId?: string; ownerUid?: string; creatorId?: string };
+  const isOwner =
+    ownerFields.ownerId === auth.uid ||
+    ownerFields.ownerUid === auth.uid ||
+    ownerFields.creatorId === auth.uid;
+  if (isOwner) {
+    return { ok: true, kind: 'team', role: 'owner', uid: auth.uid, project };
+  }
+
   const membership = await requireWebOrgRole({ uid: auth.uid }, projectOrg, 'viewer');
   if (membership.ok) {
     if (minTeamRole !== 'viewer') {

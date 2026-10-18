@@ -74,7 +74,7 @@ export default function ScheduleEExpenseModal({
       aria-modal="true"
       aria-labelledby="schedule-e-modal-title"
       data-testid="schedule-e-expense-modal"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/80 p-0 sm:p-4 backdrop-blur-md animate-in fade-in duration-150"
     >
       <div
         ref={modalRef}
@@ -102,11 +102,11 @@ export default function ScheduleEExpenseModal({
         </div>
 
         {/* Info Banner */}
-        <div className="my-3 rounded-none border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs flex items-center justify-between shrink-0">
+        <div className="my-3 rounded-none border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs flex items-center justify-between gap-2 shrink-0">
           <span className="text-white/70">
             Gross Annual Rent: <strong className="text-white font-mono">{formatCurrency(grossRentAnnual)}</strong> ({formatCurrency(Math.round(grossRentAnnual / 12))}/mo)
           </span>
-          <span className="rounded-none bg-black/40 px-2 py-0.5 font-mono text-[10px] text-emerald-300 border border-white/10">
+          <span className="shrink-0 whitespace-nowrap rounded-none bg-black/40 px-2 py-0.5 font-mono text-[10px] text-emerald-300 border border-white/10">
             Computed OpEx Ratio: {computedRatioPct}%
           </span>
         </div>
@@ -143,24 +143,31 @@ export default function ScheduleEExpenseModal({
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-white/10 flex items-center justify-between shrink-0">
-          <div>
+        <div
+          data-testid="schedule-e-modal-footer"
+          className="pt-4 border-t border-white/10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0"
+        >
+          <div data-testid="schedule-e-total-price-block">
             <span className="block text-[10px] uppercase font-mono text-white/40">Total Operating Expenses</span>
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-extrabold font-mono text-primary">
+              <span className="text-xl font-extrabold font-mono text-primary whitespace-nowrap">
                 {formatCurrency(totalAnnual)}/yr
               </span>
-              <span className="text-xs text-white/50 font-mono">
+              <span className="text-xs text-white/50 font-mono whitespace-nowrap">
                 ({formatCurrency(monthlyTotal)}/mo • {computedRatioPct}%)
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div
+            data-testid="schedule-e-footer-actions"
+            className="flex w-full items-center justify-end gap-2.5 sm:w-auto"
+          >
             <button
               type="button"
+              data-testid="cancel-schedule-e-btn"
               onClick={onClose}
-              className="rounded-none border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px]"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center rounded-none border border-white/15 px-4 py-2.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 min-h-[44px] whitespace-nowrap"
             >
               Cancel
             </button>
@@ -171,7 +178,7 @@ export default function ScheduleEExpenseModal({
                 onApplyExpenses(totalAnnual, computedRatioPct);
                 onClose();
               }}
-              className="rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px]"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center rounded-none bg-primary px-4 sm:px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition min-h-[44px] whitespace-nowrap"
             >
               Apply Expenses ({formatCurrency(totalAnnual)}/yr)
             </button>

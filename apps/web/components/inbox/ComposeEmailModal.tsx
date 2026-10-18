@@ -9,15 +9,19 @@ export default function ComposeEmailModal({
   isOpen,
   onClose,
   defaultProjectId,
+  defaultTo,
+  defaultSubject,
   onSent,
 }: {
   isOpen: boolean;
   onClose: () => void;
   defaultProjectId?: string;
+  defaultTo?: string;
+  defaultSubject?: string;
   onSent?: () => void;
 }) {
-  const [to, setTo] = useState('');
-  const [subject, setSubject] = useState('');
+  const [to, setTo] = useState(defaultTo ?? '');
+  const [subject, setSubject] = useState(defaultSubject ?? '');
   const [body, setBody] = useState('');
   const [projectId, setProjectId] = useState(defaultProjectId ?? '');
   const [sending, setSending] = useState(false);
@@ -28,11 +32,11 @@ export default function ComposeEmailModal({
     if (!isOpen) return;
     setSent(false);
     setErrorMsg(null);
-    setTo('');
-    setSubject('');
+    setTo(defaultTo ?? '');
+    setSubject(defaultSubject ?? '');
     setBody('');
     setProjectId(defaultProjectId ?? '');
-  }, [isOpen, defaultProjectId]);
+  }, [isOpen, defaultProjectId, defaultTo, defaultSubject]);
 
   if (!isOpen) return null;
 
@@ -100,7 +104,7 @@ export default function ComposeEmailModal({
       ) : (
         <div className="space-y-4">
           {errorMsg ? (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">
+            <div className="rounded-none border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">
               {errorMsg}
             </div>
           ) : null}
@@ -114,12 +118,13 @@ export default function ComposeEmailModal({
             </label>
             <select
               id="compose-project-select"
+              data-testid="compose-project-select"
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="h-11 w-full cursor-pointer rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none focus:border-emerald-500/40"
+              className="h-11 min-h-[44px] w-full min-w-0 max-w-full cursor-pointer truncate rounded-none border border-white/10 bg-[#0d0a0b] px-3 text-base md:text-sm text-white outline-none focus:border-emerald-500/40"
             >
               <option value="" className="bg-slate-950 text-white/60">
-                None (General Announcement / Workspace Message)
+                None (General Workspace)
               </option>
               {SEED_PROJECTS.map((p) => (
                 <option key={p.id} value={p.id} className="bg-slate-950 text-white">
@@ -138,12 +143,13 @@ export default function ComposeEmailModal({
             </label>
             <input
               id="compose-to-input"
+              data-testid="compose-to-input"
               type="email"
               inputMode="email"
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              placeholder="team@partnercapital.com or investor@firm.com"
-              className="h-11 w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
+              placeholder="e.g. team@partnercapital.com"
+              className="h-11 min-h-[44px] w-full rounded-none border border-white/10 bg-[#0d0a0b] px-3 text-base md:text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
             />
           </div>
 
@@ -156,10 +162,11 @@ export default function ComposeEmailModal({
             </label>
             <input
               id="compose-subject-input"
+              data-testid="compose-subject-input"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="e.g. Q3 Portfolio Review or Underwriting Sync"
-              className="h-11 w-full rounded-lg border border-white/10 bg-[#0d0a0b] px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
+              placeholder="e.g. Q3 Portfolio Review"
+              className="h-11 min-h-[44px] w-full rounded-none border border-white/10 bg-[#0d0a0b] px-3 text-base md:text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
             />
           </div>
 
@@ -172,11 +179,12 @@ export default function ComposeEmailModal({
             </label>
             <textarea
               id="compose-body-textarea"
+              data-testid="compose-body-textarea"
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={4}
               placeholder="Write your message…"
-              className="w-full resize-none rounded-lg border border-white/10 bg-[#0d0a0b] px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
+              className="w-full resize-none rounded-none border border-white/10 bg-[#0d0a0b] px-3 py-2.5 text-base md:text-sm text-white outline-none placeholder:text-white/30 focus:border-emerald-500/40"
             />
           </div>
 
@@ -184,7 +192,7 @@ export default function ComposeEmailModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex min-h-[44px] cursor-pointer items-center justify-center rounded-xl border border-white/15 px-5 py-2.5 text-xs font-semibold text-white/70 hover:bg-white/5 active:scale-98"
+              className="flex min-h-[44px] cursor-pointer items-center justify-center rounded-none border border-white/15 px-5 py-2.5 text-xs font-semibold text-white/70 hover:bg-white/5 active:scale-98"
             >
               Cancel
             </button>
@@ -192,7 +200,7 @@ export default function ComposeEmailModal({
               type="button"
               disabled={sending || !to.trim() || !subject.trim() || !body.trim()}
               onClick={() => void handleSend()}
-              className="flex min-h-[44px] cursor-pointer items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-bold text-slate-950 disabled:opacity-40 active:scale-98"
+              className="flex min-h-[44px] cursor-pointer items-center justify-center rounded-none bg-emerald-500 px-6 py-2.5 text-xs font-bold text-slate-950 disabled:opacity-40 active:scale-98"
             >
               {sending ? 'Sending…' : 'Send Message'}
             </button>

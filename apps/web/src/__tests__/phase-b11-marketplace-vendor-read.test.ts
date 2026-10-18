@@ -75,8 +75,8 @@ describe('phase B11 — Next route wiring', () => {
       'utf8',
     );
 
-    expect(investors).toContain('buildMarketplaceInvestorsReadService');
-    expect(investorDetail).toContain('buildMarketplaceInvestorsReadService');
+    expect(investors).toContain('handleMarketplaceInvestorsGet');
+    expect(investorDetail).toContain('handleMarketplaceInvestorByIdGet');
     expect(vendors).toContain('buildVendorsReadService');
     expect(portalProfile).toContain('getVendorProfileFromStore');
     expect(investors).not.toContain('prisma.');
@@ -102,7 +102,7 @@ describe('phase B11 — Next route wiring', () => {
 
     expect(marketplace).toMatch(/bffFetch\('\/api\/marketplace\/investors'/);
     expect(marketplace).toMatch(/bffFetch\(`\/api\/vendors\?/);
-    expect(investorProfile).toMatch(/bffFetch\(`\/api\/marketplace\/investors\/\$\{investorId\}`/);
+    expect(investorProfile).toMatch(/bffFetch\(\s*`\/api\/marketplace\/investors\/\$\{encodeURIComponent\(investorId\)\}`/);
     expect(vendorProfile).toMatch(/bffFetch\('\/api\/vendor-portal\/profile'/);
     expect(vendorRequests).toMatch(/bffFetch\('\/api\/vendor-portal\/requests'/);
 

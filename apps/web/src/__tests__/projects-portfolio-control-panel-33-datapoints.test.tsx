@@ -1,8 +1,13 @@
+import { TextEncoder, TextDecoder } from 'node:util';
+import { MessageChannel } from 'node:worker_threads';
+Object.assign(globalThis, { TextEncoder, TextDecoder, MessageChannel });
+
 import React from 'react';
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
-import { renderToString } from 'react-dom/server';
+const { renderToString } = await import('react-dom/server');
 
 const mockUseAuth = jest.fn();
+const mockUseSearchParams = jest.fn(() => new URLSearchParams());
 
 jest.unstable_mockModule('@/context/AuthContext', () => ({
   useAuth: mockUseAuth,
@@ -12,7 +17,7 @@ jest.unstable_mockModule('@/context/AuthContext', () => ({
 // Mock next/navigation
 jest.unstable_mockModule('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: mockUseSearchParams,
   usePathname: () => '/dashboard',
 }));
 
@@ -263,8 +268,9 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
       expect(html).toContain('The first step is the property address, establishing the physical asset and Deal serial number.');
       expect(html).toContain('Step 2 immediately performs deal calculation across the 33 Underwriting Datapoints.');
 
-      // Asserts Stepper shows Step 2 is Deal Calc
-      expect(html).toContain('Deal Calc');
+      // Asserts Stepper shows Step 2 is Deal Calculation (Bug_15c)
+      expect(html).toContain('>Deal Calculation<');
+      expect(html).not.toContain('>Deal Calc<');
       expect(html).toContain('Underwriting');
 
       // Asserts primary continue action directs to Step 2 Deal Calculation
@@ -276,6 +282,99 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
       expect(html.toLowerCase()).not.toContain('sponsor');
       expect(html).not.toContain('#00DD94');
       expect(html).not.toContain('#00dd94');
+    });
+
+    it('Bug_07: displays selected template title badge and banner on Create New Project screen for Fix & Flip, BRRRR, and Buy & Hold Rental', () => {
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('strategy=flip'));
+      const flipHtml = renderToString(<NewProjectPage />);
+      expect(flipHtml).toContain('data-testid="selected-template-title-badge"');
+      expect(flipHtml).toContain('data-testid="selected-strategy-template-banner"');
+      expect(flipHtml).toContain('data-testid="selected-template-title"');
+      expect(flipHtml).toContain('Fix &amp; Flip Template');
+      expect(flipHtml).toContain('Fix &amp; Flip');
+      expect(flipHtml).toContain('Capital improvement for rapid resale. Short 6-12 month hold.');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('strategy=brrrr'));
+      const brrrrHtml = renderToString(<NewProjectPage />);
+      expect(brrrrHtml).toContain('BRRRR Template');
+      expect(brrrrHtml).toContain('BRRRR');
+      expect(brrrrHtml).toContain('Buy, Rehab, Rent, Refinance, Repeat. Post-rehab equity extraction.');
+      expect(brrrrHtml).toContain('7.0% institutional vacancy floor');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams('strategy=buy_and_hold_rental'));
+      const rentalHtml = renderToString(<NewProjectPage />);
+      expect(rentalHtml).toContain('Buy &amp; Hold Rental Template');
+      expect(rentalHtml).toContain('Buy &amp; Hold Rental');
+      expect(rentalHtml).toContain('Long-term residential rental for durable monthly yield and appreciation.');
+      expect(rentalHtml).toContain('6.0% institutional vacancy floor');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    });
+
+    it('Bug_14: clamps extreme Target Purchase Price values and applies min-w-0 overflow-hidden + block truncate on Live 33 Underwriting Datapoints Engine KPI cards', () => {
+      const maxCurrency = 999_999_999_999;
+
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=5000000000000000000000000000000&arv=600000&strategy=flip'),
+      );
+      const step2Html = renderToString(<NewProjectPage />);
+
+      // Verify Target Purchase Price input has max attribute and clamped value
+      const priceInputMatch = step2Html.match(/<input[^>]*id="purchase-price-input"[^>]*>/);
+      expect(priceInputMatch).not.toBeNull();
+      expect(priceInputMatch?.[0]).toContain(`max="${maxCurrency}"`);
+      expect(priceInputMatch?.[0]).toContain(`value="${maxCurrency}"`);
+
+      // Verify all 4 KPI cards in Live 33 Underwriting Datapoints Engine have min-w-0 and overflow-hidden
+      const kpiCards = step2Html.match(/<div[^>]*data-testid="underwriting-kpi-card"[^>]*>/g) ?? [];
+      expect(kpiCards).toHaveLength(4);
+      for (const cardTag of kpiCards) {
+        expect(cardTag).toContain('min-w-0');
+        expect(cardTag).toContain('overflow-hidden');
+      }
+
+      // Verify Cash Required and Expected Net Margin value spans use block truncate and never render $-
+      const cashRequiredMatch = step2Html.match(
+        /<span[^>]*data-testid="underwriting-kpi-cash-required"[^>]*>/,
+      );
+      expect(cashRequiredMatch).not.toBeNull();
+      expect(cashRequiredMatch?.[0]).toContain('block');
+      expect(cashRequiredMatch?.[0]).toContain('truncate');
+
+      const netMarginMatch = step2Html.match(
+        /<span[^>]*data-testid="underwriting-kpi-net-margin"[^>]*>/,
+      );
+      expect(netMarginMatch).not.toBeNull();
+      expect(netMarginMatch?.[0]).toContain('block');
+      expect(netMarginMatch?.[0]).toContain('truncate');
+      expect(step2Html).not.toContain('$-');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    });
+
+    it('Bug_15: hides Negative Leverage Detected banner when all 4 KPI cards are non-negative and displays it only when negative KPI values appear in the section', () => {
+      // Case 1: Target Purchase Price = 4, Rehab Budget = 5, Estimated ARV = 14 (MAO=$5, Cash Required=$6, Expected Net Margin=$4, Cap Rate=0.00%)
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=4&rehab=5&arv=14&strategy=flip'),
+      );
+      const nonNegativeHtml = renderToString(<NewProjectPage />);
+      expect(nonNegativeHtml).toContain('title="$5"');
+      expect(nonNegativeHtml).toContain('title="$6"');
+      expect(nonNegativeHtml).toContain('title="$4"');
+      expect(nonNegativeHtml).toContain('title="0.00%"');
+      expect(nonNegativeHtml).not.toContain('Negative Leverage Detected');
+      expect(nonNegativeHtml).not.toContain('data-testid="negative-leverage-banner"');
+
+      // Case 2: Target Purchase Price = 485000, Rehab Budget = 50000, Estimated ARV = 2000 (produces negative Expected Net Margin -$542,800)
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=485000&rehab=50000&arv=2000&strategy=flip'),
+      );
+      const negativeKpiHtml = renderToString(<NewProjectPage />);
+      expect(negativeKpiHtml).toContain('-$542,800');
+      expect(negativeKpiHtml).toContain('data-testid="negative-leverage-banner"');
+      expect(negativeKpiHtml).toContain('Negative Leverage Detected');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams());
     });
   });
 });

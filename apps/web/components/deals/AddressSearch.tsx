@@ -7,11 +7,17 @@ import {
   CircleNotch,
   ArrowRight,
   MapPin,
+  X,
 } from '@phosphor-icons/react';
 import CollisionModal, { type CollisionDeal } from '@/components/deals/CollisionModal';
 import { bffFetch } from '@/lib/api/bff-fetch';
 import { loadGoogleMaps } from '@/lib/maps/loader';
 import { PlacesSessionManager } from '@/lib/maps/session-token';
+import {
+  extractPlaceDetailsFromAddressComponents,
+  parseAddressComponents,
+  type ParsedPlaceDetails,
+} from '@/lib/maps/address-parser';
 
 export interface AddressSearchProps {
   id?: string;
@@ -21,7 +27,8 @@ export interface AddressSearchProps {
   value?: string;
   mode?: 'navigate' | 'select';
   onSearchChange?: (value: string) => void;
-  onSelectAddress?: (address: string) => void;
+  onSelectAddress?: (address: string, details?: ParsedPlaceDetails) => void;
+  onSelectPlaceDetails?: (details: ParsedPlaceDetails) => void;
   collisionVariant?: 'deal-collision' | 'project-link';
   onExistingDealFound?: (deal: CollisionDeal) => void;
   onNoDealFound?: (address: string, slug: string) => void;
@@ -55,6 +62,7 @@ export default function AddressSearch({
   mode = 'navigate',
   onSearchChange,
   onSelectAddress,
+  onSelectPlaceDetails,
   collisionVariant = 'deal-collision',
   onExistingDealFound,
   onNoDealFound,
@@ -219,7 +227,10 @@ export default function AddressSearch({
     }, 300);
   }
 
-  async function handleAddressSubmit(addressToSearch?: string) {
+  async function handleAddressSubmit(
+    addressToSearch?: string,
+    resolvedDetails?: ParsedPlaceDetails,
+  ) {
     const targetAddress = (addressToSearch ?? query).trim();
     if (!targetAddress) return;
 
@@ -229,7 +240,9 @@ export default function AddressSearch({
     sessionTokenRef.current = null;
     sessionManagerRef.current.resetToken();
 
-    if (onSelectAddress) onSelectAddress(targetAddress);
+    const finalDetails = parseAddressComponents(targetAddress, resolvedDetails);
+    if (onSelectPlaceDetails) onSelectPlaceDetails(finalDetails);
+    if (onSelectAddress) onSelectAddress(targetAddress, finalDetails);
 
     if (mode === 'select') {
       return;
@@ -290,7 +303,14 @@ export default function AddressSearch({
   }
 
   async function handleSelectSuggestion(suggestion: AutocompleteSuggestion) {
+    setIsOpen(false);
+    setActiveIndex(-1);
     setQuery(suggestion.description);
+    if (onSearchChange) onSearchChange(suggestion.description);
+
+    const activeTokenId = sessionManagerRef.current.getToken();
+    let extractedDetails = parseAddressComponents(suggestion.description);
+    if (onSelectPlaceDetails) onSelectPlaceDetails(extractedDetails);
 
     // If Place is loaded, fetch details with strict minimal field mask to restrict billing
     if (window.google?.maps?.places?.Place && suggestion.placeId) {
@@ -299,18 +319,68 @@ export default function AddressSearch({
         await place.fetchFields({
           fields: [...PLACES_DETAILS_FIELD_MASK],
         });
+        const placeRecord = place as unknown as Record<string, unknown>;
+        const rawComponents =
+          placeRecord.addressComponents ?? placeRecord.address_components;
+        const formattedAddr =
+          (typeof placeRecord.formattedAddress === 'string'
+            ? placeRecord.formattedAddress
+            : undefined) ??
+          (typeof placeRecord.formatted_address === 'string'
+            ? placeRecord.formatted_address
+            : undefined);
+        const sdkDetails = extractPlaceDetailsFromAddressComponents(
+          rawComponents,
+          formattedAddr,
+        );
+        extractedDetails = parseAddressComponents(suggestion.description, sdkDetails);
         // Session token consumed on fetchFields per Google billing rules
         sessionTokenRef.current = null;
         sessionManagerRef.current.resetToken();
       } catch {
         // Silent degradation
       }
+    } else if (
+      suggestion.placeId &&
+      !suggestion.placeId.startsWith('custom-')
+    ) {
+      try {
+        const res = await fetch('/api/places/details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            placeId: suggestion.placeId,
+            sessionToken: activeTokenId,
+            description: suggestion.description,
+          }),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as Record<string, unknown>;
+          const apiDetails = extractPlaceDetailsFromAddressComponents(
+            data.address_components ?? data.addressComponents,
+            typeof data.formatted_address === 'string'
+              ? data.formatted_address
+              : typeof data.formattedAddress === 'string'
+                ? data.formattedAddress
+                : undefined,
+          );
+          extractedDetails = parseAddressComponents(
+            suggestion.description,
+            apiDetails,
+          );
+        }
+      } catch {
+        // Silent degradation
+      } finally {
+        sessionTokenRef.current = null;
+        sessionManagerRef.current.resetToken();
+      }
     } else {
       sessionTokenRef.current = null;
       sessionManagerRef.current.resetToken();
     }
 
-    handleAddressSubmit(suggestion.description);
+    handleAddressSubmit(suggestion.description, extractedDetails);
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -329,8 +399,16 @@ export default function AddressSearch({
       }
     } else if (event.key === 'Escape') {
       event.preventDefault();
-      setIsOpen(false);
-      setActiveIndex(-1);
+      if (isOpen) {
+        setIsOpen(false);
+        setActiveIndex(-1);
+      } else if (query) {
+        setQuery('');
+        setPredictions([]);
+        setIsOpen(false);
+        setActiveIndex(-1);
+        onSearchChange?.('');
+      }
     } else if (event.key === 'Enter') {
       event.preventDefault();
       if (isOpen && activeIndex >= 0 && predictions[activeIndex]) {
@@ -344,7 +422,10 @@ export default function AddressSearch({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       <div className="relative flex items-center">
-        <MagnifyingGlass className="pointer-events-none absolute left-3 h-4 w-4 text-neutral-400" />
+        <MagnifyingGlass
+          data-testid="address-search-icon"
+          className="pointer-events-none absolute left-3 h-4 w-4 text-neutral-400"
+        />
         <input
           id={id}
           ref={inputRef}
@@ -363,25 +444,45 @@ export default function AddressSearch({
           }}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full rounded-none border border-neutral-800 bg-neutral-900 py-2.5 pl-10 pr-10 text-base md:text-sm text-white outline-none placeholder:text-neutral-500 transition focus:border-neutral-400"
+          className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-900 py-2.5 pl-10 pr-20 text-base md:text-sm text-white outline-none placeholder:text-neutral-500 transition focus:border-ring"
         />
 
-        {/* 16px Spinner (delayed 200ms) or submit icon */}
-        <div className="absolute right-3 flex items-center">
+        <div className="absolute right-0 top-0 bottom-0 flex items-center">
           {showSpinner && loading ? (
-            <CircleNotch
-              data-testid="address-search-spinner"
-              className="h-4 w-4 animate-spin text-white"
-            />
-          ) : query ? (
-            <button
-              type="button"
-              onClick={() => handleAddressSubmit(query)}
-              aria-label="Submit address search"
-              className="text-neutral-400 hover:text-white transition"
-            >
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            <span className="flex min-h-[44px] min-w-[44px] items-center justify-center">
+              <CircleNotch
+                data-testid="address-search-spinner"
+                className="h-4 w-4 animate-spin text-white"
+              />
+            </span>
+          ) : null}
+          {query ? (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  setPredictions([]);
+                  setIsOpen(false);
+                  setActiveIndex(-1);
+                  onSearchChange?.('');
+                  inputRef.current?.focus();
+                }}
+                aria-label="Clear search"
+                data-testid="clear-address-search-btn"
+                className="flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-neutral-400 transition hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+              >
+                <X className="h-3.5 w-3.5" weight="bold" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddressSubmit(query)}
+                aria-label="Submit address search"
+                className="flex min-h-[44px] min-w-[36px] cursor-pointer items-center justify-center pr-2 text-neutral-400 transition hover:text-white"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </>
           ) : null}
         </div>
       </div>

@@ -55,9 +55,9 @@ describe('phase B12 — Next route wiring', () => {
       'utf8',
     );
 
-    expect(follow).toContain('buildMarketplaceFollowCommandService');
+    expect(follow).toContain('handleMarketplaceInvestorsFollowPost');
     expect(profile).toContain('updateVendorProfileInStore');
-    expect(requests).toContain('buildVendorPortalCommandService');
+    expect(requests).toContain('handleVendorPortalRequestsPut');
     expect(follow).not.toContain('prisma.');
   });
 });
@@ -98,7 +98,7 @@ describe('phase B12 — B11 read regression guard', () => {
       join(here, '../../app/api/marketplace/investors/route.ts'),
       'utf8',
     );
-    expect(investors).toContain('buildMarketplaceInvestorsReadService');
+    expect(investors).toContain('handleMarketplaceInvestorsGet');
     expect(investors).not.toContain('CommandService');
   });
 });

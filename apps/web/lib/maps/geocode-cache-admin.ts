@@ -15,11 +15,12 @@ export async function getAdminCachedGeocode(
   if (!address || !address.trim()) return null;
   const key = normalizeAddressKey(address);
   try {
+    const readTimeoutMs = Number(process.env.FIRESTORE_READ_TIMEOUT_MS || 250);
     const db = deps.getFirestore ? deps.getFirestore() : getAdminFirestore();
     const docRef = db.collection('geocodeCache').doc(key);
     const snapPromise = docRef.get();
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Firestore geocode read timeout')), 1500)
+      setTimeout(() => reject(new Error('Firestore geocode read timeout')), readTimeoutMs)
     );
     const snap = (await Promise.race([snapPromise, timeoutPromise])) as any;
     if (snap?.exists) {
@@ -42,11 +43,12 @@ export async function setAdminCachedGeocode(
   if (!address || !address.trim()) return;
   const key = normalizeAddressKey(address);
   try {
+    const writeTimeoutMs = Number(process.env.FIRESTORE_WRITE_TIMEOUT_MS || 250);
     const db = deps.getFirestore ? deps.getFirestore() : getAdminFirestore();
     const docRef = db.collection('geocodeCache').doc(key);
     const setPromise = docRef.set(data, { merge: true });
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('Firestore geocode write timeout')), 1500)
+      setTimeout(() => reject(new Error('Firestore geocode write timeout')), writeTimeoutMs)
     );
     await Promise.race([setPromise, timeoutPromise]);
   } catch (error) {

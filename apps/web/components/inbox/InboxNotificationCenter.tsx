@@ -135,19 +135,120 @@ function NotifMoreMenu({
   );
 }
 
+export interface InboxInitialRecipient {
+  to: string;
+  role?: string;
+  firm?: string;
+  deal?: string;
+  email?: string;
+}
+
+function slugifyContact(name: string): string {
+  return (
+    name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'contact'
+  );
+}
+
+function ensureRecipientThread(
+  threads: InboxThread[],
+  recipient: InboxInitialRecipient,
+): { threads: InboxThread[]; selectedId: string } {
+  const targetName = recipient.to.trim();
+  const normalizedTarget = targetName.toLowerCase();
+  const existing = threads.find(
+    (t) =>
+      t.from.trim().toLowerCase() === normalizedTarget ||
+      t.subject.toLowerCase().includes(normalizedTarget),
+  );
+  if (existing) {
+    return { threads, selectedId: existing.id };
+  }
+
+  const slug = slugifyContact(targetName);
+  const threadId = `thread-direct-${slug}`;
+  const roleLabel =
+    [recipient.role || 'Investor', recipient.firm].filter(Boolean).join(' · ') ||
+    'Network Counterparty';
+  const dealLabel = recipient.deal || recipient.firm || 'Investor Network';
+  const bodyText = `Direct messaging channel opened with ${targetName} (${roleLabel})${
+    recipient.deal ? ` regarding ${recipient.deal}` : ''
+  }.\n\nUse the reply box below to send a message directly to ${targetName}.`;
+  const newThread: InboxThread = {
+    id: threadId,
+    tab: 'team',
+    type: 'TEAM_INVITE',
+    subject: `Direct Message: ${targetName}`,
+    project: dealLabel,
+    from: targetName,
+    fromRole: roleLabel,
+    receivedAt: '2026-08-15T14:30:00.000Z',
+    unread: false,
+    actionable: false,
+    preview: `Direct messaging channel opened with ${targetName} (${roleLabel}).`,
+    body: bodyText,
+  };
+
+  return {
+    threads: [newThread, ...threads],
+    selectedId: threadId,
+  };
+}
+
 /**
- * Unified Inbox — port of PaperWorking `/dashboard/inbox` notification center
+ * Unified Inbox - port of PaperWorking `/dashboard/inbox` notification center
  * (two-pane list + reading pane, tabs, compose, mark-all-read).
  */
-export default function InboxNotificationCenter() {
-  const [items, setItems] = useState<InboxThread[]>(() => [...getInboxThreads()]);
+export default function InboxNotificationCenter({
+  initialRecipient = null,
+}: {
+  initialRecipient?: InboxInitialRecipient | null;
+} = {}) {
+  const initialData = useMemo(() => {
+    const base = [...getInboxThreads()];
+    if (initialRecipient && initialRecipient.to?.trim()) {
+      return ensureRecipientThread(base, initialRecipient);
+    }
+    return { threads: base, selectedId: null as string | null };
+  }, [initialRecipient]);
+
+  const [items, setItems] = useState<InboxThread[]>(() => initialData.threads);
   const [activeTab, setActiveTab] = useState<InboxTabId>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(() => initialData.selectedId);
   const [searchQuery, setSearchQuery] = useState('');
   const [composeOpen, setComposeOpen] = useState(false);
   const [readOverrides, setReadOverrides] = useState<Record<string, boolean>>({});
   const [archivedIds, setArchivedIds] = useState<Set<string>>(() => new Set());
   const [actionFlash, setActionFlash] = useState<string | null>(null);
+  const [inlineReplyText, setInlineReplyText] = useState('');
+  const [sendingInlineReply, setSendingInlineReply] = useState(false);
+  const directRecipientRef = useRef<InboxInitialRecipient | null>(initialRecipient);
+  const inlineReplyInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const toParam = (params.get('to') || params.get('recipient') || '').trim();
+    if (!toParam) return;
+
+    const recipient: InboxInitialRecipient = {
+      to: toParam,
+      role: params.get('role') || undefined,
+      firm: params.get('firm') || undefined,
+      deal: params.get('deal') || undefined,
+      email: params.get('email') || undefined,
+    };
+    directRecipientRef.current = recipient;
+    setActiveTab('all');
+    setItems((prev) => {
+      const ensured = ensureRecipientThread(prev, recipient);
+      setSelectedId(ensured.selectedId);
+      return ensured.threads;
+    });
+  }, []);
 
   const fetchThreads = useCallback(async () => {
     try {
@@ -155,7 +256,18 @@ export default function InboxNotificationCenter() {
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data.threads)) {
-          setItems(data.threads);
+          setItems((prev) => {
+            const directThreads = prev.filter((t) => t.id.startsWith('thread-direct-'));
+            const fetchedIds = new Set(data.threads.map((t: InboxThread) => t.id));
+            const merged = [
+              ...directThreads.filter((t) => !fetchedIds.has(t.id)),
+              ...data.threads,
+            ];
+            if (directRecipientRef.current?.to) {
+              return ensureRecipientThread(merged, directRecipientRef.current).threads;
+            }
+            return merged;
+          });
         }
       }
     } catch {
@@ -203,7 +315,10 @@ export default function InboxNotificationCenter() {
   }, [items, archivedIds, isUnread]);
 
   const unreadTotal = unreadCounts.all;
-  const selectedItem = visibleItems.find((i) => i.id === selectedId) ?? null;
+  const selectedItem =
+    visibleItems.find((i) => i.id === selectedId) ??
+    items.find((i) => i.id === selectedId) ??
+    null;
   const selectedUnread = selectedItem ? isUnread(selectedItem) : false;
 
   function markRead(id: string) {
@@ -268,6 +383,52 @@ export default function InboxNotificationCenter() {
     }
   }
 
+  async function handleInlineReplySubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedItem || !inlineReplyText.trim()) return;
+
+    const replyBody = inlineReplyText.trim();
+    const target = selectedItem;
+    setInlineReplyText('');
+    setSendingInlineReply(true);
+
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === target.id
+          ? {
+              ...item,
+              body: `${item.body}\n\nYou: ${replyBody}`,
+              unread: false,
+            }
+          : item,
+      ),
+    );
+    setActionFlash(`Direct message sent to ${target.from}.`);
+    setTimeout(() => setActionFlash(null), 3000);
+
+    try {
+      await fetch('/api/inbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tab: 'team',
+          type: 'TEAM_INVITE',
+          subject: target.subject.startsWith('Re:') ? target.subject : `Re: ${target.subject}`,
+          project: target.project || 'General Workspace',
+          from: target.from,
+          fromRole: target.fromRole || 'Operator',
+          body: `To: ${target.from}\n\n${replyBody}`,
+          unread: false,
+          actionable: false,
+        }),
+      });
+    } catch {
+      // Optimistic thread update already applied
+    } finally {
+      setSendingInlineReply(false);
+    }
+  }
+
   const showDetail = Boolean(selectedItem);
 
   return (
@@ -278,7 +439,7 @@ export default function InboxNotificationCenter() {
       >
         {/* List pane */}
         <section
-          className={`w-full shrink-0 flex-col border-r border-border bg-card md:flex md:w-[420px] ${
+          className={`w-full shrink-0 flex-col border-r border-border bg-card md:flex md:max-w-[420px] ${
             showDetail ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -522,8 +683,48 @@ export default function InboxNotificationCenter() {
                   </div>
 
                   {actionFlash ? (
-                    <p className="text-center text-sm font-semibold text-foreground">{actionFlash}</p>
+                    <p
+                      data-testid="inbox-action-flash"
+                      className="text-center text-sm font-semibold text-foreground"
+                    >
+                      {actionFlash}
+                    </p>
                   ) : null}
+
+                  {/* Direct Chat Inline Reply Composer */}
+                  <form
+                    data-testid="inbox-inline-reply-form"
+                    onSubmit={handleInlineReplySubmit}
+                    className="rounded-none border border-border bg-card p-4 shadow-sm space-y-3"
+                  >
+                    <label
+                      htmlFor="inbox-inline-reply-input"
+                      className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      Direct Reply to {selectedItem.from}
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <input
+                        ref={inlineReplyInputRef}
+                        id="inbox-inline-reply-input"
+                        data-testid="inbox-inline-reply-input"
+                        type="text"
+                        value={inlineReplyText}
+                        onChange={(e) => setInlineReplyText(e.target.value)}
+                        placeholder={`Message ${selectedItem.from}...`}
+                        className="flex-1 min-h-[44px] rounded-none border border-input bg-background px-3 py-2 text-base md:text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-ring"
+                      />
+                      <button
+                        type="submit"
+                        data-testid="inbox-inline-reply-send"
+                        disabled={sendingInlineReply || !inlineReplyText.trim()}
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 font-mono text-xs font-bold text-primary-foreground min-h-[44px] transition-all hover:bg-primary/90 disabled:opacity-40"
+                      >
+                        <ArrowBendUpLeft weight="bold" className="h-4 w-4" />
+                        <span>{sendingInlineReply ? 'SENDING...' : 'SEND REPLY'}</span>
+                      </button>
+                    </div>
+                  </form>
 
                   <div className="flex flex-wrap items-center justify-center gap-3 py-6">
                     {selectedItem.actionable ? (
@@ -587,6 +788,14 @@ export default function InboxNotificationCenter() {
       <ComposeEmailModal
         isOpen={composeOpen}
         onClose={() => setComposeOpen(false)}
+        defaultTo={selectedItem?.from ?? directRecipientRef.current?.to ?? ''}
+        defaultSubject={
+          selectedItem
+            ? selectedItem.subject.startsWith('Re:')
+              ? selectedItem.subject
+              : `Re: ${selectedItem.subject}`
+            : ''
+        }
         onSent={fetchThreads}
       />
     </>

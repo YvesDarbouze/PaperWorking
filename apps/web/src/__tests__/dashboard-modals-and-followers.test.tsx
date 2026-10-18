@@ -89,6 +89,32 @@ describe('Dashboard Modals & Followers Interaction Suite', () => {
       );
       expect(html).toBe('');
     });
+
+    it('Bug_73: renders active in-modal direct chat panel when initialSelectedFollower is provided', () => {
+      const html = renderToString(
+        <FollowersModal
+          isOpen={true}
+          onClose={() => {}}
+          initialSelectedFollower={{
+            id: 'f1',
+            name: 'Alex Morgan',
+            dealName: '1247 Elm Street',
+            firm: 'Apex Commercial Capital',
+            role: 'Acquisitions Director',
+            email: 'alex@apexcommercial.com',
+          }}
+        />
+      );
+
+      expect(html).toContain('data-testid="follower-direct-chat-panel"');
+      expect(html).toContain('data-testid="direct-chat-messages"');
+      expect(html).toContain('data-testid="direct-chat-input"');
+      expect(html).toContain('data-testid="direct-chat-send-btn"');
+      expect(html).toContain('data-testid="back-to-followers-list-btn"');
+      expect(html).toContain('data-testid="open-in-inbox-link"');
+      expect(html).toContain('Alex Morgan');
+      expect(html).toContain('Apex Commercial Capital');
+    });
   });
 
   describe('CommandCenterPanel & Relocated MarketplaceSocialProfileCard triggers integration', () => {

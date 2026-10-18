@@ -404,8 +404,10 @@ export default function PepperDrawer({
     }
 
     // Default conversational chat
+    setConversationalFlow('chat');
     sendMessage(text);
   };
+
 
   // Final confirmation of structured bug report
   const handleConfirmBugSubmit = async () => {
@@ -548,7 +550,7 @@ export default function PepperDrawer({
       aria-modal="true"
       aria-label="PaperWorking Support and Assistant"
       data-testid="ava-drawer-container"
-      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-white/10 bg-[#0e0c10] shadow-[-16px_0_40px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:w-[460px] animate-in slide-in-from-right duration-200"
+      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border bg-card shadow-[-16px_0_40px_rgba(0,0,0,0.45)] sm:w-[540px] sm:max-w-[540px] animate-in slide-in-from-right duration-200"
     >
       {/* Hidden file input for attachment picker */}
       <input
@@ -560,24 +562,34 @@ export default function PepperDrawer({
       />
 
       {/* Drawer Header */}
-      <header className="flex items-center justify-between border-b border-border px-5 py-3.5 bg-card">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-none bg-muted text-foreground border border-border">
+      <header
+        data-testid="triage-drawer-header"
+        className="flex items-center justify-between gap-3 sm:gap-4 border-b border-border px-4 sm:px-5 py-3.5 bg-card"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3 pr-2 sm:pr-3">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-muted text-foreground border border-border">
             <Headset weight="bold" className="h-5 w-5" />
             <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-none bg-foreground ring-1 ring-background" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-foreground tracking-tight">PaperWorking Triage</h2>
-              <span className="rounded-none bg-primary/10 border border-primary/20 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase text-foreground">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1">
+              <h2 className="text-sm font-bold text-foreground tracking-tight sm:whitespace-nowrap">
+                PaperWorking Triage
+              </h2>
+              <span
+                data-testid="triage-live-badge"
+                className="shrink-0 mr-1 rounded-none bg-primary/10 border border-primary/20 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase leading-none text-foreground"
+              >
                 Live
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground">Customer service & investor support</p>
+            <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+              Customer service & investor support
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {/* Quick Human Switch */}
           <button
             type="button"
@@ -586,7 +598,7 @@ export default function PepperDrawer({
               setConversationalFlow('escalation');
             }}
             title="Request human support or phone callback"
-            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px]"
+            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px] sm:whitespace-nowrap"
           >
             Human Desk
           </button>
@@ -596,7 +608,7 @@ export default function PepperDrawer({
             onClick={bailoutToManual}
             data-testid="bailout-manual-button"
             title="Skip AI & Explore Manually"
-            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px]"
+            className="rounded-none border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium text-foreground hover:bg-accent transition-colors min-h-[44px] sm:whitespace-nowrap"
           >
             Skip AI
           </button>

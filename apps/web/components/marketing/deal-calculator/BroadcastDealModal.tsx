@@ -11,6 +11,10 @@ interface BroadcastDealModalProps {
   address: string;
   purchasePrice: number;
   calculations: ReconciledUnderwritingMetrics;
+  rehabBudget?: number;
+  arv?: number;
+  strategy?: string;
+  holdPeriodYears?: number;
   dealId?: string;
   projectId?: string;
   onSuccess: (recipientCount: number) => void;
@@ -22,6 +26,10 @@ export default function BroadcastDealModal({
   address,
   purchasePrice,
   calculations,
+  rehabBudget,
+  arv,
+  strategy,
+  holdPeriodYears,
   dealId,
   projectId,
   onSuccess,
@@ -69,12 +77,60 @@ export default function BroadcastDealModal({
       return;
     }
 
+    const projectedRoi =
+      typeof calculations?.projectedIrrPct === 'number' && !Number.isNaN(calculations.projectedIrrPct)
+        ? Number(calculations.projectedIrrPct.toFixed(1))
+        : 18.4;
+    const resolvedRehabBudget =
+      rehabBudget ??
+      (calculations as unknown as Record<string, number>)?.rehabBudget ??
+      (calculations as unknown as Record<string, number>)?.estimatedRehabBudget ??
+      0;
+    const resolvedArv =
+      arv ??
+      (calculations as unknown as Record<string, number>)?.afterRepairValue ??
+      Math.round(purchasePrice * 1.25);
+    const resolvedHoldPeriod = holdPeriodYears ? `${holdPeriodYears} Years` : '3–5 Years';
+
+    const calculatorResults = {
+      purchasePrice,
+      rehabBudget: resolvedRehabBudget,
+      arv: resolvedArv,
+      targetIrr: projectedRoi,
+      projectedRoi,
+      cashRequired: calculations?.cashRequired ?? Math.round(purchasePrice * 0.25),
+      equityMultiple:
+        (calculations as unknown as Record<string, number>)?.equityMultiple ?? 1.85,
+      capRateOnCost: calculations?.capRateOnCost ?? 6.8,
+      cashOnCashReturnPct: calculations?.cashOnCashReturnPct ?? 7.5,
+      monthlyDebtService:
+        calculations?.monthlyDebtService ??
+        Math.round((calculations?.annualDebtService || 0) / 12),
+      grossMonthlyRent:
+        (calculations as unknown as Record<string, number>)?.grossMonthlyRent ??
+        Math.round((calculations?.grossOperatingIncome || 0) / 12),
+      netOperatingIncome: calculations?.netOperatingIncome ?? 48000,
+      maximumAllowableOffer70Pct:
+        calculations?.maximumAllowableOffer70Pct ??
+        Math.round(resolvedArv * 0.7 - resolvedRehabBudget),
+      strategy: strategy || 'VALUE_ADD',
+      holdPeriod: resolvedHoldPeriod,
+    };
+
     try {
       const res = await fetch('/api/deals/broadcast', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dealId: dealId || 'deal-mp-1',
+          projectId: projectId || undefined,
+          dealAddress: address,
+          address,
+          dealName: address.split(',')[0]?.trim() || address,
+          purchasePrice,
+          projectedRoi,
+          calculatorResults,
           recipientEmails: emailList,
           subject,
           message,
@@ -87,7 +143,13 @@ export default function BroadcastDealModal({
         if (data.requiresCredentials) {
           setError('Email Broadcast Provider requires API credentials in production.');
         } else {
-          setError(data.error || 'Failed to dispatch deal broadcast. Please try again.');
+          const errorMsg =
+            typeof data.error === 'string'
+              ? data.error
+              : data.error?.message ||
+                data.message ||
+                'Failed to dispatch deal broadcast. Please try again.';
+          setError(errorMsg);
         }
         return;
       }
@@ -130,7 +192,7 @@ export default function BroadcastDealModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
+            className="flex cursor-pointer h-9 w-9 items-center justify-center rounded-none border border-white/10 text-white/60 hover:text-white hover:bg-white/5 min-h-[44px] min-w-[44px]"
             aria-label="Close modal"
           >
             <X className="h-4 w-4" />
@@ -212,14 +274,14 @@ export default function BroadcastDealModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-none px-4 py-2.5 text-white/70 hover:bg-white/5 text-xs font-semibold min-h-[44px]"
+              className="cursor-pointer rounded-none px-4 py-2.5 text-white/70 hover:bg-white/5 text-xs font-semibold min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-none bg-white text-black hover:bg-white/90 px-5 py-2.5 font-bold text-xs shadow-lg transition active:scale-95 disabled:opacity-50 min-h-[44px]"
+              className="cursor-pointer rounded-none bg-white text-black hover:bg-white/90 px-5 py-2.5 font-bold text-xs shadow-lg transition active:scale-95 disabled:opacity-50 min-h-[44px]"
             >
               {loading ? 'Broadcasting...' : 'Broadcast to Investor List'}
             </button>

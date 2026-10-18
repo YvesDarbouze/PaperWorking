@@ -3,7 +3,6 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { BUILD_SHA, BUILT_AT } from '@/lib/build-info';
 import {
   Gear,
   Lock,
@@ -90,7 +89,7 @@ function SettingsNavContent({ children }: { children: React.ReactNode }) {
 
         <div className="flex flex-col gap-6 sm:flex-row">
           <aside className="hidden w-56 shrink-0 sm:block">
-            <div className="sticky top-20 flex h-full flex-col justify-between gap-6">
+            <div className="sticky top-20 flex flex-col gap-6">
               <nav className="space-y-1">
                 {NAV_ITEMS.map((item, index) => {
                   const active = isSectionActive(item.id);
@@ -120,37 +119,92 @@ function SettingsNavContent({ children }: { children: React.ReactNode }) {
               </nav>
 
               <div className="px-2">
-                <div className="rounded-none border border-border bg-card p-4 shadow-sm">
+                <div
+                  className="rounded-none border border-border bg-card p-4 shadow-sm"
+                  data-testid="settings-need-help-card"
+                >
                   <p className="mb-1 text-xs font-bold text-foreground">Need help?</p>
                   <p className="mb-3 text-[11px] leading-relaxed text-muted-foreground">
                     Priority operator support is available for active accounts.
                   </p>
-                  <Link
-                    href="/support"
-                    className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-muted/40 text-xs font-semibold text-foreground no-underline hover:bg-muted transition"
-                  >
-                    Contact Support
-                  </Link>
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href="/support"
+                      data-testid="settings-contact-support-link"
+                      className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-muted/40 text-xs font-semibold text-foreground no-underline hover:bg-muted transition"
+                    >
+                      Contact Support
+                    </Link>
+                    <Link
+                      href="/help/workspace-settings-and-preferences"
+                      data-testid="settings-help-article-link"
+                      className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-background text-xs font-medium text-muted-foreground no-underline hover:bg-muted/30 hover:text-foreground transition"
+                    >
+                      Settings Guide
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="px-2 pt-3 pb-1 text-[11px] text-muted-foreground font-mono flex items-center justify-between" data-testid="build-identity-footer">
-                  <span>Build</span>
-                  <a
-                    href="/api/health"
-                    className="text-foreground hover:underline transition-colors decoration-border underline-offset-2"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`Built at ${BUILT_AT}`}
+                <div
+                  className="px-2 pt-2 pb-1 text-[11px] text-muted-foreground font-mono flex items-center justify-between"
+                  data-testid="build-identity-footer"
+                >
+                  <span>Documentation</span>
+                  <Link
+                    href="/help"
+                    className="inline-flex min-h-[44px] items-center text-foreground hover:underline transition-colors decoration-border underline-offset-2 no-underline"
+                    title="Browse Knowledge Base & Help Articles"
                     data-testid="build-sha-link"
                   >
-                    {BUILD_SHA === 'unknown' ? 'unknown' : BUILD_SHA.slice(0, 7)}
-                  </a>
+                    Help Guides →
+                  </Link>
                 </div>
               </div>
             </div>
           </aside>
 
           <main className="min-w-0 w-full flex-1 max-w-[900px]">{children}</main>
+
+          <div className="mt-4 sm:hidden">
+            <div
+              className="rounded-none border border-border bg-card p-4 shadow-sm"
+              data-testid="mobile-settings-need-help-card"
+            >
+              <p className="mb-1 text-xs font-bold text-foreground">Need help?</p>
+              <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+                Priority operator support is available for active accounts.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/support"
+                  data-testid="mobile-settings-contact-support-link"
+                  className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-muted/40 text-xs font-semibold text-foreground no-underline hover:bg-muted transition"
+                >
+                  Contact Support
+                </Link>
+                <Link
+                  href="/help/workspace-settings-and-preferences"
+                  data-testid="mobile-settings-help-article-link"
+                  className="flex min-h-[44px] w-full items-center justify-center rounded-none border border-border bg-background text-xs font-medium text-muted-foreground no-underline hover:bg-muted/30 hover:text-foreground transition"
+                >
+                  Settings Guide
+                </Link>
+                <div
+                  className="px-1 pt-1 text-xs text-muted-foreground font-mono flex items-center justify-between"
+                  data-testid="mobile-help-footer"
+                >
+                  <span>Documentation</span>
+                  <Link
+                    href="/help"
+                    className="inline-flex min-h-[44px] items-center text-foreground hover:underline transition-colors decoration-border underline-offset-2 no-underline"
+                    data-testid="mobile-help-guides-link"
+                  >
+                    Help Guides →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

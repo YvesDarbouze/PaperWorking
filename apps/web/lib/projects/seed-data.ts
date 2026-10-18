@@ -423,12 +423,12 @@ export function buildSeedProjectDeals(project: Partial<ProjectWorkspace>): Proje
     address: addr,
     dealType: 'underwriting',
     status: snap ? 'underwritten' : 'draft',
-    purchasePrice: snap?.inputs.purchasePrice ?? purchasePrice,
-    rehabBudget: snap?.inputs.rehabBudget ?? rehabCost,
-    cashRequired: snap?.outputs.cashRequired ?? Math.round(purchasePrice * 0.25),
-    projectedIrr: snap?.outputs.projectedIrrPct ?? (project.estimatedIrr ? Number((project.estimatedIrr * 100).toFixed(1)) : 16.5),
-    capRate: snap?.outputs.capRateOnCost ?? 6.2,
-    cashOnCashPct: snap?.outputs.cashOnCashReturnPct ?? 7.5,
+    purchasePrice: snap?.inputs?.purchasePrice ?? purchasePrice,
+    rehabBudget: snap?.inputs?.rehabBudget ?? rehabCost,
+    cashRequired: snap?.outputs?.cashRequired ?? Math.round(purchasePrice * 0.25),
+    projectedIrr: snap?.outputs?.projectedIrrPct ?? (project.estimatedIrr ? Number((project.estimatedIrr * 100).toFixed(1)) : 16.5),
+    capRate: snap?.outputs?.capRateOnCost ?? 6.2,
+    cashOnCashPct: snap?.outputs?.cashOnCashReturnPct ?? 7.5,
     updatedAt: snap?.createdAt || '2026-08-01T12:00:00.000Z',
   });
 
@@ -1333,9 +1333,9 @@ export function updateSeedProject(
   const nextPhase = isClosing ? 'purchase' : (updates.currentPhase ?? current.currentPhase);
 
   const defaultFunding = isClosing && !current.funding ? {
-    loanAmount: current.underwritingSnapshot?.outputs.loanAmount ?? Math.round((current.purchasePrice || 392000) * 0.75),
-    interestRatePct: current.underwritingSnapshot?.inputs.interestRatePct ?? 6.875,
-    amortizationYears: current.underwritingSnapshot?.inputs.amortizationYears ?? 30,
+    loanAmount: current.underwritingSnapshot?.outputs?.loanAmount ?? Math.round((current.purchasePrice || 392000) * 0.75),
+    interestRatePct: current.underwritingSnapshot?.inputs?.interestRatePct ?? 6.875,
+    amortizationYears: current.underwritingSnapshot?.inputs?.amortizationYears ?? 30,
     downPayment: Math.round((current.purchasePrice || 392000) * 0.25),
     closingCosts: Math.round((current.purchasePrice || 392000) * 0.02),
     actualCashToClose: Math.round((current.purchasePrice || 392000) * 0.27),

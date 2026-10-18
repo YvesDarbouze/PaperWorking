@@ -14,7 +14,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <DashboardSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopBar onOpenMenu={() => setDrawerOpen(true)} />
-        <div className="flex-1 overflow-y-auto pb-24 md:pb-8">{children}</div>
+        <div
+          data-testid="dashboard-scroll-container"
+          data-dashboard-scroll-container="true"
+          className="flex-1 overflow-y-auto pb-24 md:pb-8"
+        >
+          {children}
+        </div>
       </div>
       <DashboardBottomNav onOpenDrawer={() => setDrawerOpen(true)} isDrawerOpen={drawerOpen} />
       <DashboardMobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />

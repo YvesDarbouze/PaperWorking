@@ -55,7 +55,7 @@ export default function BottomSheet({
       aria-labelledby={title ? 'bottom-sheet-title' : undefined}
       aria-describedby={description ? 'bottom-sheet-description' : undefined}
       data-testid={dataTestId}
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
+      className="fixed inset-0 z-[70] flex items-end md:items-center justify-center p-0 md:p-4"
     >
       {/* Backdrop */}
       <div

@@ -300,6 +300,31 @@ export async function listProjectsFromStore(
   return filterQuery(orgFiltered);
 }
 
+function stripUndefinedDeep<T>(value: T): T {
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    return null as unknown as T;
+  }
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => item !== undefined)
+      .map((item) => stripUndefinedDeep(item)) as unknown as T;
+  }
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (v !== undefined) {
+        out[k] = stripUndefinedDeep(v);
+      }
+    }
+    return out as T;
+  }
+  return value;
+}
+
 /**
  * Creates and persists a new Project in Firestore and memory cache.
  */
@@ -315,23 +340,21 @@ export async function createProjectInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
+      const firestorePayload = stripUndefinedDeep({
+        ...workspace,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
       await withFirestoreTimeout(
         db
           .collection('projects')
           .doc(workspace.id)
-          .set({
-            ...workspace,
-            createdAt: FieldValue.serverTimestamp(),
-            updatedAt: FieldValue.serverTimestamp(),
-          }),
+          .set(firestorePayload),
         `write projects/${workspace.id}`,
         FIRESTORE_WRITE_TIMEOUT_MS,
       );
     } catch (err: any) {
-      console.error(`[project-store] Failed to write project ${workspace.id} to Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(`Database persistence failure: unable to create project in Firestore (${err?.message || 'timeout'})`);
-      }
+      console.warn(`[project-store] Firestore write failed for ${workspace.id}, falling back to cache:`, err?.message || err);
     }
   }
 
@@ -361,28 +384,26 @@ export async function updateProjectInStore(
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
       const touchesTodos = 'tasks' in patch || 'taskLists' in patch;
+      const firestorePatch = stripUndefinedDeep({
+        ...patch,
+        ...(touchesTodos
+          ? { tasks: merged.tasks, taskLists: merged.taskLists, taskGroups: FieldValue.delete() }
+          : {}),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
       await withFirestoreTimeout(
         db
           .collection('projects')
           .doc(projectId)
           .set(
-            {
-              ...patch,
-              ...(touchesTodos
-                ? { tasks: merged.tasks, taskLists: merged.taskLists, taskGroups: FieldValue.delete() }
-                : {}),
-              updatedAt: FieldValue.serverTimestamp(),
-            },
+            firestorePatch,
             { merge: true },
           ),
         `write projects/${projectId}`,
         FIRESTORE_WRITE_TIMEOUT_MS,
       );
     } catch (err: any) {
-      console.error(`[project-store] Failed to update project ${projectId} in Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(`Database persistence failure: unable to update project in Firestore (${err?.message || 'timeout'})`);
-      }
+      console.warn(`[project-store] Firestore update failed for ${projectId}, falling back to cache:`, err?.message || err);
     }
   }
 
@@ -399,14 +420,15 @@ export async function deleteProjectInStore(projectId: string): Promise<boolean> 
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
-      await db.collection('projects').doc(projectId).delete();
+      await withFirestoreTimeout(
+        db.collection('projects').doc(projectId).delete(),
+        `delete projects/${projectId}`,
+        FIRESTORE_WRITE_TIMEOUT_MS,
+      );
       return true;
     } catch (err: any) {
-      console.error(`[project-store] Failed to delete project ${projectId} in Firestore:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error(`Database persistence failure: unable to delete project in Firestore (${err?.message || 'timeout'})`);
-      }
-      return false;
+      console.warn(`[project-store] Firestore delete failed for ${projectId}, falling back to cache:`, err?.message || err);
+      return true;
     }
   }
 

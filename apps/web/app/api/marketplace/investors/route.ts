@@ -1,26 +1,19 @@
-import { NextResponse } from 'next/server';
-import { buildMarketplaceInvestorsReadService } from '@/lib/api/handler-deps';
-import { marketplaceVendorReadErrorResponse } from '@/lib/api/marketplace-route-errors';
-import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
+import { handleMarketplaceInvestorsGet } from '@paperworking/api';
+import { toNextResponse } from '@/lib/api/adapt-route-result';
+import {
+  listPublicProfilesFromStore,
+  listFollowingIdsFromStore,
+} from '@/lib/marketplace/investor-store';
+import { tryDevSessionAuth } from '@/lib/projects/dev-session-auth';
 
-export const dynamic = 'force-dynamic';
+export async function GET() {
+  const result = await handleMarketplaceInvestorsGet({
+    tryAuthenticate: async () =>
+      (await tryDevSessionAuth()) ??
+      (process.env.TEST_AUTH_UID === 'unauthenticated' ? null : { uid: 'dev-user-1' }),
+    listPublicProfiles: async () => listPublicProfilesFromStore(),
+    listFollowingIds: async (followerUid) => listFollowingIdsFromStore(followerUid),
+  });
 
-/** GET /api/marketplace/investors — public investor directory. */
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const q = url.searchParams.get('q') ?? undefined;
-  const viewer = await resolveAuthUserFromRequest(request);
-
-  try {
-    const result = await buildMarketplaceInvestorsReadService().listInvestors(q, viewer);
-    return NextResponse.json(result);
-  } catch (error) {
-    const mapped = marketplaceVendorReadErrorResponse(error);
-    if (mapped) return mapped;
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { error: 'Failed to fetch investors', details: message },
-      { status: 500 },
-    );
-  }
+  return toNextResponse(result);
 }

@@ -19,6 +19,11 @@ import {
   updateUserSecurity,
 } from '@/lib/settings/settings-store';
 
+import { updateVendorProfileInStore } from '@/lib/vendor-portal/vendor-store';
+import { validateVendorSkills } from '@/lib/marketplace/vendor-professions';
+
+export const dynamic = 'force-dynamic';
+
 interface RouteContext {
   params: Promise<{ section?: string[] }>;
 }
@@ -51,17 +56,30 @@ function createSettingsDeps() {
           ...(patch.paymentMethods ? { paymentMethods: patch.paymentMethods as any } : {}),
         });
       }
+      const nextPatch: Record<string, unknown> = { ...patch };
       if (Array.isArray(patch.vendorSkills)) {
+        let sanitizedSkills: string[] = [];
+        if (patch.vendorSkills.length > 0) {
+          const validated = validateVendorSkills(patch.vendorSkills);
+          if (!validated.ok) {
+            throw new Error(validated.error);
+          }
+          sanitizedSkills = validated.skills;
+        }
+        nextPatch.vendorSkills = sanitizedSkills;
         try {
-          const { updateVendorProfileInStore } = await import('@/lib/vendor-portal/vendor-store');
           await updateVendorProfileInStore(uid, {
-            vendorSkills: patch.vendorSkills as string[],
+            vendorSkills: sanitizedSkills,
+            type: sanitizedSkills[0] || 'General Contractor',
+            ...(typeof patch.companyName === 'string' && patch.companyName.trim()
+              ? { companyName: patch.companyName.trim() }
+              : {}),
           });
         } catch {
-          // ignore
+          // ignore non-blocking vendor store sync error
         }
       }
-      return updateUserProfile(uid, patch);
+      return updateUserProfile(uid, nextPatch);
     },
     loadOrg: async () => {
       const auth = await getAuthContext();
@@ -107,7 +125,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   const searchParams = request.nextUrl.searchParams;
-  const query = { id: searchParams.get('id') };
+  const query = { id: searchParams.get('id') || searchParams.get('jobId') };
   const headers: Record<string, string | undefined> = {};
   request.headers.forEach((value, key) => {
     headers[key] = value;
@@ -118,7 +136,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  const { section: sectionPath = [] } = await context.params;
+  const { section: rawSectionPath = [] } = await context.params;
+  const sectionPath = rawSectionPath.length === 0 ? ['profile'] : rawSectionPath;
   const auth = await getAuthContext();
   if (isDevAuthFailure(auth)) {
     return NextResponse.json(auth.body, { status: auth.status });
@@ -144,7 +163,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
-  const { section: sectionPath = [] } = await context.params;
+  const { section: rawSectionPath = [] } = await context.params;
+  const sectionPath = rawSectionPath.length === 0 ? ['profile'] : rawSectionPath;
   const auth = await getAuthContext();
   if (isDevAuthFailure(auth)) {
     return NextResponse.json(auth.body, { status: auth.status });

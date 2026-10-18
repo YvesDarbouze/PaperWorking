@@ -7,6 +7,7 @@ import {
 } from '../../lib/auth/post-auth-redirect.js';
 import {
   forgotPasswordSchema,
+  isValidEmailAddress,
   loginSchema,
   registerSchema,
 } from '../../lib/auth/schemas.js';
@@ -73,6 +74,74 @@ describe('phase 5b — auth schemas', () => {
   it('validates forgot-password email', () => {
     expect(forgotPasswordSchema.safeParse({ email: 'hi@paperworking.co' }).success).toBe(true);
     expect(forgotPasswordSchema.safeParse({ email: 'not-an-email' }).success).toBe(false);
+  });
+
+  it('Bug_16 Regression: rejects malformed and repeated-TLD email addresses with "Please enter a valid email address"', () => {
+    const invalidEmails = [
+      'test@gmail.com.com.com.com',
+      'test@gmail.com.com..com.com',
+      'qatesthub3@gmail.com.com.com.com',
+      'test@gmail.com.com',
+      'user@domain.com.org',
+      'user@domain.com.net',
+      'user@domain.org.org',
+      'a@b.co.co',
+      'test@gmail.com.org.com',
+      'test@gmail.com.co',
+      'test@gmail.com.uk',
+    ];
+
+    for (const invalidEmail of invalidEmails) {
+      expect(isValidEmailAddress(invalidEmail)).toBe(false);
+
+      const regResult = registerSchema.safeParse({
+        fullName: 'QA Tester',
+        email: invalidEmail,
+        password: 'Paper1234',
+        confirmPassword: 'Paper1234',
+        acceptTerms: true,
+      });
+      expect(regResult.success).toBe(false);
+      if (!regResult.success) {
+        const emailIssue = regResult.error.issues.find((i) => i.path[0] === 'email');
+        expect(emailIssue?.message).toBe('Please enter a valid email address');
+      }
+
+      const loginResult = loginSchema.safeParse({
+        email: invalidEmail,
+        password: 'Paper1234',
+      });
+      expect(loginResult.success).toBe(false);
+      if (!loginResult.success) {
+        const emailIssue = loginResult.error.issues.find((i) => i.path[0] === 'email');
+        expect(emailIssue?.message).toBe('Please enter a valid email address');
+      }
+
+      const forgotResult = forgotPasswordSchema.safeParse({ email: invalidEmail });
+      expect(forgotResult.success).toBe(false);
+    }
+
+    const validEmails = [
+      'alex@paperworking.co',
+      'investor@paperworking.test',
+      'jane@company.co.uk',
+      'user@firm.com.au',
+      'user@mail.company.com',
+      'test+1@gmail.com',
+    ];
+
+    for (const validEmail of validEmails) {
+      expect(isValidEmailAddress(validEmail)).toBe(true);
+      expect(
+        registerSchema.safeParse({
+          fullName: 'QA Tester',
+          email: validEmail,
+          password: 'Paper1234',
+          confirmPassword: 'Paper1234',
+          acceptTerms: true,
+        }).success,
+      ).toBe(true);
+    }
   });
 });
 

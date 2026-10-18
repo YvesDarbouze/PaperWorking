@@ -16,7 +16,7 @@ export default function AuthActionPage() {
         <Logo href="/" />
       </div>
       <div className="mx-auto max-w-md">
-        <Suspense fallback={<div className="h-[360px] animate-pulse rounded-xl bg-black/5 dark:bg-white/5" />}>
+        <Suspense fallback={<div className="h-[360px] animate-pulse rounded-none bg-black/5 dark:bg-white/5" />}>
           <AuthActionPanel />
         </Suspense>
       </div>

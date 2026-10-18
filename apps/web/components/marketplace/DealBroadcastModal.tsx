@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, CheckCircle, CircleNotch, PaperPlaneTilt } from '@phosphor-icons/react';
 import { bffFetch } from '@/lib/api/bff-fetch';
 
@@ -11,6 +11,19 @@ export interface DealBroadcastModalProps {
   dealRoi: number;
   isOpen: boolean;
   onClose: () => void;
+  initialEmailsText?: string;
+  initialSubject?: string;
+}
+
+export function parseBroadcastRecipientEmails(emailsText: string): string[] {
+  return emailsText
+    .split(/[\n,;]+/)
+    .map((e) => e.trim())
+    .filter((e) => e.length > 0 && e.includes('@'));
+}
+
+export function isBroadcastFormValid(emailsText: string, subject: string): boolean {
+  return parseBroadcastRecipientEmails(emailsText).length > 0 && subject.trim().length > 0;
 }
 
 export default function DealBroadcastModal({
@@ -20,9 +33,13 @@ export default function DealBroadcastModal({
   dealRoi,
   isOpen,
   onClose,
+  initialEmailsText = '',
+  initialSubject,
 }: DealBroadcastModalProps) {
-  const [emailsText, setEmailsText] = useState('');
-  const [subject, setSubject] = useState(`Investment Opportunity: ${dealName}`);
+  const [emailsText, setEmailsText] = useState(initialEmailsText);
+  const [subject, setSubject] = useState(
+    initialSubject ?? `Investment Opportunity: ${dealName}`,
+  );
   const [message, setMessage] = useState(
     `I'm sharing the underwriting analysis for ${dealName} (${dealAddress}) on PaperWorking. Projected ROI: ${dealRoi}%. Review the details and gauge co-investment interest.`,
   );
@@ -32,23 +49,39 @@ export default function DealBroadcastModal({
   const [successResult, setSuccessResult] = useState<{ dispatchedCount: number } | null>(null);
   const [deliveryStatus, setDeliveryStatus] = useState<string>('not_configured');
 
+  useEffect(() => {
+    if (isOpen) {
+      setError(null);
+      setSuccessResult(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && !successResult) {
+      if (initialSubject === undefined) {
+        setSubject(`Investment Opportunity: ${dealName}`);
+      }
+      setMessage(
+        `I'm sharing the underwriting analysis for ${dealName} (${dealAddress}) on PaperWorking. Projected ROI: ${dealRoi}%. Review the details and gauge co-investment interest.`,
+      );
+    }
+  }, [isOpen, dealName, dealAddress, dealRoi, initialSubject, successResult]);
+
   if (!isOpen) return null;
+
+  const recipientEmails = parseBroadcastRecipientEmails(emailsText);
+  const isFormValid = isBroadcastFormValid(emailsText, subject);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
-    const recipientEmails = emailsText
-      .split(/[\n,;]+/)
-      .map((e) => e.trim())
-      .filter((e) => e.length > 0 && e.includes('@'));
-
-    if (recipientEmails.length === 0) {
-      setError('Please provide at least one valid recipient email address.');
-      setLoading(false);
+    if (!isFormValid) {
+      setError('Please provide at least one valid recipient email address and a subject.');
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await bffFetch('/api/deals/broadcast', {
@@ -57,7 +90,7 @@ export default function DealBroadcastModal({
         body: JSON.stringify({
           dealId,
           recipientEmails,
-          subject,
+          subject: subject.trim(),
           message,
           includeBusinessCard,
         }),
@@ -88,20 +121,20 @@ export default function DealBroadcastModal({
       aria-labelledby="broadcast-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
     >
-      <div className="relative w-full max-w-lg rounded-none border border-white/10 bg-[#16141a] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-none border border-neutral-800 bg-neutral-950 p-6 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 text-white/50 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+          className="absolute right-4 top-4 text-neutral-400 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Close broadcast modal"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <h2 id="broadcast-title" className="text-lg font-semibold text-white">
+        <h2 id="broadcast-title" className="text-lg font-semibold text-neutral-100">
           Share Analysis &amp; Broadcast Deal
         </h2>
-        <p className="mt-1 text-xs text-white/60">
+        <p className="mt-1 text-xs text-neutral-400">
           Broadcast underwriting metrics to external partners and soft-equity co-investors.
         </p>
 
@@ -122,8 +155,9 @@ export default function DealBroadcastModal({
             )}
             <button
               type="button"
+              data-testid="broadcast-done-btn"
               onClick={onClose}
-              className="mt-2 inline-flex items-center justify-center rounded-none bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[#0a0a0f] min-h-[44px]"
+              className="mt-2 inline-flex items-center justify-center rounded-none bg-neutral-100 px-4 py-2 text-xs font-semibold text-neutral-950 transition hover:bg-white min-h-[44px]"
             >
               Done
             </button>
@@ -131,13 +165,13 @@ export default function DealBroadcastModal({
         ) : (
           <form onSubmit={handleSend} className="mt-5 space-y-4">
             {error ? (
-              <div className="rounded-none border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-200">
+              <div className="rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200">
                 {error}
               </div>
             ) : null}
 
             <div>
-              <label htmlFor="recipient-emails" className="block text-xs font-medium text-white/70">
+              <label htmlFor="recipient-emails" className="block text-xs font-medium text-neutral-300">
                 Recipient Emails (comma or line separated)
               </label>
               <textarea
@@ -147,12 +181,12 @@ export default function DealBroadcastModal({
                 placeholder="partner@investor.com, capital@fund.com"
                 rows={2}
                 required
-                className="mt-1 w-full rounded-none border border-white/10 bg-white/[0.04] p-3 text-base md:text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none min-h-[44px]"
+                className="mt-1 w-full rounded-none border border-neutral-800 bg-neutral-900 p-3 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-400 focus:outline-none min-h-[44px]"
               />
             </div>
 
             <div>
-              <label htmlFor="broadcast-subject" className="block text-xs font-medium text-white/70">
+              <label htmlFor="broadcast-subject" className="block text-xs font-medium text-neutral-300">
                 Subject
               </label>
               <input
@@ -161,12 +195,12 @@ export default function DealBroadcastModal({
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 required
-                className="mt-1 w-full rounded-none border border-white/10 bg-white/[0.04] px-3 py-2 text-base md:text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none min-h-[44px]"
+                className="mt-1 w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-400 focus:outline-none min-h-[44px]"
               />
             </div>
 
             <div>
-              <label htmlFor="broadcast-message" className="block text-xs font-medium text-white/70">
+              <label htmlFor="broadcast-message" className="block text-xs font-medium text-neutral-300">
                 Custom Note
               </label>
               <textarea
@@ -174,16 +208,16 @@ export default function DealBroadcastModal({
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
-                className="mt-1 w-full rounded-none border border-white/10 bg-white/[0.04] p-3 text-base md:text-xs text-white placeholder:text-white/30 focus:border-[var(--accent)] focus:outline-none min-h-[44px]"
+                className="mt-1 w-full rounded-none border border-neutral-800 bg-neutral-900 p-3 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-400 focus:outline-none min-h-[44px]"
               />
             </div>
 
-            <label className="flex items-center gap-2 text-xs text-white/80 cursor-pointer min-h-[44px]">
+            <label className="flex items-center gap-2 text-xs text-neutral-200 cursor-pointer min-h-[44px]">
               <input
                 type="checkbox"
                 checked={includeBusinessCard}
                 onChange={(e) => setIncludeBusinessCard(e.target.checked)}
-                className="rounded-none border-white/20 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)]"
+                className="h-4 w-4 rounded-none border-neutral-700 bg-neutral-900 accent-neutral-100 focus:outline-none"
               />
               Include digital business card &amp; contact info
             </label>
@@ -193,14 +227,15 @@ export default function DealBroadcastModal({
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="rounded-none border border-white/10 px-4 py-2 text-xs font-medium text-white/70 hover:bg-white/5 min-h-[44px]"
+                className="rounded-none border border-neutral-700 bg-neutral-900 px-4 py-2 text-xs font-medium text-neutral-200 hover:bg-neutral-800 min-h-[44px]"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={loading}
-                className="inline-flex items-center gap-1.5 rounded-none bg-[var(--accent)] px-5 py-2 text-xs font-semibold text-[#0a0a0f] hover:brightness-110 disabled:opacity-50 min-h-[44px]"
+                data-testid="broadcast-submit-btn"
+                disabled={loading || !isFormValid}
+                className="inline-flex items-center gap-1.5 rounded-none bg-neutral-100 px-5 py-2 text-xs font-semibold text-neutral-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 min-h-[44px]"
               >
                 {loading ? (
                   <>
@@ -221,3 +256,4 @@ export default function DealBroadcastModal({
     </div>
   );
 }
+

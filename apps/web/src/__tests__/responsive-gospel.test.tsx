@@ -4,15 +4,15 @@ import { renderToString } from 'react-dom/server';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const { Input } = await import('../../components/ui/Input.js');
-const { default: LandingHero } = await import('../../components/marketing/LandingHero.js');
-const { default: DealCalculatorSection } = await import('../../sections/DealCalculatorSection.js');
-const { default: MarketplaceSection } = await import('../../sections/MarketplaceSection.js');
-const { default: HowItWorksHeader } = await import('../../sections/HowItWorksHeader.js');
-const { default: PhaseWalkthrough } = await import('../../sections/PhaseWalkthrough.js');
-const { default: LandingBelowFold } = await import('../../components/marketing/LandingBelowFold.js');
-const { default: MarketplacesClient } = await import('../../components/marketing/MarketplacesClient.js');
-const { default: HowItWorks } = await import('../../components/marketing/HowItWorks.js');
+import { Input } from '../../components/ui/Input';
+import LandingHero from '../../components/marketing/LandingHero';
+import DealCalculatorSection from '../../sections/DealCalculatorSection';
+import MarketplaceSection from '../../sections/MarketplaceSection';
+import HowItWorksHeader from '../../sections/HowItWorksHeader';
+import PhaseWalkthrough from '../../sections/PhaseWalkthrough';
+import LandingBelowFold from '../../components/marketing/LandingBelowFold';
+import MarketplacesClient from '../../components/marketing/MarketplacesClient';
+import HowItWorks from '../../components/marketing/HowItWorks';
 
 describe('The PaperWorking Responsive Design Gospel (Core Best Practices)', () => {
   const webDir = path.resolve(process.cwd());

@@ -91,6 +91,63 @@ describe('Requirement 5: Deal Calculator Project Initialization & Financial Mode
       expect(html).toContain('data-testid="confirm-open-wizard-btn"');
       expect(html).toContain('Configure in Full Wizard');
     });
+
+    it('Bug_03: displays the loader on the clicked CTA (Configure in Full Wizard vs Launch Project Workspace) rather than always on Launch Project Workspace', () => {
+      const baseProps = {
+        isOpen: true,
+        onClose: () => {},
+        address: '742 Evergreen Terrace, Springfield, OR 97477',
+        strategy: 'buy_and_hold_rental' as const,
+        purchasePrice: 450000,
+        rehabBudget: 35000,
+        arv: 580000,
+        grossRentMonthly: 3400,
+        noi: 26520,
+        projectedIrrPct: 16.8,
+        capRateOnCost: 5.4,
+        cashOnCashReturnPct: 8.9,
+        loanAmount: 337500,
+        cashRequired: 156500,
+        persistedSnapshotId: 'snap-springfield-01',
+        projectCreationError: null,
+        onLaunchProjectWorkspace: () => {},
+        onOpenProjectWizard: () => {},
+      };
+
+      // Case 1: User clicked "Configure in Full Wizard"
+      const wizardLoadingHtml = renderToString(
+        <StartProjectFromCalculatorModal
+          {...baseProps}
+          isCreatingProject={true}
+          creatingProjectTarget="wizard"
+        />
+      );
+
+      expect(wizardLoadingHtml).toMatch(
+        /<button[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?Opening Wizard\.\.\.[\s\S]*?<\/button>/
+      );
+      expect(wizardLoadingHtml).toMatch(
+        /<button[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?Launch Project Workspace[\s\S]*?<\/button>/
+      );
+      expect(wizardLoadingHtml).not.toContain('Creating Project Workspace...');
+
+      // Case 2: User clicked "Launch Project Workspace"
+      const workspaceLoadingHtml = renderToString(
+        <StartProjectFromCalculatorModal
+          {...baseProps}
+          isCreatingProject={true}
+          creatingProjectTarget="workspace"
+        />
+      );
+
+      expect(workspaceLoadingHtml).toMatch(
+        /<button[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?Creating Project Workspace\.\.\.[\s\S]*?<\/button>/
+      );
+      expect(workspaceLoadingHtml).toMatch(
+        /<button[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?Configure in Full Wizard[\s\S]*?<\/button>/
+      );
+      expect(workspaceLoadingHtml).not.toContain('Opening Wizard...');
+    });
   });
 
   describe('2. Purchase & Acquisition Cost Tracking with Itemized Closing Costs', () => {

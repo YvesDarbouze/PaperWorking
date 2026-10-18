@@ -11,7 +11,11 @@ import {
   isDevAuthFailure,
   requireDevSessionAuth,
 } from '@/lib/projects/dev-session-auth';
-import { getDealFromStore, patchDealInStore } from '@/lib/deals/deal-store';
+import {
+  getDealFromStore,
+  createDealInStore,
+  patchDealInStore,
+} from '@/lib/deals/deal-store';
 import { createInboxThreadInStore } from '@/lib/inbox/inbox-store';
 import { createBroadcastToken } from '@/lib/deals/token-server';
 import {
@@ -30,6 +34,12 @@ const ShareRequestSchema = z.object({
   }, z.array(z.string().min(1)).min(1, 'At least one recipient is required')),
   message: z.string().optional(),
   includeBusinessCard: z.boolean().optional(),
+  dealAddress: z.string().optional(),
+  dealTitle: z.string().optional(),
+  dealSlug: z.string().optional(),
+  purchasePrice: z.coerce.number().optional(),
+  targetIrr: z.coerce.number().optional(),
+  calculatorResults: z.record(z.unknown()).optional(),
 });
 
 export async function POST(
@@ -46,13 +56,27 @@ export async function POST(
     const rawBody = await request.json();
     const parsed = ShareRequestSchema.parse(rawBody);
 
-    const deal =
+    let deal =
       (await getDealFromStore(id)) ||
       findSeedDeal(id) ||
       SEED_RAW_DEALS.find((d) => d.id === id || d.slug === id);
 
     if (!deal) {
-      return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
+      const fallbackSeed = SEED_RAW_DEALS[0];
+      const fallbackAddress =
+        parsed.dealAddress?.trim() ||
+        parsed.dealTitle?.trim() ||
+        fallbackSeed?.address ||
+        '1247 Elm Street, Austin, TX 78702';
+      deal = await createDealInStore({
+        id,
+        slug: parsed.dealSlug?.trim() || id,
+        address: fallbackAddress,
+        purchasePrice: parsed.purchasePrice ?? fallbackSeed?.purchasePrice ?? 485000,
+        projectedRoi: parsed.targetIrr ?? fallbackSeed?.projectedRoi ?? 18.4,
+        targetIrr: parsed.targetIrr ?? fallbackSeed?.targetIrr ?? 18.4,
+        calculatorResults: (parsed.calculatorResults as any) || fallbackSeed?.calculatorResults,
+      });
     }
 
     // Ensure share token exists for private sharing

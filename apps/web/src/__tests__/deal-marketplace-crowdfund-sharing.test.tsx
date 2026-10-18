@@ -4,7 +4,9 @@ import { renderToString } from 'react-dom/server';
 
 // Mock next/navigation
 jest.unstable_mockModule('next/navigation', () => ({
-  useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
+  redirect: jest.fn(),
+  notFound: jest.fn(),
+  useRouter: () => ({ push: jest.fn(), back: jest.fn(), refresh: jest.fn(), replace: jest.fn() }),
   useSearchParams: () => new URLSearchParams(''),
   usePathname: () => '/marketplace/apexheights',
 }));
@@ -265,6 +267,71 @@ describe('Requirement 8: Crowdfunding Ecosystem, Deal Sharing & Subscriber Gatin
       expect(plainText).toContain('Purchase Price: $1,250,000');
       expect(plainText).toContain('Rehab Budget: $150,000');
       expect(plainText).toContain('Target IRR: 18.4%');
+    });
+
+    it('Bug_02 Regression: POST /api/deals/broadcast succeeds for both seeded deals and unpublished Deal Calculator scenarios without "Deal not found"', async () => {
+      process.env.TEST_AUTH_UID = 'dev-user-1';
+      const { POST: postDealBroadcast } = await import('../../app/api/deals/broadcast/route.js');
+      const { POST: postDealShare } = await import('../../app/api/deals/[id]/share/route.js');
+
+      // 1. Broadcast with unpublished Deal Calculator scenario (no dealId in store)
+      const calcReq = new Request('http://localhost/api/deals/broadcast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: 'unpublished-calc-deal-999',
+          dealAddress: '742 Evergreen Terrace, Austin, TX 78701',
+          address: '742 Evergreen Terrace, Austin, TX 78701',
+          dealName: '742 Evergreen Terrace',
+          purchasePrice: 540000,
+          projectedRoi: 19.2,
+          calculatorResults: {
+            purchasePrice: 540000,
+            rehabBudget: 75000,
+            arv: 720000,
+            targetIrr: 19.2,
+            projectedRoi: 19.2,
+            cashRequired: 183000,
+            netOperatingIncome: 52000,
+            capRateOnCost: 7.4,
+            strategy: 'FIX_AND_FLIP',
+            holdPeriod: '5 Years',
+          },
+          recipientEmails: ['partners@investorgroup.com', 'acquisitions@capitalfund.io'],
+          subject: 'New Investment Opportunity: 742 Evergreen Terrace',
+          message: 'Reviewing this newly underwritten asset with a projected IRR of 19.2%.',
+          includeBusinessCard: true,
+        }),
+      });
+
+      const calcRes = await postDealBroadcast(calcReq);
+      expect(calcRes.status).toBe(200);
+      const calcData = await calcRes.json();
+      expect(calcData.success).toBe(true);
+      expect(calcData.dispatchedCount).toBe(2);
+      expect(calcData.error).toBeUndefined();
+
+      // 2. Share via /api/deals/[id]/share with an unpublished deal ID also bootstraps and succeeds without 404 "Deal not found"
+      const shareReq = new Request('http://localhost/api/deals/unpublished-calc-share-888/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel: 'email',
+          recipients: ['investor@paperworking.test'],
+          message: 'Sharing underwriting analysis from Deal Calculator.',
+          dealAddress: '742 Evergreen Terrace, Austin, TX 78701',
+          purchasePrice: 540000,
+          targetIrr: 19.2,
+        }),
+      });
+
+      const shareRes = await postDealShare(shareReq, {
+        params: Promise.resolve({ id: 'unpublished-calc-share-888' }),
+      });
+      expect(shareRes.status).toBe(200);
+      const shareData = await shareRes.json();
+      expect(shareData.success).toBe(true);
+      expect(shareData.error).toBeUndefined();
     });
   });
 

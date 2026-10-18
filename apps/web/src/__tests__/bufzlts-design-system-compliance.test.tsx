@@ -10,13 +10,17 @@ describe('shadcn buFzlTs Design System & Responsive Gospel Compliance Test', () 
     'components/marketing/MarketingBottomNav.tsx',
     'components/marketing/LandingHero.tsx',
     'components/marketing/HeroProductShowcase.tsx',
+    'components/marketing/HeroProductCarousel.tsx',
     'components/marketing/SupportCenter.tsx',
     'components/marketing/PricingSection.tsx',
+    'components/marketing/BlogIndexClient.tsx',
+    'components/marketing/MarketingLayoutShell.tsx',
     'components/dashboard/DashboardSidebar.tsx',
     'components/dashboard/DashboardTopBar.tsx',
     'components/dashboard/DashboardMobileDrawer.tsx',
     'components/dashboard/DashboardBottomNav.tsx',
     'components/dashboard/CommandCenterPanel.tsx',
+    'components/dashboard/DashboardCalendarPanel.tsx',
     'components/dashboard/FollowersModal.tsx',
     'components/dashboard/DashboardTrendDetailModal.tsx',
     'components/dashboard/SettingsHubPanel.tsx',
@@ -27,14 +31,29 @@ describe('shadcn buFzlTs Design System & Responsive Gospel Compliance Test', () 
     'components/marketing/deal-calculator/PublishToMarketplaceModal.tsx',
     'components/marketing/deal-calculator/StartProjectFromCalculatorModal.tsx',
     'components/marketing/DealCalculatorView.tsx',
+    'components/marketplace/InvestorProfilePanel.tsx',
+    'components/vendor-portal/VendorProfilePanel.tsx',
+    'components/reports/ProjectReportsPanel.tsx',
+    'components/reports/RentRollView.tsx',
+    'components/settings/SecuritySettingsPanel.tsx',
+    'components/settings/BankConnectionCard.tsx',
     'components/projects/ProjectsListPanel.tsx',
     'components/projects/ProjectFolderCard.tsx',
     'components/projects/REILKanBan.tsx',
     'components/projects/AcquisitionPipelineBoard.tsx',
     'app/(dashboard)/projects/new/page.tsx',
+    'app/(dashboard)/dashboard/calendar/page.tsx',
+    'app/(dashboard)/dashboard/support/page.tsx',
+    'app/(marketing)/blog/page.tsx',
+    'app/(marketing)/about/page.tsx',
+    'app/(marketing)/careers/page.tsx',
+    'app/(marketing)/cookies/page.tsx',
+    'app/(marketing)/unsubscribe/page.tsx',
+    'app/auth/action/page.tsx',
+    'app/global-error.tsx',
   ];
 
-  it('enforces buFzlTs precision geometry: 0 instances of rounded-2xl or rounded-xl in elevated components', () => {
+  it('enforces buFywKm / buFzlTs precision geometry: 0 instances of rounded-2xl or rounded-xl in elevated components', () => {
     elevatedComponents.forEach((relPath) => {
       const fullPath = path.join(webAppDir, relPath);
       if (!fs.existsSync(fullPath)) return;
@@ -44,6 +63,12 @@ describe('shadcn buFzlTs Design System & Responsive Gospel Compliance Test', () 
       const hasRoundedXl = /className=.*rounded-(?:xl|2xl|3xl)/.test(content);
       expect(hasRoundedXl).toBe(false);
     });
+  });
+
+  it('enforces pure OKLCH neutral tokens in globals.css without colored sidebar-primary overrides', () => {
+    const globalsCss = fs.readFileSync(path.join(webAppDir, 'app/globals.css'), 'utf8');
+    expect(globalsCss).not.toContain('oklch(0.488 0.243 264.376)');
+    expect(globalsCss).toContain('--sidebar-primary: oklch(0.985 0 0);');
   });
 
   it('enforces Phosphor icon library: 0 instances of material-symbols-outlined in elevated components', () => {

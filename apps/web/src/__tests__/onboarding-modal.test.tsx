@@ -74,4 +74,37 @@ describe('FirstLoginOnboardingModal', () => {
     const html = renderToString(<FirstLoginOnboardingModal forceOpen={false} />);
     expect(html).toBe('');
   });
+
+  it('Bug_08: aligns the Change Photo button vertically with the Your Name input field using items-end and matching h-11 min-h-[44px]', () => {
+    mockUseAuth.mockReturnValue({
+      authenticated: true,
+      loading: false,
+      profile: {
+        accountType: 'investor',
+        name: 'Jordan Principal',
+        subscriptionPlan: 'Individual',
+        subscriptionStatus: 'active',
+      },
+    });
+
+    const html = renderToString(<FirstLoginOnboardingModal forceOpen={true} />);
+
+    // Verify the Account Identity row uses items-end alignment
+    const identityRowMatch = html.match(/<div[^>]*data-testid="onboarding-identity-row"[^>]*>/);
+    expect(identityRowMatch).not.toBeNull();
+    expect(identityRowMatch?.[0]).toContain('items-end');
+    expect(identityRowMatch?.[0]).not.toContain('items-center');
+
+    // Verify both the display name input and the Change Photo button share h-11 and min-h-[44px]
+    const nameInputMatch = html.match(/<input[^>]*data-testid="onboarding-display-name-input"[^>]*>/);
+    expect(nameInputMatch).not.toBeNull();
+    expect(nameInputMatch?.[0]).toContain('h-11');
+    expect(nameInputMatch?.[0]).toContain('min-h-[44px]');
+
+    const changePhotoMatch = html.match(/<label[^>]*data-testid="onboarding-change-photo-btn"[^>]*>/);
+    expect(changePhotoMatch).not.toBeNull();
+    expect(changePhotoMatch?.[0]).toContain('h-11');
+    expect(changePhotoMatch?.[0]).toContain('min-h-[44px]');
+    expect(changePhotoMatch?.[0]).toContain('self-end');
+  });
 });

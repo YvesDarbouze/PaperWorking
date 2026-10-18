@@ -19,6 +19,7 @@ export interface SeedVendorRequest {
   vendorId?: string;
   requesterUid?: string;
   projectLabel?: string;
+  location?: string;
 }
 
 export interface VendorProfileData {

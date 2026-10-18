@@ -103,6 +103,111 @@ function clearCookies(nodeEnv?: string): SetCookie[] {
   ];
 }
 
+const GTLDS = new Set([
+  'com',
+  'net',
+  'org',
+  'edu',
+  'gov',
+  'mil',
+  'int',
+  'io',
+  'ai',
+  'app',
+  'dev',
+  'tech',
+  'xyz',
+  'info',
+  'biz',
+  'test',
+]);
+
+const SINGLE_TLD_PROVIDERS = new Set([
+  'gmail',
+  'googlemail',
+  'icloud',
+  'protonmail',
+]);
+
+export function isValidEmailAddress(rawEmail: string): boolean {
+  if (typeof rawEmail !== 'string') return false;
+  const email = rawEmail.trim();
+  if (email.length < 1 || email.length > 254 || /\s/.test(email)) {
+    return false;
+  }
+
+  const parts = email.split('@');
+  if (parts.length !== 2) return false;
+  const [localPart, rawDomain] = parts;
+
+  if (
+    !localPart ||
+    localPart.length < 1 ||
+    localPart.length > 64 ||
+    localPart.startsWith('.') ||
+    localPart.endsWith('.') ||
+    localPart.includes('..') ||
+    !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(localPart)
+  ) {
+    return false;
+  }
+
+  const domainPart = rawDomain.toLowerCase();
+  if (
+    domainPart.length < 3 ||
+    domainPart.length > 253 ||
+    domainPart.startsWith('.') ||
+    domainPart.endsWith('.') ||
+    domainPart.startsWith('-') ||
+    domainPart.endsWith('-') ||
+    domainPart.includes('..')
+  ) {
+    return false;
+  }
+
+  const labels = domainPart.split('.');
+  if (labels.length < 2 || labels.length > 4) {
+    return false;
+  }
+
+  for (const label of labels) {
+    if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label)) {
+      return false;
+    }
+  }
+
+  const finalTld = labels[labels.length - 1];
+  if (!/^[a-z]{2,24}$/.test(finalTld)) {
+    return false;
+  }
+
+  for (let i = 1; i < labels.length; i++) {
+    if (labels[i] === labels[i - 1]) {
+      return false;
+    }
+  }
+
+  const suffixLabels = labels.slice(1);
+  if (new Set(suffixLabels).size !== suffixLabels.length) {
+    return false;
+  }
+
+  if (SINGLE_TLD_PROVIDERS.has(labels[0]) && labels.length !== 2) {
+    return false;
+  }
+
+  const intermediateLabels = labels.slice(1, -1);
+  for (const label of intermediateLabels) {
+    if (GTLDS.has(label)) {
+      if (labels.length !== 3 || !/^[a-z]{2}$/.test(finalTld)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 /**
  * POST /api/auth/session — migrated from PaperWorking src/app/api/auth/session/route.ts
  */

@@ -1,14 +1,20 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, type MouseEvent } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { resolveDrawerNav, isNavItemActive } from '@/lib/navigation/nav-contract';
+import {
+  resolvePrimaryNav,
+  resolveAccountNav,
+  isNavItemActive,
+  type NavItem,
+} from '@/lib/navigation/nav-contract';
 import Logo from '@/components/marketing/Logo';
 import { PROFILE_CARD } from '@/lib/dashboard/content';
 import { Lock, X, Robot, SignOut } from '@/components/icons/PhosphorIcons';
 import { getNavPhosphorIcon } from './nav-icons';
+import { useModalScrollLock } from './useModalScrollLock';
 
 interface DashboardMobileDrawerProps {
   isOpen: boolean;
@@ -19,8 +25,31 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
   const pathname = usePathname();
   const router = useRouter();
   const { navContext, profile, logout } = useAuth();
-  const drawerItems = resolveDrawerNav(navContext);
+  const effectiveNavContext = navContext ?? {
+    accountType: profile?.accountType ?? 'investor',
+    subscriptionPlan: profile?.subscriptionPlan ?? 'Individual',
+  };
+  const primaryItems = resolvePrimaryNav(effectiveNavContext).map((item) =>
+    item.id === 'vendor-marketplace' ? { ...item, id: 'marketplace' } : item
+  );
+  const accountItems = resolveAccountNav(effectiveNavContext);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  useModalScrollLock(isOpen);
+
+  function handleNavigate(item: NavItem, event: MouseEvent) {
+    if (!item.isLocked) {
+      onClose();
+      return;
+    }
+    if (item.id === 'deals' && process.env.NODE_ENV !== 'production') {
+      onClose();
+      return;
+    }
+    event.preventDefault();
+    onClose();
+    router.push('/dashboard/settings?section=billing&paywall=deals');
+  }
 
   // Close on route change
   const prevPathRef = useRef(pathname);
@@ -40,18 +69,6 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
-
-  // Lock body scroll when drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
 
   async function handleLogout() {
     onClose();
@@ -83,7 +100,7 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
-          <Logo href="/dashboard" tone="dashboard" theme="dark" size={24} variant="icon" />
+          <Logo href="/dashboard" tone="dashboard" theme="dark" size={22} variant="full" />
           <button
             type="button"
             onClick={onClose}
@@ -109,13 +126,40 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
           </div>
         </div>
 
-        {/* Navigation Sections */}
+        {/* Navigation Sections (matches Desktop DashboardSidebar 1:1) */}
         <nav className="flex-1 space-y-1">
-          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Workspace Tools
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            Workspace
           </p>
 
-          {drawerItems.map((item) => {
+          {primaryItems.map((item) => {
+            const isActive = isNavItemActive(pathname || '', item.href);
+            return (
+              <Link
+                key={item.id}
+                href={item.href}
+                data-testid={`drawer-link-${item.id}`}
+                onClick={(event: MouseEvent) => handleNavigate(item, event)}
+                className={`flex items-center gap-3 rounded-none px-3 py-2.5 min-h-[44px] text-sm font-medium no-underline transition ${
+                  isActive
+                    ? 'bg-primary/10 border border-primary text-foreground font-semibold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent'
+                }`}
+              >
+                {getNavPhosphorIcon(item.id, 'h-5 w-5 shrink-0')}
+                <span className="flex-1 truncate">{item.label}</span>
+                {item.isLocked && (
+                  <Lock className="h-4 w-4 text-amber-400 shrink-0" />
+                )}
+              </Link>
+            );
+          })}
+
+          <p className="px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            Account
+          </p>
+
+          {accountItems.map((item) => {
             const isActive = isNavItemActive(pathname || '', item.href);
             return (
               <Link
@@ -131,9 +175,6 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
               >
                 {getNavPhosphorIcon(item.id, 'h-5 w-5 shrink-0')}
                 <span className="flex-1 truncate">{item.label}</span>
-                {item.isLocked && (
-                  <Lock className="h-4 w-4 text-amber-400 shrink-0" />
-                )}
               </Link>
             );
           })}
@@ -142,7 +183,8 @@ export default function DashboardMobileDrawer({ isOpen, onClose }: DashboardMobi
         {/* Drawer Footer Actions */}
         <div className="border-t border-border pt-4 mt-6 space-y-2">
           <Link
-            href="/support"
+            href="/dashboard/support"
+            data-testid="drawer-link-support"
             onClick={onClose}
             className="flex items-center gap-3 rounded-none px-3 py-2.5 min-h-[44px] text-sm text-muted-foreground hover:text-foreground hover:bg-muted no-underline transition"
           >

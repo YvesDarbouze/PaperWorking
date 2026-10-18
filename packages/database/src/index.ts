@@ -76,3 +76,8 @@ export {
   type StripeBillingProvider,
 } from './stripe/stripe-billing-provider.js';
 export { createReportPdfExportPort, type ReportPdfExportAdapter } from './reports/report-pdf-export.js';
+
+export {
+  assertProjectTimezoneDerivation,
+  ProjectTimezoneValidationError,
+} from './firestore/timezone-validation.js';

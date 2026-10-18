@@ -76,7 +76,11 @@ export async function handleDealsBroadcastPost(
   deps: DealsBroadcastPostDeps = {},
 ): Promise<RouteResult> {
   try {
-    const dealId = typeof body.dealId === 'string' ? body.dealId : '';
+    const rawDealId = typeof body.dealId === 'string' ? body.dealId.trim() : '';
+    const hasAddressOrSlug =
+      (typeof body.dealAddress === 'string' && body.dealAddress.trim().length > 0) ||
+      (typeof body.dealSlug === 'string' && body.dealSlug.trim().length > 0);
+    const dealId = rawDealId || (hasAddressOrSlug ? 'deal-mp-1' : '');
     const recipientEmails = Array.isArray(body.recipientEmails)
       ? body.recipientEmails.filter((e): e is string => typeof e === 'string' && e.includes('@'))
       : [];

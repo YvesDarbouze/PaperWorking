@@ -13,6 +13,7 @@ import {
   CreditCard,
   User,
   SquaresFour,
+  Robot,
 } from '@/components/icons/PhosphorIcons';
 
 export function getNavPhosphorIcon(id: string, className = 'h-5 w-5') {
@@ -27,6 +28,7 @@ export function getNavPhosphorIcon(id: string, className = 'h-5 w-5') {
     case 'deals':
       return <Tag className={className} />;
     case 'deal-calculator':
+    case 'calculator':
       return <Calculator className={className} />;
     case 'insights':
       return <ChartBar className={className} />;
@@ -42,6 +44,8 @@ export function getNavPhosphorIcon(id: string, className = 'h-5 w-5') {
       return <CreditCard className={className} />;
     case 'profile':
       return <User className={className} />;
+    case 'support':
+      return <Robot className={className} />;
     default:
       return <SquaresFour className={className} />;
   }

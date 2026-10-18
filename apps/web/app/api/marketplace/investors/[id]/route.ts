@@ -1,27 +1,33 @@
-import { NextResponse } from 'next/server';
-import { buildMarketplaceInvestorsReadService } from '@/lib/api/handler-deps';
-import { marketplaceVendorReadErrorResponse } from '@/lib/api/marketplace-route-errors';
-import { resolveAuthUserFromRequest } from '@/lib/api/server-session';
+import { handleMarketplaceInvestorByIdGet } from '@paperworking/api';
+import { toNextResponse } from '@/lib/api/adapt-route-result';
+import {
+  getInvestorProfileFromStore,
+  isFollowingInStore,
+} from '@/lib/marketplace/investor-store';
+import {
+  seedInvestorActivity,
+  seedPublicDealsForOwner,
+} from '@/lib/marketplace/seed-data';
+import { tryDevSessionAuth } from '@/lib/projects/dev-session-auth';
 
-export const dynamic = 'force-dynamic';
-
-type RouteContext = { params: Promise<{ id: string }> };
-
-/** GET /api/marketplace/investors/[id] — public investor profile detail. */
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
   const { id } = await context.params;
-  const viewer = await resolveAuthUserFromRequest(request);
 
-  try {
-    const result = await buildMarketplaceInvestorsReadService().getInvestorById(id, viewer);
-    return NextResponse.json(result);
-  } catch (error) {
-    const mapped = marketplaceVendorReadErrorResponse(error);
-    if (mapped) return mapped;
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json(
-      { error: 'Failed to fetch investor', details: message },
-      { status: 500 },
-    );
-  }
+  const result = await handleMarketplaceInvestorByIdGet(
+    { id },
+    {
+      tryAuthenticate: async () =>
+        (await tryDevSessionAuth()) ??
+        (process.env.TEST_AUTH_UID === 'unauthenticated' ? null : { uid: 'dev-user-1' }),
+      getInvestor: async (investorId) => getInvestorProfileFromStore(investorId),
+      listDeals: async (ownerUid) => seedPublicDealsForOwner(ownerUid),
+      listActivity: async (actorUid) => seedInvestorActivity(actorUid),
+      isFollowing: async (followerUid, targetUid) => isFollowingInStore(followerUid, targetUid),
+    },
+  );
+
+  return toNextResponse(result);
 }

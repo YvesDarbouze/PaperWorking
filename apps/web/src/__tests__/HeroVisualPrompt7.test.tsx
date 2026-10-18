@@ -17,7 +17,7 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
 
     it('places the visual column after the text column in the DOM so it stacks below on mobile', () => {
       const h1Pos = heroHtml.indexOf('<h1');
-      const ctaPos = heroHtml.indexOf('href="/pricing"');
+      const ctaPos = heroHtml.indexOf('href="/signup"');
       const carouselPos = heroHtml.indexOf('aria-roledescription="carousel"');
 
       expect(h1Pos).toBeGreaterThan(-1);
@@ -125,8 +125,8 @@ describe('PROMPT 7 — Hero Visual Beside the Headline', () => {
     });
 
     it('renders primary and secondary CTAs above the fold', () => {
-      expect(heroHtml).toContain('href="/pricing"');
-      expect(heroHtml).toContain('href="#deal-calculator"');
+      expect(heroHtml).toContain('href="/signup"');
+      expect(heroHtml).toContain('href="/how-it-works"');
       expect(heroHtml).toContain('Get started');
       expect(heroHtml).toContain('See how it works');
     });

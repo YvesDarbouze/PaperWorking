@@ -73,11 +73,23 @@ export default function SecuritySettingsPanel() {
     setSaveSuccess(false);
 
     try {
-      const res = await fetch('/api/settings/security', {
-        method: 'PUT',
+      let res = await fetch('/api/settings/security', {
+        method: 'POST',
+        cache: 'no-store',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ twoFaRequired: twoFaEnabled }),
       });
+
+      if (!res.ok && res.status !== 401) {
+        res = await fetch('/api/settings/security', {
+          method: 'PUT',
+          cache: 'no-store',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ twoFaRequired: twoFaEnabled }),
+        });
+      }
 
       if (res.status === 401) {
         router.push('/login?next=/dashboard/settings?section=security');
@@ -151,7 +163,7 @@ export default function SecuritySettingsPanel() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 space-y-3">
+        <div className="rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">Account Password</p>
@@ -173,7 +185,7 @@ export default function SecuritySettingsPanel() {
       </section>
 
       {/* Two-Factor Authentication Section (Honest Workspace Policy) */}
-      <section className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm">
+      <section className="rounded-none border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 space-y-4 shadow-sm">
         <div className="border-b border-[var(--border-subtle)] pb-2">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Two-Factor Authentication (2FA)
@@ -183,7 +195,7 @@ export default function SecuritySettingsPanel() {
           </p>
         </div>
 
-        <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4">
+        <div className="flex items-start justify-between gap-4 rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-[var(--text-primary)]">
@@ -191,7 +203,7 @@ export default function SecuritySettingsPanel() {
               </span>
               <span
                 data-testid="security-2fa-badge"
-                className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                className={`rounded-none px-2 py-0.5 text-[10px] font-bold ${
                   twoFaEnabled
                     ? 'border border-emerald-500/30 bg-emerald-500/15 text-emerald-400'
                     : 'border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-muted)]'

@@ -18,7 +18,7 @@ export default function HelpPage() {
           Help articles
         </h1>
         <p className="max-w-[52ch] text-base leading-relaxed text-muted-foreground">
-          Migration preview of the help center. Full search and CMS wiring lands post-cutover.
+          Guides for configuring deals, underwriting metrics, workspace settings, and vendor directory workflows.
         </p>
       </section>
 

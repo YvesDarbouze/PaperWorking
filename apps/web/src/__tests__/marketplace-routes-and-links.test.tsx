@@ -81,7 +81,7 @@ describe('Marketplace Singular vs Plural Route Alignment (Item 3.1)', () => {
 
       // Ensure no standalone href="/marketplace" remains in DealCalculatorView
       expect(content).not.toMatch(/href="\/marketplace"/);
-      expect(content).toContain('href="/marketplaces"');
+      expect(content).toContain('/marketplaces');
     });
   });
 

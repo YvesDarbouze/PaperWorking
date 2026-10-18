@@ -28,28 +28,28 @@ export function RentRollView({
   const { summary, units } = report;
 
   return (
-    <div className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden space-y-6 p-6" data-testid="rent-roll-view">
+    <div className="flex flex-col rounded-none border border-border-subtle bg-surface overflow-hidden space-y-6 p-6" data-testid="rent-roll-view">
       {/* Summary Stat Quad */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="rounded-xl border border-border-subtle bg-surface p-4">
+        <div className="rounded-none border border-border-subtle bg-surface p-4">
           <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Units</span>
           <p className="mt-1 text-xl font-black text-text-primary">{summary.totalUnits}</p>
           <p className="text-[11px] text-text-muted mt-0.5">{summary.occupiedUnits} occupied · {summary.vacantUnits} vacant</p>
         </div>
 
-        <div className="rounded-xl border border-border-subtle bg-surface p-4">
+        <div className="rounded-none border border-border-subtle bg-surface p-4">
           <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Physical Occupancy</span>
           <p className="mt-1 text-xl font-black text-accent">{formatPercent(summary.occupancyRatePct, { decimals: 1 })}</p>
           <p className="text-[11px] text-text-muted mt-0.5">{summary.delinquentUnits} delinquent</p>
         </div>
 
-        <div className="rounded-xl border border-border-subtle bg-surface p-4">
+        <div className="rounded-none border border-border-subtle bg-surface p-4">
           <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Gross Potential Rent</span>
           <p className="mt-1 text-xl font-black text-text-primary">{formatCurrency(summary.grossPotentialRentMonthly, { decimals: 0 })}/mo</p>
           <p className="text-[11px] text-text-muted mt-0.5">{formatCurrency(summary.grossPotentialRentAnnual, { compact: true })} annual</p>
         </div>
 
-        <div className="rounded-xl border border-border-subtle bg-surface p-4">
+        <div className="rounded-none border border-border-subtle bg-surface p-4">
           <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Deposits Held (Liability)</span>
           <p className="mt-1 text-xl font-black text-text-primary">{formatCurrency(summary.totalDepositsHeld, { decimals: 0 })}</p>
           <p className="text-[11px] text-text-muted mt-0.5">Escrow balance</p>
@@ -61,7 +61,7 @@ export function RentRollView({
         tabIndex={0}
         role="region"
         aria-label="Rent roll units table"
-        className="rounded-xl border border-border-subtle overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="rounded-none border border-border-subtle overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
       >
         <table className="w-full text-left text-xs text-text-primary border-collapse">
           <thead>

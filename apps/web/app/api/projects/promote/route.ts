@@ -14,7 +14,11 @@ export async function POST(request: Request) {
   const auth = await requireDevSessionAuth();
   const body = await request.json();
 
-  const targetOrgId = (body as any)?.organizationId || 'org-1';
+  const targetOrgId =
+    (body as any)?.organizationId ||
+    (!isDevAuthFailure(auth) && auth.organizationId ? auth.organizationId : 'org-1');
+
+  const isVendor = !isDevAuthFailure(auth) && auth.accountType === 'vendor';
 
   const result = await handleProjectsPromotePost(body, {
     requireAuth: async () => {
@@ -23,10 +27,13 @@ export async function POST(request: Request) {
     },
     getUser: async () => ({
       organizationId: targetOrgId,
-      account_type: 'standard',
+      account_type: isVendor ? 'vendor' : 'standard',
+      role: isVendor ? 'vendor' : 'owner',
     }),
     countOrgProjects: async () => countProjectsInStore(targetOrgId),
     createProject: async ({ projectData, storageQuotaBytes, organizationId }) => {
+      const resolvedOrgId = organizationId || targetOrgId;
+
       const projectId = (projectData as any).id || `proj-${Date.now().toString().slice(-6)}`;
       const pData = projectData as any;
       const initializedTools = initializeProjectTools({
@@ -50,7 +57,7 @@ export async function POST(request: Request) {
         ...pData,
         ...initializedTools,
         id: projectId,
-        organizationId: organizationId || targetOrgId,
+        organizationId: resolvedOrgId,
         storageQuotaBytes,
       });
       return { projectId, project: created as unknown as Record<string, unknown> };

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { MapPin, CircleNotch, WarningCircle, Warning, MagnifyingGlass, PlusCircle, Storefront, X } from '@phosphor-icons/react';
@@ -141,11 +141,11 @@ function VendorCard({
         <RatingDisplay rating={vendor.rating} totalReviews={vendor.totalReviews} variant="compact" />
       </div>
 
-      <div>
-        <h3 className="text-base font-semibold leading-snug text-white">{vendor.companyName}</h3>
+      <div className="min-w-0">
+        <h3 className="break-words text-base font-semibold leading-snug text-white">{vendor.companyName}</h3>
         <p className="mt-0.5 flex items-center gap-1 text-xs text-neutral-400">
-          <MapPin className="h-3.5 w-3.5 text-neutral-400" />
-          {vendor.location}
+          <MapPin className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
+          <span className="break-words">{vendor.location}</span>
         </p>
       </div>
 
@@ -186,7 +186,7 @@ function VendorCard({
   );
 }
 
-function MarketplaceContent() {
+function MarketplaceContent({ initialSearchInput = '' }: { initialSearchInput?: string }) {
   const auth = useOptionalAuth();
   const isAuthed = auth ? (auth.authenticated && !auth.loading) : true;
   const searchParams = useSearchParams();
@@ -197,8 +197,9 @@ function MarketplaceContent() {
   const [activeTab, setActiveTab] = useState<ActiveTab>(
     tabParam === 'investors' ? 'investors' : 'vendors',
   );
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState(cityParam || initialSearchInput || '');
+  const [searchQuery, setSearchQuery] = useState(cityParam || initialSearchInput || '');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
   const [vendors, setVendors] = useState<ApiVendor[]>([]);
@@ -237,12 +238,44 @@ function MarketplaceContent() {
     let isMounted = true;
     async function loadUserSkills() {
       try {
-        const res = await fetch('/api/marketplace/profile', { cache: 'no-store' });
+        let skills: string[] | null = null;
+        const res = await fetch('/api/marketplace/profile', {
+          cache: 'no-store',
+          credentials: 'include',
+        });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted) {
-            setUserVendorSkills(Array.isArray(data.profile?.vendorSkills) ? data.profile.vendorSkills : []);
+          if (Array.isArray(data.profile?.vendorSkills) && data.profile.vendorSkills.length > 0) {
+            skills = data.profile.vendorSkills;
           }
+        }
+        if (!skills) {
+          const sRes = await fetch('/api/settings/profile', {
+            cache: 'no-store',
+            credentials: 'include',
+          });
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            if (Array.isArray(sData.vendorSkills) && sData.vendorSkills.length > 0) {
+              skills = sData.vendorSkills;
+            }
+          }
+        }
+        if (!skills && typeof window !== 'undefined') {
+          try {
+            const raw = localStorage.getItem('pw_settings_vendor_skills');
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                skills = parsed.filter((s): s is string => typeof s === 'string');
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+        if (isMounted) {
+          setUserVendorSkills(skills ?? []);
         }
       } catch {
         if (isMounted) setUserVendorSkills([]);
@@ -490,15 +523,43 @@ function MarketplaceContent() {
   const toggleFollow = useCallback(
     async (targetUid: string) => {
       const isFollowing = following.includes(targetUid);
-      const response = await bffFetch('/api/marketplace/investors/follow', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUid, follow: !isFollowing }),
-      });
-      if (!response.ok) return;
+      const nextFollow = !isFollowing;
+      const delta = nextFollow ? 1 : -1;
+
+      // Optimistically update following list and target investor followerCount
       setFollowing((current) =>
         isFollowing ? current.filter((uid) => uid !== targetUid) : [...current, targetUid],
       );
+      setInvestors((current) =>
+        current.map((inv) =>
+          inv.uid === targetUid
+            ? { ...inv, followerCount: Math.max(0, (inv.followerCount ?? 0) + delta) }
+            : inv,
+        ),
+      );
+
+      try {
+        const response = await bffFetch('/api/marketplace/investors/follow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetUid, follow: nextFollow }),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update follow status');
+        }
+      } catch {
+        // Roll back on server failure
+        setFollowing((current) =>
+          nextFollow ? current.filter((uid) => uid !== targetUid) : [...current, targetUid],
+        );
+        setInvestors((current) =>
+          current.map((inv) =>
+            inv.uid === targetUid
+              ? { ...inv, followerCount: Math.max(0, (inv.followerCount ?? 0) - delta) }
+              : inv,
+          ),
+        );
+      }
     },
     [following],
   );
@@ -518,10 +579,8 @@ function MarketplaceContent() {
         : 'Discover and follow public investor profiles';
 
   const handleListServicesClick = (e: React.MouseEvent) => {
-    if (userVendorSkills !== null && userVendorSkills.length === 0) {
-      e.preventDefault();
-      setIsSkillsGateOpen(true);
-    }
+    e.preventDefault();
+    setIsSkillsGateOpen(true);
   };
 
   return (
@@ -536,7 +595,7 @@ function MarketplaceContent() {
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <Link
-            href="/vendor-portal/profile"
+            href="/dashboard/settings?section=general#vendor-skills"
             data-testid="list-services-vendor-directory-btn"
             onClick={handleListServicesClick}
             className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none bg-neutral-100 px-4 py-2 text-xs font-semibold text-neutral-950 transition hover:bg-white"
@@ -544,6 +603,15 @@ function MarketplaceContent() {
             <PlusCircle className="h-4 w-4" />
             <span>+ List Your Services</span>
           </Link>
+          {userVendorSkills && userVendorSkills.length > 0 ? (
+            <Link
+              href="/dashboard/settings?section=general#vendor-skills"
+              data-testid="manage-vendor-skills-settings-link"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-none border border-neutral-800 bg-neutral-900/60 px-4 py-2 text-xs font-semibold text-neutral-200 transition hover:border-neutral-600 hover:bg-neutral-800"
+            >
+              <span>Manage Skills ({userVendorSkills.length}/3)</span>
+            </Link>
+          ) : null}
 
           <div className="flex self-start rounded-none border border-neutral-800 bg-neutral-900/50 p-0.5 md:self-center">
             {(
@@ -581,7 +649,11 @@ function MarketplaceContent() {
       </div>
 
       {/* Investor Profile & Social Network Bar */}
-      <MarketplaceSocialProfileCard variant="banner" contextLabel="Vendor Directory" />
+      <MarketplaceSocialProfileCard
+        variant="banner"
+        contextLabel="Vendor Directory"
+        followingCount={8 + following.length}
+      />
 
       {activeTab === 'deals' ? (
         <div className="space-y-4">
@@ -633,61 +705,111 @@ function MarketplaceContent() {
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
-              {investors.map((profile) => (
-                <article
-                  key={profile.uid}
-                  className="rounded-none border border-neutral-800 bg-neutral-900/40 p-5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h4 className="text-lg font-semibold text-neutral-100">
-                        {profile.displayName}
-                        {profile.isVerified ? (
-                          <span className="ml-2 text-xs text-neutral-400">Verified</span>
-                        ) : null}
-                      </h4>
-                      <p className="mt-1 text-sm text-neutral-400">{profile.location}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleFollow(profile.uid)}
-                      className="rounded-none border border-neutral-700 px-3 py-1 text-xs text-neutral-300 hover:bg-neutral-800"
-                    >
-                      {following.includes(profile.uid) ? 'Following' : 'Follow'}
-                    </button>
-                  </div>
-                  {profile.publicBio ? (
-                    <p className="mt-3 text-sm text-neutral-300">{profile.publicBio}</p>
-                  ) : null}
-                  <Link
-                    href={`/dashboard/marketplace/investors/${profile.uid}`}
-                    className="mt-4 inline-flex text-sm text-neutral-400 underline-offset-4 hover:underline"
+              {investors.map((profile) => {
+                const isFollowingInvestor = following.includes(profile.uid);
+                return (
+                  <article
+                    key={profile.uid}
+                    className="rounded-none border border-neutral-800 bg-neutral-900/40 p-5"
                   >
-                    View profile
-                  </Link>
-                </article>
-              ))}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="break-words text-lg font-semibold text-neutral-100">
+                          {profile.displayName}
+                          {profile.isVerified ? (
+                            <span className="ml-2 text-xs text-neutral-400">Verified</span>
+                          ) : null}
+                        </h4>
+                        <p className="mt-1 break-words text-sm text-neutral-400">{profile.location}</p>
+                      </div>
+                      <button
+                        type="button"
+                        data-testid={`follow-investor-btn-${profile.uid}`}
+                        aria-pressed={isFollowingInvestor}
+                        onClick={() => toggleFollow(profile.uid)}
+                        className={`min-h-[36px] cursor-pointer rounded-none border px-3.5 py-1.5 text-xs transition ${
+                          isFollowingInvestor
+                            ? 'border-neutral-200 bg-neutral-100 font-semibold text-neutral-950 hover:bg-white'
+                            : 'border-neutral-700 bg-neutral-900 font-medium text-neutral-200 hover:border-neutral-500 hover:bg-neutral-800'
+                        }`}
+                      >
+                        {isFollowingInvestor ? 'Following' : 'Follow'}
+                      </button>
+                    </div>
+                    {profile.publicBio ? (
+                      <p className="mt-3 text-sm text-neutral-300">{profile.publicBio}</p>
+                    ) : null}
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <Link
+                        href={`/dashboard/marketplace/investors/${encodeURIComponent(profile.uid)}`}
+                        data-testid={`view-investor-profile-link-${profile.uid}`}
+                        className="inline-flex text-sm text-neutral-400 underline-offset-4 hover:underline"
+                      >
+                        View profile
+                      </Link>
+                      <span
+                        data-testid={`investor-follower-count-${profile.uid}`}
+                        className="font-mono text-xs tabular-nums text-neutral-400"
+                      >
+                        {profile.followerCount ?? 0} followers
+                      </span>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
       ) : (
         <>
-          <div className="flex gap-0">
-            <div className="relative flex-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-0">
+            <div className="relative w-full flex-1">
               <MapPin className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-neutral-400" />
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search by City or Zip Code…"
+                aria-label="Search vendors"
+                data-testid="vendor-directory-search-input"
                 value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchInput)}
-                className="w-full rounded-none border border-r-0 border-neutral-800 bg-neutral-900/50 py-3.5 pl-11 pr-4 text-base md:text-sm text-neutral-100 outline-none placeholder:text-neutral-500 focus:border-neutral-600"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSearchInput(val);
+                  setSearchQuery(val);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setSearchQuery(searchInput);
+                  } else if (e.key === 'Escape' && searchInput) {
+                    e.preventDefault();
+                    setSearchInput('');
+                    setSearchQuery('');
+                  }
+                }}
+                className={`w-full rounded-none border border-neutral-800 sm:border-r-0 bg-neutral-900/50 py-3.5 pl-11 ${
+                  searchInput.length > 0 ? 'pr-11' : 'pr-4'
+                } text-base md:text-sm text-neutral-100 outline-none placeholder:text-neutral-500 min-h-[44px] focus:border-neutral-600`}
               />
+              {searchInput.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInput('');
+                    setSearchQuery('');
+                    searchInputRef.current?.focus();
+                  }}
+                  aria-label="Clear search"
+                  data-testid="clear-vendor-search-btn"
+                  className="absolute right-0 top-0 bottom-0 flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none text-neutral-400 transition hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400"
+                >
+                  <X size={14} weight="bold" />
+                </button>
+              ) : null}
             </div>
             <button
               type="button"
               onClick={() => setSearchQuery(searchInput)}
-              className="rounded-none bg-neutral-100 px-6 py-3.5 text-sm font-semibold text-neutral-950 hover:bg-white min-h-[44px]"
+              className="w-full sm:w-auto shrink-0 whitespace-nowrap rounded-none bg-neutral-100 px-6 py-3.5 text-sm font-semibold text-neutral-950 hover:bg-white min-h-[44px]"
             >
               Find Vendors
             </button>
@@ -859,7 +981,9 @@ function MarketplaceContent() {
                 </div>
                 <div>
                   <h3 id="skills-gate-modal-title" className="text-lg font-bold text-neutral-100">
-                    Skills Required to List Services
+                    {userVendorSkills && userVendorSkills.length > 0
+                      ? 'Vendor Directory Service Skills'
+                      : 'Skills Required to List Services'}
                   </h3>
                   <p className="text-xs text-neutral-400 mt-0.5">
                     Vendor Directory Requirement
@@ -869,7 +993,7 @@ function MarketplaceContent() {
               <button
                 type="button"
                 onClick={() => setIsSkillsGateOpen(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100 transition"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-none text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100 transition"
                 aria-label="Close dialog"
               >
                 <X className="h-4 w-4" />
@@ -883,6 +1007,26 @@ function MarketplaceContent() {
               <p className="text-xs text-neutral-400 leading-relaxed">
                 This identifies your capabilities in directory search engines so investors and deal operators can find and request quotes from you.
               </p>
+              {userVendorSkills && userVendorSkills.length > 0 ? (
+                <div
+                  data-testid="skills-gate-active-skills"
+                  className="rounded-none border border-neutral-800 bg-neutral-900/70 p-3 space-y-2"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-300">
+                    Active Directory Skills ({userVendorSkills.length}/3 Selected)
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {userVendorSkills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="rounded-none border border-neutral-700 bg-neutral-800 px-2.5 py-1 text-xs font-medium text-neutral-100"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-neutral-800 pt-4">
@@ -893,6 +1037,15 @@ function MarketplaceContent() {
               >
                 Cancel
               </button>
+              {userVendorSkills && userVendorSkills.length > 0 ? (
+                <Link
+                  href="/vendor-portal/profile"
+                  data-testid="skills-gate-vendor-profile-link"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-none border border-neutral-700 bg-neutral-900 px-4 py-2 text-xs font-semibold text-neutral-100 hover:bg-neutral-800 transition"
+                >
+                  Vendor Profile
+                </Link>
+              ) : null}
               <Link
                 href="/dashboard/settings?section=general#vendor-skills"
                 data-testid="skills-gate-settings-link"
@@ -916,7 +1069,11 @@ function MarketplaceContent() {
   );
 }
 
-export default function VendorMarketplacePanel() {
+export default function VendorMarketplacePanel({
+  initialSearchInput = '',
+}: {
+  initialSearchInput?: string;
+} = {}) {
   return (
     <Suspense
       fallback={
@@ -930,7 +1087,7 @@ export default function VendorMarketplacePanel() {
         </div>
       }
     >
-      <MarketplaceContent />
+      <MarketplaceContent initialSearchInput={initialSearchInput} />
     </Suspense>
   );
 }

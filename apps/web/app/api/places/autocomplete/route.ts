@@ -6,6 +6,7 @@ import { tryDevSessionAuth } from '@/lib/projects/dev-session-auth';
 export const dynamic = 'force-dynamic';
 
 const BENCHMARK_ADDRESSES: PlacePrediction[] = [
+  { placeId: 'bm-dc-abbey-place', description: 'Abbey Place Northeast, Washington, DC, USA', mainText: 'Abbey Place Northeast', secondaryText: 'Washington, DC, USA' },
   { placeId: 'bm-austin-1', description: '1204 E 7th St, Austin, TX 78702', mainText: '1204 E 7th St', secondaryText: 'Austin, TX 78702' },
   { placeId: 'bm-phoenix-1', description: '4521 N 24th St, Phoenix, AZ 85016', mainText: '4521 N 24th St', secondaryText: 'Phoenix, AZ 85016' },
   { placeId: 'bm-dallas-1', description: '3804 Swiss Ave, Dallas, TX 75204', mainText: '3804 Swiss Ave', secondaryText: 'Dallas, TX 75204' },

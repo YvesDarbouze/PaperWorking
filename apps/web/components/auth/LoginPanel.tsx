@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AuthCard, { AuthFieldError } from '@/components/auth/AuthCard';
 import { useAuth } from '@/context/AuthContext';
 import { ADMIN_ROUTE } from '@/lib/auth/post-auth-redirect';
@@ -11,6 +11,7 @@ import { loginSchema, registerSchema } from '@/lib/auth/schemas';
 import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { resolveLoginRedirect } from '@/lib/auth/session-client';
 import { useMockAuth } from '@/lib/data';
+import { formatSocialAuthError, isPopupDismissedError } from '@/lib/firebase/social-auth';
 
 type LoginMode = 'password' | 'magic-link';
 
@@ -49,7 +50,11 @@ function FacebookIcon() {
  * Login / Sign up — visual + flow parity with PaperWorking v0
  * (Google, Facebook, Password / Magic Link).
  */
-export default function LoginPanel() {
+export interface LoginPanelProps {
+  defaultMode?: 'signin' | 'signup';
+}
+
+export default function LoginPanel({ defaultMode }: LoginPanelProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const {
@@ -78,7 +83,7 @@ export default function LoginPanel() {
   const isAdminLogin = accountType === 'admin';
   const mockAuthEnabled = useMockAuth();
 
-  const [isSignUp, setIsSignUp] = useState(urlMode === 'signup');
+  const [isSignUp, setIsSignUp] = useState(defaultMode === 'signup' || urlMode === 'signup');
   const [loginMode, setLoginMode] = useState<LoginMode>('password');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -88,6 +93,71 @@ export default function LoginPanel() {
   const [magicEmail, setMagicEmail] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: '' } : prev));
+  };
+
+  const signupFormRef = useRef<HTMLFormElement | null>(null);
+
+  function validateAuthPayload(
+    mode: 'signin' | 'signup',
+    payload: { email: string; password: string; fullName: string; confirmPassword: string; acceptTerms: boolean },
+  ): { ok: boolean; fieldErrors: Record<string, string> } {
+    const parsed =
+      mode === 'signup'
+        ? registerSchema.safeParse(payload)
+        : loginSchema.safeParse({ email: payload.email, password: payload.password });
+    if (parsed.success) return { ok: true, fieldErrors: {} };
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0];
+      if (typeof key === 'string' && !fieldErrors[key]) {
+        fieldErrors[key] = issue.message;
+      }
+    }
+    return { ok: false, fieldErrors };
+  }
+
+  // Clears a field's error as soon as the field becomes valid, without waiting
+  // for another submit (Bug_69).
+  function reconcileFieldErrors(formEl: HTMLFormElement) {
+    const formData = new FormData(formEl);
+    const email = String(formData.get('email') ?? '').trim();
+    const password = String(formData.get('password') ?? '');
+    const confirmPassword = String(formData.get('confirmPassword') ?? '');
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      const clearIf = (key: string, valid: boolean) => {
+        if (valid && next[key]) {
+          next[key] = '';
+          changed = true;
+        }
+      };
+      clearIf('fullName', String(formData.get('fullName') ?? '').trim().length >= 2);
+      clearIf('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+      clearIf('password', password.length >= 8);
+      clearIf('confirmPassword', confirmPassword.length > 0);
+      clearIf('acceptTerms', formData.get('acceptTerms') !== null);
+      return changed ? next : prev;
+    });
+  }
+
+  useEffect(() => {
+    const formEl = signupFormRef.current;
+    if (!formEl || !isSignUp) return;
+    const handler = () => {
+      reconcileFieldErrors(formEl);
+    };
+    formEl.addEventListener('input', handler);
+    formEl.addEventListener('change', handler);
+    return () => {
+      formEl.removeEventListener('input', handler);
+      formEl.removeEventListener('change', handler);
+    };
+  }, [isSignUp]);
+
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -267,8 +337,12 @@ export default function LoginPanel() {
       }
       const ok = await loginWithGoogle(accountType);
       if (ok) redirectAfterAuth(isSignUp);
-    } catch {
-      /* error in AuthContext */
+    } catch (err) {
+      const result = { error: err };
+      if (isPopupDismissedError(result.error)) {
+        return;
+      }
+      setLocalError(formatSocialAuthError(result.error));
     } finally {
       setLoadingProvider(null);
     }
@@ -351,6 +425,7 @@ export default function LoginPanel() {
         <div className="mb-3 grid w-full grid-cols-2 gap-2">
           <button
             type="button"
+            data-testid="google-signin-button"
             onClick={() => void handleSocial('google')}
             disabled={!!loadingProvider || isSubmitting}
             className="auth-btn-social flex items-center justify-center gap-2 px-2 py-2.5 disabled:opacity-50"
@@ -361,12 +436,13 @@ export default function LoginPanel() {
               <GoogleIcon />
             )}
             <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-white sm:text-xs">
-              Google
+              Continue with Google
             </span>
           </button>
 
           <button
             type="button"
+            data-testid="facebook-signin-button"
             onClick={() => void handleSocial('facebook')}
             disabled={!!loadingProvider || isSubmitting}
             className="auth-btn-social flex items-center justify-center gap-2 px-2 py-2.5 disabled:opacity-50"
@@ -377,7 +453,7 @@ export default function LoginPanel() {
               <FacebookIcon />
             )}
             <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-white sm:text-xs">
-              Facebook
+              Continue with Facebook
             </span>
           </button>
         </div>
@@ -421,7 +497,7 @@ export default function LoginPanel() {
         <div className="relative w-full">
           {/* Sign in — password */}
           {loginMode === 'password' && !isSignUp ? (
-            <form onSubmit={handlePasswordLogin} className="w-full space-y-3">
+            <form onSubmit={handlePasswordLogin} noValidate className="w-full space-y-3">
               <div>
                 <label htmlFor="login-email" className="auth-label">
                   Email Address
@@ -497,48 +573,64 @@ export default function LoginPanel() {
 
           {/* Sign up — password */}
           {loginMode === 'password' && isSignUp ? (
-            <form onSubmit={handleSignup} className="w-full space-y-3">
+            <form
+              ref={signupFormRef}
+              onSubmit={handleSignup}
+              onInput={(e) => reconcileFieldErrors(e.currentTarget)}
+              onChange={(e) => reconcileFieldErrors(e.currentTarget)}
+              noValidate
+              className="w-full space-y-3"
+            >
               <div>
-                <label htmlFor="signup-name" className="auth-label">
-                  Full Name
+                <label htmlFor="fullName" className="auth-label">
+                  Full Name <span data-testid="required-asterisk">*</span>
                 </label>
                 <input
-                  id="signup-name"
+                  id="fullName"
                   name="fullName"
                   type="text"
                   placeholder="John Doe"
                   autoComplete="name"
+                  required
+                  aria-required="true"
+                  onChange={() => clearFieldError('fullName')}
                   className="auth-input"
                 />
                 <AuthFieldError message={fieldErrors.fullName} />
               </div>
 
               <div>
-                <label htmlFor="signup-email" className="auth-label">
-                  Email Address
+                <label htmlFor="email" className="auth-label">
+                  Email Address <span data-testid="required-asterisk">*</span>
                 </label>
                 <input
-                  id="signup-email"
+                  id="email"
                   name="email"
                   type="email"
                   placeholder="name@example.com"
                   autoComplete="email"
+                  required
+                  aria-required="true"
+                  onChange={() => clearFieldError('email')}
                   className="auth-input"
                 />
                 <AuthFieldError message={fieldErrors.email} />
               </div>
 
               <div>
-                <label htmlFor="signup-password" className="auth-label">
-                  Password
+                <label htmlFor="password" className="auth-label">
+                  Password <span data-testid="required-asterisk">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    id="signup-password"
+                    id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Create a strong password"
                     autoComplete="new-password"
+                    required
+                    aria-required="true"
+                    onChange={() => clearFieldError('password')}
                     className="auth-input pr-12"
                   />
                   <button
@@ -558,16 +650,19 @@ export default function LoginPanel() {
               </div>
 
               <div>
-                <label htmlFor="signup-confirm" className="auth-label">
-                  Confirm Password
+                <label htmlFor="confirmPassword" className="auth-label">
+                  Confirm Password <span data-testid="required-asterisk">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    id="signup-confirm"
+                    id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm your password"
                     autoComplete="new-password"
+                    required
+                    aria-required="true"
+                    onChange={() => clearFieldError('confirmPassword')}
                     className="auth-input pr-12"
                   />
                   <button
@@ -589,12 +684,22 @@ export default function LoginPanel() {
               <div className="mt-2 flex items-start gap-2.5">
                 <input
                   id="signup-terms"
+                  name="acceptTerms"
                   type="checkbox"
+                  required
+                  aria-required="true"
                   checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  onChange={(e) => {
+                    setAcceptTerms(e.target.checked);
+                    clearFieldError('acceptTerms');
+                  }}
                   className="mt-1 h-4 w-4 cursor-pointer rounded border-white/10 bg-white/5"
                 />
-                <label htmlFor="signup-terms" className="cursor-pointer select-none text-xs leading-relaxed text-white/55">
+                <label
+                  htmlFor="signup-terms"
+                  data-testid="accept-terms-text"
+                  className="cursor-pointer select-none text-xs leading-relaxed text-white/55"
+                >
                   I accept the{' '}
                   <Link href="/terms" target="_blank" className="text-white underline hover:opacity-90">
                     Terms of Service
@@ -603,7 +708,7 @@ export default function LoginPanel() {
                   <Link href="/privacy" target="_blank" className="text-white underline hover:opacity-90">
                     Privacy Policy
                   </Link>
-                  .
+                  . <span data-testid="required-asterisk">*</span>
                 </label>
               </div>
               <AuthFieldError message={fieldErrors.acceptTerms} />

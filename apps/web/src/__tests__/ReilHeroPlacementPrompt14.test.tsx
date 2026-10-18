@@ -38,7 +38,7 @@ describe('PROMPT 14 — Move the REIL Phase Block Above the Fold', () => {
   describe('3. Ordering, Visual Hierarchy & Coordination with Prompts 7 and 15', () => {
     it('places hero header text, CTAs, and visual product showcase in clean 2-column layout', () => {
       const h1Pos = heroHtml.indexOf('<h1');
-      const ctaPos = heroHtml.indexOf('href="/pricing"');
+      const ctaPos = heroHtml.indexOf('href="/signup"');
       const visualPos = heroHtml.indexOf('aria-roledescription="carousel"');
 
       // DOM order: H1 -> CTAs -> Visual

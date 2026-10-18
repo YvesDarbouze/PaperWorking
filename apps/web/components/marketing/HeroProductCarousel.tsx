@@ -243,7 +243,7 @@ export default function HeroProductCarousel() {
             {/* Top 5 Headline Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3.5">
               {/* Metric 1: NOI */}
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
+              <div className="rounded-none border border-white/[0.08] bg-white/[0.02] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
                   NOI (Annual)
                 </span>
@@ -256,7 +256,7 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Metric 2: Market Cap Rate */}
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
+              <div className="rounded-none border border-white/[0.08] bg-white/[0.02] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
                   Market Cap Rate
                 </span>
@@ -269,7 +269,7 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Metric 3: DSCR */}
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
+              <div className="rounded-none border border-white/[0.08] bg-white/[0.02] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
                   DSCR
                 </span>
@@ -282,7 +282,7 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Metric 4: Cash-on-Cash */}
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2.5">
+              <div className="rounded-none border border-white/[0.08] bg-white/[0.02] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 mb-0.5">
                   Cash-on-Cash
                 </span>
@@ -295,7 +295,7 @@ export default function HeroProductCarousel() {
               </div>
 
               {/* Metric 5: Levered IRR: 18.4% is verified by projected-irr.test.ts as the True DCF IRR for Apex Equity Fund I capital stack ($1.05M equity, $84k cash flow, $3.5M purchase, 5.4% appreciation) */}
-              <div className="col-span-2 sm:col-span-1 rounded-xl border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.04] p-2.5">
+              <div className="col-span-2 sm:col-span-1 rounded-none border border-[color:var(--color-primary)]/20 bg-[color:var(--color-primary)]/[0.04] p-2.5">
                 <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-[color:var(--color-primary)]/80 mb-0.5">
                   Projected IRR
                 </span>
@@ -309,7 +309,7 @@ export default function HeroProductCarousel() {
             </div>
 
             {/* Supporting Financial Engine Strip + Sparkline */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.015] px-3 py-2.5 mb-3.5">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 rounded-none border border-white/[0.06] bg-white/[0.015] px-3 py-2.5 mb-3.5">
               <div className="grid grid-cols-3 gap-3 text-left">
                 <div>
                   <span className="block font-[family-name:var(--font-jetbrains-mono)] text-[8px] uppercase tracking-wider text-white/40">
@@ -365,7 +365,7 @@ export default function HeroProductCarousel() {
             </div>
 
             {/* Per-Property Breakdown Table Excerpt */}
-            <div className="overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.015]">
+            <div className="overflow-hidden rounded-none border border-white/[0.06] bg-white/[0.015]">
               <div className="grid grid-cols-12 bg-white/[0.03] px-3 py-1.5 font-[family-name:var(--font-jetbrains-mono)] text-[8.5px] uppercase tracking-wider text-white/40 border-b border-white/[0.06]">
                 <span className="col-span-4">Property</span>
                 <span className="col-span-2 text-right">Units</span>

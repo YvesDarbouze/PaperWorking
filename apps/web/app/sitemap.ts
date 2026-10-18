@@ -11,6 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/support',
     '/support/glossary',
     '/support/metrics',
+    '/blog',
+    '/about',
+    '/careers',
+    '/cookies',
   ];
 
   return routes.map((route) => ({

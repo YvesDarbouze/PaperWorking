@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ChartLineUp, ArrowSquareOut, X, Table } from '@/components/icons/PhosphorIcons';
+import { useModalScrollLock } from './useModalScrollLock';
 
 export type TimePeriod = '30D' | '90D' | '1Y' | 'ALL';
 export type PhaseFilter = 'all' | 'acquisition' | 'fund' | 'hold' | 'exit';
@@ -134,6 +135,8 @@ export default function DashboardTrendDetailModal({
   const [viewMode, setViewMode] = useState<ViewMode>('chart');
   const modalRef = useRef<HTMLDivElement>(null);
 
+  useModalScrollLock(isOpen);
+
   useEffect(() => {
     if (!isOpen) {
       setIsExpanded(false);
@@ -205,7 +208,7 @@ export default function DashboardTrendDetailModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="trend-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md overscroll-contain"
     >
       <div
         ref={modalRef}
@@ -338,7 +341,7 @@ export default function DashboardTrendDetailModal({
         </div>
 
         {/* Modal Body: Chart or Table */}
-        <div className="mt-4 flex-1 overflow-y-auto pr-1">
+        <div className="mt-4 flex-1 overflow-y-auto overscroll-contain pr-1">
           {viewMode === 'chart' ? (
             <div data-testid="trend-chart-container" className="space-y-4">
               <div className="relative w-full rounded-none border border-border bg-card/60 p-4">

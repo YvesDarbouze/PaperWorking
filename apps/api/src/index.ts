@@ -29,6 +29,7 @@ export {
 export {
   handleSessionPost,
   handleSessionDelete,
+  isValidEmailAddress,
   type SessionPostBody,
   type SessionPostDeps,
   type SessionDeleteDeps,
@@ -1721,5 +1722,10 @@ export {
   type GetProjectUnderwritingFn,
   type SaveProjectUnderwritingFn,
 } from './routes/projects/underwriting/handler.js';
+export {
+  handleProjectContingenciesGet,
+  handleProjectContingenciesPost,
+  type ProjectContingenciesDeps,
+} from './routes/projects/contingencies/handler.js';
 
 export const API_APP_STATUS = 'phase-4aa' as const;

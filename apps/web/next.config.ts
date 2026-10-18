@@ -45,6 +45,8 @@ const nextConfig: NextConfig = {
       { source: '/dashboard/explore', destination: '/dashboard/deals', permanent: true },
       // Fallback redirect for deal detail paths under dashboard
       { source: '/dashboard/deals/:id', destination: '/marketplace/:id', permanent: false },
+      { source: '/dashboard/vendor-directory', destination: '/dashboard/marketplace', permanent: false },
+      { source: '/blogs', destination: '/blog', permanent: true },
     ];
   },
   async headers() {

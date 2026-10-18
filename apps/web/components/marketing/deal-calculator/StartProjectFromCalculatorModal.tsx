@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
 import { Folder, X, ChartLineUp, PencilSimple, RocketLaunch } from '@/components/icons/PhosphorIcons';
 import type { InvestmentStrategyType } from './StrategySelectorBar';
@@ -22,6 +22,7 @@ interface StartProjectFromCalculatorModalProps {
   cashRequired: number;
   persistedSnapshotId?: string | null;
   isCreatingProject: boolean;
+  creatingProjectTarget?: 'wizard' | 'workspace' | null;
   projectCreationError: string | null;
   onLaunchProjectWorkspace: () => void;
   onOpenProjectWizard: () => void;
@@ -44,11 +45,19 @@ export default function StartProjectFromCalculatorModal({
   cashRequired,
   persistedSnapshotId,
   isCreatingProject,
+  creatingProjectTarget = null,
   projectCreationError,
   onLaunchProjectWorkspace,
   onOpenProjectWizard,
 }: StartProjectFromCalculatorModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [clickedTarget, setClickedTarget] = useState<'wizard' | 'workspace' | null>(null);
+
+  useEffect(() => {
+    if (!isCreatingProject || !isOpen) {
+      setClickedTarget(null);
+    }
+  }, [isCreatingProject, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -61,6 +70,10 @@ export default function StartProjectFromCalculatorModal({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const isWizardLoading =
+    isCreatingProject && (creatingProjectTarget === 'wizard' || clickedTarget === 'wizard');
+  const isWorkspaceLoading = isCreatingProject && !isWizardLoading;
 
   const formatCurrency = (val: number | null | undefined) => {
     if (val === null || val === undefined || isNaN(val)) return 'N/A';
@@ -132,7 +145,8 @@ export default function StartProjectFromCalculatorModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-none border border-border text-muted-foreground hover:text-foreground hover:bg-accent min-h-[44px] min-w-[44px]"
+            disabled={isCreatingProject}
+            className="flex cursor-pointer h-9 w-9 items-center justify-center rounded-none border border-border text-muted-foreground hover:text-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] min-w-[44px]"
             aria-label="Close dialog"
           >
             <X size={18} />
@@ -230,13 +244,28 @@ export default function StartProjectFromCalculatorModal({
         <div className="border-t border-border pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <button
             type="button"
-            onClick={onOpenProjectWizard}
+            onClick={() => {
+              setClickedTarget('wizard');
+              onOpenProjectWizard();
+            }}
             disabled={isCreatingProject}
             data-testid="confirm-open-wizard-btn"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-none border border-border bg-muted/30 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted transition disabled:opacity-50 min-h-[44px]"
+            className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border border-border bg-muted/30 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]"
           >
-            <PencilSimple size={16} />
-            <span>Configure in Full Wizard</span>
+            {isWizardLoading ? (
+              <>
+                <span
+                  className="h-3.5 w-3.5 animate-spin rounded-none border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+                <span>Opening Wizard...</span>
+              </>
+            ) : (
+              <>
+                <PencilSimple size={16} />
+                <span>Configure in Full Wizard</span>
+              </>
+            )}
           </button>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
@@ -244,19 +273,34 @@ export default function StartProjectFromCalculatorModal({
               type="button"
               onClick={onClose}
               disabled={isCreatingProject}
-              className="w-full sm:w-auto rounded-none border border-border px-4 py-2.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition min-h-[44px]"
+              className="w-full sm:w-auto cursor-pointer rounded-none border border-border px-4 py-2.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]"
             >
               Cancel
             </button>
             <button
               type="button"
-              onClick={onLaunchProjectWorkspace}
+              onClick={() => {
+                setClickedTarget('workspace');
+                onLaunchProjectWorkspace();
+              }}
               disabled={isCreatingProject}
               data-testid="confirm-launch-project-btn"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:opacity-50 shadow-none min-h-[44px]"
+              className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:cursor-not-allowed disabled:opacity-50 shadow-none min-h-[44px]"
             >
-              <RocketLaunch size={16} />
-              <span>{isCreatingProject ? 'Creating Project Workspace...' : 'Launch Project Workspace'}</span>
+              {isWorkspaceLoading ? (
+                <>
+                  <span
+                    className="h-3.5 w-3.5 animate-spin rounded-none border-2 border-current border-t-transparent"
+                    aria-hidden="true"
+                  />
+                  <span>Creating Project Workspace...</span>
+                </>
+              ) : (
+                <>
+                  <RocketLaunch size={16} />
+                  <span>Launch Project Workspace</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -264,3 +308,4 @@ export default function StartProjectFromCalculatorModal({
     </div>
   );
 }
+

@@ -49,9 +49,13 @@ function SidebarLink({
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { navContext } = useAuth();
-  const primary = resolvePrimaryNav(navContext);
-  const account = resolveAccountNav(navContext);
+  const { navContext, profile } = useAuth();
+  const effectiveNavContext = navContext ?? {
+    accountType: profile?.accountType ?? 'investor',
+    subscriptionPlan: profile?.subscriptionPlan ?? 'Individual',
+  };
+  const primary = resolvePrimaryNav(effectiveNavContext);
+  const account = resolveAccountNav(effectiveNavContext);
 
   function handleNavigate(item: NavItem, event: MouseEvent) {
     if (!item.isLocked) return;

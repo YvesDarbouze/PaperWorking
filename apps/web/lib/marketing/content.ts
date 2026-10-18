@@ -33,7 +33,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Real Estate Glossary', href: '/support/glossary' },
       { label: 'The Playbook (33 Metrics)', href: '/support/metrics' },
       { label: 'Knowledge Base', href: '/help' },
-      { label: 'Blog', href: '/help' },
+      { label: 'Blog', href: '/blog' },
     ],
   },
   {
@@ -49,12 +49,12 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Company & Legal',
     links: [
-      { label: 'About', href: '/contact' },
-      { label: 'Careers', href: '/contact' },
+      { label: 'About', href: '/about' },
+      { label: 'Careers', href: '/careers' },
       { label: 'Contact', href: '/contact' },
       { label: 'Privacy', href: '/privacy' },
       { label: 'Terms', href: '/terms' },
-      { label: 'Cookies', href: '/privacy' },
+      { label: 'Cookies', href: '/cookies' },
     ],
   },
 ];
@@ -62,7 +62,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
 export const FOOTER_BOTTOM_LINKS: NavLink[] = [
   { label: 'Privacy', href: '/privacy' },
   { label: 'Terms', href: '/terms' },
-  { label: 'Cookies', href: '/privacy' },
+  { label: 'Cookies', href: '/cookies' },
 ];
 
 export const HERO_CONTENT = {

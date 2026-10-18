@@ -430,7 +430,7 @@ export default function DealDetailPageView({
   }, [basePurchasePrice, sensitivityCase]);
 
   // Deep-link to deal calculator
-  const calculatorUrl = `/#deal-calculator?deal=${encodeURIComponent(deal.slug)}&price=${deal.purchasePrice || 1250000}&roi=${targetIrr}`;
+  const calculatorUrl = `/deal-calculator?deal=${encodeURIComponent(deal.slug)}&address=${encodeURIComponent(deal.address || name || '1247 Elm Street, Austin, TX 78702')}&price=${calculatorResults.purchasePrice || deal.purchasePrice || 1250000}&arv=${calculatorResults.arv || Math.round((deal.purchasePrice || 1250000) * 1.25)}&rehab=${calculatorResults.rehabBudget || 0}&roi=${targetIrr}`;
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-[#fdfffc] pb-24">

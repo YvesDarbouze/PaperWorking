@@ -17,21 +17,29 @@ export default function NotFound() {
 
         <div className="space-y-1.5">
           <h1 className="text-lg font-bold text-foreground tracking-tight">
-            This deal is no longer available
+            Page not found
           </h1>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            It may have been fully funded, withdrawn, or the link is incorrect.
+            The page you requested does not exist or may have moved to a new location.
           </p>
         </div>
 
-        <div className="pt-3">
+        <div className="flex flex-col gap-2 pt-3 sm:flex-row">
           <Button
-            href="/dashboard/deals"
+            href="/"
+            variant="primary"
+            size="md"
+            className="w-full justify-center rounded-none min-h-[44px]"
+          >
+            Return Home
+          </Button>
+          <Button
+            href="/blog"
             variant="secondary"
             size="md"
-            className="w-full justify-center rounded-none"
+            className="w-full justify-center rounded-none min-h-[44px]"
           >
-            Browse Deals Marketplace →
+            Browse Blog
           </Button>
         </div>
       </div>

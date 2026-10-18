@@ -382,11 +382,17 @@ export default function PortfolioReportsPanel({
       </div>
 
       {/* Control Bar: Scope, Period Granularity, Fiscal Year, Data Source */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-none border border-border bg-card p-4 shadow-sm ring-1 ring-foreground/10">
-        <div className="flex flex-wrap items-center gap-4">
+      <div
+        data-testid="reports-control-bar"
+        className="flex flex-wrap items-center justify-between gap-4 rounded-none border border-border bg-card p-4 shadow-sm ring-1 ring-foreground/10"
+      >
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-4 lg:w-auto">
           {/* Scope Selector */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="project-scope-select" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <div
+            data-testid="scope-selector-group"
+            className="flex w-full min-w-0 items-center gap-2 sm:w-auto"
+          >
+            <label htmlFor="project-scope-select" className="shrink-0 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Scope
             </label>
             <select
@@ -394,7 +400,7 @@ export default function PortfolioReportsPanel({
               data-testid="project-filter"
               value={projectScope}
               onChange={(e) => setProjectScope(e.target.value)}
-              className="h-10 cursor-pointer rounded-none border border-input bg-background px-3 text-base md:text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-h-[44px]"
+              className="h-10 min-h-[44px] w-full min-w-0 max-w-full flex-1 cursor-pointer truncate rounded-none border border-input bg-background px-3 text-base font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-ring sm:w-auto sm:max-w-[280px] sm:flex-none md:max-w-[340px] md:text-xs"
             >
               <option value={ALL_PROJECTS}>Portfolio Aggregate ({projects.length})</option>
               {projects.map((p) => (
@@ -454,9 +460,9 @@ export default function PortfolioReportsPanel({
         </div>
 
         {/* Data Source Indicator: No dead Actual toggle per Prompt R2 */}
-        <div className="flex items-center gap-2 rounded-none border border-border bg-muted/50 px-3 py-1.5 text-[11px] text-muted-foreground min-h-[44px]">
-          <span className="h-2 w-2 rounded-none bg-foreground" />
-          <span>Data Source: <strong className="text-foreground">Projected (underwriting model)</strong></span>
+        <div className="flex w-full max-w-full items-center gap-2 rounded-none border border-border bg-muted/50 px-3 py-1.5 text-[11px] text-muted-foreground min-h-[44px] sm:w-auto">
+          <span className="h-2 w-2 shrink-0 rounded-none bg-foreground" />
+          <span className="min-w-0 break-words">Data Source: <strong className="text-foreground">Projected (underwriting model)</strong></span>
         </div>
       </div>
 

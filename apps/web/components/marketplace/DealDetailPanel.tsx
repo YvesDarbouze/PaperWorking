@@ -116,7 +116,7 @@ export default function DealDetailPanel({ slug }: { slug: string }) {
 
           <Link
             href={`/dashboard?linkDeal=${encodeURIComponent(deal.slug)}`}
-            className="inline-flex items-center gap-1.5 rounded-none bg-[var(--accent)] px-3 py-1.5 text-xs font-semibold text-[#0a0a0f] transition hover:brightness-110 min-h-[44px]"
+            className="inline-flex items-center gap-1.5 rounded-none bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-950 transition hover:bg-white min-h-[44px]"
           >
             <FolderOpen className="h-4 w-4" />
             Open Project Workspace

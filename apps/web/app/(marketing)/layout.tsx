@@ -1,18 +1,32 @@
-import MarketingFooter from '@/components/marketing/MarketingFooter';
-import MarketingHeader from '@/components/marketing/MarketingHeader';
-import MarketingBottomNav from '@/components/marketing/MarketingBottomNav';
-import StickyMobileCta from '@/components/marketing/StickyMobileCta';
+import { cookies } from 'next/headers';
+import { isValidSessionToken } from '@paperworking/api';
+import MarketingLayoutShell from '@/components/marketing/MarketingLayoutShell';
+import { ACCT_COOKIE, SESSION_COOKIE } from '@/lib/auth/session-cookies';
+import { verifySessionTokenEdge } from '@/lib/auth/session-edge';
 
-export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
+  let isSessionValid = false;
+  let accountType = 'investor';
+
+  try {
+    const cookieStore = await cookies();
+    const session = cookieStore.get(SESSION_COOKIE)?.value;
+    accountType = cookieStore.get(ACCT_COOKIE)?.value || 'investor';
+    if (session) {
+      const secret = process.env.SESSION_SECRET || 'paperworking_session_secure_key_2026_prod';
+      isSessionValid =
+        isValidSessionToken(session) || (await verifySessionTokenEdge(session, secret));
+    }
+  } catch {
+    // Non-request context fallback
+  }
+
   return (
-    <div className="marketing-shell min-h-screen text-foreground bg-background">
-      <MarketingHeader />
-      <main className="relative pt-16 md:pt-[72px] pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
-        {children}
-      </main>
-      <MarketingFooter />
-      <StickyMobileCta />
-      <MarketingBottomNav />
-    </div>
+    <MarketingLayoutShell
+      initialAuthenticated={isSessionValid}
+      initialAccountType={accountType}
+    >
+      {children}
+    </MarketingLayoutShell>
   );
 }

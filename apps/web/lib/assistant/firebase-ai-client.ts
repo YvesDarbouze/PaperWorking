@@ -21,6 +21,8 @@ import {
 import { AVA_KNOWLEDGE_BASE } from './knowledge';
 import { containsUrgencyKeywords } from './escalation';
 import { sanitizePepperOutput } from '../support/content-filter';
+import { CANONICAL_FAQ_SEED, CANONICAL_GLOSSARY_SEED } from '../support/seed-data';
+
 
 export interface PepperStreamOptions {
   message: string;
@@ -77,6 +79,15 @@ export function isFirebaseAiConfigured(): boolean {
     return false;
   }
 
+  const projectId =
+    process.env.FIREBASE_ADMIN_PROJECT_ID ||
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
+    'demo-paperworking';
+
+  if (projectId === 'demo-paperworking') {
+    return false;
+  }
+
   return true;
 }
 
@@ -129,6 +140,45 @@ export function getPepperGenerativeModel(
   });
 }
 
+function isExplicitPricingOrTrialQuery(lower: string): boolean {
+  if (
+    lower.includes('holding cost') ||
+    lower.includes('closing cost') ||
+    lower.includes('rehab cost') ||
+    lower.includes('cost basis') ||
+    lower.includes('cap rate on cost') ||
+    lower.includes('margin on cost') ||
+    lower.includes('loan-to-cost') ||
+    lower.includes('hold phase') ||
+    lower.includes('fund phase') ||
+    lower.includes('acquisition phase') ||
+    lower.includes('exit phase')
+  ) {
+    return false;
+  }
+
+  return (
+    lower.includes('trial') ||
+    lower.includes('free trial') ||
+    lower.includes('pricing') ||
+    lower.includes('subscription') ||
+    lower.includes('billing') ||
+    /\b(your plans?|pricing plans?|subscription plans?|billing plans?|how much does paperworking cost|what does paperworking cost)\b/i.test(
+      lower,
+    )
+  );
+}
+
+function isWorkspaceSetupQuery(lower: string): boolean {
+  return (
+    lower.includes('workspace') ||
+    lower.includes('project workspace') ||
+    lower.includes('create a project') ||
+    lower.includes('manage projects') ||
+    (lower.includes('set up') && lower.includes('project'))
+  );
+}
+
 /**
  * Synthesizes a high-fidelity, grounded answer strictly from PaperWorking's
  * verified knowledge modules, FAQs, glossary, and core copy.
@@ -147,34 +197,25 @@ export function synthesizeGroundedKnowledgeResponse(
     (lower.includes('metric') && (lower.includes('what') || lower.includes('how') || lower.includes('playbook')))
   ) {
     const faq = retrievedContext?.matchedFaqs?.find((f) => f.id === 'faq-deal-calculator');
-    const answer = faq?.answer ||
+    const answer =
+      faq?.answer ||
       'PaperWorking tracks 33 institutional metrics across the Real Estate Investment Lifecycle (REIL).';
     return `${answer}\n\nKey metrics include ARV, Cap Rate, Cash-on-Cash Return, Levered & Unlevered IRR, NOI, and Debt Service Coverage Ratio (DSCR).\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "How does the Deal Calculator compute metrics across REIL?")*`;
   }
 
-  // 2. 14-Day Free Trial / Pricing / Policies
-  if (
-    lower.includes('trial') ||
-    lower.includes('free trial') ||
-    lower.includes('pricing') ||
-    lower.includes('subscription') ||
-    lower.includes('cost') ||
-    lower.includes('plans')
-  ) {
+  // 2. 14-Day Free Trial / Pricing / Policies (strictly scoped so operational "holding costs" / "cost basis" never match)
+  if (isExplicitPricingOrTrialQuery(lower)) {
     const faq = retrievedContext?.matchedFaqs?.find((f) => f.id === 'faq-pricing-plans');
+    const pricingBreakdown = `PaperWorking offers three transparent pricing plans:\n- **Investor** (${AVA_CONFIG.pricing.investor.billingText})\n- **Investment Team** (${AVA_CONFIG.pricing.investmentTeam.billingText})\n- **Vendor** (${AVA_CONFIG.pricing.vendor.billingText})\n\nAll accounts include an unrestricted 14-day free trial. Your card is not charged until day 15, and you can cancel anytime with one click at Dashboard → Settings → Billing.`;
     const baseAnswer =
-      faq?.answer ||
-      `PaperWorking offers three transparent pricing plans:\n- **Investor** (${AVA_CONFIG.pricing.investor.billingText})\n- **Investment Team** (${AVA_CONFIG.pricing.investmentTeam.billingText})\n- **Vendor** (${AVA_CONFIG.pricing.vendor.billingText})\n\nAll accounts include an unrestricted 14-day free trial. Your card is not charged until day 15, and you can cancel anytime with one click at Dashboard → Settings → Billing.`;
+      faq?.answer && !faq.answer.includes(AVA_CONFIG.pricing.investor.billingText)
+        ? `${faq.answer}\n\n${pricingBreakdown}`
+        : faq?.answer || pricingBreakdown;
     return `${baseAnswer}\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "What is included in the 14-day free trial?")*`;
   }
 
   // 3. Workspace / Projects Setup
-  if (
-    lower.includes('workspace') ||
-    lower.includes('set up') ||
-    lower.includes('project workspace') ||
-    lower.includes('create a project')
-  ) {
+  if (isWorkspaceSetupQuery(lower)) {
     const faq = retrievedContext?.matchedFaqs?.find((f) => f.id === 'faq-projects');
     const answer =
       faq?.answer ||
@@ -182,29 +223,58 @@ export function synthesizeGroundedKnowledgeResponse(
     return `${answer}\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "How do I create and manage projects in PaperWorking?")*`;
   }
 
-  // 4. Exact FAQ Match from RAG Retrieval
-  if (retrievedContext?.matchedFaqs && retrievedContext.matchedFaqs.length > 0) {
-    const topFaq = retrievedContext.matchedFaqs[0];
+  // 4. Exact or Ranked FAQ Match from RAG Retrieval (or canonical seed fallback when called directly)
+  const effectiveFaqs =
+    retrievedContext?.matchedFaqs && retrievedContext.matchedFaqs.length > 0
+      ? retrievedContext.matchedFaqs
+      : CANONICAL_FAQ_SEED.filter((faq) => {
+          const qLower = faq.question.toLowerCase();
+          return (
+            lower.includes(qLower) ||
+            (lower.length >= 8 && qLower.includes(lower)) ||
+            (lower.includes('hold phase') && faq.id === 'faq-hold') ||
+            (lower.includes('fund phase') && faq.id === 'faq-fund') ||
+            (lower.includes('acquisition phase') && faq.id === 'faq-acquisition') ||
+            (lower.includes('exit phase') && faq.id === 'faq-exit')
+          );
+        });
+
+  const effectiveTerms =
+    retrievedContext?.matchedTerms && retrievedContext.matchedTerms.length > 0
+      ? retrievedContext.matchedTerms
+      : CANONICAL_GLOSSARY_SEED.filter((term) => {
+          const termLower = term.term.toLowerCase();
+          const simpleTerm = termLower.replace(/\s*\([^)]*\)/g, '').trim();
+          return lower.includes(termLower) || (simpleTerm.length >= 4 && lower.includes(simpleTerm));
+        });
+
+  if (effectiveFaqs.length > 0) {
+    const topFaq = effectiveFaqs[0];
     let response = `${topFaq.answer}\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "${topFaq.question}")*`;
-    if (retrievedContext.matchedTerms && retrievedContext.matchedTerms.length > 0) {
-      const topTerm = retrievedContext.matchedTerms[0];
+    if (effectiveTerms.length > 0) {
+      const topTerm = effectiveTerms[0];
       response += `\n\nRelated Definition: **${topTerm.term}** — ${topTerm.definition}\n\n*Source: PaperWorking Glossary ("${topTerm.term}")*`;
     }
     return response;
   }
 
   // 5. Exact Glossary Term Match from RAG Retrieval
-  if (retrievedContext?.matchedTerms && retrievedContext.matchedTerms.length > 0) {
-    const topTerm = retrievedContext.matchedTerms[0];
+  if (effectiveTerms.length > 0) {
+    const topTerm = effectiveTerms[0];
     return `**${topTerm.term}**: ${topTerm.definition}\n\n*Source: PaperWorking Glossary ("${topTerm.term}")*`;
   }
 
-  // 6. Structured Knowledge Base Topic Matches
+  // 6. Structured Knowledge Base Topic Matches (including embedded topic FAQs and keyword matching)
   for (const topic of AVA_KNOWLEDGE_BASE) {
     const titleMatch = lower.includes(topic.title.toLowerCase());
     const idMatch = lower.includes(topic.id.replace(/-/g, ' '));
-    if (titleMatch || idMatch) {
-      return `**${topic.title}**\n\n${topic.summary}\n\n${topic.details.map((d) => `• ${d}`).join('\n')}\n\n*Source: PaperWorking Platform Knowledge Base ("${topic.title}")*`;
+    const embeddedFaqMatch = topic.frequentlyAskedQuestions?.find((f) => {
+      const fq = f.question.toLowerCase();
+      return lower.includes(fq) || (lower.length >= 8 && fq.includes(lower));
+    });
+    if (titleMatch || idMatch || embeddedFaqMatch) {
+      const faqText = embeddedFaqMatch ? `\n\n**${embeddedFaqMatch.question}**\n${embeddedFaqMatch.answer}` : '';
+      return `**${topic.title}**\n\n${topic.summary}\n\n${topic.details.map((d) => `• ${d}`).join('\n')}${faqText}\n\n*Source: PaperWorking Platform Knowledge Base ("${topic.title}")*`;
     }
   }
 
@@ -250,18 +320,37 @@ export async function streamPepperResponse(
 
       return new ReadableStream({
         async start(controller) {
+          let emittedAny = false;
           try {
             for await (const chunk of result.stream) {
               const text = chunk.text();
               if (text) {
                 const safeChunk = sanitizePepperOutput(text);
-                controller.enqueue(encoder.encode(safeChunk));
+                if (safeChunk) {
+                  emittedAny = true;
+                  controller.enqueue(encoder.encode(safeChunk));
+                }
               }
+            }
+            if (!emittedAny) {
+              const fallbackText = sanitizePepperOutput(
+                synthesizeGroundedKnowledgeResponse(message, retrievedContext, userContext),
+              );
+              controller.enqueue(encoder.encode(fallbackText));
             }
             controller.close();
           } catch (streamErr) {
-            console.error('[Firebase AI Logic Stream Error]:', streamErr);
-            controller.error(streamErr);
+            console.warn(
+              '[Firebase AI Logic Stream Warning]: Stream interrupted, falling back to grounded knowledge engine.',
+              streamErr,
+            );
+            if (!emittedAny) {
+              const fallbackText = sanitizePepperOutput(
+                synthesizeGroundedKnowledgeResponse(message, retrievedContext, userContext),
+              );
+              controller.enqueue(encoder.encode(fallbackText));
+            }
+            controller.close();
           }
         },
       });
@@ -389,13 +478,7 @@ export async function generatePepperResponse(
   }
 
   // 3. Pricing and Plans
-  if (
-    lowerMsg.includes('pricing') ||
-    lowerMsg.includes('how much') ||
-    lowerMsg.includes('plans') ||
-    lowerMsg.includes('subscription') ||
-    lowerMsg.includes('trial')
-  ) {
+  if (isExplicitPricingOrTrialQuery(lowerMsg) || lowerMsg.includes('how much')) {
     return {
       text: `PaperWorking offers transparent pricing designed for serious real estate investors:\n\n- **Investor** (${AVA_CONFIG.pricing.investor.billingText}): Solo plan with full 4-phase lifecycle pipeline, Deal Calculator, 33 KPIs, and a dedicated read-only CPA collaborator seat.\n- **Investment Team** (${AVA_CONFIG.pricing.investmentTeam.billingText}): Up to 10 user accounts, role-based permissions, automated Google Drive folder provisioning, and priority emergency closing support.\n- **Vendor** (${AVA_CONFIG.pricing.vendor.billingText}): For general contractors and trades to view assigned scopes and submit scoped draw requests.\n\nEvery subscription starts with a **14-day free trial** (card not charged until day 15), switch between annual/monthly anytime, with self-serve cancellation.`,
       actionLabel: 'View Pricing & Start Trial',
@@ -438,3 +521,4 @@ export async function generatePepperResponse(
     usedLiveModel: false,
   };
 }
+

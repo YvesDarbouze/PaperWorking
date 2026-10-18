@@ -72,7 +72,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-border-subtle bg-surface p-8 text-sm text-text-secondary">
+      <div className="rounded-none border border-border-subtle bg-surface p-8 text-sm text-text-secondary">
         Loading project report…
       </div>
     );
@@ -80,7 +80,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
 
   if (error || !payload) {
     return (
-      <div className="rounded-2xl border border-danger/30 bg-danger/10 p-6 text-sm text-danger">
+      <div className="rounded-none border border-danger/30 bg-danger/10 p-6 text-sm text-danger">
         {error ?? 'Report unavailable'}
       </div>
     );
@@ -107,7 +107,7 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
             key={option.value}
             type="button"
             onClick={() => setPeriod(option.value)}
-            className={`rounded-full px-4 py-2 text-sm transition ${
+            className={`min-h-[44px] rounded-none px-4 py-2 text-sm transition ${
               period === option.value
                 ? 'bg-accent text-surface font-semibold'
                 : 'border border-border-subtle text-text-secondary hover:bg-elevated'
@@ -125,14 +125,14 @@ export default function ProjectReportsPanel({ projectId }: { projectId: string }
           { label: 'Revenue', value: formatReportMoney(payload.totals.totalRevenue) },
           { label: 'Net flow', value: formatReportMoney(payload.totals.netFlow) },
         ].map((item) => (
-          <article key={item.label} className="rounded-2xl border border-border-subtle bg-surface p-4">
+          <article key={item.label} className="rounded-none border border-border-subtle bg-surface p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-text-muted">{item.label}</p>
             <p className="mt-2 text-xl font-semibold text-text-primary">{item.value}</p>
           </article>
         ))}
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-border-subtle">
+      <section className="overflow-hidden rounded-none border border-border-subtle">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-surface text-text-muted border-b border-border-subtle">
             <tr>

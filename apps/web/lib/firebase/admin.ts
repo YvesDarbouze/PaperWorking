@@ -40,6 +40,7 @@ function initializeAdminApp(): App {
 
   const projectId =
     process.env.FIREBASE_ADMIN_PROJECT_ID ||
+    process.env.FIREBASE_PROJECT_ID ||
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
     process.env.GOOGLE_CLOUD_PROJECT ||
     'demo-paperworking';
@@ -82,8 +83,10 @@ function initializeAdminApp(): App {
     process.env.GCLOUD_PROJECT
   );
 
-  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  const rawPrivateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+  const clientEmail =
+    process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL;
+  const rawPrivateKey =
+    process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY;
 
   // If explicit service account credentials are provided, use cert()
   if (clientEmail && rawPrivateKey && isValidPrivateKey(rawPrivateKey)) {
@@ -138,12 +141,20 @@ export function getAdminFirestore(): Firestore {
     const app = getAdminApp();
     adminFirestoreInstance = getFirestore(app);
 
-    // If emulator host is specified, ensure settings ignore SSL
-    if (process.env.FIRESTORE_EMULATOR_HOST) {
-      adminFirestoreInstance.settings({
-        host: process.env.FIRESTORE_EMULATOR_HOST,
-        ssl: false,
-      });
+    try {
+      if (process.env.FIRESTORE_EMULATOR_HOST) {
+        adminFirestoreInstance.settings({
+          host: process.env.FIRESTORE_EMULATOR_HOST,
+          ssl: false,
+          ignoreUndefinedProperties: true,
+        });
+      } else {
+        adminFirestoreInstance.settings({
+          ignoreUndefinedProperties: true,
+        });
+      }
+    } catch {
+      // Firestore settings may already be initialized on hot reload
     }
   }
   return adminFirestoreInstance;
@@ -189,6 +200,7 @@ export function shouldAttemptFirestore(): boolean {
   return Boolean(
     process.env.FIRESTORE_EMULATOR_HOST ||
     isValidPrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY) ||
+    isValidPrivateKey(process.env.FIREBASE_PRIVATE_KEY) ||
     process.env.FIRESTORE_EMULATOR_RUNNING === 'true' ||
     (process.env.NODE_ENV === 'production' && isHostedRuntime)
   );

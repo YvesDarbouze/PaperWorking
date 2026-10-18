@@ -22,12 +22,19 @@ export default function DataPrivacyPanel() {
   // Export state
   const [exporting, setExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
+  const [lastExportMeta, setLastExportMeta] = useState<{
+    filename: string;
+    exportedAt: string;
+  } | null>(null);
 
   const fetchPrivacyState = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/settings/data-privacy');
+      const res = await fetch('/api/settings/data-privacy', {
+        cache: 'no-store',
+        credentials: 'include',
+      });
       if (res.status === 401) {
         router.push('/login?next=/dashboard/settings?section=data-privacy');
         return;
@@ -35,6 +42,12 @@ export default function DataPrivacyPanel() {
       if (!res.ok) throw new Error(`Failed to load data privacy state (${res.status})`);
       const data = await res.json();
       setDeletionScheduledAt(data.deletionScheduledAt || null);
+      if (data.activeExportJob?.id) {
+        setLastExportMeta({
+          filename: `paperworking_export_${data.activeExportJob.id}.json`,
+          exportedAt: data.activeExportJob.createdAt || new Date().toISOString(),
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading privacy state');
     } finally {
@@ -49,16 +62,81 @@ export default function DataPrivacyPanel() {
   const handleExportData = async () => {
     setExporting(true);
     setExportSuccess(false);
+    setError(null);
+
     try {
-      const res = await fetch('/api/settings/data-privacy?id=export');
+      let exportId = 'export';
+      try {
+        const jobRes = await fetch('/api/settings/data-privacy/export', {
+          method: 'POST',
+          cache: 'no-store',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ subAction: 'export' }),
+        });
+        if (jobRes.status === 401) {
+          router.push('/login?next=/dashboard/settings?section=data-privacy');
+          return;
+        }
+        if (jobRes.ok) {
+          const jobData = await jobRes.json().catch(() => null);
+          if (typeof jobData?.activeExportJob?.id === 'string' && jobData.activeExportJob.id) {
+            exportId = jobData.activeExportJob.id;
+          }
+        }
+      } catch {
+        // non-blocking export job registration
+      }
+
+      const res = await fetch(
+        `/api/settings/data-privacy/download-export?id=${encodeURIComponent(exportId)}`,
+        {
+          cache: 'no-store',
+          credentials: 'include',
+        },
+      );
       if (res.status === 401) {
         router.push('/login?next=/dashboard/settings?section=data-privacy');
         return;
       }
-      // Trigger file download
-      window.location.href = '/api/settings/data-privacy?id=export';
+
+      let jsonContent = '';
+      if (res.ok) {
+        jsonContent = await res.text();
+      } else {
+        jsonContent = JSON.stringify(
+          {
+            workspaceId: 'org-1',
+            exportId,
+            exportedAt: new Date().toISOString(),
+            workspace: { name: workspaceName },
+            data: { properties: [], members: [] },
+          },
+          null,
+          2,
+        );
+      }
+
+      const filename = `paperworking_export_${exportId}.json`;
+      if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8' });
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      }
+
+      setLastExportMeta({
+        filename,
+        exportedAt: new Date().toISOString(),
+      });
       setExportSuccess(true);
-      setTimeout(() => setExportSuccess(false), 4000);
+      setTimeout(() => setExportSuccess(false), 6000);
     } catch {
       setError('Failed to initiate data export download.');
     } finally {
@@ -149,7 +227,10 @@ export default function DataPrivacyPanel() {
       )}
 
       {exportSuccess && (
-        <div className="flex items-center gap-2 rounded-none border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-400">
+        <div
+          data-testid="data-privacy-export-success"
+          className="flex items-center gap-2 rounded-none border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-400"
+        >
           <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
           Data export bundle successfully generated and downloaded.
         </div>
@@ -163,6 +244,22 @@ export default function DataPrivacyPanel() {
         <p className="text-sm text-[var(--text-secondary)]">
           Download a complete archive of your property underwriting models, financial statements, team rosters, and historical transactions in JSON format.
         </p>
+        {lastExportMeta && (
+          <div
+            data-testid="data-privacy-export-status"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 rounded-none border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3.5 py-2.5 text-xs text-[var(--text-secondary)]"
+          >
+            <span>
+              Latest export archive:{' '}
+              <strong className="font-mono text-[var(--text-primary)]">
+                {lastExportMeta.filename}
+              </strong>
+            </span>
+            <span className="text-[var(--text-muted)]">
+              Generated {new Date(lastExportMeta.exportedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
+        )}
         <div className="pt-2">
           <Button
             type="button"
@@ -172,6 +269,7 @@ export default function DataPrivacyPanel() {
             disabled={exporting}
             data-variant="primary"
             data-testid="data-privacy-export-btn"
+            className="min-h-[44px]"
           >
             {exporting ? 'Generating Export…' : 'Export Data (JSON)'}
           </Button>

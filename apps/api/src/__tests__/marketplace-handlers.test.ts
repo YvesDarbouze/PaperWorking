@@ -78,6 +78,19 @@ describe('marketplace route handlers', () => {
     expect(result.status).toBe(200);
     expect(result.body).toEqual({ following: true, changed: true });
   });
+
+  it('Bug_06 Regression: POST /api/marketplace/investors/follow allows following any directory card including when targetUid matches auth.uid', async () => {
+    const result = await handleMarketplaceInvestorsFollowPost(
+      { targetUid: adminAuth.uid, follow: true },
+      {
+        requireAuth: async () => adminAuth,
+        updateFollow: async () => ({ following: true, changed: true }),
+      },
+    );
+
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual({ following: true, changed: true });
+  });
 });
 
 describe('deals route handlers', () => {

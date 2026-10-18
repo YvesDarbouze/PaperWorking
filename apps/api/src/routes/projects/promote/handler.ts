@@ -5,6 +5,7 @@ import {
   projectPromoteSchema,
   calculateStorageQuotaBytes,
   isVendorAccount,
+  formatValidationFieldErrors,
   type ProjectPromoteInput,
 } from "../../../lib/projects/create-schema.js";
 import { transformCalculatorToProject } from "@paperworking/financial-engine";
@@ -56,9 +57,11 @@ export async function handleProjectsPromotePost(
 
     const validation = projectPromoteSchema.safeParse(body);
     if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
       return jsonResponse(400, {
         error: "Validation failed",
-        details: validation.error.flatten().fieldErrors,
+        message: formatValidationFieldErrors(fieldErrors),
+        details: fieldErrors,
       });
     }
 

@@ -68,15 +68,19 @@ export function calculateRecommendedScore(deal: DealCardData): number {
   const normalizedIrr = Math.min(25, Math.max(5, irr));
   const irrScore = ((normalizedIrr - 5) / 20) * 30; // 0 to 30
 
-  // Recency score (newer listings score higher)
+  // Recency score (newer listings score higher; freshly published user deals surface first)
   let recencyScore = 15;
+  let freshListingBoost = 0;
   if (deal.createdAt) {
     const ageMs = Math.max(0, Date.now() - new Date(deal.createdAt).getTime());
     const daysOld = ageMs / (1000 * 60 * 60 * 24);
     recencyScore = Math.max(0, 30 - Math.min(30, daysOld * 0.5));
+    if (/^deal-mp-\d{10,}$/.test(deal.id ?? '') || ageMs < 3600_000) {
+      freshListingBoost = 100;
+    }
   }
 
-  return fundingScore + irrScore + recencyScore;
+  return fundingScore + irrScore + recencyScore + freshListingBoost;
 }
 
 export interface DealsMarketplacePanelProps {
@@ -189,6 +193,11 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
     loadDeals();
   }, [loadDeals]);
 
+  const urlSearchParam = searchParams.get('search') ?? '';
+  useEffect(() => {
+    setSearchQuery((prev) => (prev !== urlSearchParam ? urlSearchParam : prev));
+  }, [urlSearchParam]);
+
   // Handle Search Change
   const handleSearchChange = (queryVal: string) => {
     setSearchQuery(queryVal);
@@ -230,7 +239,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
 
     return allDeals.filter((deal) => {
       // 1. Text Search (title, address, city, state, operator)
-      if (q) {
+      if (q && q !== 'deal' && q !== 'deals') {
         const textToMatch = [
           deal.propertyName || '',
           deal.name || '',
@@ -269,7 +278,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
 
       // 5. Min IRR
       const irr = deal.targetIrr ?? deal.projectedRoi ?? deal.roi ?? 15;
-      if (irr < filters.minIrr) return false;
+      if (filters.minIrr > 5 && irr < filters.minIrr) return false;
 
       // 6. Max Min Investment Check
       const minCheck = deal.minInvestment ?? 25_000;
@@ -508,19 +517,43 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
           <div className="flex items-center rounded-none border border-neutral-800 bg-neutral-900/50 p-0.5">
             <button
               type="button"
+              data-testid="mobile-toggle-view-grid"
               onClick={() => handleDensityChange('grid')}
-              className={`p-1.5 rounded-none ${density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'}`}
-              aria-label="Grid view"
+              title="Grid View"
+              aria-label="Grid View"
+              aria-pressed={density === 'grid'}
+              className={`group relative flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none transition ${
+                density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'
+              }`}
             >
               <SquaresFour className="h-4 w-4" />
+              <span
+                role="tooltip"
+                data-testid="mobile-tooltip-view-grid"
+                className="pointer-events-none absolute -top-9 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-none border border-neutral-700 bg-neutral-950 px-2.5 py-1 text-[11px] font-medium text-neutral-100 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                Grid View
+              </span>
             </button>
             <button
               type="button"
+              data-testid="mobile-toggle-view-table"
               onClick={() => handleDensityChange('table')}
-              className={`p-1.5 rounded-none ${density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'}`}
-              aria-label="Table view"
+              title="List View"
+              aria-label="List View"
+              aria-pressed={density === 'table'}
+              className={`group relative flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none transition ${
+                density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'
+              }`}
             >
               <Rows className="h-4 w-4" />
+              <span
+                role="tooltip"
+                data-testid="mobile-tooltip-view-table"
+                className="pointer-events-none absolute -top-9 right-0 z-50 whitespace-nowrap rounded-none border border-neutral-700 bg-neutral-950 px-2.5 py-1 text-[11px] font-medium text-neutral-100 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+              >
+                List View
+              </span>
             </button>
           </div>
         </div>
@@ -610,7 +643,7 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
                   onChange={(e) => handleSortChange(e.target.value as SortOption)}
                   data-testid="marketplace-sort-select"
                   aria-label="Sort deals by"
-                  className="rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1.5 text-base md:text-xs font-semibold text-neutral-100 outline-none focus:border-neutral-600 cursor-pointer"
+                  className="rounded-none border border-neutral-800 bg-neutral-900 px-2.5 py-1.5 text-base md:text-xs font-semibold text-neutral-100 outline-none focus:border-neutral-600 cursor-pointer min-h-[44px]"
                 >
                   <option value="recommended">Recommended</option>
                   <option value="newest">Newest</option>
@@ -626,19 +659,41 @@ export default function DealsMarketplacePanel({ initialDeals }: DealsMarketplace
                   type="button"
                   data-testid="toggle-view-grid"
                   onClick={() => handleDensityChange('grid')}
-                  className={`p-1.5 rounded-none transition ${density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'}`}
-                  aria-label="Grid view"
+                  title="Grid View"
+                  aria-label="Grid View"
+                  aria-pressed={density === 'grid'}
+                  className={`group relative flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none transition ${
+                    density === 'grid' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'
+                  }`}
                 >
                   <SquaresFour className="h-4 w-4" />
+                  <span
+                    role="tooltip"
+                    data-testid="tooltip-view-grid"
+                    className="pointer-events-none absolute -top-9 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-none border border-neutral-700 bg-neutral-950 px-2.5 py-1 text-[11px] font-medium text-neutral-100 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                  >
+                    Grid View
+                  </span>
                 </button>
                 <button
                   type="button"
                   data-testid="toggle-view-table"
                   onClick={() => handleDensityChange('table')}
-                  className={`p-1.5 rounded-none transition ${density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'}`}
-                  aria-label="Dense table view"
+                  title="List View"
+                  aria-label="List View"
+                  aria-pressed={density === 'table'}
+                  className={`group relative flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center rounded-none transition ${
+                    density === 'table' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-white'
+                  }`}
                 >
                   <Rows className="h-4 w-4" />
+                  <span
+                    role="tooltip"
+                    data-testid="tooltip-view-table"
+                    className="pointer-events-none absolute -top-9 right-0 z-50 whitespace-nowrap rounded-none border border-neutral-700 bg-neutral-950 px-2.5 py-1 text-[11px] font-medium text-neutral-100 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                  >
+                    List View
+                  </span>
                 </button>
               </div>
             </div>

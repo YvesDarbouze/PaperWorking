@@ -27,39 +27,39 @@ export function FinancialStatementGrid({
   return (
     <div
       data-testid={testId}
-      className="flex flex-col rounded-2xl border border-border-subtle bg-surface/60 shadow-lg backdrop-blur-md overflow-hidden"
+      className="flex flex-col rounded-none border border-border bg-card shadow-sm ring-1 ring-foreground/10 overflow-hidden"
     >
       {/* Statement Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-subtle px-6 py-4 bg-surface">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 sm:px-6 py-4 bg-card">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-text-primary">{title}</h2>
+          <h2 className="text-sm font-bold tracking-tight text-foreground">{title}</h2>
           {subtitle && (
-            <p className="mt-0.5 text-xs text-text-muted">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-elevated px-2.5 py-1 text-[11px] font-semibold text-text-secondary">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-none border border-border bg-muted px-2.5 py-1 text-[11px] font-semibold text-foreground">
             Fiscal Year {fiscalYear}
           </span>
-          <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-[11px] font-bold text-accent">
+          <span className="rounded-none border border-border bg-muted px-2.5 py-1 text-[11px] font-bold text-foreground">
             Chronological (Oldest → Newest)
           </span>
         </div>
       </div>
 
-      {/* Grid Table with Horizontal Scroll & Sticky First Column */}
+      {/* Grid Table with Horizontal Scroll */}
       <div
         tabIndex={0}
         role="region"
         aria-label={title}
-        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-accent/50"
+        className="relative w-full overflow-x-auto focus:outline-none focus:ring-1 focus:ring-ring"
       >
-        <table className="w-full text-left text-xs text-text-primary border-collapse">
+        <table className="w-full text-left text-xs text-foreground border-collapse">
           <thead>
-            <tr className="border-b border-border-subtle bg-app/40 text-[11px] uppercase tracking-wider text-text-muted">
+            <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
               <th
                 scope="col"
-                className="sticky left-0 z-20 min-w-[280px] bg-surface px-6 py-3.5 font-bold shadow-[2px_0_5px_rgba(0,0,0,0.5)] border-r border-border-subtle/50"
+                className="min-w-[240px] bg-card px-6 py-3.5 font-bold whitespace-nowrap border-r border-border text-foreground"
               >
                 Line Item
               </th>
@@ -67,15 +67,15 @@ export function FinancialStatementGrid({
                 <th
                   key={col.key}
                   scope="col"
-                  className={`min-w-[110px] px-4 py-3.5 text-right font-mono font-bold ${
+                  className={`min-w-[110px] px-4 py-3.5 text-right font-mono font-bold whitespace-nowrap ${
                     col.isTotal
-                      ? 'bg-elevated/50 text-accent border-l border-border-subtle'
+                      ? 'bg-muted/60 text-foreground border-l border-border'
                       : ''
                   }`}
                 >
                   <div>{col.label}</div>
                   {col.sublabel && (
-                    <div className="text-[10px] font-normal text-text-muted">
+                    <div className="text-[10px] font-normal text-muted-foreground">
                       {col.sublabel}
                     </div>
                   )}
@@ -83,18 +83,18 @@ export function FinancialStatementGrid({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
+          <tbody className="divide-y divide-border">
             {rows.map((row) => {
               if (row.isHeader) {
                 return (
                   <tr
                     key={row.id}
-                    className="bg-elevated/40 text-[11px] font-bold uppercase tracking-wider text-text-muted"
+                    className="bg-muted/50 text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
                     data-testid={`row-header-${row.id}`}
                   >
                     <td
                       colSpan={columns.length + 1}
-                      className="sticky left-0 z-10 bg-elevated px-6 py-2.5 border-r border-border-subtle/50"
+                      className="bg-muted/50 px-6 py-2.5 whitespace-nowrap"
                     >
                       {row.label}
                     </td>
@@ -108,10 +108,10 @@ export function FinancialStatementGrid({
                 row.indent === 1 ? 'pl-9' : row.indent === 2 ? 'pl-14' : 'pl-6';
 
               const rowStyle = isTotal
-                ? 'bg-accent/10 font-extrabold text-text-primary border-t-2 border-b-2 border-accent/30'
+                ? 'bg-muted/60 font-extrabold text-foreground border-t-2 border-b-2 border-border'
                 : isSubtotal
-                ? 'bg-surface font-bold text-text-primary border-t border-border-subtle'
-                : 'hover:bg-elevated/40 text-text-secondary';
+                ? 'bg-card font-bold text-foreground border-t border-border'
+                : 'bg-card hover:bg-muted/30 text-muted-foreground';
 
               return (
                 <tr
@@ -121,8 +121,8 @@ export function FinancialStatementGrid({
                 >
                   <th
                     scope="row"
-                    className={`sticky left-0 z-10 ${indentClass} pr-4 py-2.5 font-sans whitespace-nowrap bg-surface shadow-[2px_0_5px_rgba(0,0,0,0.5)] border-r border-border-subtle/50 ${
-                      isTotal ? 'text-accent font-bold' : isSubtotal ? 'text-text-primary font-semibold' : 'text-text-secondary'
+                    className={`${indentClass} pr-6 py-2.5 font-sans whitespace-nowrap border-r border-border ${
+                      isTotal ? 'bg-muted/60 text-foreground font-bold' : isSubtotal ? 'bg-card text-foreground font-semibold' : 'bg-card text-muted-foreground'
                     }`}
                   >
                     {row.label}
@@ -136,11 +136,11 @@ export function FinancialStatementGrid({
                       return (
                         <td
                           key={col.key}
-                          className={`px-4 py-2.5 text-right font-mono text-[11px] ${
-                            isTotalCol ? 'bg-elevated/50 border-l border-border-subtle' : ''
+                          className={`px-4 py-2.5 text-right font-mono text-[11px] whitespace-nowrap ${
+                            isTotalCol ? 'bg-muted/50 border-l border-border' : ''
                           }`}
                         >
-                          <span className="inline-flex rounded bg-status-caution/10 px-1.5 py-0.5 text-[9px] font-bold text-status-caution">
+                          <span className="inline-flex rounded-none bg-status-caution/10 px-1.5 py-0.5 text-[9px] font-bold text-status-caution">
                             INSUFFICIENT
                           </span>
                         </td>
@@ -156,14 +156,14 @@ export function FinancialStatementGrid({
                     return (
                       <td
                         key={col.key}
-                        className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                          isTotalCol ? 'bg-elevated/50 border-l border-border-subtle font-bold' : ''
+                        className={`px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap ${
+                          isTotalCol ? 'bg-muted/50 border-l border-border font-bold' : ''
                         } ${
                           isNegative
-                            ? 'text-danger'
+                            ? 'text-destructive'
                             : isTotal || (isTotalCol && isSubtotal)
-                            ? 'text-text-primary font-bold'
-                            : 'text-text-primary'
+                            ? 'text-foreground font-bold'
+                            : 'text-foreground'
                         }`}
                       >
                         {formatted}

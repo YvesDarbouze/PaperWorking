@@ -118,15 +118,15 @@ export async function handleSettingsGet(
   }
 
   if (section === 'data-privacy') {
-    if (subAction === 'download-export') {
+    const org = deps.loadOrg ? await deps.loadOrg(orgId) : {};
+    if (subAction === 'download-export' || subAction === 'export' || Boolean(query.id)) {
       const exportId = query.id || 'export';
-      const attachment = buildDataPrivacyExportAttachment(orgId, exportId);
+      const attachment = buildDataPrivacyExportAttachment(orgId, exportId, user, org);
       return binaryResponse(200, attachment.content, {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Content-Disposition': `attachment; filename="${attachment.filename}"`,
       });
     }
-    const org = deps.loadOrg ? await deps.loadOrg(orgId) : {};
     return jsonResponse(200, {
       exports: org.exports || [],
       activeExportJob: org.activeExportJob || null,
@@ -171,12 +171,13 @@ export async function handleSettingsPut(
     const updated = deps.updateUser
       ? await deps.updateUser(auth.uid, update)
       : { ...user, ...update };
+    const merged = { ...user, ...update, ...updated };
     return jsonResponse(200, {
-      ...buildProfileResponse({ ...user, ...updated }),
-      name: update.displayName,
-      phone: update.phone,
-      companyName: update.companyName,
-      avatar: update.avatar ?? user.avatar ?? '',
+      ...buildProfileResponse(merged),
+      ...(update.displayName !== undefined ? { name: update.displayName } : {}),
+      ...(update.phone !== undefined ? { phone: update.phone } : {}),
+      ...(update.companyName !== undefined ? { companyName: update.companyName } : {}),
+      avatar: update.avatar ?? merged.avatar ?? '',
     });
   }
 
@@ -252,6 +253,17 @@ export async function handleSettingsPost(
   const user = deps.loadUser ? await deps.loadUser(auth.uid) : {};
   const orgId = resolveOrgId(user, deps);
 
+  if (
+    !subAction &&
+    (section === 'profile' ||
+      section === 'workspace' ||
+      section === 'security' ||
+      section === 'notifications' ||
+      section === 'billing')
+  ) {
+    return handleSettingsPut(sectionPath, body, deps);
+  }
+
   if (section === 'change-plan') {
     const plan = body.plan;
     if (deps.updateUser) {
@@ -290,7 +302,10 @@ export async function handleSettingsPost(
     return jsonResponse(200, { success: true });
   }
 
-  if (section === 'data-privacy' && subAction === 'export') {
+  const resolvedPostSubAction =
+    subAction || (typeof body.subAction === 'string' ? body.subAction : undefined);
+
+  if (section === 'data-privacy' && resolvedPostSubAction === 'export') {
     const activeExportJob = {
       id: `exp_${Date.now()}`,
       status: 'Queued',
@@ -300,7 +315,7 @@ export async function handleSettingsPost(
     return jsonResponse(200, { success: true, activeExportJob });
   }
 
-  if (section === 'data-privacy' && subAction === 'delete-workspace') {
+  if (section === 'data-privacy' && resolvedPostSubAction === 'delete-workspace') {
     const org = deps.loadOrg ? await deps.loadOrg(orgId) : {};
     const validated = validateWorkspaceDeletionConfirm(body.confirmName, String(org.name || ''));
     if (!validated.ok) return jsonResponse(validated.status, { error: validated.error });
@@ -341,6 +356,8 @@ export async function handleSettingsDelete(
   if (isAuthFailure(auth)) return jsonResponse(auth.status, auth.body);
 
   const { section, subAction } = parseSettingsSection(sectionPath);
+  const resolvedDeleteSubAction =
+    subAction || (typeof body.subAction === 'string' ? body.subAction : undefined);
   const user = deps.loadUser ? await deps.loadUser(auth.uid) : {};
   const orgId = resolveOrgId(user, deps);
 
@@ -357,7 +374,7 @@ export async function handleSettingsDelete(
     return jsonResponse(200, { success: true });
   }
 
-  if (section === 'data-privacy' && subAction === 'delete-workspace') {
+  if (section === 'data-privacy' && resolvedDeleteSubAction === 'delete-workspace') {
     if (deps.updateOrg) await deps.updateOrg(orgId, { deletionScheduledAt: null });
     return jsonResponse(200, { success: true, deletionScheduledAt: null });
   }

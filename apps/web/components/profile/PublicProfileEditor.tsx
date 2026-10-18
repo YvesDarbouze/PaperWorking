@@ -52,7 +52,12 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
     setError(null);
     try {
       const res = await fetch('/api/marketplace/profile', {
-        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Cache-Control': 'no-cache',
+        },
       });
 
       if (res.status === 401) {
@@ -66,15 +71,38 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
       }
 
       const data = await res.json();
-      const p = data.profile || {};
-      setDisplayName(p.displayName || '');
-      setCompanyName(p.businessName || p.companyName || '');
-      setHeadline(p.headline || '');
-      setPublicBio(p.publicBio || '');
-      setLocation(p.location || '');
-      setWebsiteUrl(p.websiteUrl || '');
-      setAvatarUrl(p.avatarUrl || p.avatar || '');
-      setStrategies(p.strategies || ['buy_and_hold', 'multifamily']);
+      let p = data.profile || {};
+
+      if (typeof window !== 'undefined') {
+        try {
+          const cachedRaw = window.localStorage.getItem('pw_marketplace_public_profile');
+          if (cachedRaw) {
+            const cached = JSON.parse(cachedRaw);
+            if (cached && (!p.uid || !cached.uid || cached.uid === p.uid)) {
+              const localTime = cached.updatedAt ? Date.parse(String(cached.updatedAt)) : 0;
+              const serverTime = p.updatedAt ? Date.parse(String(p.updatedAt)) : 0;
+              if (localTime > serverTime) {
+                p = { ...p, ...cached };
+              }
+            }
+          }
+        } catch {
+          // Ignore localStorage parse errors
+        }
+      }
+
+      setDisplayName(p.displayName ?? '');
+      setCompanyName(p.businessName ?? p.companyName ?? '');
+      setHeadline(p.headline ?? '');
+      setPublicBio(p.publicBio ?? '');
+      setLocation(p.location ?? '');
+      setWebsiteUrl(p.websiteUrl ?? '');
+      setAvatarUrl(p.avatarUrl ?? p.avatar ?? '');
+      setStrategies(
+        Array.isArray(p.strategies)
+          ? (p.strategies as InvestmentStrategy[])
+          : ['buy_and_hold', 'multifamily'],
+      );
       if (typeof p.isVerified === 'boolean') setIsVerified(p.isVerified);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading profile data');
@@ -160,6 +188,7 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
       const payload = {
         displayName: displayName.trim(),
         businessName: companyName.trim(),
+        companyName: companyName.trim(),
         headline: headline.trim(),
         publicBio: publicBio.trim(),
         location: location.trim(),
@@ -175,6 +204,8 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
 
       const res = await fetch('/api/marketplace/profile', {
         method: 'POST',
+        cache: 'no-store',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -187,6 +218,34 @@ export default function PublicProfileEditor({ initialLoading = true }: PublicPro
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || `Failed to save profile (${res.status})`);
+      }
+
+      const savedData = await res.json().catch(() => ({}));
+      const savedProfile = savedData.profile || payload;
+
+      setDisplayName(savedProfile.displayName ?? payload.displayName);
+      setCompanyName(savedProfile.businessName ?? savedProfile.companyName ?? payload.businessName);
+      setHeadline(savedProfile.headline ?? payload.headline);
+      setPublicBio(savedProfile.publicBio ?? payload.publicBio);
+      setLocation(savedProfile.location ?? payload.location);
+      setWebsiteUrl(savedProfile.websiteUrl ?? payload.websiteUrl);
+      setAvatarUrl(savedProfile.avatarUrl ?? savedProfile.avatar ?? payload.avatarUrl);
+      if (Array.isArray(savedProfile.strategies)) {
+        setStrategies(savedProfile.strategies as InvestmentStrategy[]);
+      }
+
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.setItem(
+            'pw_marketplace_public_profile',
+            JSON.stringify({
+              ...savedProfile,
+              updatedAt: savedProfile.updatedAt || new Date().toISOString(),
+            }),
+          );
+        } catch {
+          // Ignore storage quota errors
+        }
       }
 
       setSavedSuccess(true);

@@ -29,11 +29,18 @@ export const HELP_ARTICLES: HelpArticle[] = [
     body: 'Vendors sign in at /vendor-portal to view open requests. Submit a quoted fee and message; investors see updates on the project documents workflow.',
   },
   {
+    slug: 'workspace-settings-and-preferences',
+    title: 'Workspace settings, security, and directory skills',
+    category: 'Settings',
+    summary: 'Configure general workspace preferences, vendor directory skills, security credentials, billing, and data privacy.',
+    body: 'Open Settings from the dashboard sidebar to manage your profile details, time zone, currency, and notification preferences. In the General tab, you can also select and save Vendor Directory skills so investors can discover your services in the marketplace. Use the Security, Billing, and Data & Privacy tabs to manage authentication, subscriptions, and workspace data.',
+  },
+  {
     slug: 'billing-and-plans',
     title: 'Billing, trials, and plan changes',
     category: 'Account',
     summary: 'Manage subscription tiers and payment methods.',
-    body: 'Investor, Investment Team, and Vendor tiers map to Stripe checkout. During migration preview, checkout uses mock sandbox unless Stripe keys are configured.',
+    body: 'Investor, Investment Team, and Vendor tiers map to Stripe checkout. Manage active plans, payment methods, and invoices from the Billing tab in Settings.',
   },
   {
     slug: 'admin-agent-crew',

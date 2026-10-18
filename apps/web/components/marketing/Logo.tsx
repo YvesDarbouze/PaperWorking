@@ -81,24 +81,14 @@ export default function Logo({
   const mark = (
     <>
       {targetVariant === 'full' ? (
-        <>
-          <PaperWorkingLogotype
-            width={!size ? '100%' : fullWidth}
-            height={!size ? '100%' : fullHeight}
-            role="img"
-            aria-label="PaperWorking"
-            style={{ color, flexShrink: 0 }}
-            className={`hidden select-none md:block ${svgClassName}`}
-          />
-          <PaperWorkingIcon
-            width={!size ? '100%' : Math.round(resolvedHeight * ASPECT_RATIOS.icon)}
-            height={!size ? '100%' : resolvedHeight}
-            role="img"
-            aria-label="PaperWorking"
-            style={{ color, flexShrink: 0 }}
-            className={`block select-none md:hidden ${svgClassName}`}
-          />
-        </>
+        <PaperWorkingLogotype
+          width={!size ? '100%' : fullWidth}
+          height={!size ? '100%' : fullHeight}
+          role="img"
+          aria-label="PaperWorking"
+          style={{ color, flexShrink: 0 }}
+          className={`block select-none ${svgClassName}`}
+        />
       ) : (
         <Svg
           width={!size ? '100%' : resolvedWidth}

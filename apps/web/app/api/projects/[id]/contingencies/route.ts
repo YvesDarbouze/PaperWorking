@@ -1,9 +1,117 @@
 import { NextResponse } from 'next/server';
+import {
+  handleProjectContingenciesGet,
+  handleProjectContingenciesPost,
+} from '@paperworking/api';
+import { toNextResponse } from '@/lib/api/adapt-route-result';
+import {
+  isDevAuthFailure,
+  requireDevSessionAuth,
+} from '@/lib/projects/dev-session-auth';
+import { requireWebOrgRole } from '@/lib/auth/require-role';
+import {
+  getProjectFromStore,
+  updateProjectInStore,
+} from '@/lib/projects/project-store';
 import { isRecord, updateProjectSubresource } from '@/lib/projects/project-subresource';
 
 export const dynamic = 'force-dynamic';
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(
+  _request: Request,
+  context: RouteContext,
+) {
+  const { id: projectId } = await context.params;
+  const auth = await requireDevSessionAuth();
+  if (isDevAuthFailure(auth)) {
+    return NextResponse.json(auth.body, { status: auth.status });
+  }
+
+  const project = await getProjectFromStore(projectId);
+  if (!project) {
+    return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+  }
+
+  const projectOrg = (project as { organizationId?: string }).organizationId || 'org-1';
+  const roleCheck = await requireWebOrgRole({ uid: auth.uid }, projectOrg, 'viewer');
+  if (!roleCheck.ok) {
+    return roleCheck.response;
+  }
+
+  const result = await handleProjectContingenciesGet(projectId, {
+    requireAuth: async () => ({ uid: auth.uid, organizationId: projectOrg }),
+    getProject: async (id) => {
+      const p = await getProjectFromStore(id);
+      if (!p) return null;
+      return {
+        id: p.id,
+        organizationId: p.organizationId ?? 'org-1',
+        contingencies: p.contingencies ?? [],
+      };
+    },
+  });
+
+  return toNextResponse(result);
+}
+
+export async function POST(
+  request: Request,
+  context: RouteContext,
+) {
+  const { id: projectId } = await context.params;
+  const auth = await requireDevSessionAuth();
+  if (isDevAuthFailure(auth)) {
+    return NextResponse.json(auth.body, { status: auth.status });
+  }
+
+  const project = await getProjectFromStore(projectId);
+  if (!project) {
+    return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+  }
+
+  const projectOrg = (project as { organizationId?: string }).organizationId || 'org-1';
+  const roleCheck = await requireWebOrgRole({ uid: auth.uid }, projectOrg, 'member');
+  if (!roleCheck.ok) {
+    return roleCheck.response;
+  }
+
+  let body: unknown = {};
+  try {
+    body = await request.json();
+  } catch {
+    body = {};
+  }
+
+  const result = await handleProjectContingenciesPost(projectId, body, {
+    requireAuth: async () => ({ uid: auth.uid, organizationId: projectOrg }),
+    getProject: async (id) => {
+      const p = await getProjectFromStore(id);
+      if (!p) return null;
+      return {
+        id: p.id,
+        organizationId: p.organizationId ?? 'org-1',
+        contingencies: p.contingencies ?? [],
+      };
+    },
+    createContingency: async (id, data) => {
+      const p = await getProjectFromStore(id);
+      const existing = (p?.contingencies ?? []) as unknown[];
+      const contingencyWithId = {
+        id: `ctg-${Date.now().toString().slice(-6)}`,
+        label: data.name,
+        deadline: data.deadlineDate,
+        ...data,
+      };
+      const updated = [...existing, contingencyWithId];
+      await updateProjectInStore(id, { contingencies: updated } as never);
+      return contingencyWithId;
+    },
+  });
+
+  return toNextResponse(result);
+}
 
 function optionalString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;

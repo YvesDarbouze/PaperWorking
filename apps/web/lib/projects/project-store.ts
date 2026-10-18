@@ -23,6 +23,66 @@ import {
   deleteSeedProject,
 } from './seed-data';
 
+const NESTED_ARRAY_MARKER = '__pw_matrix';
+
+/**
+ * Firestore rejects nested arrays, undefined values, and non-finite numbers.
+ * Encodes nested arrays as `{ __pw_matrix: true, rows: [{ cells: [...] }, ...] }`
+ * so the document write always succeeds; fromFirestoreSafe decodes on read.
+ */
+export function toFirestoreSafe<T>(value: T): T {
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    return null as unknown as T;
+  }
+  if (Array.isArray(value)) {
+    const cleaned = value
+      .filter((item) => item !== undefined)
+      .map((item) => toFirestoreSafe(item));
+    if (cleaned.some((item) => Array.isArray(item))) {
+      return {
+        [NESTED_ARRAY_MARKER]: true,
+        rows: cleaned.map((row) => (Array.isArray(row) ? { cells: row } : { value: row })),
+      } as unknown as T;
+    }
+    return cleaned as unknown as T;
+  }
+  if (
+    value !== null &&
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (v !== undefined) {
+        out[k] = toFirestoreSafe(v);
+      }
+    }
+    return out as T;
+  }
+  return value;
+}
+
+/** Reverses toFirestoreSafe so readers receive the original nested-array shapes. */
+export function fromFirestoreSafe<T>(value: T): T {
+  if (value === null || typeof value !== 'object') return value;
+  if (Array.isArray(value)) {
+    return value.map((item) => fromFirestoreSafe(item)) as unknown as T;
+  }
+  const obj = value as Record<string, unknown>;
+  if (obj[NESTED_ARRAY_MARKER] === true && Array.isArray(obj.rows)) {
+    return (obj.rows as unknown[]).map((row) => {
+      const r = row as { cells?: unknown; value?: unknown };
+      if (Array.isArray(r?.cells)) return fromFirestoreSafe(r.cells);
+      return fromFirestoreSafe(r?.value);
+    }) as unknown as T;
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    out[k] = fromFirestoreSafe(v);
+  }
+  return out as T;
+}
+
 // Server-side in-memory cache keyed across hot-reloads via globalThis
 declare global {
   // eslint-disable-next-line no-var
@@ -62,7 +122,8 @@ export function withFirestoreTimeout<T>(
 /**
  * Normalizes a raw Firestore or seed document to a complete ProjectWorkspace.
  */
-function normalizeWorkspace(docId: string, data: Record<string, unknown>): ProjectWorkspace {
+function normalizeWorkspace(docId: string, rawData: Record<string, unknown>): ProjectWorkspace {
+  const data = fromFirestoreSafe(rawData) as Record<string, unknown>;
   const purchasePrice = Number(data.purchasePrice ?? data.purchase_price ?? 485000);
   const rehabCosts = Number(data.rehab_costs ?? data.rehabCost ?? 65000);
 
@@ -204,11 +265,11 @@ export async function getProjectFromStore(projectId: string): Promise<ProjectWor
         db.collection('projects')
           .doc(projectId)
           .set(
-            {
+            toFirestoreSafe({
               ...workspace,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
-            },
+            }),
             { merge: true },
           )
           .catch((err) => {
@@ -300,30 +361,6 @@ export async function listProjectsFromStore(
   return filterQuery(orgFiltered);
 }
 
-function stripUndefinedDeep<T>(value: T): T {
-  if (typeof value === 'number' && !Number.isFinite(value)) {
-    return null as unknown as T;
-  }
-  if (Array.isArray(value)) {
-    return value
-      .filter((item) => item !== undefined)
-      .map((item) => stripUndefinedDeep(item)) as unknown as T;
-  }
-  if (
-    value !== null &&
-    typeof value === 'object' &&
-    Object.getPrototypeOf(value) === Object.prototype
-  ) {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (v !== undefined) {
-        out[k] = stripUndefinedDeep(v);
-      }
-    }
-    return out as T;
-  }
-  return value;
-}
 
 /**
  * Creates and persists a new Project in Firestore and memory cache.
@@ -340,7 +377,7 @@ export async function createProjectInStore(
     try {
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
-      const firestorePayload = stripUndefinedDeep({
+      const firestorePayload = toFirestoreSafe({
         ...workspace,
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
@@ -355,6 +392,11 @@ export async function createProjectInStore(
       );
     } catch (err: any) {
       console.warn(`[project-store] Firestore write failed for ${workspace.id}, falling back to cache:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+          `Database persistence failure: unable to write project ${workspace.id} (${err?.message || 'unknown'}). Please retry.`,
+        );
+      }
     }
   }
 
@@ -384,7 +426,7 @@ export async function updateProjectInStore(
       const db = getAdminFirestore();
       const { FieldValue } = await import('firebase-admin/firestore');
       const touchesTodos = 'tasks' in patch || 'taskLists' in patch;
-      const firestorePatch = stripUndefinedDeep({
+      const firestorePatch = toFirestoreSafe({
         ...patch,
         ...(touchesTodos
           ? { tasks: merged.tasks, taskLists: merged.taskLists, taskGroups: FieldValue.delete() }
@@ -404,6 +446,11 @@ export async function updateProjectInStore(
       );
     } catch (err: any) {
       console.warn(`[project-store] Firestore update failed for ${projectId}, falling back to cache:`, err?.message || err);
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(
+          `Database persistence failure: unable to update project ${projectId} (${err?.message || 'unknown'}). Please retry.`,
+        );
+      }
     }
   }
 

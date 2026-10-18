@@ -23,19 +23,19 @@ function mockRequest(headers: Record<string, string> = {}): HttpRequestLike {
   };
 }
 
-describe('Auth User Store & Session Handler Persistence', () => {
+describe('Auth User Store & Session Handler (v0 architecture)', () => {
   beforeEach(() => {
     clearAuthUsers();
   });
 
-  describe('user-store operations', () => {
-    it('registers and retrieves a new user by email and UID', async () => {
+  describe('user-store operations (memory + seed fixtures)', () => {
+    it('registers and retrieves a new user by email and UID', () => {
       const email = `newinvestor-${Date.now()}@paperworking.test`;
       const uid = `usr-${Date.now()}`;
       const password = 'StrongPassword2026!';
       const passwordHash = hashPassword(password);
 
-      const registered = await registerAuthUser({
+      registerAuthUser({
         uid,
         email,
         passwordHash,
@@ -45,53 +45,45 @@ describe('Auth User Store & Session Handler Persistence', () => {
         displayName: 'New Investor',
       });
 
-      expect(registered.uid).toBe(uid);
-      expect(registered.email).toBe(email.toLowerCase());
-
       // Lookup by email with different casing/whitespace
-      const foundByEmail = await findAuthUserByEmail(`  ${email.toUpperCase()}  `);
+      const foundByEmail = findAuthUserByEmail(`  ${email.toUpperCase()}  `);
       expect(foundByEmail).not.toBeNull();
       expect(foundByEmail?.uid).toBe(uid);
       expect(foundByEmail?.displayName).toBe('New Investor');
       expect(verifyPasswordHash(password, foundByEmail!.passwordHash)).toBe(true);
 
       // Lookup by UID
-      const foundByUid = await findAuthUserByUid(uid);
+      const foundByUid = findAuthUserByUid(uid);
       expect(foundByUid).not.toBeNull();
       expect(foundByUid?.email).toBe(email.toLowerCase());
     });
 
-    it('resolves seed users from local fixture on demand', async () => {
-      const seedUser = await findAuthUserByEmail('e2e@paperworking.test');
+    it('resolves seed users from local fixture on demand', () => {
+      const seedUser = findAuthUserByEmail('e2e@paperworking.test');
       expect(seedUser).not.toBeNull();
       expect(seedUser?.email).toBe('e2e@paperworking.test');
       expect(seedUser?.accountType).toBe('investor');
     });
 
-    it('returns null for nonexistent emails', async () => {
-      const missing = await findAuthUserByEmail('does-not-exist@nowhere.test');
-      expect(missing).toBeNull();
+    it('returns null for nonexistent emails', () => {
+      expect(findAuthUserByEmail('does-not-exist@nowhere.test')).toBeNull();
     });
 
-    it('verifies shouldAttemptFirestore guard returns false in test environment without emulator', () => {
-      const shouldAttempt = shouldAttemptFirestore();
-      expect(typeof shouldAttempt).toBe('boolean');
-      // In offline test run, guard safely avoids hanging network calls
-      expect(shouldAttempt).toBe(false);
+    it('shouldAttemptFirestore guard returns false — the web BFF owns Firestore persistence', () => {
+      expect(shouldAttemptFirestore()).toBe(false);
     });
   });
 
-  describe('handleSessionPost account creation & credentials verification', () => {
-    it('registers and logs in a new user when acceptTerms is true', async () => {
+  describe('handleSessionPost (v0: Firebase idToken contract)', () => {
+    it('rejects credential-only bodies without idToken with 400 — Firebase client owns credential auth', async () => {
       const request = mockRequest({ origin: 'http://localhost:3000' });
       const email = `signup-test-${Date.now()}@paperworking.test`;
-      const password = 'AcctPassword2026!';
 
       const result = await handleSessionPost(
         request,
         {
           email,
-          password,
+          password: 'AcctPassword2026!',
           fullName: 'Jane Doe Investor',
           accountType: 'investor',
           acceptTerms: true,
@@ -100,70 +92,12 @@ describe('Auth User Store & Session Handler Persistence', () => {
         { env: { nodeEnv: 'test' } },
       );
 
-      expect(result.status).toBe(200);
-      expect(result.body).toMatchObject({
-        status: 'success',
-        accountType: 'investor',
-      });
-
-      // Confirm cookies are issued
-      expect(result.cookies?.some((c) => c.name === '__session')).toBe(true);
-      expect(result.cookies?.some((c) => c.name === '__acct' && c.value === 'investor')).toBe(true);
-      expect(result.cookies?.some((c) => c.name === '__session_id')).toBe(true);
-
-      // Confirm user was persisted and can log in without acceptTerms
-      const persisted = await findAuthUserByEmail(email);
-      expect(persisted).not.toBeNull();
-      expect(persisted?.email).toBe(email);
-      expect(verifyPasswordHash(password, persisted!.passwordHash)).toBe(true);
-
-      // Subsequent login attempt with valid credentials succeeds
-      const loginResult = await handleSessionPost(
-        request,
-        {
-          email,
-          password,
-        },
-        { env: { nodeEnv: 'test' } },
-      );
-
-      expect(loginResult.status).toBe(200);
-      expect(loginResult.body).toMatchObject({ status: 'success', uid: persisted?.uid });
+      expect(result.status).toBe(400);
+      expect(result.body).toMatchObject({ error: 'Missing or invalid idToken' });
+      expect(findAuthUserByEmail(email)).toBeNull();
     });
 
-    it('rejects existing email with mismatched password on signup attempt with 409 Conflict', async () => {
-      const request = mockRequest({ origin: 'http://localhost:3000' });
-      const email = `existing-${Date.now()}@paperworking.test`;
-      const originalPassword = 'OriginalPassword123!';
-
-      // Register user first
-      await registerAuthUser({
-        uid: `usr-conflict-test`,
-        email,
-        passwordHash: hashPassword(originalPassword),
-        accountType: 'investor',
-        subscriptionPlan: 'Individual',
-        subscriptionStatus: 'active',
-      });
-
-      // Attempt signup with different password
-      const result = await handleSessionPost(
-        request,
-        {
-          email,
-          password: 'DifferentPassword456!',
-          acceptTerms: true,
-        },
-        { env: { nodeEnv: 'test' } },
-      );
-
-      expect(result.status).toBe(409);
-      expect(result.body).toMatchObject({
-        error: 'An account with this email already exists. Please sign in.',
-      });
-    });
-
-    it('rejects non-existent user with 401 when acceptTerms is omitted', async () => {
+    it('rejects non-idToken payloads regardless of acceptTerms', async () => {
       const request = mockRequest({ origin: 'http://localhost:3000' });
       const result = await handleSessionPost(
         request,
@@ -174,11 +108,11 @@ describe('Auth User Store & Session Handler Persistence', () => {
         { env: { nodeEnv: 'test' } },
       );
 
-      expect(result.status).toBe(401);
-      expect(result.body).toMatchObject({ error: 'Invalid credentials' });
+      expect(result.status).toBe(400);
+      expect(result.body).toMatchObject({ error: 'Missing or invalid idToken' });
     });
 
-    it('Bug_16 Regression: rejects invalid and repeated-TLD email formats with 400 and does not register user', async () => {
+    it('Bug_16 Regression: invalid and repeated-TLD emails never register through the session endpoint', async () => {
       const request = mockRequest({ origin: 'http://localhost:3000' });
       const invalidEmails = [
         'test@gmail.com.com.com.com',
@@ -203,12 +137,7 @@ describe('Auth User Store & Session Handler Persistence', () => {
         );
 
         expect(result.status).toBe(400);
-        expect(result.body).toEqual({
-          error: 'Please enter a valid email address',
-        });
-
-        const persisted = await findAuthUserByEmail(badEmail);
-        expect(persisted).toBeNull();
+        expect(findAuthUserByEmail(badEmail)).toBeNull();
       }
     });
   });

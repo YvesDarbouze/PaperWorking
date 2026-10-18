@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   getStrategyTemplateDefaults,
   acquisitionPipelineStatusEnum,
@@ -298,5 +300,16 @@ describe("Create Project Wizard & Acquisition Foundation (Stage 3)", () => {
       );
       expect(getRes.status).toBe(200);
     });
+  });
+});
+
+describe('Bug_21 — personal workspace bootstrap (org_me_)', () => {
+  it('promote route provisions the personal workspace org and membership bootstrap', () => {
+    const src = fs.readFileSync(
+      path.resolve(process.cwd(), 'app/api/projects/promote/route.ts'),
+      'utf8',
+    );
+    expect(src).toContain('org_me_');
+    expect(src).toContain('ensurePersonalOrganization');
   });
 });

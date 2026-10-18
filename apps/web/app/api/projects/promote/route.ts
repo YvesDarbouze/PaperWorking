@@ -4,6 +4,7 @@ import {
   isDevAuthFailure,
   requireDevSessionAuth,
 } from '@/lib/projects/dev-session-auth';
+import { ensurePersonalOrganization } from '@paperworking/database';
 import {
   createProjectInStore,
   countProjectsInStore,
@@ -16,7 +17,8 @@ export async function POST(request: Request) {
 
   const targetOrgId =
     (body as any)?.organizationId ||
-    (!isDevAuthFailure(auth) && auth.organizationId ? auth.organizationId : 'org-1');
+    (!isDevAuthFailure(auth) && auth.organizationId ? auth.organizationId : null) ||
+    (!isDevAuthFailure(auth) ? `org_me_${auth.uid}` : 'org-1');
 
   const isVendor = !isDevAuthFailure(auth) && auth.accountType === 'vendor';
 
@@ -33,6 +35,16 @@ export async function POST(request: Request) {
     countOrgProjects: async () => countProjectsInStore(targetOrgId),
     createProject: async ({ projectData, storageQuotaBytes, organizationId }) => {
       const resolvedOrgId = organizationId || targetOrgId;
+
+      // Personal workspace convention: org_me_<uid> with an active owner membership
+      // so the creator can access the project page immediately after creation.
+      if (!isDevAuthFailure(auth) && resolvedOrgId.startsWith('org_me_')) {
+        try {
+          await ensurePersonalOrganization(auth.uid, resolvedOrgId);
+        } catch {
+          // Non-fatal: project creation continues even if workspace bootstrap fails.
+        }
+      }
 
       const projectId = (projectData as any).id || `proj-${Date.now().toString().slice(-6)}`;
       const pData = projectData as any;

@@ -81,3 +81,5 @@ export {
   assertProjectTimezoneDerivation,
   ProjectTimezoneValidationError,
 } from './firestore/timezone-validation.js';
+
+export { ensurePersonalOrganization } from './firestore/create-firestore-projects-command-repository.js';

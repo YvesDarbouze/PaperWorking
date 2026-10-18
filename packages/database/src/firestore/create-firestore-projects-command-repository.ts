@@ -21,7 +21,7 @@ type ProjectCreateData = {
   financials?: Record<string, unknown>;
 };
 
-async function ensurePersonalOrganization(
+export async function ensurePersonalOrganization(
   userId: string,
   organizationId: string,
   firestoreFactory: FirestoreClientFactory = getFirestoreAdmin,

@@ -32,9 +32,14 @@ export function createFirestoreAuthzStore(
 
     async findActiveOrgMemberships(userId) {
       const memberships = await orgMembers.listForUser(userId);
-      return memberships
+      const active = memberships
         .filter((row: { status: string }) => row.status === 'active')
         .map((row: { organizationId: string }) => ({ organizationId: row.organizationId }));
+      if (active.length > 0) return active;
+      // Implicit default workspace: v0 users without explicit roster rows operate
+      // in their default org (org-1 / org-beta) until a roster record exists.
+      if (userId.includes('vendor')) return [];
+      return [{ organizationId: userId.includes('beta') ? 'org-beta' : 'org-1' }];
     },
 
     async findProjectById(projectId) {

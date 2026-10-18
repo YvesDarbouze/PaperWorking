@@ -313,3 +313,37 @@ describe('Bug_21 — personal workspace bootstrap (org_me_)', () => {
     expect(src).toContain('ensurePersonalOrganization');
   });
 });
+
+describe('Bug_21 — project tool routes honor the project organization', () => {
+  it('alerts and underwriting routes authorize the project owner on a freshly promoted project', async () => {
+    process.env.TEST_AUTH_UID = 'usr-tool-owner-1';
+    const { POST: postPromote } = await import('../../app/api/projects/promote/route.js');
+    const { GET: getAlerts } = await import('../../app/api/projects/[id]/alerts/route.js');
+    const { GET: getUnderwriting } = await import('../../app/api/projects/[id]/underwriting/route.js');
+
+    const promoteRes = await postPromote(
+      new Request('http://localhost/api/projects/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: '777 Tool Route Way, Austin, TX 78704',
+          projectName: 'Tool Route Project',
+          purchasePrice: 300000,
+          rehabBudget: 30000,
+          estimatedARV: 400000,
+          grossRentMonthly: 2200,
+          strategy: 'flip',
+        }),
+      }),
+    );
+    expect(promoteRes.status).toBe(201);
+    const { projectId } = await promoteRes.json();
+    const ctx = { params: Promise.resolve({ id: projectId }) };
+
+    const alertsRes = await getAlerts(new Request('http://localhost/x'), ctx);
+    expect(alertsRes.status).toBeLessThan(400);
+
+    const underwritingRes = await getUnderwriting(new Request('http://localhost/x'), ctx);
+    expect(underwritingRes.status).toBeLessThan(400);
+  });
+});

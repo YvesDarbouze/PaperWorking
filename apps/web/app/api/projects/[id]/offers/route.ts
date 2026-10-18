@@ -16,10 +16,16 @@ export async function GET(
   const { id: projectId } = await context.params;
   const auth = await requireDevSessionAuth();
 
+  const project = await getProjectFromStore(projectId);
+  if (!project) {
+    return toNextResponse({ status: 404, body: { error: 'Project not found' } });
+  }
+  const projectOrg = project.organizationId ?? 'org-1';
+
   const result = await handleProjectOffersGet(projectId, {
     requireAuth: async () => {
       if (isDevAuthFailure(auth)) return auth;
-      return { uid: auth.uid, organizationId: (auth as any).organizationId ?? 'org-1' };
+      return { uid: auth.uid, organizationId: projectOrg };
     },
     getProject: async (id) => {
       const p = await getProjectFromStore(id);
@@ -48,10 +54,16 @@ export async function POST(
     body = {};
   }
 
+  const project = await getProjectFromStore(projectId);
+  if (!project) {
+    return toNextResponse({ status: 404, body: { error: 'Project not found' } });
+  }
+  const projectOrg = project.organizationId ?? 'org-1';
+
   const result = await handleProjectOffersPost(projectId, body, {
     requireAuth: async () => {
       if (isDevAuthFailure(auth)) return auth;
-      return { uid: auth.uid, organizationId: (auth as any).organizationId ?? 'org-1' };
+      return { uid: auth.uid, organizationId: projectOrg };
     },
     getProject: async (id) => {
       const p = await getProjectFromStore(id);

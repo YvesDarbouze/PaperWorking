@@ -18,10 +18,30 @@ export const ROLE_RANKS: Record<OrgRole, number> = {
 };
 
 /**
+ * Legacy display-role labels stored on Firestore membership documents
+ * (e.g. personal workspaces use "Lead Investor") mapped to hierarchy roles.
+ */
+const ROLE_ALIASES: Record<string, OrgRole> = {
+  'lead investor': 'owner',
+  'managing member': 'owner',
+  'managing partner': 'owner',
+  'general partner': 'owner',
+  'manager': 'admin',
+  'contributor': 'member',
+  'guest': 'viewer',
+};
+
+export function normalizeOrgRole(role: string | OrgRole): OrgRole | null {
+  const key = String(role).toLowerCase().trim();
+  if (ROLE_RANKS[key as OrgRole] !== undefined) return key as OrgRole;
+  return ROLE_ALIASES[key] ?? null;
+}
+
+/**
  * Checks whether currentRole meets or exceeds the required minimum role.
  */
 export function isRoleAtLeast(currentRole: string | OrgRole, minRole: OrgRole): boolean {
-  const normCurrent = currentRole.toLowerCase().trim() as OrgRole;
+  const normCurrent = normalizeOrgRole(currentRole) ?? (String(currentRole).toLowerCase().trim() as OrgRole);
   const currentRank = ROLE_RANKS[normCurrent] ?? 0;
   const targetRank = ROLE_RANKS[minRole] ?? 0;
   return currentRank >= targetRank;

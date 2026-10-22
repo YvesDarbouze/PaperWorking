@@ -89,15 +89,17 @@ describe('FirstLoginOnboardingModal', () => {
 
     const html = renderToString(<FirstLoginOnboardingModal forceOpen={true} />);
 
-    // Verify the Account Identity row uses items-end alignment
+    // Verify the Account Identity row uses non-wrapping items-end alignment across viewports
     const identityRowMatch = html.match(/<div[^>]*data-testid="onboarding-identity-row"[^>]*>/);
     expect(identityRowMatch).not.toBeNull();
     expect(identityRowMatch?.[0]).toContain('items-end');
     expect(identityRowMatch?.[0]).not.toContain('items-center');
+    expect(identityRowMatch?.[0]).not.toContain('flex-wrap');
 
-    // Verify both the display name input and the Change Photo button share h-11 and min-h-[44px]
+    // Verify both the display name input and the Change Photo button share block/flex display, h-11, and min-h-[44px]
     const nameInputMatch = html.match(/<input[^>]*data-testid="onboarding-display-name-input"[^>]*>/);
     expect(nameInputMatch).not.toBeNull();
+    expect(nameInputMatch?.[0]).toContain('block');
     expect(nameInputMatch?.[0]).toContain('h-11');
     expect(nameInputMatch?.[0]).toContain('min-h-[44px]');
 
@@ -106,5 +108,6 @@ describe('FirstLoginOnboardingModal', () => {
     expect(changePhotoMatch?.[0]).toContain('h-11');
     expect(changePhotoMatch?.[0]).toContain('min-h-[44px]');
     expect(changePhotoMatch?.[0]).toContain('self-end');
+    expect(changePhotoMatch?.[0]).not.toContain('inline-flex');
   });
 });

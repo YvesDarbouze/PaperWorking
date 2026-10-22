@@ -353,6 +353,18 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
     });
 
     it('Bug_15: hides Negative Leverage Detected banner when all 4 KPI cards are non-negative and displays it only when negative KPI values appear in the section', () => {
+      // Case 0: Target Purchase Price entered without Estimated ARV (MAO=N/A, Cash Required=$189,150, Expected Net Margin=N/A, Cap Rate=0.00%)
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=485000&strategy=flip'),
+      );
+      const noArvHtml = renderToString(<NewProjectPage />);
+      expect(noArvHtml).toContain('Live 33 Underwriting Datapoints Engine');
+      expect(noArvHtml).toContain('title="N/A"');
+      expect(noArvHtml).toContain('title="$189,150"');
+      expect(noArvHtml).toContain('title="0.00%"');
+      expect(noArvHtml).not.toContain('Negative Leverage Detected');
+      expect(noArvHtml).not.toContain('data-testid="negative-leverage-banner"');
+
       // Case 1: Target Purchase Price = 4, Rehab Budget = 5, Estimated ARV = 14 (MAO=$5, Cash Required=$6, Expected Net Margin=$4, Cap Rate=0.00%)
       mockUseSearchParams.mockReturnValue(
         new URLSearchParams('step=2&price=4&rehab=5&arv=14&strategy=flip'),
@@ -365,7 +377,19 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
       expect(nonNegativeHtml).not.toContain('Negative Leverage Detected');
       expect(nonNegativeHtml).not.toContain('data-testid="negative-leverage-banner"');
 
-      // Case 2: Target Purchase Price = 485000, Rehab Budget = 50000, Estimated ARV = 2000 (produces negative Expected Net Margin -$542,800)
+      // Case 2: Sub-unit negative MAO (-0.2) that rounds to $0 displayed (Target Purchase Price = 1, Rehab Budget = 3, Estimated ARV = 4 -> MAO=$0, Cash Required=$3, Expected Net Margin=$0, Cap Rate=0.00%)
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=1&rehab=3&arv=4&strategy=flip'),
+      );
+      const roundedZeroHtml = renderToString(<NewProjectPage />);
+      expect(roundedZeroHtml).toContain('title="$0"');
+      expect(roundedZeroHtml).toContain('title="$3"');
+      expect(roundedZeroHtml).toContain('title="0.00%"');
+      expect(roundedZeroHtml).not.toContain('-$0');
+      expect(roundedZeroHtml).not.toContain('Negative Leverage Detected');
+      expect(roundedZeroHtml).not.toContain('data-testid="negative-leverage-banner"');
+
+      // Case 3: Target Purchase Price = 485000, Rehab Budget = 50000, Estimated ARV = 2000 (produces negative Expected Net Margin -$542,800)
       mockUseSearchParams.mockReturnValue(
         new URLSearchParams('step=2&price=485000&rehab=50000&arv=2000&strategy=flip'),
       );
@@ -373,6 +397,39 @@ describe('PROJECTS as Central Mechanism in Portfolio Control Panel & 33 Datapoin
       expect(negativeKpiHtml).toContain('-$542,800');
       expect(negativeKpiHtml).toContain('data-testid="negative-leverage-banner"');
       expect(negativeKpiHtml).toContain('Negative Leverage Detected');
+
+      // Case 4: Rental strategy with high Target Purchase Price and no ARV produces negative Cash-on-Cash Return and shows banner
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=2&price=900000&rent=2000&strategy=buy_and_hold_rental'),
+      );
+      const negativeRentalHtml = renderToString(<NewProjectPage />);
+      expect(negativeRentalHtml).toContain('data-testid="negative-leverage-banner"');
+      expect(negativeRentalHtml).toContain('Negative Leverage Detected');
+
+      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    });
+
+    it('Bug_19 & Bug_20: Step 5 Underwriting Highlights displays consistent positive Estimated ARV, MAO (70% Rule), and Projected Return (Net Profit = Displayed ARV - Purchase Price - Rehab Budget > $0)', () => {
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=5&price=485000&rehab=50000&arv=10000&strategy=flip'),
+      );
+      const step5SmallArvHtml = renderToString(<NewProjectPage />);
+      expect(step5SmallArvHtml).toContain('data-testid="step5-estimated-arv"');
+      expect(step5SmallArvHtml).toContain('>$545,000<');
+      expect(step5SmallArvHtml).toContain('data-testid="step5-mao-value"');
+      expect(step5SmallArvHtml).toContain('>$331,500<');
+      expect(step5SmallArvHtml).toContain('data-testid="step5-projected-return"');
+      expect(step5SmallArvHtml).toContain('>$10,000 Net Profit<');
+      expect(step5SmallArvHtml).not.toContain('>$0 Net Profit<');
+      expect(step5SmallArvHtml).not.toContain('>$0<');
+
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams('step=5&price=485000&rehab=50000&arv=625000&strategy=flip'),
+      );
+      const step5FullArvHtml = renderToString(<NewProjectPage />);
+      expect(step5FullArvHtml).toContain('>$625,000<');
+      expect(step5FullArvHtml).toContain('>$387,500<');
+      expect(step5FullArvHtml).toContain('>$90,000 Net Profit<');
 
       mockUseSearchParams.mockReturnValue(new URLSearchParams());
     });

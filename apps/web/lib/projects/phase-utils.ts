@@ -15,12 +15,14 @@ export const PHASE_COLORS: Record<LegacyProjectPhase, { bg: string; text: string
   exit: { bg: 'rgba(16,185,129,0.15)', text: '#10B981', shell: '#5c1a1a' },
 };
 
-export function formatCurrency(value: number): string {
+export function formatCurrency(value: number | null | undefined): string {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  const safeValue = Number.isFinite(numeric) ? numeric : 0;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(safeValue);
 }
 
 export function formatPercent(value: number): string {

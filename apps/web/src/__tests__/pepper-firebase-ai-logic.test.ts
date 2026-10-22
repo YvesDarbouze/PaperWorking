@@ -217,7 +217,7 @@ describe('Pepper AI Chat & Firebase AI Logic Integration (Item 4.5)', () => {
     });
   });
 
-  describe('6. Bug_74: Operational & REIL Phase Queries Never Return Irrelevant Pricing Tiers', () => {
+  describe('6. Bug_71 & Bug_74: Operational & REIL Phase Queries Never Return Irrelevant Pricing Tiers', () => {
     it('returns the Hold phase knowledge base answer for "How does the Hold phase track rehabilitation budgets and holding costs in real time?" instead of pricing tiers', async () => {
       const query = 'How does the Hold phase track rehabilitation budgets and holding costs in real time?';
       const req = new NextRequest('http://localhost:3000/api/support/pepper', {
@@ -234,9 +234,91 @@ describe('Pepper AI Chat & Firebase AI Logic Integration (Item 4.5)', () => {
       expect(text).toContain('Milestone-based draw schedules');
       expect(text).toContain('budget-vs-actual variance');
       expect(text).not.toContain('three transparent pricing plans');
+      expect(text).not.toContain('$29/mo');
+      expect(text).not.toContain('$82/mo');
       expect(text).not.toContain('$59/mo');
       expect(text).not.toContain('$99/mo');
       expect(text).not.toContain('$39/mo');
+    });
+
+    it('prioritizes grounded Hold phase knowledge base in production mode (isFirebaseAiConfigured() === true) without emitting pricing tiers', async () => {
+      const prevNodeEnv = process.env.NODE_ENV;
+      const prevApiKey = process.env.GEMINI_API_KEY;
+      const prevProjectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+
+      try {
+        (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
+        process.env.GEMINI_API_KEY = 'AIzaSyProdRealKeyForVerification999';
+        process.env.FIREBASE_ADMIN_PROJECT_ID = 'paperworking-prod';
+
+        expect(isFirebaseAiConfigured()).toBe(true);
+
+        const query = 'How does the Hold phase track rehabilitation budgets and holding costs in real time?';
+        const req = new NextRequest('http://localhost:3000/api/support/pepper', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: query }),
+        });
+
+        const res = await postPepper(req);
+        expect(res.status).toBe(200);
+        const text = await res.text();
+
+        expect(text).toContain('Holding Cost Clock');
+        expect(text).toContain('Milestone-based draw schedules');
+        expect(text).toContain('budget-vs-actual variance');
+        expect(text).not.toContain('$29/mo');
+        expect(text).not.toContain('$82/mo');
+        expect(text).not.toContain('$59/mo');
+
+        const multiTurnRes = await generatePepperResponse({
+          message: 'How much are holding costs tracked in the Hold phase?',
+        });
+        expect(multiTurnRes.text).toContain('Holding Cost Clock');
+        expect(multiTurnRes.text).not.toContain('$59/mo');
+        expect(multiTurnRes.text).not.toContain('$82/mo');
+      } finally {
+        (process.env as Record<string, string | undefined>).NODE_ENV = prevNodeEnv;
+        if (prevApiKey === undefined) delete process.env.GEMINI_API_KEY;
+        else process.env.GEMINI_API_KEY = prevApiKey;
+        if (prevProjectId === undefined) delete process.env.FIREBASE_ADMIN_PROJECT_ID;
+        else process.env.FIREBASE_ADMIN_PROJECT_ID = prevProjectId;
+      }
+    });
+
+    it('heals stale/corrupted Firestore FAQ entries containing legacy pricing strings ("Vendor $29/mo, Investment Team $82/mo")', async () => {
+      const { faqMemoryMap, getFaqEntries } = await import('@/lib/support/firestore-support-store');
+
+      // Inject a corrupted/stale FAQ entry into faqMemoryMap simulating stale Firestore data
+      faqMemoryMap.set('faq-hold', {
+        id: 'faq-hold',
+        category: 'REIL',
+        question: 'How does the Hold phase track rehabilitation budgets and holding costs in real time?',
+        answer:
+          'PaperWorking subscription pricing tiers include Vendor $29/mo, Investment Team $82/mo, and Solo Investor $41/mo.',
+        order: 6,
+      });
+
+      const healedFaqs = await getFaqEntries();
+      const healedHold = healedFaqs.find((f) => f.id === 'faq-hold');
+      expect(healedHold).toBeDefined();
+      expect(healedHold?.answer).toContain('Holding Cost Clock');
+      expect(healedHold?.answer).not.toContain('Vendor $29/mo');
+      expect(healedHold?.answer).not.toContain('Investment Team $82/mo');
+
+      const req = new NextRequest('http://localhost:3000/api/support/pepper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'How does the Hold phase track rehabilitation budgets and holding costs in real time?',
+        }),
+      });
+      const res = await postPepper(req);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+      expect(text).toContain('Holding Cost Clock');
+      expect(text).not.toContain('Vendor $29/mo');
+      expect(text).not.toContain('Investment Team $82/mo');
     });
 
     it('handles paraphrased Hold, Fund, Acquisition, Exit, and operational cost queries without triggering pricing tiers', async () => {
@@ -275,6 +357,55 @@ describe('Pepper AI Chat & Firebase AI Logic Integration (Item 4.5)', () => {
         expect(text).toContain(item.expected);
         expect(text).not.toContain('three transparent pricing plans');
       }
+    });
+
+    it('guards client-side SupportCenter streaming, /api/assistant/chat, and system prompt against unsolicited pricing tiers', async () => {
+      const { containsUnsolicitedPricingTiers, isExplicitPricingOrTrialQuery } = await import(
+        '@/lib/assistant/firebase-ai-client'
+      );
+      const { POST: postChat } = await import('@/app/api/assistant/chat/route');
+
+      const query = 'How does the Hold phase track rehabilitation budgets and holding costs in real time?';
+      expect(isExplicitPricingOrTrialQuery(query.toLowerCase())).toBe(false);
+      expect(
+        containsUnsolicitedPricingTiers(
+          'PaperWorking subscription tiers include Vendor $29/mo and Investment Team $82/mo.',
+        ),
+      ).toBe(true);
+
+      const clientFallback = synthesizeGroundedKnowledgeResponse(query);
+      expect(clientFallback).toContain('Holding Cost Clock');
+      expect(clientFallback).not.toContain('$29/mo');
+      expect(clientFallback).not.toContain('$82/mo');
+
+      const systemPrompt = compileSystemPrompt({});
+      expect(systemPrompt).toContain(
+        'NEVER mention subscription pricing tiers, monthly/annual prices, or plan comparisons when answering operational, feature, or REIL phase questions',
+      );
+
+      const chatReq = new NextRequest('http://localhost:3000/api/assistant/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-firebase-appcheck': 'debug-verified-token-123',
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              id: 'm1',
+              role: 'user',
+              content: query,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        }),
+      });
+      const chatRes = await postChat(chatReq);
+      expect(chatRes.status).toBe(200);
+      const chatJson = await chatRes.json();
+      expect(chatJson.message.content).toContain('Holding Cost Clock');
+      expect(chatJson.message.content).not.toContain('$29/mo');
+      expect(chatJson.message.content).not.toContain('$82/mo');
     });
   });
 });

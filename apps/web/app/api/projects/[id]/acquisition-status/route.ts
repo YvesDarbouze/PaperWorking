@@ -55,3 +55,10 @@ export async function PATCH(
 
   return toNextResponse(result);
 }
+
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  return PATCH(request, context);
+}

@@ -87,7 +87,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
     jest.useRealTimers();
   });
 
-  it('clears both the inline address error and the top-level error-banner immediately when a valid Street Address is typed', async () => {
+  it('renders a single inline address error (without duplicate top-level error-banner) on empty submission and clears it immediately when a valid Street Address is typed', async () => {
     await act(async () => {
       root.render(<NewProjectPage />);
     });
@@ -106,12 +106,14 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
 
     const errorBanner = container.querySelector('[data-testid="error-banner"]');
     const inlineError = container.querySelector('[data-testid="address-field-error"]');
-    expect(errorBanner).not.toBeNull();
-    expect(errorBanner?.textContent).toContain('Property Address');
+    expect(errorBanner).toBeNull();
     expect(inlineError).not.toBeNull();
+    expect(inlineError?.getAttribute('role')).toBe('alert');
+    expect(inlineError?.textContent).toContain('Property address is required');
 
     const addressInput = container.querySelector<HTMLInputElement>('#address-input');
     expect(addressInput).not.toBeNull();
+    expect(addressInput?.getAttribute('aria-invalid')).toBe('true');
 
     await act(async () => {
       setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
@@ -119,9 +121,10 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
 
     expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
     expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+    expect(addressInput?.getAttribute('aria-invalid')).toBe('false');
   });
 
-  it('re-triggers both validation errors if the address is cleared and Continue is clicked again, then clears both when a valid Street Address is entered and submitted with Enter', async () => {
+  it('re-triggers the single inline address validation error if the address is cleared and Continue is clicked again, then clears it when a valid Street Address is entered and submitted with Enter', async () => {
     await act(async () => {
       root.render(<NewProjectPage />);
     });
@@ -135,7 +138,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
       continueBtn!.click();
     });
 
-    expect(container.querySelector('[data-testid="error-banner"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
     expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
 
     const addressInput = container.querySelector<HTMLInputElement>('#address-input');
@@ -152,7 +155,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
     expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
   });
 
-  it('clears both validation errors when a valid address is selected from autocomplete suggestions', async () => {
+  it('clears the address validation error when a valid address is selected from autocomplete suggestions', async () => {
     const prevFetch = globalThis.fetch;
     globalThis.fetch = (async (url: string | URL | Request) => {
       if (String(url).includes('/api/places/autocomplete')) {
@@ -190,7 +193,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
         continueBtn!.click();
       });
 
-      expect(container.querySelector('[data-testid="error-banner"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
       expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
 
       const addressInput = container.querySelector<HTMLInputElement>('#address-input');
@@ -392,9 +395,10 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
       await act(async () => {
         stepperButtons[4]!.click();
       });
-      expect(container.querySelector('[data-testid="error-banner"]')?.textContent).toContain(
-        'Property Address',
+      expect(container.querySelector('[data-testid="address-field-error"]')?.textContent).toContain(
+        'Property address is required',
       );
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
 
       // Select "London Bridge Court, Aspen Hill, MD, USA" from autocomplete
       const addressInput = container.querySelector<HTMLInputElement>('#address-input');
@@ -835,7 +839,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
       expect(valEl?.className).toContain('tabular-nums');
       expect(valEl?.textContent).not.toContain('e+');
     }
-    expect(maoVal?.textContent).toBe('$699,999,932,099');
+    expect(maoVal?.textContent).toBe('$699,999,941,799');
   });
 
   it('Bug_47: shows immediate validation errors on invalid Step 4 dates (including Chrome validity.badInput, out-of-range years, and closing before PSA date), blocks forward navigation to Step 5, and preserves Step 4 DOM nodes across step transitions', async () => {
@@ -1279,7 +1283,7 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
     }
   });
 
-  it('Bug_19 & Bug_20: Step 5 Underwriting Highlights renders non-negative Net Profit ($0 when ARV <= Purchase Price + Rehab Budget) and accurate Net Profit (ARV - Purchase Price - Rehab Budget) when positive', async () => {
+  it('Bug_19 & Bug_20: Step 5 Underwriting Highlights renders strictly positive non-zero Net Profit and MAO (70% Rule) where Displayed Estimated ARV - Purchase Price - Rehab Budget === Net Profit across blank ARV, ARV <= Purchase Price + Rehab Budget, and ARV > Purchase Price + Rehab Budget', async () => {
     await act(async () => {
       root.render(<NewProjectPage />);
     });
@@ -1298,33 +1302,59 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
       getContinueBtn()!.click();
     });
 
-    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
-    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
-    const arvInput = container.querySelector<HTMLInputElement>('#arv-input');
-
-    // Case 1 (Bug_19): Purchase Price = $485,000, Rehab Budget = $50,000, Estimated ARV = $10,000 -> Net Profit is $0 (never negative)
-    await act(async () => {
-      setNativeInputValue(priceInput!, '485000');
-      setNativeInputValue(rehabInput!, '50000');
-      setNativeInputValue(arvInput!, '10000');
-    });
-
-    // Advance Step 2 -> Step 3 -> Step 4 -> Step 5
+    // Case 0 (Bug_19 & Bug_20 default): Navigate to Step 5 without entering Estimated ARV (Purchase Price = $485,000, Rehab Budget = $58,200)
+    // Displayed Estimated ARV = $651,840, Net Profit = $651,840 - $485,000 - $58,200 = $108,640 Net Profit, MAO = ($651,840 * 0.70) - $58,200 = $398,088
     for (const _step of [3, 4, 5]) {
       await act(async () => {
         getContinueBtn()!.click();
       });
     }
 
-    const projectedReturnEl = container.querySelector('[data-testid="step5-projected-return"]');
-    expect(projectedReturnEl).not.toBeNull();
-    expect(projectedReturnEl?.textContent).toBe('$0 Net Profit');
-    expect(projectedReturnEl?.textContent).not.toContain('-');
+    const defaultArvEl = container.querySelector('[data-testid="step5-estimated-arv"]');
+    const defaultProjectedReturnEl = container.querySelector('[data-testid="step5-projected-return"]');
+    const defaultMaoEl = container.querySelector('[data-testid="step5-mao-value"]');
+    expect(defaultArvEl?.textContent).toBe('$651,840');
+    expect(defaultProjectedReturnEl?.textContent).toBe('$108,640 Net Profit');
+    expect(defaultMaoEl?.textContent).toBe('$398,088');
+    expect(defaultProjectedReturnEl?.textContent).not.toContain('-');
+    expect(defaultProjectedReturnEl?.textContent).not.toBe('$0 Net Profit');
+    expect(defaultMaoEl?.textContent).not.toBe('$0');
 
-    // Case 2 (Bug_20): Navigate back to Step 2, set Estimated ARV = $625,000 ($625,000 - $485,000 - $50,000 = $90,000 Net Profit)
     const stepperButtons = container.querySelectorAll<HTMLButtonElement>(
       'nav[aria-label="Wizard Steps"] button',
     );
+
+    // Case 1 (Bug_19 & Bug_20 QA Re-test): Return to Step 2, set Purchase Price = $485,000, Rehab Budget = $50,000, Estimated ARV = $10,000
+    // Displayed Estimated ARV = $545,000 ($485,000 + $50,000 + $10,000), Net Profit = $545,000 - $485,000 - $50,000 = $10,000 Net Profit, MAO = ($545,000 * 0.70) - $50,000 = $331,500
+    await act(async () => {
+      stepperButtons[1]!.click();
+    });
+
+    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
+    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
+    const arvInput = container.querySelector<HTMLInputElement>('#arv-input');
+
+    await act(async () => {
+      setNativeInputValue(priceInput!, '485000');
+      setNativeInputValue(rehabInput!, '50000');
+      setNativeInputValue(arvInput!, '10000');
+    });
+
+    await act(async () => {
+      stepperButtons[4]!.click();
+    });
+
+    const arvEl = container.querySelector('[data-testid="step5-estimated-arv"]');
+    const projectedReturnEl = container.querySelector('[data-testid="step5-projected-return"]');
+    const maoEl = container.querySelector('[data-testid="step5-mao-value"]');
+    expect(arvEl?.textContent).toBe('$545,000');
+    expect(projectedReturnEl?.textContent).toBe('$10,000 Net Profit');
+    expect(maoEl?.textContent).toBe('$331,500');
+    expect(projectedReturnEl?.textContent).not.toContain('-');
+    expect(projectedReturnEl?.textContent).not.toBe('$0 Net Profit');
+    expect(maoEl?.textContent).not.toBe('$0');
+
+    // Case 2 (Bug_20): Navigate back to Step 2, set Estimated ARV = $625,000 ($625,000 - $485,000 - $50,000 = $90,000 Net Profit, MAO = ($625,000 * 0.70) - $50,000 = $387,500)
     await act(async () => {
       stepperButtons[1]!.click();
     });
@@ -1338,9 +1368,480 @@ describe('Bug_20 & Bug_21 Regression: Create New Project 5-Step Wizard Validatio
       stepperButtons[4]!.click();
     });
 
+    const updatedArvEl = container.querySelector('[data-testid="step5-estimated-arv"]');
     const updatedReturnEl = container.querySelector('[data-testid="step5-projected-return"]');
+    const updatedMaoEl = container.querySelector('[data-testid="step5-mao-value"]');
+    expect(updatedArvEl?.textContent).toBe('$625,000');
     expect(updatedReturnEl?.textContent).toBe('$90,000 Net Profit');
+    expect(updatedMaoEl?.textContent).toBe('$387,500');
+  });
+
+  it('Bug_15: dynamically renders Live 33 Underwriting Datapoints Engine when Target Purchase Price is entered and shows Negative Leverage Detected banner if and only if a negative KPI value is displayed', async () => {
+    await act(async () => {
+      root.render(<NewProjectPage />);
+    });
+
+    const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+    expect(addressInput).not.toBeNull();
+    await act(async () => {
+      setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
+    });
+
+    const continueBtn = container.querySelector<HTMLButtonElement>(
+      '[data-testid="wizard-continue-btn"]',
+    );
+    await act(async () => {
+      continueBtn!.click();
+    });
+
+    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
+    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
+    const arvInput = container.querySelector<HTMLInputElement>('#arv-input');
+
+    expect(priceInput).not.toBeNull();
+    expect(rehabInput).not.toBeNull();
+    expect(arvInput).not.toBeNull();
+
+    // 1. Enter only Target Purchase Price (without Estimated ARV): KPI section renders, no negative values, no banner
+    await act(async () => {
+      setNativeInputValue(priceInput!, '450000');
+    });
+    expect(container.querySelectorAll('[data-testid="underwriting-kpi-card"]').length).toBe(4);
+    expect(container.querySelector('[data-testid="underwriting-kpi-mao"]')?.textContent).toBe('N/A');
+    expect(container.querySelector('[data-testid="underwriting-kpi-net-margin"]')?.textContent).toBe('N/A');
+    expect(container.querySelector('[data-testid="negative-leverage-banner"]')).toBeNull();
+
+    // 2. Enter Target Purchase Price = 4, Rehab = 5, ARV = 14 ($5, $6, $4, 0.00%): all non-negative, no banner
+    await act(async () => {
+      setNativeInputValue(priceInput!, '4');
+      setNativeInputValue(rehabInput!, '5');
+      setNativeInputValue(arvInput!, '14');
+    });
+    expect(container.querySelector('[data-testid="underwriting-kpi-mao"]')?.textContent).toBe('$5');
+    expect(container.querySelector('[data-testid="underwriting-kpi-cash-required"]')?.textContent).toBe('$6');
+    expect(container.querySelector('[data-testid="underwriting-kpi-net-margin"]')?.textContent).toBe('$4');
+    expect(container.querySelector('[data-testid="underwriting-kpi-cap-rate"]')?.textContent).toBe('0.00%');
+    expect(container.querySelector('[data-testid="negative-leverage-banner"]')).toBeNull();
+
+    // 3. Enter Target Purchase Price = 485000 (while Rehab = 5, ARV = 14): Expected Net Margin becomes negative (-$494,692), banner appears
+    await act(async () => {
+      setNativeInputValue(priceInput!, '485000');
+    });
+    expect(container.querySelector('[data-testid="underwriting-kpi-net-margin"]')?.textContent).toContain('-$');
+    expect(container.querySelector('[data-testid="negative-leverage-banner"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="negative-leverage-banner"]')?.textContent).toContain(
+      'Negative Leverage Detected',
+    );
+  });
+
+  it('Bug_26: clears both the inline address error and top-level error-banner across typing, blur/autofill, and autocomplete selection even when place details contain non-US postal codes or other Step 1 fields were touched', async () => {
+    const prevFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: string | URL | Request) => {
+      const urlStr = String(url);
+      if (urlStr.includes('/api/places/autocomplete')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            predictions: [
+              {
+                placeId: 'place-intl-1',
+                description: '100 King Street West, Sector 15, ON, Canada',
+                mainText: '100 King Street West',
+                secondaryText: 'Sector 15, ON, Canada',
+              },
+            ],
+          }),
+        };
+      }
+      if (urlStr.includes('/api/places/details')) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            placeId: 'place-intl-1',
+            formatted_address: '100 King St W, Sector 15, ON M5X 1A9, Canada',
+            address_components: [
+              { long_name: '100', short_name: '100', types: ['street_number'] },
+              { long_name: 'King Street West', short_name: 'King St W', types: ['route'] },
+              { long_name: 'Sector 15', short_name: 'Sector 15', types: ['locality'] },
+              { long_name: 'Ontario', short_name: 'ON', types: ['administrative_area_level_1'] },
+              { long_name: 'M5X 1A9', short_name: 'M5X 1A9', types: ['postal_code'] },
+            ],
+          }),
+        };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({}),
+      };
+    }) as unknown as typeof fetch;
+
+    try {
+      await act(async () => {
+        root.render(<NewProjectPage />);
+      });
+
+      const continueBtn = container.querySelector<HTMLButtonElement>(
+        '[data-testid="wizard-continue-btn"]',
+      );
+      const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+      const cityInput = container.querySelector<HTMLInputElement>('#city-input');
+      const stateInput = container.querySelector<HTMLInputElement>('#state-input');
+      const zipInput = container.querySelector<HTMLInputElement>('#zip-input');
+
+      expect(continueBtn).not.toBeNull();
+      expect(addressInput).not.toBeNull();
+
+      // 1. Leave Street Address empty and click Continue (and also test Change Template button guard)
+      const changeTemplateBtn = Array.from(container.querySelectorAll('button')).find((b) =>
+        b.textContent?.includes('Change Template'),
+      );
+      expect(changeTemplateBtn).toBeDefined();
+      await act(async () => {
+        changeTemplateBtn!.click();
+      });
+      // Must stay on Step 1 and display a single validation error message beneath the input field (Bug_76)
+      expect(container.querySelector('[data-testid="step-1-address-intake"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+      expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
+
+      // 2. Select an autocomplete suggestion whose place details have non-US postal code ("M5X 1A9") & numeric locality ("Sector 15")
+      await act(async () => {
+        setNativeInputValue(addressInput!, '100 King');
+        jest.advanceTimersByTime(350);
+      });
+
+      const option = container.querySelector<HTMLLIElement>('#address-prediction-0');
+      expect(option).not.toBeNull();
+
+      await act(async () => {
+        option!.click();
+      });
+
+      // Both error messages must be completely gone, and invalid city/state/zip from non-US details must NOT overwrite valid defaults
+      expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+      expect(container.querySelector('[data-testid="city-field-error"]')).toBeNull();
+      expect(container.querySelector('[data-testid="state-field-error"]')).toBeNull();
+      expect(container.querySelector('[data-testid="zip-field-error"]')).toBeNull();
+      expect(cityInput?.value).toBe('Austin');
+      expect(stateInput?.value).toBe('TX');
+      expect(zipInput?.value).toBe('78702');
+
+      // 3. Clear address, re-trigger error via Continue, then simulate Chrome native autofill onBlur sync
+      const clearBtn = container.querySelector<HTMLButtonElement>(
+        '[data-testid="clear-address-search-btn"]',
+      );
+      await act(async () => {
+        clearBtn!.click();
+      });
+      await act(async () => {
+        continueBtn!.click();
+      });
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+      expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
+
+      await act(async () => {
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          'value',
+        )?.set;
+        nativeSetter?.call(addressInput!, '500 Congress Ave, Austin, TX 78701');
+        addressInput!.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+      });
+
+      expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+    } finally {
+      globalThis.fetch = prevFetch;
+    }
+  });
+
+  it('Bug_26 & Bug_76: renders a single validation error on empty submission and clears it when Google Places SDK returns FormattableText objects', async () => {
+    const prevGoogle = (window as unknown as Record<string, unknown>).google;
+    (window as unknown as Record<string, unknown>).google = {
+      maps: {
+        places: {
+          AutocompleteSuggestion: {
+            fetchAutocompleteSuggestions: async () => ({
+              suggestions: [
+                {
+                  placePrediction: {
+                    placeId: 'sdk-place-1',
+                    text: { text: '1247 Elm Street, Austin, TX 78702' },
+                    mainText: { text: '1247 Elm Street' },
+                    secondaryText: { text: 'Austin, TX 78702' },
+                  },
+                },
+              ],
+            }),
+          },
+        },
+      },
+    };
+
+    try {
+      await act(async () => {
+        root.render(<NewProjectPage />);
+      });
+
+      const continueBtn = container.querySelector<HTMLButtonElement>(
+        '[data-testid="wizard-continue-btn"]',
+      );
+      await act(async () => {
+        continueBtn!.click();
+      });
+
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+      expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
+      expect(container.querySelectorAll('[role="alert"]').length).toBe(1);
+
+      const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+      await act(async () => {
+        setNativeInputValue(addressInput!, '1247 Elm');
+        jest.advanceTimersByTime(350);
+      });
+
+      const option = container.querySelector<HTMLLIElement>('#address-prediction-0');
+      expect(option).not.toBeNull();
+      expect(option?.textContent).toContain('1247 Elm Street');
+      expect(option?.textContent).not.toContain('[object Object]');
+
+      await act(async () => {
+        option!.click();
+      });
+
+      expect(addressInput?.value).toBe('1247 Elm Street, Austin, TX 78702');
+      expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
+      expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+      expect(container.querySelectorAll('[role="alert"]').length).toBe(0);
+    } finally {
+      (window as unknown as Record<string, unknown>).google = prevGoogle;
+    }
+  });
+
+  it('Bug_77: strictly blocks Step 1 Address validation bypass via Change Template, Stepper steps 2-5, or ?step=2..5 URL params when Street Address is empty', async () => {
+    // Even if URL has ?step=5 without an address, wizard must start on Step 1
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('step=5'));
+
+    await act(async () => {
+      root.render(<NewProjectPage />);
+    });
+
+    expect(container.querySelector('[data-testid="step-1-address-intake"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="create-project-submit-btn"]')).toBeNull();
+
+    // 1. Clicking "Change Template" while Street Address is empty is blocked and shows Step 1 address error
+    const changeTemplateBtn = container.querySelector<HTMLButtonElement>(
+      '[data-testid="change-template-btn"]',
+    );
+    expect(changeTemplateBtn).not.toBeNull();
+    expect(changeTemplateBtn?.getAttribute('aria-disabled')).toBe('true');
+
+    await act(async () => {
+      changeTemplateBtn!.click();
+    });
+
+    expect(container.querySelector('[data-testid="step-1-address-intake"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
+    expect(container.querySelector('[data-testid="error-banner"]')).toBeNull();
+
+    // 2. Clicking each forward step (Step 2, 3, 4, 5) in the top stepper is blocked while Street Address is empty
+    const stepperButtons = container.querySelectorAll<HTMLButtonElement>(
+      'nav[aria-label="Wizard Steps"] button',
+    );
+    expect(stepperButtons.length).toBe(5);
+    for (const idx of [1, 2, 3, 4]) {
+      expect(stepperButtons[idx]?.getAttribute('aria-disabled')).toBe('true');
+      await act(async () => {
+        stepperButtons[idx]!.click();
+      });
+      expect(container.querySelector('[data-testid="step-1-address-intake"]')).not.toBeNull();
+      expect(container.querySelector('[data-testid="address-field-error"]')).not.toBeNull();
+    }
+
+    // 3. Once a valid Street Address is entered, "Change Template" unlocks and navigates to Step 2
+    const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+    await act(async () => {
+      setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
+    });
+
+    expect(container.querySelector('[data-testid="address-field-error"]')).toBeNull();
+    expect(changeTemplateBtn?.getAttribute('aria-disabled')).toBe('false');
+
+    await act(async () => {
+      changeTemplateBtn!.click();
+    });
+
+    expect(container.querySelector('[data-testid="step-1-address-intake"]')).toBeNull();
+  });
+
+  it('Bug_78: calculates MAO (70% Rule) as $405,000 using (ARV * 0.70) - Rehab Budget when ARV = $650,000 and Rehab Budget = $50,000', async () => {
+    await act(async () => {
+      root.render(<NewProjectPage />);
+    });
+
+    const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+    expect(addressInput).not.toBeNull();
+    await act(async () => {
+      setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
+    });
+
+    const continueBtn = container.querySelector<HTMLButtonElement>(
+      '[data-testid="wizard-continue-btn"]',
+    );
+    await act(async () => {
+      continueBtn!.click();
+    });
+
+    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
+    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
+    const arvInput = container.querySelector<HTMLInputElement>('#arv-input');
+
+    expect(priceInput).not.toBeNull();
+    expect(rehabInput).not.toBeNull();
+    expect(arvInput).not.toBeNull();
+
+    await act(async () => {
+      setNativeInputValue(priceInput!, '450000');
+      setNativeInputValue(rehabInput!, '50000');
+      setNativeInputValue(arvInput!, '650000');
+    });
+
+    const step2MaoEl = container.querySelector('[data-testid="underwriting-kpi-mao"]');
+    expect(step2MaoEl).not.toBeNull();
+    expect(step2MaoEl?.textContent).toBe('$405,000');
+
+    // Also verify Step 5 Underwriting Highlights displays $405,000
+    const stepperButtons = container.querySelectorAll<HTMLButtonElement>(
+      'nav[aria-label="Wizard Steps"] button',
+    );
+    await act(async () => {
+      stepperButtons[4]!.click();
+    });
+
+    const step5MaoEl = container.querySelector('[data-testid="step5-mao-value"]');
+    expect(step5MaoEl?.textContent).toBe('$405,000');
+  });
+
+  it('Bug_79: calculates Cash Required as $153,500 (Down Payment $90,000 + Rehab $50,000 + Closing $13,500) when Purchase Price = $450,000, Rehab = $50,000, LTV = 80%, and Buyer Closing Costs = 3%', async () => {
+    await act(async () => {
+      root.render(<NewProjectPage />);
+    });
+
+    const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+    expect(addressInput).not.toBeNull();
+    await act(async () => {
+      setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
+    });
+
+    const continueBtn = container.querySelector<HTMLButtonElement>(
+      '[data-testid="wizard-continue-btn"]',
+    );
+    await act(async () => {
+      continueBtn!.click();
+    });
+
+    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
+    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
+
+    expect(priceInput).not.toBeNull();
+    expect(rehabInput).not.toBeNull();
+
+    await act(async () => {
+      setNativeInputValue(priceInput!, '450000');
+      setNativeInputValue(rehabInput!, '50000');
+    });
+
+    // Open Advanced Financial Assumptions
+    const advBtn = Array.from(container.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Advanced Financial Assumptions'),
+    );
+    expect(advBtn).toBeDefined();
+    await act(async () => {
+      advBtn!.click();
+    });
+
+    const ltvInput = container.querySelector<HTMLInputElement>('#target-ltv-input');
+    const closingInput = container.querySelector<HTMLInputElement>('#buyer-closing-input');
+    expect(ltvInput).not.toBeNull();
+    expect(closingInput).not.toBeNull();
+
+    await act(async () => {
+      setNativeInputValue(ltvInput!, '80');
+      setNativeInputValue(closingInput!, '3');
+    });
+
+    const cashRequiredEl = container.querySelector('[data-testid="underwriting-kpi-cash-required"]');
+    expect(cashRequiredEl).not.toBeNull();
+    expect(cashRequiredEl?.textContent).toBe('$153,500');
+  });
+
+  it('Bug_80: dynamically recalculates and decreases Expected Net Margin from default $108,500 when Interest Rate increases to 10.5% and Buyer Closing Costs increases to 3%', async () => {
+    await act(async () => {
+      root.render(<NewProjectPage />);
+    });
+
+    const addressInput = container.querySelector<HTMLInputElement>('#address-input');
+    expect(addressInput).not.toBeNull();
+    await act(async () => {
+      setNativeInputValue(addressInput!, '1247 Elm Street, Austin, TX 78702');
+    });
+
+    const continueBtn = container.querySelector<HTMLButtonElement>(
+      '[data-testid="wizard-continue-btn"]',
+    );
+    await act(async () => {
+      continueBtn!.click();
+    });
+
+    const priceInput = container.querySelector<HTMLInputElement>('#purchase-price-input');
+    const rehabInput = container.querySelector<HTMLInputElement>('#rehab-budget-input');
+    const arvInput = container.querySelector<HTMLInputElement>('#arv-input');
+
+    expect(priceInput).not.toBeNull();
+    expect(rehabInput).not.toBeNull();
+    expect(arvInput).not.toBeNull();
+
+    await act(async () => {
+      setNativeInputValue(priceInput!, '450000');
+      setNativeInputValue(rehabInput!, '50000');
+      setNativeInputValue(arvInput!, '650000');
+    });
+
+    const netMarginEl = container.querySelector('[data-testid="underwriting-kpi-net-margin"]');
+    expect(netMarginEl).not.toBeNull();
+    expect(netMarginEl?.textContent).toBe('$108,500');
+
+    // Open Advanced Financial Assumptions
+    const advBtn = Array.from(container.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Advanced Financial Assumptions'),
+    );
+    expect(advBtn).toBeDefined();
+    await act(async () => {
+      advBtn!.click();
+    });
+
+    const interestRateInput = container.querySelector<HTMLInputElement>('#interest-rate-input');
+    const closingInput = container.querySelector<HTMLInputElement>('#buyer-closing-input');
+    expect(interestRateInput).not.toBeNull();
+    expect(closingInput).not.toBeNull();
+
+    // Increase Interest Rate from 9.5% to 10.5% -> Expected Net Margin decreases ($108,500 -> $105,125)
+    await act(async () => {
+      setNativeInputValue(interestRateInput!, '10.5');
+    });
+    expect(netMarginEl?.textContent).toBe('$105,125');
+
+    // Increase Buyer Closing Costs from 2% to 3% -> Expected Net Margin decreases further ($105,125 -> $100,625)
+    await act(async () => {
+      setNativeInputValue(closingInput!, '3');
+    });
+    expect(netMarginEl?.textContent).toBe('$100,625');
   });
 });
+
 
 

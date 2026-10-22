@@ -140,15 +140,20 @@ export function getPepperGenerativeModel(
   });
 }
 
-function isExplicitPricingOrTrialQuery(lower: string): boolean {
+export function isExplicitPricingOrTrialQuery(lower: string): boolean {
   if (
     lower.includes('holding cost') ||
     lower.includes('closing cost') ||
     lower.includes('rehab cost') ||
+    lower.includes('rehabilitation') ||
+    lower.includes('rehab budget') ||
     lower.includes('cost basis') ||
     lower.includes('cap rate on cost') ||
     lower.includes('margin on cost') ||
     lower.includes('loan-to-cost') ||
+    lower.includes('cost overrun') ||
+    lower.includes('construction cost') ||
+    lower.includes('operating cost') ||
     lower.includes('hold phase') ||
     lower.includes('fund phase') ||
     lower.includes('acquisition phase') ||
@@ -163,10 +168,17 @@ function isExplicitPricingOrTrialQuery(lower: string): boolean {
     lower.includes('pricing') ||
     lower.includes('subscription') ||
     lower.includes('billing') ||
-    /\b(your plans?|pricing plans?|subscription plans?|billing plans?|how much does paperworking cost|what does paperworking cost)\b/i.test(
+    /\b(your plans?|pricing plans?|subscription plans?|billing plans?|how much does paperworking cost|what does paperworking cost|how much is paperworking|how much for a subscription)\b/i.test(
       lower,
     )
   );
+}
+
+const UNSOLICITED_PRICING_PATTERN =
+  /(\$\s*(?:29|39|41|49|59|79|82|83|99)\s*\/\s*mo|\$\s*(?:348|390|499|590|990|999)\s*\/\s*yr|three\s+transparent\s+pricing\s+plans|tailored\s+subscription\s+tiers|subscription\s+(?:pricing\s+)?tiers|vendor\s+\$\d+|investment\s+team\s+\$\d+|investor\s+\(\$\d+)/i;
+
+export function containsUnsolicitedPricingTiers(text: string): boolean {
+  return UNSOLICITED_PRICING_PATTERN.test(text);
 }
 
 function isWorkspaceSetupQuery(lower: string): boolean {
@@ -182,7 +194,7 @@ function isWorkspaceSetupQuery(lower: string): boolean {
 /**
  * Synthesizes a high-fidelity, grounded answer strictly from PaperWorking's
  * verified knowledge modules, FAQs, glossary, and core copy.
- * Used when offline, in automated tests, or when Gemini API keys are not supplied.
+ * Used for verified platform knowledge, offline/emulator runs, or when Gemini API keys are not supplied.
  */
 export function synthesizeGroundedKnowledgeResponse(
   query: string,
@@ -190,6 +202,7 @@ export function synthesizeGroundedKnowledgeResponse(
   userContext?: UserContext,
 ): string {
   const lower = query.toLowerCase();
+  const isPricingQuery = isExplicitPricingOrTrialQuery(lower);
 
   // 1. 33 Institutional Metrics / Playbook
   if (
@@ -204,19 +217,25 @@ export function synthesizeGroundedKnowledgeResponse(
   }
 
   // 2. 14-Day Free Trial / Pricing / Policies (strictly scoped so operational "holding costs" / "cost basis" never match)
-  if (isExplicitPricingOrTrialQuery(lower)) {
+  if (isPricingQuery) {
     const faq = retrievedContext?.matchedFaqs?.find((f) => f.id === 'faq-pricing-plans');
     const pricingBreakdown = `PaperWorking offers three transparent pricing plans:\n- **Investor** (${AVA_CONFIG.pricing.investor.billingText})\n- **Investment Team** (${AVA_CONFIG.pricing.investmentTeam.billingText})\n- **Vendor** (${AVA_CONFIG.pricing.vendor.billingText})\n\nAll accounts include an unrestricted 14-day free trial. Your card is not charged until day 15, and you can cancel anytime with one click at Dashboard → Settings → Billing.`;
     const baseAnswer =
-      faq?.answer && !faq.answer.includes(AVA_CONFIG.pricing.investor.billingText)
+      faq?.answer &&
+      !containsUnsolicitedPricingTiers(faq.answer) &&
+      !faq.answer.includes(AVA_CONFIG.pricing.investor.billingText)
         ? `${faq.answer}\n\n${pricingBreakdown}`
-        : faq?.answer || pricingBreakdown;
+        : faq?.answer && faq.answer.includes(AVA_CONFIG.pricing.investor.billingText)
+          ? faq.answer
+          : pricingBreakdown;
     return `${baseAnswer}\n\n*Source: PaperWorking Support Knowledge Base (FAQ: "What is included in the 14-day free trial?")*`;
   }
 
   // 3. Workspace / Projects Setup
   if (isWorkspaceSetupQuery(lower)) {
-    const faq = retrievedContext?.matchedFaqs?.find((f) => f.id === 'faq-projects');
+    const faq = retrievedContext?.matchedFaqs?.find(
+      (f) => f.id === 'faq-projects' && !containsUnsolicitedPricingTiers(f.answer),
+    );
     const answer =
       faq?.answer ||
       `Setting up your workspace in PaperWorking starts by creating a Project:\n\n1. Go to Projects and click "Create New Project".\n2. Enter your property address to auto-pull property tax data and automated comps.\n3. Enter your purchase price, loan terms, and rehabilitation budget.\n4. Set contract dates to auto-activate deadline tracking for inspection and earnest money.`;
@@ -224,18 +243,45 @@ export function synthesizeGroundedKnowledgeResponse(
   }
 
   // 4. Exact or Ranked FAQ Match from RAG Retrieval (or canonical seed fallback when called directly)
+  const sanitizedRetrievedFaqs = (retrievedContext?.matchedFaqs || []).filter((faq) => {
+    if (!isPricingQuery && (faq.id === 'faq-pricing-plans' || containsUnsolicitedPricingTiers(faq.answer))) {
+      return false;
+    }
+    return true;
+  });
+
   const effectiveFaqs =
-    retrievedContext?.matchedFaqs && retrievedContext.matchedFaqs.length > 0
-      ? retrievedContext.matchedFaqs
+    sanitizedRetrievedFaqs.length > 0
+      ? sanitizedRetrievedFaqs
       : CANONICAL_FAQ_SEED.filter((faq) => {
+          if (!isPricingQuery && (faq.id === 'faq-pricing-plans' || faq.category === 'Billing')) {
+            return false;
+          }
           const qLower = faq.question.toLowerCase();
           return (
             lower.includes(qLower) ||
             (lower.length >= 8 && qLower.includes(lower)) ||
-            (lower.includes('hold phase') && faq.id === 'faq-hold') ||
-            (lower.includes('fund phase') && faq.id === 'faq-fund') ||
+            ((lower.includes('hold phase') ||
+              lower.includes('holding cost') ||
+              lower.includes('rehab budget') ||
+              lower.includes('rehabilitation budget') ||
+              (lower.includes('rehabilitation') && lower.includes('budget')) ||
+              (lower.includes('hold') && (lower.includes('rehab') || lower.includes('budget') || lower.includes('cost')))) &&
+              faq.id === 'faq-hold') ||
+            ((lower.includes('fund phase') ||
+              lower.includes('earnest money') ||
+              lower.includes('contingency deadline')) &&
+              faq.id === 'faq-fund') ||
             (lower.includes('acquisition phase') && faq.id === 'faq-acquisition') ||
-            (lower.includes('exit phase') && faq.id === 'faq-exit')
+            ((lower.includes('exit phase') || lower.includes('disposition strategies')) &&
+              faq.id === 'faq-exit') ||
+            ((lower.includes('reil') || lower.includes('investment lifecycle')) &&
+              faq.id === 'faq-reil-overview') ||
+            (lower.includes('portfolio insights') && faq.id === 'faq-portfolio-insights') ||
+            ((lower.includes('schedule e') || lower.includes('form 4797') || lower.includes('tax-ready')) &&
+              faq.id === 'faq-tax-exports') ||
+            (lower.includes('deal marketplace') && faq.id === 'faq-deal-marketplace') ||
+            (lower.includes('offline') && faq.id === 'faq-offline-mode')
           );
         });
 
@@ -266,6 +312,14 @@ export function synthesizeGroundedKnowledgeResponse(
 
   // 6. Structured Knowledge Base Topic Matches (including embedded topic FAQs and keyword matching)
   for (const topic of AVA_KNOWLEDGE_BASE) {
+    if (
+      !isPricingQuery &&
+      (topic.id === 'plans-policies-truth' ||
+        topic.id === 'pricing-trial-policies' ||
+        topic.title.toLowerCase().includes('pricing'))
+    ) {
+      continue;
+    }
     const titleMatch = lower.includes(topic.title.toLowerCase());
     const idMatch = lower.includes(topic.id.replace(/-/g, ' '));
     const embeddedFaqMatch = topic.frequentlyAskedQuestions?.find((f) => {
@@ -279,8 +333,11 @@ export function synthesizeGroundedKnowledgeResponse(
   }
 
   // 7. Core Site Copy Matches
-  if (retrievedContext?.matchedCopy && retrievedContext.matchedCopy.length > 0) {
-    return retrievedContext.matchedCopy.join('\n\n') + '\n\n*Source: PaperWorking Platform Documentation*';
+  const filteredCopy = (retrievedContext?.matchedCopy || []).filter(
+    (c) => isPricingQuery || !containsUnsolicitedPricingTiers(c),
+  );
+  if (filteredCopy.length > 0) {
+    return filteredCopy.join('\n\n') + '\n\n*Source: PaperWorking Platform Documentation*';
   }
 
   // 8. General inquiry welcome connecting to investor outcome
@@ -300,16 +357,27 @@ export function synthesizeGroundedKnowledgeResponse(
 }
 
 /**
- * Streams response chunks using real Firebase AI Logic / Gemini stream when configured,
- * or immediate unbuffered chunks from grounded domain knowledge when unconfigured.
+ * Streams response chunks using verified grounded domain knowledge first,
+ * and falls back to live Firebase AI Logic / Gemini stream for open-ended queries when configured.
  */
 export async function streamPepperResponse(
   options: PepperStreamOptions,
 ): Promise<ReadableStream<Uint8Array>> {
   const { message, userContext, history, retrievedContext } = options;
   const encoder = new TextEncoder();
+  const lowerMsg = message.toLowerCase();
+  const isPricingQuery = isExplicitPricingOrTrialQuery(lowerMsg);
 
-  if (isFirebaseAiConfigured()) {
+  // Evaluate authoritative grounded knowledge base first so verified FAQs, REIL phases,
+  // and Glossary definitions are never overridden by hallucinated pricing tiers in production.
+  const groundedText = synthesizeGroundedKnowledgeResponse(
+    message,
+    retrievedContext,
+    userContext,
+  );
+  const hasGroundedMatch = groundedText !== FALLBACK_OUT_OF_SCOPE;
+
+  if (!hasGroundedMatch && isFirebaseAiConfigured()) {
     try {
       const model = getPepperGenerativeModel(userContext, retrievedContext);
       const prompt = history && history.length > 0
@@ -325,6 +393,9 @@ export async function streamPepperResponse(
             for await (const chunk of result.stream) {
               const text = chunk.text();
               if (text) {
+                if (!isPricingQuery && containsUnsolicitedPricingTiers(text)) {
+                  continue;
+                }
                 const safeChunk = sanitizePepperOutput(text);
                 if (safeChunk) {
                   emittedAny = true;
@@ -333,9 +404,7 @@ export async function streamPepperResponse(
               }
             }
             if (!emittedAny) {
-              const fallbackText = sanitizePepperOutput(
-                synthesizeGroundedKnowledgeResponse(message, retrievedContext, userContext),
-              );
+              const fallbackText = sanitizePepperOutput(groundedText);
               controller.enqueue(encoder.encode(fallbackText));
             }
             controller.close();
@@ -345,9 +414,7 @@ export async function streamPepperResponse(
               streamErr,
             );
             if (!emittedAny) {
-              const fallbackText = sanitizePepperOutput(
-                synthesizeGroundedKnowledgeResponse(message, retrievedContext, userContext),
-              );
+              const fallbackText = sanitizePepperOutput(groundedText);
               controller.enqueue(encoder.encode(fallbackText));
             }
             controller.close();
@@ -360,7 +427,7 @@ export async function streamPepperResponse(
         err,
       );
     }
-  } else if (!loggedUnconfiguredWarning) {
+  } else if (!isFirebaseAiConfigured() && !loggedUnconfiguredWarning) {
     loggedUnconfiguredWarning = true;
     console.warn(
       JSON.stringify({
@@ -377,13 +444,7 @@ export async function streamPepperResponse(
     );
   }
 
-  // Grounded Domain Knowledge fallback stream
-  const responseText = synthesizeGroundedKnowledgeResponse(
-    message,
-    retrievedContext,
-    userContext,
-  );
-  const safeText = sanitizePepperOutput(responseText);
+  const safeText = sanitizePepperOutput(groundedText);
 
   // Return standard unbuffered stream chunks
   return new ReadableStream({
@@ -477,8 +538,9 @@ export async function generatePepperResponse(
     }
   }
 
-  // 3. Pricing and Plans
-  if (isExplicitPricingOrTrialQuery(lowerMsg) || lowerMsg.includes('how much')) {
+  // 3. Pricing and Plans (strictly scoped to explicit pricing/trial inquiries)
+  const isPricingQuery = isExplicitPricingOrTrialQuery(lowerMsg);
+  if (isPricingQuery) {
     return {
       text: `PaperWorking offers transparent pricing designed for serious real estate investors:\n\n- **Investor** (${AVA_CONFIG.pricing.investor.billingText}): Solo plan with full 4-phase lifecycle pipeline, Deal Calculator, 33 KPIs, and a dedicated read-only CPA collaborator seat.\n- **Investment Team** (${AVA_CONFIG.pricing.investmentTeam.billingText}): Up to 10 user accounts, role-based permissions, automated Google Drive folder provisioning, and priority emergency closing support.\n- **Vendor** (${AVA_CONFIG.pricing.vendor.billingText}): For general contractors and trades to view assigned scopes and submit scoped draw requests.\n\nEvery subscription starts with a **14-day free trial** (card not charged until day 15), switch between annual/monthly anytime, with self-serve cancellation.`,
       actionLabel: 'View Pricing & Start Trial',
@@ -486,7 +548,21 @@ export async function generatePepperResponse(
     };
   }
 
-  // 4. Live Model Generation if configured
+  // 4. Authoritative Grounded Knowledge Base evaluation first
+  const groundedText = synthesizeGroundedKnowledgeResponse(
+    message,
+    retrievedContext,
+    userContext,
+  );
+
+  if (groundedText !== FALLBACK_OUT_OF_SCOPE) {
+    return {
+      text: sanitizePepperOutput(groundedText),
+      usedLiveModel: false,
+    };
+  }
+
+  // 5. Live Model Generation for open-ended queries if configured
   if (isFirebaseAiConfigured()) {
     try {
       const model = getPepperGenerativeModel(userContext, retrievedContext);
@@ -497,6 +573,12 @@ export async function generatePepperResponse(
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
+      if (!isPricingQuery && containsUnsolicitedPricingTiers(text)) {
+        return {
+          text: sanitizePepperOutput(groundedText),
+          usedLiveModel: false,
+        };
+      }
       return {
         text: sanitizePepperOutput(text),
         usedLiveModel: true,
@@ -508,13 +590,6 @@ export async function generatePepperResponse(
       );
     }
   }
-
-  // 5. Grounded knowledge response
-  const groundedText = synthesizeGroundedKnowledgeResponse(
-    message,
-    retrievedContext,
-    userContext,
-  );
 
   return {
     text: sanitizePepperOutput(groundedText),

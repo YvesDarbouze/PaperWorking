@@ -67,6 +67,7 @@ const {
   formatSocialAuthError,
 } = await import('../../lib/firebase/social-auth.js');
 const { default: LoginPanel } = await import('../../components/auth/LoginPanel.js');
+const { PRICING_PLANS } = await import('../../lib/marketing/pricing-data.js');
 
 describe('Bug_09 Regression — Google Social Sign-In Popup Close Handling', () => {
   beforeEach(() => {
@@ -170,6 +171,180 @@ describe('Bug_09 Regression — Google Social Sign-In Popup Close Handling', () 
     );
   });
 
+    it('Bug_09 Win11 Chrome Race 1: treats popup close as cancelled when Firebase PopupOperation.reject() calls popup.close() synchronously before popup.closed flips to true', async () => {
+          const originalWindow = (globalThis as { window?: unknown }).window;
+          const fakePopup = {
+            closed: false,
+            close: jest.fn(() => {
+              // In Chrome on Windows 11, calling popup.close() during PopupOperation.cleanUp()
+              // happens while popup.closed is still false at entry, and popup.closed becomes true right after
+              setTimeout(() => {
+                fakePopup.closed = true;
+              }, 20);
+            }),
+            focus: jest.fn(),
+          };
+          const fakeWindow = {
+            open: jest.fn((..._args: unknown[]) => fakePopup),
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+          };
+          (globalThis as { window?: unknown }).window = fakeWindow;
+    
+          mockSignInWithPopup.mockImplementationOnce(async () => {
+            const winObj = (globalThis as unknown as { window: typeof fakeWindow }).window;
+            const opened = winObj.open('https://accounts.google.com', 'oauth');
+            // Simulate Firebase PopupOperation.reject(err) -> unregisterAndCleanUp() -> cleanUp() -> authWindow.close()
+            // running synchronously in the same turn BEFORE popup.closed is true and BEFORE microtask catch(err) runs
+            opened.close();
+            const err = new Error('Firebase: Error (auth/internal-error).') as Error & { code?: string };
+            err.code = 'auth/internal-error';
+            throw err;
+          });
+    
+          try {
+            const result = await signInWithSocialProvider('google');
+            expect(result).toEqual({
+              ok: false,
+              cancelled: true,
+              idToken: null,
+              email: null,
+              displayName: null,
+            });
+            expect(result.error).toBeUndefined();
+          } finally {
+            (globalThis as { window?: unknown }).window = originalWindow;
+          }
+        });
+
+    it('Bug_09 Win11 Chrome Race 2: treats popup close as cancelled when clicking X aborts the OAuth request 80ms before OS window close animation flips popup.closed to true', async () => {
+          const originalWindow = (globalThis as { window?: unknown }).window;
+          const fakePopup = {
+            closed: false,
+            close: jest.fn(),
+            focus: jest.fn(),
+          };
+          const fakeWindow = {
+            open: jest.fn((..._args: unknown[]) => fakePopup),
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+          };
+          (globalThis as { window?: unknown }).window = fakeWindow;
+    
+          mockSignInWithPopup.mockImplementationOnce(async () => {
+            const winObj = (globalThis as unknown as { window: typeof fakeWindow }).window;
+            winObj.open('https://accounts.google.com', 'oauth');
+            // User clicks "X": browser aborts in-flight OAuth navigation immediately,
+            // while Windows 11 DWM close animation marks popup.closed = true 80ms later.
+            setTimeout(() => {
+              fakePopup.closed = true;
+            }, 80);
+            const err = new Error('Firebase: Error (auth/network-request-failed).') as Error & { code?: string };
+            err.code = 'auth/network-request-failed';
+            throw err;
+          });
+    
+          try {
+            const result = await signInWithSocialProvider('google');
+            expect(result).toEqual({
+              ok: false,
+              cancelled: true,
+              idToken: null,
+              email: null,
+              displayName: null,
+            });
+            expect(result.error).toBeUndefined();
+          } finally {
+            (globalThis as { window?: unknown }).window = originalWindow;
+          }
+        });
+
+    it('Bug_09 Win11 Chrome Race 3: resolves as cancelled via userCloseWatcher when user clicks X and signInWithPopup hangs waiting on AUTH_EVENT timeout', async () => {
+          const originalWindow = (globalThis as { window?: unknown }).window;
+          const fakePopup = {
+            closed: false,
+            close: jest.fn(),
+            focus: jest.fn(),
+          };
+          const fakeWindow = {
+            open: jest.fn((..._args: unknown[]) => fakePopup),
+            addEventListener: jest.fn(),
+            removeEventListener: jest.fn(),
+          };
+          (globalThis as { window?: unknown }).window = fakeWindow;
+    
+          mockSignInWithPopup.mockImplementationOnce(
+            () =>
+              new Promise((_resolve) => {
+                const winObj = (globalThis as unknown as { window: typeof fakeWindow }).window;
+                winObj.open('https://accounts.google.com', 'oauth');
+                // User clicks "X" 50ms after popup opens; Firebase's internal watcher is blocked or waiting 8s
+                setTimeout(() => {
+                  fakePopup.closed = true;
+                }, 50);
+              }),
+          );
+    
+          try {
+            const result = await signInWithSocialProvider('google');
+            expect(result).toEqual({
+              ok: false,
+              cancelled: true,
+              idToken: null,
+              email: null,
+              displayName: null,
+            });
+            expect(result.error).toBeUndefined();
+          } finally {
+            (globalThis as { window?: unknown }).window = originalWindow;
+          }
+        });
+
+    it('Bug_09 Win11 Chrome Race 4: detects popup close via parent window focus event when user clicks X and returns focus to login page', async () => {
+          const originalWindow = (globalThis as { window?: unknown }).window;
+          const focusListeners: Array<() => void> = [];
+          const fakePopup = {
+            closed: false,
+            close: jest.fn(),
+            focus: jest.fn(),
+          };
+          const fakeWindow = {
+            open: jest.fn((..._args: unknown[]) => fakePopup),
+            addEventListener: jest.fn((event: string, cb: () => void) => {
+              if (event === 'focus') focusListeners.push(cb);
+            }),
+            removeEventListener: jest.fn(),
+          };
+          (globalThis as { window?: unknown }).window = fakeWindow;
+    
+          mockSignInWithPopup.mockImplementationOnce(
+            () =>
+              new Promise((_resolve) => {
+                const winObj = (globalThis as unknown as { window: typeof fakeWindow }).window;
+                winObj.open('https://accounts.google.com', 'oauth');
+                setTimeout(() => {
+                  fakePopup.closed = true;
+                  for (const fn of focusListeners) fn();
+                }, 10);
+              }),
+          );
+    
+          try {
+            const result = await signInWithSocialProvider('google');
+            expect(result).toEqual({
+              ok: false,
+              cancelled: true,
+              idToken: null,
+              email: null,
+              displayName: null,
+            });
+            expect(result.error).toBeUndefined();
+            expect(fakeWindow.removeEventListener).toHaveBeenCalled();
+          } finally {
+            (globalThis as { window?: unknown }).window = originalWindow;
+          }
+        });
+
   describe('formatSocialAuthError sanitization', () => {
     it('returns an empty string for popup-dismissed errors (auth/popup-closed-by-user) so no banner can ever be rendered', () => {
       expect(
@@ -219,4 +394,13 @@ describe('Bug_09 Regression — Google Social Sign-In Popup Close Handling', () 
     expect(html).not.toContain('Firebase: Error');
   });
 });
+});
+
+describe('Bug_10 Regression — Signup CTA links', () => {
+  it('Bug_10 Regression: PRICING_PLANS ctaHref links point directly to /signup rather than /login?mode=signup', () => {
+        for (const plan of PRICING_PLANS) {
+          expect(plan.ctaHref.startsWith('/signup')).toBe(true);
+          expect(plan.ctaHref).not.toContain('/login');
+        }
+      });
 });

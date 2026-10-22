@@ -45,6 +45,9 @@ const POPUP_DISMISSED_PATTERNS = [
   'popup closed by user',
   'popup_closed',
   'popup-closed',
+  'closed_by_user',
+  'closed-by-user',
+  'closed by user',
   'auth/cancelled-popup-request',
   'cancelled-popup-request',
   'cancelled_popup_request',
@@ -53,6 +56,8 @@ const POPUP_DISMISSED_PATTERNS = [
   'auth/user-cancelled',
   'user-cancelled',
   'user_cancelled',
+  'user cancelled',
+  'user canceled',
   'auth/redirect-cancelled-by-user',
   'redirect-cancelled-by-user',
   'access_denied',
@@ -63,7 +68,57 @@ const POPUP_DISMISSED_PATTERNS = [
   'user denied',
   'permissions error',
   'window closed',
+  'window_closed',
 ];
+
+function isExplicitNonDismissalPopupError(err: unknown): boolean {
+  if (!err) return false;
+  const code =
+    typeof (err as { code?: unknown })?.code === 'string'
+      ? ((err as { code: string }).code || '').toLowerCase().trim()
+      : '';
+  const message =
+    typeof (err as { message?: unknown })?.message === 'string'
+      ? ((err as { message: string }).message || '').toLowerCase().trim()
+      : typeof err === 'string'
+        ? err.toLowerCase().trim()
+        : '';
+  const combined = `${code} ${message}`;
+  return (
+    combined.includes('account-exists-with-different-credential') ||
+    combined.includes('popup-blocked') ||
+    combined.includes('user-disabled') ||
+    combined.includes('too-many-requests')
+  );
+}
+
+function isPopupWindowClosed(win: Window | null): boolean {
+  if (!win) return false;
+  try {
+    return Boolean(win.closed);
+  } catch {
+    return false;
+  }
+}
+
+async function waitForPopupWindowClosed(win: Window | null, maxWaitMs = 250): Promise<boolean> {
+  if (!win) return false;
+  if (isPopupWindowClosed(win)) return true;
+  const stepMs = 25;
+  const deadline = Date.now() + maxWaitMs;
+  while (Date.now() < deadline) {
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, stepMs);
+      if (typeof (timer as { unref?: () => void })?.unref === 'function') {
+        (timer as { unref: () => void }).unref();
+      }
+    });
+    if (isPopupWindowClosed(win)) {
+      return true;
+    }
+  }
+  return isPopupWindowClosed(win);
+}
 
 /**
  * Returns true when an error thrown by Firebase Auth popup flow represents
@@ -192,12 +247,12 @@ export async function signInWithSocialProvider(
 
   const popupState: {
     popupWindow: Window | null;
-    closedBySdk: boolean;
-    closedByUserBeforeCleanup: boolean;
+    closedByUser: boolean;
+    removeWindowFocusListener: (() => void) | null;
   } = {
     popupWindow: null,
-    closedBySdk: false,
-    closedByUserBeforeCleanup: false,
+    closedByUser: false,
+    removeWindowFocusListener: null,
   };
   let closeWatchInterval: ReturnType<typeof setInterval> | null = null;
   let closeGraceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -209,24 +264,6 @@ export async function signInWithSocialProvider(
       const opened = originalWindowOpen.apply(window, args);
       if (opened) {
         popupState.popupWindow = opened;
-        try {
-          const originalClose = opened.close;
-          if (typeof originalClose === 'function') {
-            opened.close = function () {
-              try {
-                if (opened.closed) {
-                  popupState.closedByUserBeforeCleanup = true;
-                }
-              } catch {
-                // Ignore cross-origin window access errors
-              }
-              popupState.closedBySdk = true;
-              return originalClose.apply(opened);
-            };
-          }
-        } catch {
-          // Ignore if window proxy is non-configurable
-        }
       }
       return opened;
     };
@@ -238,33 +275,46 @@ export async function signInWithSocialProvider(
     popupPromise.catch(() => {});
 
     const userCloseWatcher = new Promise<never>((_, reject) => {
-      closeWatchInterval = setInterval(() => {
-        const win = popupState.popupWindow;
-        if (!win) return;
-        try {
-          if (win.closed && !popupState.closedBySdk) {
-            popupState.closedByUserBeforeCleanup = true;
-            if (closeWatchInterval) {
-              clearInterval(closeWatchInterval);
-              closeWatchInterval = null;
-            }
-            closeGraceTimer = setTimeout(() => {
-              const dismissErr = new Error('Firebase: Error (auth/popup-closed-by-user).') as Error & {
-                code?: string;
-              };
-              dismissErr.code = 'auth/popup-closed-by-user';
-              reject(dismissErr);
-            }, 300);
-            if (typeof (closeGraceTimer as { unref?: () => void })?.unref === 'function') {
-              (closeGraceTimer as { unref: () => void }).unref();
-            }
-          }
-        } catch {
-          // Ignore cross-origin window access errors
+      const triggerCloseGraceReject = () => {
+        if (popupState.closedByUser) return;
+        popupState.closedByUser = true;
+        if (closeWatchInterval) {
+          clearInterval(closeWatchInterval);
+          closeWatchInterval = null;
         }
-      }, 150);
+        closeGraceTimer = setTimeout(() => {
+          const dismissErr = new Error('Firebase: Error (auth/popup-closed-by-user).') as Error & {
+            code?: string;
+          };
+          dismissErr.code = 'auth/popup-closed-by-user';
+          reject(dismissErr);
+        }, 200);
+        if (typeof (closeGraceTimer as { unref?: () => void })?.unref === 'function') {
+          (closeGraceTimer as { unref: () => void }).unref();
+        }
+      };
+
+      const checkPopupClosed = () => {
+        if (isPopupWindowClosed(popupState.popupWindow)) {
+          triggerCloseGraceReject();
+        }
+      };
+
+      closeWatchInterval = setInterval(checkPopupClosed, 100);
       if (typeof (closeWatchInterval as { unref?: () => void })?.unref === 'function') {
         (closeWatchInterval as { unref: () => void }).unref();
+      }
+
+      if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+        const onWindowRegainFocus = () => {
+          checkPopupClosed();
+        };
+        window.addEventListener('focus', onWindowRegainFocus);
+        popupState.removeWindowFocusListener = () => {
+          if (typeof window.removeEventListener === 'function') {
+            window.removeEventListener('focus', onWindowRegainFocus);
+          }
+        };
       }
     });
 
@@ -278,20 +328,17 @@ export async function signInWithSocialProvider(
       displayName: credential.user.displayName,
     };
   } catch (err: unknown) {
-    let popupClosedByUser = popupState.closedByUserBeforeCleanup;
-    if (!popupClosedByUser && popupState.popupWindow) {
-      try {
-        if (popupState.popupWindow.closed && !popupState.closedBySdk) {
-          popupClosedByUser = true;
-        }
-      } catch {
-        // Ignore cross-origin window access errors
+    if (isPopupDismissedError(err) || popupState.closedByUser) {
+      return { ok: false, cancelled: true, idToken: null, email: null, displayName: null };
+    }
+
+    if (popupState.popupWindow && !isExplicitNonDismissalPopupError(err)) {
+      const closedAfterReject = await waitForPopupWindowClosed(popupState.popupWindow, 250);
+      if (closedAfterReject) {
+        return { ok: false, cancelled: true, idToken: null, email: null, displayName: null };
       }
     }
 
-    if (isPopupDismissedError(err) || popupClosedByUser) {
-      return { ok: false, cancelled: true, idToken: null, email: null, displayName: null };
-    }
     const formattedError = formatSocialAuthError(err);
     if (!formattedError) {
       return { ok: false, cancelled: true, idToken: null, email: null, displayName: null };
@@ -309,6 +356,9 @@ export async function signInWithSocialProvider(
     }
     if (closeGraceTimer) {
       clearTimeout(closeGraceTimer);
+    }
+    if (popupState.removeWindowFocusListener) {
+      popupState.removeWindowFocusListener();
     }
     if (hasWindowOpen && originalWindowOpen) {
       window.open = originalWindowOpen;

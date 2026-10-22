@@ -59,6 +59,17 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
+function isInternalMetadataValidationError(val: unknown): boolean {
+  if (typeof val !== 'string') return false;
+  const upper = val.toUpperCase();
+  return (
+    upper.includes('UNEXPECTED_KEY') ||
+    upper.includes('METADATA_UNKNOWN_JSON') ||
+    upper.includes('STAGE WIRE VALIDATION') ||
+    upper.includes('UNRECOGNIZED_KEYS')
+  );
+}
+
 export interface ProjectsListPanelProps {
   initialProjects?: ProjectSummary[];
   initialLoading?: boolean;
@@ -117,34 +128,45 @@ export default function ProjectsListPanel({
             : body.error?.message || 'Failed to load projects';
         throw new Error(errorMessage);
       }
-      const mapped = (body.projects ?? []).map((row) => ({
-        id: String(row.id ?? ''),
-        propertyName: String(row.propertyName ?? row.property_address ?? 'Untitled'),
-        address: String(row.address ?? row.property_address ?? ''),
-        city: String(row.city ?? ''),
-        currentPhase: (row.currentPhase ?? 'acquisition') as LegacyProjectPhase,
-        status: String(row.status ?? 'Active'),
-        dispositionType: (row.dispositionType === 'RENT' || row.dispositionType === 'MIXED'
-          ? row.dispositionType
-          : 'SALE') as ProjectSummary['dispositionType'],
-        purchasePrice: Number(row.purchasePrice ?? row.purchase_price ?? 0),
-        estimatedIrr: Number(row.estimatedIrr ?? 0),
-        phaseCompletionPct: Number(row.phaseCompletionPct ?? row.phase_completion_pct ?? 0),
-        ownershipPercentage: Number(row.ownershipPercentage ?? 100),
-        estimatedExitValue: Number(row.estimatedExitValue ?? 0),
-        dealId: row.dealId ? String(row.dealId) : null,
-        dealSlug: row.dealSlug ? String(row.dealSlug) : null,
-        dealAddress: row.dealAddress ? String(row.dealAddress) : null,
-        acquisitionStatus: (row.acquisitionStatus as any) || 'lead',
-        tasks: (row.tasks as any) || [],
-        deadRecord: (row.deadRecord as any) || null,
-        contingencies: (row.contingencies as any) || [],
-        underwritingSnapshot: (row.underwritingSnapshot as any) || null,
-        isArchived: Boolean(row.isArchived),
-      }));
+      const mapped = (body.projects ?? [])
+        .filter(
+          (row) =>
+            !isInternalMetadataValidationError(row.id) &&
+            !isInternalMetadataValidationError(row.propertyName) &&
+            !isInternalMetadataValidationError(row.address) &&
+            !isInternalMetadataValidationError(row.property_address),
+        )
+        .map((row) => ({
+          id: String(row.id ?? ''),
+          propertyName: String(row.propertyName ?? row.property_address ?? 'Untitled'),
+          address: String(row.address ?? row.property_address ?? ''),
+          city: String(row.city ?? ''),
+          currentPhase: (row.currentPhase ?? 'acquisition') as LegacyProjectPhase,
+          status: String(row.status ?? 'Active'),
+          dispositionType: (row.dispositionType === 'RENT' || row.dispositionType === 'MIXED'
+            ? row.dispositionType
+            : 'SALE') as ProjectSummary['dispositionType'],
+          purchasePrice: Number(row.purchasePrice ?? row.purchase_price ?? 0),
+          estimatedIrr: Number(row.estimatedIrr ?? 0),
+          phaseCompletionPct: Number(row.phaseCompletionPct ?? row.phase_completion_pct ?? 0),
+          ownershipPercentage: Number(row.ownershipPercentage ?? 100),
+          estimatedExitValue: Number(row.estimatedExitValue ?? 0),
+          dealId: row.dealId ? String(row.dealId) : null,
+          dealSlug: row.dealSlug ? String(row.dealSlug) : null,
+          dealAddress: row.dealAddress ? String(row.dealAddress) : null,
+          acquisitionStatus: (row.acquisitionStatus as any) || 'lead',
+          tasks: (row.tasks as any) || [],
+          deadRecord: (row.deadRecord as any) || null,
+          contingencies: (row.contingencies as any) || [],
+          underwritingSnapshot: (row.underwritingSnapshot as any) || null,
+          isArchived: Boolean(row.isArchived),
+        }));
       setProjects(mapped);
     } catch (err: unknown) {
-      if (!isSilent) setError(err instanceof Error ? err.message : 'Failed to load projects');
+      const msg = err instanceof Error ? err.message : 'Failed to load projects';
+      if (!isSilent && !isInternalMetadataValidationError(msg)) {
+        setError(msg);
+      }
     } finally {
       if (!isSilent) setLoading(false);
     }
@@ -156,7 +178,12 @@ export default function ProjectsListPanel({
   }, [isAuthed, loadProjects]);
 
   const filteredProjects = useMemo(() => {
-    let rows = [...projects];
+    let rows = projects.filter(
+      (p) =>
+        !isInternalMetadataValidationError(p.id) &&
+        !isInternalMetadataValidationError(p.propertyName) &&
+        !isInternalMetadataValidationError(p.address),
+    );
     if (search.trim()) {
       const q = search.toLowerCase().trim();
       const qNumeric = q.replace(/[$,\s]/g, '');
@@ -393,7 +420,7 @@ export default function ProjectsListPanel({
         </select>
       </div>
 
-      {error ? (
+      {error && !isInternalMetadataValidationError(error) ? (
         <div className="mb-6 rounded-none border border-destructive/30 bg-destructive/10 p-4 text-xs sm:text-sm text-destructive">
           {error}
         </div>

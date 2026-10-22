@@ -48,13 +48,45 @@ export async function POST(request: Request) {
 
       const projectId = (projectData as any).id || `proj-${Date.now().toString().slice(-6)}`;
       const pData = projectData as any;
+      const resolvedPurchasePrice =
+        typeof pData.purchasePrice === 'number' && Number.isFinite(pData.purchasePrice)
+          ? pData.purchasePrice
+          : typeof pData.purchase_price === 'number' && Number.isFinite(pData.purchase_price)
+            ? pData.purchase_price
+            : typeof body?.purchasePrice === 'number' && Number.isFinite(body.purchasePrice)
+              ? body.purchasePrice
+              : 0;
+      const resolvedRehabBudget =
+        typeof pData.rehab_costs === 'number' && Number.isFinite(pData.rehab_costs)
+          ? pData.rehab_costs
+          : typeof pData.rehabBudget === 'number' && Number.isFinite(pData.rehabBudget)
+            ? pData.rehabBudget
+            : typeof body?.rehabBudget === 'number' && Number.isFinite(body.rehabBudget)
+              ? body.rehabBudget
+              : typeof body?.rehab_costs === 'number' && Number.isFinite(body.rehab_costs)
+                ? body.rehab_costs
+                : 0;
+      const resolvedEstimatedArv =
+        typeof pData.estimatedARV === 'number' && Number.isFinite(pData.estimatedARV) && pData.estimatedARV > 0
+          ? pData.estimatedARV
+          : typeof pData.estimatedExitValue === 'number' && Number.isFinite(pData.estimatedExitValue) && pData.estimatedExitValue > 0
+            ? pData.estimatedExitValue
+            : typeof pData.underwritingSnapshot?.inputs?.estimatedARV === 'number' &&
+                Number.isFinite(pData.underwritingSnapshot.inputs.estimatedARV) &&
+                pData.underwritingSnapshot.inputs.estimatedARV > 0
+              ? pData.underwritingSnapshot.inputs.estimatedARV
+              : typeof body?.estimatedARV === 'number' && Number.isFinite(body.estimatedARV) && body.estimatedARV > 0
+                ? body.estimatedARV
+                : resolvedPurchasePrice > 0
+                  ? Math.round((resolvedPurchasePrice + Math.max(0, resolvedRehabBudget)) * 1.3)
+                  : 650000;
       const initializedTools = initializeProjectTools({
         projectId,
         propertyName: pData.propertyName || pData.address || 'Project Workspace',
         address: pData.address || pData.property_address || '',
-        purchasePrice: pData.purchasePrice,
-        rehabBudget: pData.rehabBudget || pData.rehab_costs,
-        estimatedARV: pData.estimatedARV,
+        purchasePrice: resolvedPurchasePrice,
+        rehabBudget: resolvedRehabBudget,
+        estimatedARV: resolvedEstimatedArv,
         strategy: pData.strategy || pData.exit_strategy,
         creatorUid: isDevAuthFailure(auth) ? 'usr-dev-1' : auth.uid,
         creatorName: 'Lead Underwriter',
@@ -70,8 +102,28 @@ export async function POST(request: Request) {
         ...initializedTools,
         id: projectId,
         organizationId: resolvedOrgId,
+        purchasePrice: resolvedPurchasePrice,
+        purchase_price: resolvedPurchasePrice,
+        rehab_costs: resolvedRehabBudget,
+        rehabBudget: resolvedRehabBudget,
+        estimatedARV: resolvedEstimatedArv,
+        estimatedExitValue: resolvedEstimatedArv,
+        ...(pData.underwritingSnapshot
+          ? {
+              underwritingSnapshot: {
+                ...pData.underwritingSnapshot,
+                inputs: {
+                  ...(pData.underwritingSnapshot.inputs || {}),
+                  purchasePrice: resolvedPurchasePrice,
+                  rehabBudget: resolvedRehabBudget,
+                  estimatedARV:
+                    pData.underwritingSnapshot.inputs?.estimatedARV ?? resolvedEstimatedArv,
+                },
+              },
+            }
+          : {}),
         storageQuotaBytes,
-      });
+      } as any);
       return { projectId, project: created as unknown as Record<string, unknown> };
     },
   });

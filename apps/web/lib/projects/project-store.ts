@@ -119,24 +119,167 @@ export function withFirestoreTimeout<T>(
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+function resolveFiniteNumber(candidates: unknown[], fallback: number): number {
+  for (const candidate of candidates) {
+    if (candidate === undefined || candidate === null || candidate === '') continue;
+    if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+      return candidate;
+    }
+    if (typeof candidate === 'string') {
+      const cleaned = candidate.replace(/[$,\s]/g, '');
+      if (cleaned !== '') {
+        const parsed = Number(cleaned);
+        if (Number.isFinite(parsed)) return parsed;
+      }
+    }
+  }
+  return fallback;
+}
+
+export function isInternalMetadataValidationNoise(value: unknown): boolean {
+  if (typeof value === 'string') {
+    const upper = value.toUpperCase();
+    return (
+      upper.includes('UNEXPECTED_KEY') ||
+      upper.includes('METADATA_UNKNOWN_JSON') ||
+      upper.includes('STAGE WIRE VALIDATION') ||
+      upper.includes('UNRECOGNIZED_KEYS')
+    );
+  }
+  if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (isInternalMetadataValidationNoise(k) || isInternalMetadataValidationNoise(v)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /**
  * Normalizes a raw Firestore or seed document to a complete ProjectWorkspace.
  */
-function normalizeWorkspace(docId: string, rawData: Record<string, unknown>): ProjectWorkspace {
-  const data = fromFirestoreSafe(rawData) as Record<string, unknown>;
-  const purchasePrice = Number(data.purchasePrice ?? data.purchase_price ?? 485000);
-  const rehabCosts = Number(data.rehab_costs ?? data.rehabCost ?? 65000);
+function normalizeWorkspace(docId: string, rawInputData: Record<string, unknown>): ProjectWorkspace {
+  const decodedInput = fromFirestoreSafe(rawInputData) as Record<string, unknown>;
+  const data: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(decodedInput || {})) {
+    if (
+      k.startsWith('__metadata') ||
+      k.startsWith('UNEXPECTED_KEY') ||
+      isInternalMetadataValidationNoise(k)
+    ) {
+      continue;
+    }
+    data[k] = v;
+  }
+  if (Array.isArray(data.contingencies)) {
+    data.contingencies = (data.contingencies as Array<Record<string, unknown>>).filter(
+      (c) =>
+        !isInternalMetadataValidationNoise(c?.name) &&
+        !isInternalMetadataValidationNoise(c?.label) &&
+        !isInternalMetadataValidationNoise(c?.type) &&
+        !isInternalMetadataValidationNoise(c?.id),
+    );
+  }
+  if (
+    data.deadRecord &&
+    typeof data.deadRecord === 'object' &&
+    isInternalMetadataValidationNoise(data.deadRecord)
+  ) {
+    delete data.deadRecord;
+    data.isArchived = false;
+    if (data.acquisitionStatus === 'dead') {
+      data.acquisitionStatus = 'lead';
+    }
+  }
+  if (isInternalMetadataValidationNoise(data.error)) {
+    delete data.error;
+  }
+  if (isInternalMetadataValidationNoise(data.validationError)) {
+    delete data.validationError;
+  }
+
+  const snapshotInputs = (data.underwritingSnapshot as any)?.inputs;
+  const underwritingAcq = (data.underwriting as any)?.acquisition;
+  const downstreamHoldBudget = (data.downstreamSeeding as any)?.hold?.budget?.allocatedTotal;
+
+  const purchasePrice = resolveFiniteNumber(
+    [
+      data.purchasePrice,
+      data.purchase_price,
+      snapshotInputs?.purchasePrice,
+      underwritingAcq?.purchasePrice,
+    ],
+    485000,
+  );
+  const rehabCosts = resolveFiniteNumber(
+    [
+      data.rehab_costs,
+      data.rehabBudget,
+      data.rehab_budget,
+      data.rehabCost,
+      snapshotInputs?.rehabBudget,
+      downstreamHoldBudget,
+      underwritingAcq?.rehabBudget,
+    ],
+    65000,
+  );
+  const explicitEstimatedArv = resolveFiniteNumber(
+    [
+      data.estimatedARV,
+      data.estimated_arv,
+      data.estimatedExitValue,
+      snapshotInputs?.estimatedARV,
+      (data.underwritingSnapshot as any)?.outputs?.estimatedExitValue,
+      underwritingAcq?.estimatedARV,
+      (data.underwriting as any)?.exit?.estimatedArv,
+    ],
+    0,
+  );
+  const resolvedEstimatedArv =
+    explicitEstimatedArv > 0
+      ? explicitEstimatedArv
+      : purchasePrice > 0
+        ? Math.round((purchasePrice + Math.max(0, rehabCosts)) * 1.3)
+        : 650000;
+  const normalizedSnapshot =
+    data.underwritingSnapshot && typeof data.underwritingSnapshot === 'object'
+      ? {
+          ...(data.underwritingSnapshot as Record<string, unknown>),
+          inputs: {
+            ...(snapshotInputs && typeof snapshotInputs === 'object' ? snapshotInputs : {}),
+            purchasePrice: resolveFiniteNumber([snapshotInputs?.purchasePrice], purchasePrice),
+            rehabBudget: resolveFiniteNumber([snapshotInputs?.rehabBudget], rehabCosts),
+            estimatedARV:
+              resolveFiniteNumber([snapshotInputs?.estimatedARV], 0) > 0
+                ? resolveFiniteNumber([snapshotInputs?.estimatedARV], resolvedEstimatedArv)
+                : resolvedEstimatedArv,
+          },
+        }
+      : undefined;
 
   const rawTasks = (data.tasks as any[]) || [];
   const totalTasks = rawTasks.length;
   const completedTasks = rawTasks.filter((t) => t.status === 'complete').length;
   const computedProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  const phaseCompletion = Number(
-    data.phase_completion_pct ?? data.phaseCompletionPct ?? (totalTasks > 0 ? computedProgress : 0)
+  const phaseCompletion = resolveFiniteNumber(
+    [data.phase_completion_pct, data.phaseCompletionPct],
+    totalTasks > 0 ? computedProgress : 0,
   );
 
   const workspace = {
+    messageTopics: [],
+    campfireMessages: [],
+    checkInQuestions: [],
+    taskLists: [],
+    cardColumns: [],
+    hillChartItems: [],
+    scheduleEvents: [],
+    vendorAccess: [],
+    activity: [],
+    publicShareLinks: [],
+    ...data,
     id: docId,
     project_id: (data.project_id as string) || docId,
     organizationId: (data.organizationId as string) || 'org-1',
@@ -154,35 +297,33 @@ function normalizeWorkspace(docId: string, rawData: Record<string, unknown>): Pr
     purchasePrice,
     purchase_price: purchasePrice,
     rehab_costs: rehabCosts,
+    rehabBudget: rehabCosts,
+    estimatedARV: resolvedEstimatedArv,
+    estimatedExitValue:
+      explicitEstimatedArv > 0
+        ? explicitEstimatedArv
+        : data.estimatedExitValue === null
+          ? resolvedEstimatedArv
+          : resolvedEstimatedArv,
+    ...(normalizedSnapshot ? { underwritingSnapshot: normalizedSnapshot } : {}),
     exit_strategy: (data.exit_strategy as string) || (data.exitStrategy as string) || 'Fix & Flip',
     dispositionType: (data.dispositionType as any) || 'SALE',
     entity_type: (data.entity_type as string) || 'LLC',
-    storage_used_bytes: Number(data.storage_used_bytes ?? 0),
-    storageQuotaBytes: Number(data.storageQuotaBytes ?? 536870912),
+    storage_used_bytes: resolveFiniteNumber([data.storage_used_bytes], 0),
+    storageQuotaBytes: resolveFiniteNumber([data.storageQuotaBytes], 536870912),
     ianaTimezone: (data.ianaTimezone as string) || 'America/Chicago',
     dealId: (data.dealId as string) || null,
     dealSlug: (data.dealSlug as string) || null,
     dealAddress: (data.dealAddress as string) || null,
-    todos: (data.todos as any[]) || [],
-    tasks: (data.tasks as any[]) || [],
-    documents: (data.documents as any[]) || [],
+    todos: Array.isArray(data.todos) ? (data.todos as any[]) : [],
+    tasks: Array.isArray(data.tasks) ? (data.tasks as any[]) : [],
+    documents: Array.isArray(data.documents) ? (data.documents as any[]) : [],
     acquisition: (data.acquisition as any) || null,
     funding: (data.funding as any) || null,
     hold: (data.hold as any) || null,
     exit: (data.exit as any) || null,
     underwriting: (data.underwriting as any) || null,
-    messageTopics: [],
-    campfireMessages: [],
-    checkInQuestions: [],
-    taskLists: [],
-    cardColumns: [],
-    hillChartItems: [],
-    scheduleEvents: [],
-    vendorAccess: [],
-    activity: [],
-    publicShareLinks: [],
-    ...data,
-  } as ProjectWorkspace & { taskGroups?: unknown };
+  } as ProjectWorkspace & { taskGroups?: unknown; rehabBudget?: number };
 
   const migrated = migrateLegacyTaskGroups(docId, workspace, data.taskGroups);
   workspace.tasks = migrated.tasks;
@@ -252,7 +393,13 @@ export async function getProjectFromStore(projectId: string): Promise<ProjectWor
       const docSnap = await withFirestoreTimeout(db.collection('projects').doc(projectId).get(), `read projects/${projectId}`);
 
       if (docSnap.exists) {
-        const workspace = normalizeWorkspace(docSnap.id, docSnap.data() as Record<string, unknown>);
+        const cached = memoryProjectsCache.get(projectId);
+        const rawData = docSnap.data() as Record<string, unknown>;
+        const mergedRaw: Record<string, unknown> = cached ? { ...cached, ...rawData } : { ...rawData };
+        if (!mergedRaw.underwritingSnapshot && cached?.underwritingSnapshot) {
+          mergedRaw.underwritingSnapshot = cached.underwritingSnapshot;
+        }
+        const workspace = normalizeWorkspace(docSnap.id, mergedRaw);
         memoryProjectsCache.set(projectId, workspace);
         return workspace;
       }
@@ -306,9 +453,16 @@ export async function listProjectsFromStore(
   query?: string,
 ): Promise<ProjectWorkspace[]> {
   const filterQuery = (list: ProjectWorkspace[]): ProjectWorkspace[] => {
-    if (!query || !query.trim()) return list;
+    const sanitized = list.filter(
+      (p) =>
+        !isInternalMetadataValidationNoise(p.id) &&
+        !isInternalMetadataValidationNoise(p.propertyName) &&
+        !isInternalMetadataValidationNoise(p.address) &&
+        !isInternalMetadataValidationNoise(p.property_address),
+    );
+    if (!query || !query.trim()) return sanitized;
     const q = query.trim().toLowerCase();
-    return list.filter(
+    return sanitized.filter(
       (p) =>
         p.propertyName?.toLowerCase().includes(q) ||
         p.address?.toLowerCase().includes(q) ||
@@ -428,6 +582,13 @@ export async function updateProjectInStore(
       const touchesTodos = 'tasks' in patch || 'taskLists' in patch;
       const firestorePatch = toFirestoreSafe({
         ...patch,
+        purchasePrice: merged.purchasePrice,
+        purchase_price: merged.purchase_price,
+        rehab_costs: merged.rehab_costs,
+        rehabBudget: (merged as any).rehabBudget ?? merged.rehab_costs,
+        estimatedExitValue: merged.estimatedExitValue ?? null,
+        estimatedARV: (merged as any).estimatedARV ?? merged.estimatedExitValue ?? null,
+        ...(merged.underwritingSnapshot ? { underwritingSnapshot: merged.underwritingSnapshot } : {}),
         ...(touchesTodos
           ? { tasks: merged.tasks, taskLists: merged.taskLists, taskGroups: FieldValue.delete() }
           : {}),

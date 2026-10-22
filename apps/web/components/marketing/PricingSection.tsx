@@ -36,13 +36,12 @@ export default function PricingSection() {
 
   function handleSelect(plan: PricingPlan) {
     const params = new URLSearchParams({
-      mode: 'signup',
       accountType: plan.id === 'vendor' ? 'vendor' : 'investor',
       redirectTo: '/pricing',
       plan: plan.stripeKey,
       interval: billingCycle,
     });
-    router.push(`/login?${params.toString()}`);
+    router.push(`/signup?${params.toString()}`);
   }
 
   function handleKeyDown(e: React.KeyboardEvent, cycle: 'annual' | 'monthly') {

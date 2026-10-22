@@ -29,6 +29,63 @@ if (!globalStore.__PW_GLOSSARY_STORE) {
 export const faqMemoryMap = globalStore.__PW_FAQ_STORE;
 export const glossaryMemoryMap = globalStore.__PW_GLOSSARY_STORE;
 
+const canonicalFaqById = new Map<string, FaqEntry>(
+  CANONICAL_FAQ_SEED.map((f) => [f.id, f]),
+);
+
+const LEGACY_OR_STALE_PRICING_REGEX =
+  /(\$(?:29|41|79|82)\s*\/\s*mo|vendor\s+\$29|investment\s+team\s+\$82)/i;
+
+const ANY_PRICING_TIER_REGEX =
+  /(\$(?:29|39|41|59|79|82|99)\s*\/\s*mo|\$(?:390|499|999)\s*\/\s*yr|three\s+transparent\s+pricing\s+plans|subscription\s+tiers)/i;
+
+/**
+ * Validates a FAQ entry loaded from Firestore or cache and heals stale legacy pricing
+ * strings (e.g. "Vendor $29/mo, Investment Team $82/mo") or non-Billing FAQs polluted
+ * with subscription tier breakdowns back to CANONICAL_FAQ_SEED.
+ */
+export function sanitizeOrHealFaqEntry(item: FaqEntry): FaqEntry | null {
+  if (
+    !item ||
+    typeof item.id !== 'string' ||
+    typeof item.question !== 'string' ||
+    typeof item.answer !== 'string'
+  ) {
+    return null;
+  }
+
+  const canonical = canonicalFaqById.get(item.id);
+  const combined = `${item.question} ${item.answer}`;
+
+  if (LEGACY_OR_STALE_PRICING_REGEX.test(combined)) {
+    return canonical ? { ...canonical } : null;
+  }
+
+  const isBillingFaq =
+    item.id === 'faq-pricing-plans' || item.category?.toLowerCase() === 'billing';
+  if (!isBillingFaq && ANY_PRICING_TIER_REGEX.test(item.answer)) {
+    return canonical ? { ...canonical } : null;
+  }
+
+  return item;
+}
+
+function ensureCanonicalFaqsAndHealStore(): void {
+  for (const canonical of CANONICAL_FAQ_SEED) {
+    if (!faqMemoryMap.has(canonical.id)) {
+      faqMemoryMap.set(canonical.id, { ...canonical });
+    }
+  }
+  for (const [id, entry] of Array.from(faqMemoryMap.entries())) {
+    const healed = sanitizeOrHealFaqEntry(entry);
+    if (!healed) {
+      faqMemoryMap.delete(id);
+    } else if (healed !== entry) {
+      faqMemoryMap.set(id, healed);
+    }
+  }
+}
+
 export function slugifyTerm(term: string): string {
   return term
     .toLowerCase()
@@ -54,30 +111,30 @@ function withFirestoreTimeout<T>(promise: Promise<T>): Promise<T> {
 }
 
 /**
- * Reads all FAQ entries from Firestore (or memory mirror).
+ * Reads all FAQ entries from Firestore (merged onto canonical seeds and healed).
  */
 export async function getFaqEntries(): Promise<FaqEntry[]> {
+  ensureCanonicalFaqsAndHealStore();
+
   if (shouldAttemptFirestore()) {
     try {
       const db = getAdminFirestore();
       const snapshot = await withFirestoreTimeout(db.collection(FAQ_COLLECTION).get());
       if (!snapshot.empty) {
-        const list: FaqEntry[] = [];
         snapshot.forEach((doc) => {
           const data = doc.data() as FaqEntry;
-          list.push({ ...data, id: doc.id });
+          const healed = sanitizeOrHealFaqEntry({ ...data, id: doc.id });
+          if (healed) {
+            faqMemoryMap.set(healed.id, healed);
+          }
         });
-        // Update live cache
-        for (const item of list) {
-          faqMemoryMap.set(item.id, item);
-        }
-        return list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
       }
     } catch (err) {
       console.warn('[firestore-support-store] Firestore FAQ read failed, falling back to memory store:', err);
     }
   }
 
+  ensureCanonicalFaqsAndHealStore();
   return Array.from(faqMemoryMap.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
@@ -85,6 +142,7 @@ export async function getFaqEntries(): Promise<FaqEntry[]> {
  * Synchronous getter reading current live memory store.
  */
 export function getFaqEntriesSync(): FaqEntry[] {
+  ensureCanonicalFaqsAndHealStore();
   return Array.from(faqMemoryMap.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 

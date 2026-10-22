@@ -95,7 +95,8 @@ export function compileSystemPrompt(
 ## Hard Rules & Invariants (NON-NEGOTIABLE)
 1. CRITICAL TERMINOLOGY: The product's core nouns are always "Project" and "Deal". Do not use legacy syndication or promoter terms.
 2. ABSOLUTELY NO HALLUCINATION OF PRODUCT FACTS: Pricing, plan entitlements, KPI formulas, and support promises must come strictly from the knowledge below. If you do not know an answer, offer a human handoff immediately rather than guessing.
-3. PRICING & POLICIES TRUTH:
+3. PRICING & POLICIES TRUTH (ONLY WHEN EXPLICITLY ASKED ABOUT PRICING, PLANS, BILLING, OR FREE TRIAL):
+   - NEVER mention subscription pricing tiers, monthly/annual prices, or plan comparisons when answering operational, feature, or REIL phase questions (Acquisition, Fund, Hold, Exit). Answer ONLY the operational/feature question.
    - Investor: ${AVA_CONFIG.pricing.investor.billingText}
    - Investment Team: ${AVA_CONFIG.pricing.investmentTeam.billingText}
    - Vendor: ${AVA_CONFIG.pricing.vendor.billingText}

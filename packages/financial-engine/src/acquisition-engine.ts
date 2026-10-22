@@ -765,6 +765,7 @@ export interface TransformedProjectPayload {
   purchasePrice: number;
   purchase_price: number;
   rehab_costs: number;
+  rehabBudget: number;
   estimatedExitValue: number | null;
   beds?: number;
   baths?: number;
@@ -840,6 +841,7 @@ export function transformCalculatorToProject(
     purchasePrice: input.purchasePrice,
     purchase_price: input.purchasePrice,
     rehab_costs: input.rehabBudget ?? 0,
+    rehabBudget: input.rehabBudget ?? 0,
     estimatedExitValue: input.estimatedARV ?? null,
     beds: input.beds,
     baths: input.baths,

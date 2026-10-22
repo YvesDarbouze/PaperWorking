@@ -16,6 +16,11 @@ import {
   CheckCircle,
 } from '@/components/icons/PhosphorIcons';
 import { CANONICAL_FAQ_SEED, CANONICAL_GLOSSARY_SEED } from '@/lib/support/seed-data';
+import {
+  isExplicitPricingOrTrialQuery,
+  containsUnsolicitedPricingTiers,
+  synthesizeGroundedKnowledgeResponse,
+} from '@/lib/assistant/firebase-ai-client';
 import TurnstileWidget from '@/components/ui/TurnstileWidget';
 
 interface PepperMessage {
@@ -224,6 +229,7 @@ export default function SupportCenter({
       const reader = res.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let accumulatedText = '';
+      const isPricingQuery = isExplicitPricingOrTrialQuery(textToAsk.toLowerCase());
 
       while (true) {
         const { done, value } = await reader.read();
@@ -231,9 +237,14 @@ export default function SupportCenter({
         const chunk = decoder.decode(value, { stream: true });
         accumulatedText += chunk;
 
+        const safeDisplayText =
+          !isPricingQuery && containsUnsolicitedPricingTiers(accumulatedText)
+            ? synthesizeGroundedKnowledgeResponse(textToAsk)
+            : accumulatedText;
+
         setPepperMessages((prev) =>
           prev.map((msg) =>
-            msg.id === assistantMsgId ? { ...msg, text: accumulatedText } : msg,
+            msg.id === assistantMsgId ? { ...msg, text: safeDisplayText } : msg,
           ),
         );
       }
@@ -483,6 +494,7 @@ export default function SupportCenter({
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
+                    'How does the Hold phase track rehabilitation budgets and holding costs in real time?',
                     'How do I set up my workspace?',
                     'What are the 33 metrics?',
                     'How does the free trial work?',

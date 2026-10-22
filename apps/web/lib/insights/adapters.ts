@@ -39,15 +39,21 @@ export function seedProjectsForInsights(): Array<{
   });
 }
 
-export function buildSeedProjectMockData(projectId: string): Record<string, unknown> {
-  const project = getSeedProjectById(projectId);
+export function buildSeedProjectMockData(
+  projectId: string,
+  loadedProject?: any,
+): Record<string, unknown> {
+  const project = loadedProject || getSeedProjectById(projectId);
   if (!project) return canonicalSeedDeal;
 
   const uw = project.underwriting;
   const snap = project.underwritingSnapshot;
   const holdPhase = (project as any).holdPhase;
   const purchasePrice =
-    uw?.acquisition?.purchasePrice ?? snap?.inputs?.purchasePrice ?? project.purchase_price;
+    uw?.acquisition?.purchasePrice ??
+    snap?.inputs?.purchasePrice ??
+    project.purchasePrice ??
+    project.purchase_price;
   const loanAmount =
     uw?.debt?.loanAmount ??
     snap?.outputs?.loanAmount ??
@@ -59,11 +65,12 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
     holdPhase?.initialRehabBudget ??
     uw?.acquisition?.rehabBudget ??
     snap?.inputs?.rehabBudget ??
-    project.rehab_costs;
+    project.rehab_costs ??
+    project.rehabBudget;
   const grossRent =
-    uw?.rentRoll?.grossScheduledRent !== undefined
+    uw?.rentRoll?.grossScheduledRent !== undefined && uw.rentRoll.grossScheduledRent > 0
       ? uw.rentRoll.grossScheduledRent * 12
-      : snap?.inputs?.grossMonthlyRent !== undefined
+      : snap?.inputs?.grossMonthlyRent !== undefined && snap.inputs.grossMonthlyRent > 0
         ? snap.inputs.grossMonthlyRent * 12
         : project.dispositionType === 'RENT'
           ? Math.round(purchasePrice * 0.08)
@@ -74,7 +81,11 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
     id: project.id,
     purchase_price: purchasePrice,
     property_value:
-      uw?.acquisition?.estimatedARV || snap?.inputs?.estimatedARV || purchasePrice,
+      uw?.acquisition?.estimatedARV ||
+      snap?.inputs?.estimatedARV ||
+      project.estimatedARV ||
+      project.estimatedExitValue ||
+      purchasePrice,
     down_payment_amount: cashInvested,
     total_cash_invested: cashInvested,
     loan_amount: loanAmount,
@@ -83,20 +94,6 @@ export function buildSeedProjectMockData(projectId: string): Record<string, unkn
     underwriting: uw || undefined,
     underwritingSnapshot: snap || undefined,
     holdPhase: holdPhase || undefined,
-  };
-}
-
-export async function recalculateSeedProjectKpis(
-  projectId: string,
-): Promise<Record<string, unknown>> {
-  const metrics = await deriveAllProjectMetrics(projectId, {
-    mockData: buildSeedProjectMockData(projectId),
-  });
-
-  return {
-    snapshotAt: new Date().toISOString(),
-    scorecard: metrics.scorecard,
-    insights: metrics.insights,
   };
 }
 

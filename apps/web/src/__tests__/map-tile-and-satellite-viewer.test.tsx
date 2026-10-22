@@ -157,11 +157,14 @@ describe('Bug_13 & Bug_41 Regression: Map Tile Binary Serialization, Geocode Fal
     );
 
     expect(html).toContain('data-testid="satellite-viewer-bottom-bar"');
+    expect(html).toContain('min-h-[220px] sm:min-h-[240px]');
     expect(html).toContain('gap-3 sm:gap-4');
+    expect(html).toContain('mr-2 sm:mr-3');
     expect(html).toContain('data-testid="satellite-viewer-coords-badge"');
     expect(html).toContain('flex w-fit max-w-full flex-col sm:flex-row');
     expect(html).toContain('data-testid="satellite-viewer-controls"');
     expect(html).toContain('data-testid="satellite-viewer-maptype-btn"');
+    expect(html).toContain('mr-1 sm:mr-1.5');
     expect(html).toContain('flex shrink-0 items-center gap-1.5');
   });
 });

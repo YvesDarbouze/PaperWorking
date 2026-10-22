@@ -26,6 +26,8 @@ export interface AddressSearchProps {
   autoFocus?: boolean;
   value?: string;
   mode?: 'navigate' | 'select';
+  ariaInvalid?: boolean;
+  ariaDescribedBy?: string;
   onSearchChange?: (value: string) => void;
   onSelectAddress?: (address: string, details?: ParsedPlaceDetails) => void;
   onSelectPlaceDetails?: (details: ParsedPlaceDetails) => void;
@@ -53,6 +55,20 @@ export const PLACES_DETAILS_FIELD_MASK = [
   'address_components',
 ] as const;
 
+function extractFormattableText(val: unknown): string {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (
+    typeof val === 'object' &&
+    'text' in val &&
+    typeof (val as { text?: unknown }).text === 'string'
+  ) {
+    return (val as { text: string }).text;
+  }
+  const str = String(val);
+  return str === '[object Object]' ? '' : str;
+}
+
 export default function AddressSearch({
   id,
   placeholder = 'Search any street address or deal name…',
@@ -60,6 +76,8 @@ export default function AddressSearch({
   autoFocus = false,
   value,
   mode = 'navigate',
+  ariaInvalid,
+  ariaDescribedBy,
   onSearchChange,
   onSelectAddress,
   onSelectPlaceDetails,
@@ -95,6 +113,32 @@ export default function AddressSearch({
   const inputRef = useRef<HTMLInputElement>(null);
   const spinnerTimerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const onSearchChangeRef = useRef(onSearchChange);
+  onSearchChangeRef.current = onSearchChange;
+
+  useEffect(() => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+    const handleNativeSync = () => {
+      const domVal = inputEl.value;
+      if (domVal !== queryRef.current) {
+        queryRef.current = domVal;
+        setQuery(domVal);
+        setActiveIndex(-1);
+        onSearchChangeRef.current?.(domVal);
+      }
+    };
+    inputEl.addEventListener('input', handleNativeSync);
+    inputEl.addEventListener('change', handleNativeSync);
+    inputEl.addEventListener('blur', handleNativeSync);
+    return () => {
+      inputEl.removeEventListener('input', handleNativeSync);
+      inputEl.removeEventListener('change', handleNativeSync);
+      inputEl.removeEventListener('blur', handleNativeSync);
+    };
+  }, []);
 
   // Google Maps Places references
   const sessionManagerRef = useRef<PlacesSessionManager>(new PlacesSessionManager());
@@ -169,11 +213,16 @@ export default function AddressSearch({
           setPredictions(
             suggestions.slice(0, 5).map((r) => {
               const p = r.placePrediction;
+              const mainText = extractFormattableText(p?.mainText);
+              const secondaryText = extractFormattableText(p?.secondaryText);
+              const fullText =
+                extractFormattableText(p?.text) ||
+                [mainText, secondaryText].filter(Boolean).join(', ');
               return {
                 placeId: p?.placeId || '',
-                description: p?.text?.toString() || '',
-                mainText: p?.mainText?.toString() || '',
-                secondaryText: p?.secondaryText?.toString() || '',
+                description: fullText,
+                mainText,
+                secondaryText,
               };
             })
           );
@@ -214,17 +263,22 @@ export default function AddressSearch({
     }
   }, []);
 
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const val = event.target.value;
+  function syncInputValue(val: string, triggerPredictions = true) {
     setQuery(val);
     setActiveIndex(-1);
     if (onSearchChange) onSearchChange(val);
 
-    // 300ms debounce
-    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-    debounceTimerRef.current = setTimeout(() => {
-      fetchPredictions(val);
-    }, 300);
+    if (triggerPredictions) {
+      // 300ms debounce
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(() => {
+        fetchPredictions(val);
+      }, 300);
+    }
+  }
+
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    syncInputValue(event.target.value, true);
   }
 
   async function handleAddressSubmit(
@@ -305,11 +359,14 @@ export default function AddressSearch({
   async function handleSelectSuggestion(suggestion: AutocompleteSuggestion) {
     setIsOpen(false);
     setActiveIndex(-1);
-    setQuery(suggestion.description);
-    if (onSearchChange) onSearchChange(suggestion.description);
+    const selectedDescription =
+      suggestion.description ||
+      [suggestion.mainText, suggestion.secondaryText].filter(Boolean).join(', ');
+    setQuery(selectedDescription);
+    if (onSearchChange) onSearchChange(selectedDescription);
 
     const activeTokenId = sessionManagerRef.current.getToken();
-    let extractedDetails = parseAddressComponents(suggestion.description);
+    let extractedDetails = parseAddressComponents(selectedDescription);
     if (onSelectPlaceDetails) onSelectPlaceDetails(extractedDetails);
 
     // If Place is loaded, fetch details with strict minimal field mask to restrict billing
@@ -333,7 +390,7 @@ export default function AddressSearch({
           rawComponents,
           formattedAddr,
         );
-        extractedDetails = parseAddressComponents(suggestion.description, sdkDetails);
+        extractedDetails = parseAddressComponents(selectedDescription, sdkDetails);
         // Session token consumed on fetchFields per Google billing rules
         sessionTokenRef.current = null;
         sessionManagerRef.current.resetToken();
@@ -351,7 +408,7 @@ export default function AddressSearch({
           body: JSON.stringify({
             placeId: suggestion.placeId,
             sessionToken: activeTokenId,
-            description: suggestion.description,
+            description: selectedDescription,
           }),
         });
         if (res.ok) {
@@ -365,7 +422,7 @@ export default function AddressSearch({
                 : undefined,
           );
           extractedDetails = parseAddressComponents(
-            suggestion.description,
+            selectedDescription,
             apiDetails,
           );
         }
@@ -380,7 +437,7 @@ export default function AddressSearch({
       sessionManagerRef.current.resetToken();
     }
 
-    handleAddressSubmit(suggestion.description, extractedDetails);
+    handleAddressSubmit(selectedDescription, extractedDetails);
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -438,13 +495,31 @@ export default function AddressSearch({
           aria-activedescendant={activeIndex >= 0 ? `address-prediction-${activeIndex}` : undefined}
           value={query}
           onChange={handleInputChange}
+          onInput={(e) => {
+            const domVal = e.currentTarget.value;
+            if (domVal !== query) {
+              syncInputValue(domVal, true);
+            }
+          }}
+          onBlur={(e) => {
+            const domVal = e.currentTarget.value;
+            if (domVal !== query) {
+              syncInputValue(domVal, false);
+            }
+          }}
           onKeyDown={handleKeyDown}
           onFocus={() => {
             if (predictions.length > 0) setIsOpen(true);
           }}
           placeholder={placeholder}
           autoFocus={autoFocus}
-          className="w-full min-h-[44px] rounded-none border border-neutral-800 bg-neutral-900 py-2.5 pl-10 pr-20 text-base md:text-sm text-white outline-none placeholder:text-neutral-500 transition focus:border-ring"
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
+          className={`w-full min-h-[44px] rounded-none border bg-neutral-900 py-2.5 pl-10 pr-20 text-base md:text-sm text-white outline-none placeholder:text-neutral-500 transition ${
+            ariaInvalid
+              ? 'border-destructive focus:border-destructive'
+              : 'border-neutral-800 focus:border-ring'
+          }`}
         />
 
         <div className="absolute right-0 top-0 bottom-0 flex items-center">
@@ -503,6 +578,7 @@ export default function AddressSearch({
                 id={`address-prediction-${index}`}
                 role="option"
                 aria-selected={isSelected}
+                onMouseDown={(e) => e.preventDefault()}
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => handleSelectSuggestion(pred)}
                 className={`flex cursor-pointer items-center gap-2.5 rounded-none px-3 py-2 text-xs transition ${

@@ -284,15 +284,34 @@ const HIGH_SIGNAL_PHRASES = [
   'disposition strategies',
 ];
 
+import {
+  streamPepperResponse,
+  isExplicitPricingOrTrialQuery,
+  containsUnsolicitedPricingTiers,
+} from '@/lib/assistant/firebase-ai-client';
+
 async function retrieveDomainContext(query: string) {
   const lower = query.toLowerCase().trim();
+  const isPricingQuery = isExplicitPricingOrTrialQuery(lower);
   const allFaqs = await getFaqEntries();
   const allTerms = await getGlossaryTerms();
 
   const queryTokens = tokenizeForMatch(lower);
 
+  const candidateFaqs = allFaqs.filter((faq) => {
+    if (
+      !isPricingQuery &&
+      (faq.id === 'faq-pricing-plans' ||
+        faq.category?.toLowerCase() === 'billing' ||
+        containsUnsolicitedPricingTiers(faq.answer))
+    ) {
+      return false;
+    }
+    return true;
+  });
+
   // Score and rank FAQs by exact match, phrase match, and normalized token overlap
-  const scoredFaqs = allFaqs
+  const scoredFaqs = candidateFaqs
     .map((faq) => {
       const qLower = faq.question.toLowerCase();
       const aLower = faq.answer.toLowerCase();
@@ -386,7 +405,7 @@ async function retrieveDomainContext(query: string) {
     matchedCopy.push(siteCopy.dealMarketplaceDescription);
     matchedCopy.push(siteCopy.vendorMarketplaceDescription);
   }
-  if (lower.includes('terminal') || lower.includes('bloomberg') || lower.includes('pricing')) {
+  if (isPricingQuery) {
     matchedCopy.push(siteCopy.pricingHeader);
     matchedCopy.push(siteCopy.pricingPositioningHeadline);
     matchedCopy.push(siteCopy.pricingSubheadline);
@@ -399,11 +418,6 @@ async function retrieveDomainContext(query: string) {
     matchedCopy,
   };
 }
-
-
-import {
-  streamPepperResponse,
-} from '@/lib/assistant/firebase-ai-client';
 
 export async function POST(request: NextRequest) {
   try {

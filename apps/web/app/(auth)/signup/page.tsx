@@ -4,6 +4,7 @@ import SignupAccountTypePanel from '@/components/auth/SignupAccountTypePanel';
 
 export const metadata: Metadata = {
   title: 'Create Account',
+  robots: 'noindex, nofollow',
 };
 
 export default function SignupPage() {

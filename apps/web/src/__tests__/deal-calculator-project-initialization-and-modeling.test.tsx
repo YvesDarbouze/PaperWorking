@@ -1,6 +1,26 @@
-import React from 'react';
+/**
+ * @jest-environment jsdom
+ */
+
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
-import { renderToString } from 'react-dom/server';
+import { TextEncoder, TextDecoder } from 'node:util';
+import { MessageChannel } from 'node:worker_threads';
+
+// @ts-expect-error global flag for React 18/19 act environment
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+if (typeof globalThis.TextEncoder === 'undefined') {
+  globalThis.TextEncoder = TextEncoder as unknown as typeof globalThis.TextEncoder;
+}
+if (typeof globalThis.TextDecoder === 'undefined') {
+  globalThis.TextDecoder = TextDecoder as unknown as typeof globalThis.TextDecoder;
+}
+if (typeof globalThis.MessageChannel === 'undefined') {
+  globalThis.MessageChannel = MessageChannel as unknown as typeof globalThis.MessageChannel;
+}
+
+const { renderToString } = await import('react-dom/server');
 
 const mockPush = jest.fn();
 const mockFetchSessionProfile = jest.fn<() => Promise<{
@@ -43,6 +63,12 @@ describe('Requirement 5: Deal Calculator Project Initialization & Financial Mode
   beforeEach(() => {
     mockPush.mockReset();
     mockFetchSessionProfile.mockReset();
+    mockFetchSessionProfile.mockResolvedValue({
+      authenticated: true,
+      accountType: 'investor',
+      subscriptionPlan: 'pro',
+      subscriptionStatus: 'active',
+    });
   });
 
   describe('1. Start Project from Deal Calculator Process & Interface', () => {
@@ -124,11 +150,12 @@ describe('Requirement 5: Deal Calculator Project Initialization & Financial Mode
       );
 
       expect(wizardLoadingHtml).toMatch(
-        /<button[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?Opening Wizard\.\.\.[\s\S]*?<\/button>/
+        /<button[^>]*aria-busy="true"[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?data-testid="wizard-cta-loader"[\s\S]*?Opening Wizard\.\.\.[\s\S]*?<\/button>/
       );
       expect(wizardLoadingHtml).toMatch(
-        /<button[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?Launch Project Workspace[\s\S]*?<\/button>/
+        /<button[^>]*aria-busy="false"[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?Launch Project Workspace[\s\S]*?<\/button>/
       );
+      expect(wizardLoadingHtml).not.toContain('data-testid="workspace-cta-loader"');
       expect(wizardLoadingHtml).not.toContain('Creating Project Workspace...');
 
       // Case 2: User clicked "Launch Project Workspace"
@@ -141,12 +168,194 @@ describe('Requirement 5: Deal Calculator Project Initialization & Financial Mode
       );
 
       expect(workspaceLoadingHtml).toMatch(
-        /<button[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?Creating Project Workspace\.\.\.[\s\S]*?<\/button>/
+        /<button[^>]*aria-busy="true"[^>]*data-testid="confirm-launch-project-btn"[^>]*>[\s\S]*?animate-spin[\s\S]*?data-testid="workspace-cta-loader"[\s\S]*?Creating Project Workspace\.\.\.[\s\S]*?<\/button>/
       );
       expect(workspaceLoadingHtml).toMatch(
-        /<button[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?Configure in Full Wizard[\s\S]*?<\/button>/
+        /<button[^>]*aria-busy="false"[^>]*data-testid="confirm-open-wizard-btn"[^>]*>[\s\S]*?Configure in Full Wizard[\s\S]*?<\/button>/
       );
+      expect(workspaceLoadingHtml).not.toContain('data-testid="wizard-cta-loader"');
       expect(workspaceLoadingHtml).not.toContain('Opening Wizard...');
+
+      // Case 3: Ambiguous creatingProjectTarget={null} never falsely displays loader on Launch Project Workspace
+      const untargetedLoadingHtml = renderToString(
+        <StartProjectFromCalculatorModal
+          {...baseProps}
+          isCreatingProject={true}
+          creatingProjectTarget={null}
+        />
+      );
+
+      expect(untargetedLoadingHtml).not.toContain('data-testid="workspace-cta-loader"');
+      expect(untargetedLoadingHtml).not.toContain('Creating Project Workspace...');
+      expect(untargetedLoadingHtml).toContain('Launch Project Workspace');
+      expect(untargetedLoadingHtml).toContain('Configure in Full Wizard');
+    });
+
+    it('Bug_03 interactive DOM flow: clicking "Start Project from Deal" then "Configure in Full Wizard" renders the loader on "Configure in Full Wizard" and never on "Launch Project Workspace"', async () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      const root = createRoot(container);
+
+      let resolvePromote: ((res: Response) => void) | null = null;
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = ((input: RequestInfo | URL) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.includes('/api/projects/promote')) {
+          return new Promise<Response>((resolve) => {
+            resolvePromote = resolve;
+          });
+        }
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: async () => ({}),
+        } as Response);
+      }) as typeof fetch;
+
+      try {
+        await act(async () => {
+          root.render(
+            <DealCalculatorView initialAuthenticated={true} initialSubscriptionStatus="active" />
+          );
+        });
+
+        const startProjectBtn = container.querySelector(
+          '[data-testid="start-project-from-calculator-btn"]'
+        ) as HTMLButtonElement | null;
+        expect(startProjectBtn).not.toBeNull();
+
+        await act(async () => {
+          startProjectBtn!.click();
+        });
+
+        const openWizardBtn = container.querySelector(
+          '[data-testid="confirm-open-wizard-btn"]'
+        ) as HTMLButtonElement | null;
+        const launchWorkspaceBtn = container.querySelector(
+          '[data-testid="confirm-launch-project-btn"]'
+        ) as HTMLButtonElement | null;
+
+        expect(openWizardBtn).not.toBeNull();
+        expect(launchWorkspaceBtn).not.toBeNull();
+        expect(openWizardBtn!.getAttribute('aria-busy')).toBe('false');
+        expect(launchWorkspaceBtn!.getAttribute('aria-busy')).toBe('false');
+
+        // Click "Configure in Full Wizard"
+        await act(async () => {
+          openWizardBtn!.click();
+        });
+
+        // Loader must be on "Configure in Full Wizard" and NOT on "Launch Project Workspace"
+        expect(openWizardBtn!.getAttribute('aria-busy')).toBe('true');
+        expect(openWizardBtn!.textContent).toContain('Opening Wizard...');
+        expect(openWizardBtn!.querySelector('[data-testid="wizard-cta-loader"]')).not.toBeNull();
+
+        expect(launchWorkspaceBtn!.getAttribute('aria-busy')).toBe('false');
+        expect(launchWorkspaceBtn!.textContent).toContain('Launch Project Workspace');
+        expect(launchWorkspaceBtn!.textContent).not.toContain('Creating Project Workspace...');
+        expect(launchWorkspaceBtn!.querySelector('[data-testid="workspace-cta-loader"]')).toBeNull();
+
+        // Complete pending promotion request
+        if (resolvePromote) {
+          await act(async () => {
+            resolvePromote!({
+              ok: true,
+              status: 201,
+              json: async () => ({ projectId: 'proj-bug03-test' }),
+            } as Response);
+          });
+        }
+
+        expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('/projects/new?'));
+      } finally {
+        globalThis.fetch = originalFetch;
+        await act(async () => {
+          root.unmount();
+        });
+        container.remove();
+      }
+    });
+
+    it('Bug_03 interactive DOM flow: clicking "Start Project from Deal" then "Launch Project Workspace" renders the loader on "Launch Project Workspace" and never on "Configure in Full Wizard"', async () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      const root = createRoot(container);
+
+      let resolvePromote: ((res: Response) => void) | null = null;
+      const originalFetch = globalThis.fetch;
+      globalThis.fetch = ((input: RequestInfo | URL) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.includes('/api/projects/promote')) {
+          return new Promise<Response>((resolve) => {
+            resolvePromote = resolve;
+          });
+        }
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: async () => ({}),
+        } as Response);
+      }) as typeof fetch;
+
+      try {
+        await act(async () => {
+          root.render(
+            <DealCalculatorView initialAuthenticated={true} initialSubscriptionStatus="active" />
+          );
+        });
+
+        const startProjectBtn = container.querySelector(
+          '[data-testid="start-project-from-calculator-btn"]'
+        ) as HTMLButtonElement | null;
+        expect(startProjectBtn).not.toBeNull();
+
+        await act(async () => {
+          startProjectBtn!.click();
+        });
+
+        const openWizardBtn = container.querySelector(
+          '[data-testid="confirm-open-wizard-btn"]'
+        ) as HTMLButtonElement | null;
+        const launchWorkspaceBtn = container.querySelector(
+          '[data-testid="confirm-launch-project-btn"]'
+        ) as HTMLButtonElement | null;
+
+        expect(openWizardBtn).not.toBeNull();
+        expect(launchWorkspaceBtn).not.toBeNull();
+
+        // Click "Launch Project Workspace"
+        await act(async () => {
+          launchWorkspaceBtn!.click();
+        });
+
+        // Loader must be on "Launch Project Workspace" and NOT on "Configure in Full Wizard"
+        expect(launchWorkspaceBtn!.getAttribute('aria-busy')).toBe('true');
+        expect(launchWorkspaceBtn!.textContent).toContain('Creating Project Workspace...');
+        expect(launchWorkspaceBtn!.querySelector('[data-testid="workspace-cta-loader"]')).not.toBeNull();
+
+        expect(openWizardBtn!.getAttribute('aria-busy')).toBe('false');
+        expect(openWizardBtn!.textContent).toContain('Configure in Full Wizard');
+        expect(openWizardBtn!.textContent).not.toContain('Opening Wizard...');
+        expect(openWizardBtn!.querySelector('[data-testid="wizard-cta-loader"]')).toBeNull();
+
+        if (resolvePromote) {
+          await act(async () => {
+            resolvePromote!({
+              ok: true,
+              status: 201,
+              json: async () => ({ projectId: 'proj-bug03-workspace' }),
+            } as Response);
+          });
+        }
+
+        expect(mockPush).toHaveBeenCalledWith('/project/proj-bug03-workspace');
+      } finally {
+        globalThis.fetch = originalFetch;
+        await act(async () => {
+          root.unmount();
+        });
+        container.remove();
+      }
     });
   });
 

@@ -26,9 +26,21 @@ const VALIDATION_FIELD_LABELS: Record<string, string> = {
   taxAssessment: 'Tax Assessment',
 };
 
+const INTERNAL_METADATA_NOISE_RE =
+  /Stage\s*Wire\s*Validation|UNEXPECTED_KEY|METADATA_UNKNOWN_JSON|UNRECOGNIZED_KEYS/i;
+
 export function formatValidationDetailsMap(details: Record<string, unknown>): string {
   const formattedParts = Object.entries(details)
-    .filter(([, msgs]) => (Array.isArray(msgs) && msgs.length > 0) || typeof msgs === 'string')
+    .filter(([field, msgs]) => {
+      if (INTERNAL_METADATA_NOISE_RE.test(field) || field.startsWith('__metadata')) {
+        return false;
+      }
+      const ruleText = Array.isArray(msgs) ? msgs.join(', ') : typeof msgs === 'string' ? msgs : '';
+      if (INTERNAL_METADATA_NOISE_RE.test(ruleText)) {
+        return false;
+      }
+      return (Array.isArray(msgs) && msgs.length > 0) || typeof msgs === 'string';
+    })
     .map(([field, msgs]) => {
       const label = VALIDATION_FIELD_LABELS[field] || field;
       const ruleText = Array.isArray(msgs) ? msgs.join(', ') : String(msgs);
@@ -47,7 +59,10 @@ export function extractValidationErrorMessage(
   fallback = 'Failed to create project. Please verify inputs.',
 ): string {
   if (!errorData || typeof errorData !== 'object') {
-    return typeof errorData === 'string' && errorData.trim().length > 0 ? errorData : fallback;
+    if (typeof errorData === 'string' && errorData.trim().length > 0) {
+      return INTERNAL_METADATA_NOISE_RE.test(errorData) ? fallback : errorData;
+    }
+    return fallback;
   }
 
   const obj = errorData as Record<string, unknown>;
@@ -68,6 +83,10 @@ export function extractValidationErrorMessage(
     nestedErrorObj.message.trim().length > 0
       ? nestedErrorObj.message.trim()
       : '');
+
+  if (INTERNAL_METADATA_NOISE_RE.test(candidate)) {
+    return fallback;
+  }
 
   if (candidate === 'Validation failed' || candidate === 'Validation failed.') {
     return 'Validation failed: Property Address (Step 1) and Purchase Price greater than $0 (Step 2) are required.';

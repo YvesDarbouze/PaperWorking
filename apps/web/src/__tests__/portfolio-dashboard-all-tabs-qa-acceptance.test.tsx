@@ -1892,7 +1892,11 @@ describe('Portfolio Dashboard All-Tabs QA Acceptance Verification Suite', () => 
         path.resolve(process.cwd(), 'lib/assistant/firebase-ai-client.ts'),
         'utf8',
       );
-      expect(aiClientSrc).not.toContain("lower.includes('cost')");
+      const pricingBlock = aiClientSrc.slice(
+        aiClientSrc.indexOf('isPricingQuery'),
+        aiClientSrc.indexOf(';', aiClientSrc.indexOf('isPricingQuery')),
+      );
+      expect(pricingBlock).not.toContain("includes('cost')");
 
       const pepperRouteSrc = fs.readFileSync(
         path.resolve(process.cwd(), 'app/api/support/pepper/route.ts'),

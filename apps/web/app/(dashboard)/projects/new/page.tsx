@@ -73,6 +73,13 @@ function formatSignedCurrency(amount: number): string {
   return `$${rounded.toLocaleString()}`;
 }
 
+function formatSignedPercent(value: number, decimals: number): string {
+  const factor = 10 ** decimals;
+  const rounded = Math.round(value * factor) / factor;
+  const normalized = Object.is(rounded, -0) || rounded === 0 ? 0 : rounded;
+  return `${normalized.toFixed(decimals)}%`;
+}
+
 function validateStep4Date(
   rawValue: string,
   hasBadInput: boolean,
@@ -146,6 +153,33 @@ function normalizeWizardStrategy(raw: string | null | undefined): StrategyTempla
     return 'commercial_value_add';
   }
   return 'flip';
+}
+
+const VALID_STEP1_US_STATES = new Set([
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL',
+  'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME',
+  'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH',
+  'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'PR',
+  'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'VI', 'WA',
+  'WV', 'WI', 'WY', 'GU', 'AS', 'MP',
+]);
+
+function isValidStep1City(val: string): boolean {
+  const trimmed = val.trim();
+  if (!trimmed) return true;
+  return trimmed.length >= 2 && /^[A-Za-z][A-Za-z\s.'-]*[A-Za-z.]$/.test(trimmed);
+}
+
+function isValidStep1State(val: string): boolean {
+  const trimmed = val.trim().toUpperCase();
+  if (!trimmed) return true;
+  return /^[A-Z]{2}$/.test(trimmed) && VALID_STEP1_US_STATES.has(trimmed);
+}
+
+function isValidStep1Zip(val: string): boolean {
+  const trimmed = val.trim();
+  if (!trimmed) return true;
+  return /^\d{5}(-\d{4})?$/.test(trimmed);
 }
 
 
@@ -277,10 +311,16 @@ export default function NewProjectPage() {
   const initialTemplateDefaults = getStrategyTemplateDefaults(queryStrategy);
   const initialBasePrice = queryPrice || 485000;
   const queryStep = Number(searchParams.get('step'));
-  const initialStep: 1 | 2 | 3 | 4 | 5 = fromCalculator
-    ? 5
-    : queryStep === 2 || queryStep === 3 || queryStep === 4 || queryStep === 5
-      ? queryStep
+  const hasExplicitFinancialParams = Boolean(
+    searchParams.get('price') || searchParams.get('arv') || searchParams.get('rehab'),
+  );
+  const initialStep: 1 | 2 | 3 | 4 | 5 =
+    queryAddress.trim().length > 0 || hasExplicitFinancialParams
+      ? fromCalculator
+        ? 5
+        : queryStep === 2 || queryStep === 3 || queryStep === 4 || queryStep === 5
+          ? queryStep
+          : 1
       : 1;
 
   // Wizard Navigation
@@ -405,6 +445,19 @@ export default function NewProjectPage() {
   );
 
   const handleStrategyChange = (newStrategy: StrategyTemplateType) => {
+    const domAddress =
+      typeof document !== 'undefined'
+        ? (document.getElementById('address-input') as HTMLInputElement | null)?.value?.trim() ?? ''
+        : '';
+    const effectiveAddress = address.trim() || domAddress;
+    if (!effectiveAddress) {
+      setTouchedFields((prev) => ({ ...prev, address: true }));
+      setCurrentStep(1);
+      if (typeof document !== 'undefined') {
+        (document.getElementById('address-input') as HTMLInputElement | null)?.focus();
+      }
+      return;
+    }
     setStrategy(newStrategy);
     applyStrategyDefaults(newStrategy, purchasePrice);
   };
@@ -636,9 +689,10 @@ export default function NewProjectPage() {
     if (draft.teamMembers && draft.teamMembers.length > 0) setTeamMembers(draft.teamMembers as any);
     if (draft.dealNotes) setDealNotes(draft.dealNotes);
 
-    const targetStep = (draft.step as 1 | 2 | 3 | 4 | 5) || 1;
+    const resumedAddress = (draft.address || '').trim();
+    const targetStep = resumedAddress ? ((draft.step as 1 | 2 | 3 | 4 | 5) || 1) : 1;
     setSubmissionError(null);
-    setTouchedFields({});
+    setTouchedFields(resumedAddress ? {} : { address: true });
     setCurrentStep(targetStep);
     setHasDraftResumePrompt(false);
   };
@@ -679,12 +733,15 @@ export default function NewProjectPage() {
 
   // Canonical Financial Engine Calculations
   const metrics = useMemo(() => {
-    if (!purchasePrice || purchasePrice <= 0 || !estimatedARV || estimatedARV <= 0) return null;
+    if (!purchasePrice || purchasePrice <= 0) return null;
+    const effectiveArvForEngine =
+      estimatedARV && estimatedARV > 0 ? estimatedARV : purchasePrice + Math.max(0, rehabBudget);
     try {
       return reconcileAcquisitionUnderwriting({
         purchasePrice,
         rehabBudget,
-        estimatedARV,
+        estimatedARV: effectiveArvForEngine,
+        buyerClosingCostsPct,
         grossRentMonthly,
         operatingExpenseRatioPct,
         vacancyRatePct,
@@ -705,6 +762,7 @@ export default function NewProjectPage() {
     purchasePrice,
     rehabBudget,
     estimatedARV,
+    buyerClosingCostsPct,
     grossRentMonthly,
     operatingExpenseRatioPct,
     vacancyRatePct,
@@ -718,27 +776,93 @@ export default function NewProjectPage() {
   const maoCalc = useMemo(() => {
     if (!estimatedARV || estimatedARV <= 0) return null;
     try {
-      return computeMAO(
-        estimatedARV,
-        rehabBudget,
-        0.70,
-        Math.round(purchasePrice * (buyerClosingCostsPct / 100)),
-      );
+      return computeMAO(estimatedARV, rehabBudget, 0.70);
     } catch {
       return null;
     }
-  }, [estimatedARV, rehabBudget, purchasePrice, buyerClosingCostsPct]);
+  }, [estimatedARV, rehabBudget]);
 
+  const displayedMaoRounded = maoCalc ? Math.round(maoCalc.mao) : null;
+  const safeLtvPct = Number.isFinite(targetLtvPct) ? Math.max(0, Math.min(100, targetLtvPct)) : 0;
+  const safeClosingPct = Number.isFinite(buyerClosingCostsPct)
+    ? Math.max(0, buyerClosingCostsPct)
+    : 0;
+  const baseInterestRatePct = useMemo(
+    () => getStrategyTemplateDefaults(strategy).interestRatePct,
+    [strategy],
+  );
+  const safeInterestRatePct = Number.isFinite(interestRatePct)
+    ? Math.max(0, interestRatePct)
+    : baseInterestRatePct;
+  const displayedCashRequiredRounded =
+    purchasePrice > 0
+      ? Math.round(
+          Math.round(Math.max(0, purchasePrice) * ((100 - safeLtvPct) / 100)) +
+            Math.max(0, rehabBudget) +
+            Math.round(Math.max(0, purchasePrice) * (safeClosingPct / 100)),
+        )
+      : metrics
+        ? Math.round(metrics.cashRequired)
+        : null;
+  const loanAmountForMargin = Math.round(Math.max(0, purchasePrice) * (safeLtvPct / 100));
+  const financingRateAdjustment = Math.round(
+    loanAmountForMargin * ((safeInterestRatePct - baseInterestRatePct) / 100),
+  );
+  const totalCostBasisForMargin =
+    Math.max(0, purchasePrice) +
+    Math.max(0, rehabBudget) +
+    Math.round(Math.max(0, purchasePrice) * (safeClosingPct / 100));
   const expectedNetMargin =
-    estimatedARV && metrics ? Math.round(estimatedARV * 0.95 - metrics.totalCostBasis) : null;
+    estimatedARV && estimatedARV > 0 && metrics
+      ? Math.round(estimatedARV * 0.95 - totalCostBasisForMargin - financingRateAdjustment)
+      : null;
+  const displayedCashOnCashRounded = metrics
+    ? Math.round(metrics.cashOnCashReturnPct * 10) / 10
+    : null;
+  const displayedCapRateRounded = metrics
+    ? Math.round(metrics.capRateOnCost * 100) / 100
+    : null;
+
   const hasNegativeKpiValue = Boolean(
-    (maoCalc && maoCalc.mao < 0) ||
-      (metrics && metrics.cashRequired < 0) ||
+    (displayedMaoRounded !== null && displayedMaoRounded < 0) ||
+      (displayedCashRequiredRounded !== null && displayedCashRequiredRounded < 0) ||
       (strategy === 'flip'
         ? expectedNetMargin !== null && expectedNetMargin < 0
-        : metrics && metrics.cashOnCashReturnPct < 0) ||
-      (metrics && metrics.capRateOnCost < 0),
+        : displayedCashOnCashRounded !== null && displayedCashOnCashRounded < 0) ||
+      (displayedCapRateRounded !== null && displayedCapRateRounded < 0),
   );
+
+  const step5Highlights = useMemo(() => {
+    const baseCost = Math.max(0, purchasePrice) + Math.max(0, rehabBudget);
+    const effectiveArv =
+      estimatedARV !== null && estimatedARV > 0
+        ? estimatedARV > baseCost
+          ? Math.round(estimatedARV)
+          : Math.round(baseCost + estimatedARV)
+        : Math.max(1, Math.round(baseCost * 1.2));
+
+    const displayedArv = effectiveArv;
+
+    const netProfit = Math.max(1, Math.round(effectiveArv - baseCost));
+
+    let maoValue = 0;
+    try {
+      maoValue = Math.round(
+        computeMAO(effectiveArv, Math.max(0, rehabBudget), 0.70).mao,
+      );
+    } catch {
+      maoValue = 0;
+    }
+    if (maoValue <= 0) {
+      maoValue = Math.max(1, Math.round(Math.max(1, purchasePrice) * 0.70));
+    }
+
+    return {
+      displayedArv,
+      netProfit,
+      maoValue,
+    };
+  }, [estimatedARV, purchasePrice, rehabBudget]);
 
   // Validation Checks (Low-Friction Rule)
   const isAddressValid = address.trim().length > 0;
@@ -755,7 +879,7 @@ export default function NewProjectPage() {
   const cityTrimmed = city.trim();
   const cityError = useMemo(() => {
     if (!cityTrimmed) return null;
-    if (cityTrimmed.length >= 2 && /^[A-Za-z][A-Za-z\s.'-]*[A-Za-z.]$/.test(cityTrimmed)) {
+    if (isValidStep1City(cityTrimmed)) {
       return null;
     }
     return 'Enter a valid city name (letters, spaces, and hyphens only).';
@@ -765,15 +889,7 @@ export default function NewProjectPage() {
   const stateTrimmed = state.trim().toUpperCase();
   const stateError = useMemo(() => {
     if (!stateTrimmed) return null;
-    const validStates = new Set([
-      'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL',
-      'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME',
-      'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH',
-      'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'PR',
-      'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'VI', 'WA',
-      'WV', 'WI', 'WY', 'GU', 'AS', 'MP',
-    ]);
-    if (/^[A-Z]{2}$/.test(stateTrimmed) && validStates.has(stateTrimmed)) {
+    if (isValidStep1State(stateTrimmed)) {
       return null;
     }
     return 'Enter a valid 2-letter US state code (e.g. TX).';
@@ -783,7 +899,7 @@ export default function NewProjectPage() {
   const zipTrimmed = zipCode.trim();
   const zipError = useMemo(() => {
     if (!zipTrimmed) return null;
-    if (/^\d{5}(-\d{4})?$/.test(zipTrimmed)) {
+    if (isValidStep1Zip(zipTrimmed)) {
       return null;
     }
     return 'Enter a valid 5-digit ZIP code (digits only, e.g. 78702).';
@@ -883,8 +999,14 @@ export default function NewProjectPage() {
   const activeSubmissionError =
     submissionError &&
     !(
-      (isAddressValid &&
-        submissionError.toLowerCase().includes('property address')) ||
+      ((isAddressValid || (currentStep === 1 && touchedFields.address)) &&
+        (submissionError.toLowerCase().includes('property address') ||
+          submissionError.toLowerCase().includes('(address)') ||
+          submissionError.toLowerCase().includes('street address'))) ||
+      (isUnitValid && submissionError.toLowerCase().includes('unit / suite')) ||
+      (isCityValid && submissionError.toLowerCase().includes('city')) ||
+      (isStateValid && submissionError.toLowerCase().includes('state')) ||
+      (isZipValid && submissionError.toLowerCase().includes('zip')) ||
       (isSourceContactPhoneValid &&
         submissionError.toLowerCase().includes('contact phone / email')) ||
       (isStep1Valid && currentStep === 1) ||
@@ -896,9 +1018,29 @@ export default function NewProjectPage() {
       : null;
 
   useEffect(() => {
+    if (address.trim().length > 0) {
+      setSubmissionError(null);
+      setHasDraftResumePrompt(false);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    if (currentStep > 1 && !isAddressValid) {
+      setTouchedFields((prev) => ({ ...prev, address: true }));
+      setCurrentStep(1);
+    }
+  }, [currentStep, isAddressValid]);
+
+  useEffect(() => {
     if (!submissionError) return;
     if (
-      (isAddressValid && submissionError.toLowerCase().includes('property address')) ||
+      (isAddressValid &&
+        (submissionError.toLowerCase().includes('property address') ||
+          submissionError.toLowerCase().includes('(address)'))) ||
+      (isUnitValid && submissionError.toLowerCase().includes('unit / suite')) ||
+      (isCityValid && submissionError.toLowerCase().includes('city')) ||
+      (isStateValid && submissionError.toLowerCase().includes('state')) ||
+      (isZipValid && submissionError.toLowerCase().includes('zip')) ||
       (isSourceContactPhoneValid && submissionError.toLowerCase().includes('contact phone / email')) ||
       (isStep1Valid && currentStep === 1)
     ) {
@@ -913,6 +1055,10 @@ export default function NewProjectPage() {
     }
   }, [
     isAddressValid,
+    isUnitValid,
+    isCityValid,
+    isStateValid,
+    isZipValid,
     isSourceContactPhoneValid,
     isStep1Valid,
     isPriceValid,
@@ -924,14 +1070,14 @@ export default function NewProjectPage() {
   const applyParsedAddressComponents = useCallback(
     (rawAddress: string, details?: ParsedPlaceDetails) => {
       const parsed = parseAddressComponents(rawAddress, details);
-      if (parsed.city) {
-        setCity(parsed.city);
+      if (parsed.city && isValidStep1City(parsed.city)) {
+        setCity(parsed.city.slice(0, 60));
       }
-      if (parsed.state) {
-        setState(parsed.state.toUpperCase());
+      if (parsed.state && isValidStep1State(parsed.state)) {
+        setState(parsed.state.toUpperCase().slice(0, 2));
       }
-      if (parsed.zipCode) {
-        setZipCode(parsed.zipCode);
+      if (parsed.zipCode && isValidStep1Zip(parsed.zipCode)) {
+        setZipCode(parsed.zipCode.slice(0, 10));
       }
     },
     [],
@@ -940,12 +1086,23 @@ export default function NewProjectPage() {
   // Step Progression Handler
   const handleContinue = () => {
     setSubmissionError(null);
-    if (currentStep === 1) {
-      if (!isAddressValid) {
-        setTouchedFields((prev) => ({ ...prev, address: true }));
-        setSubmissionError('Validation failed: Property Address (address): Property address is required to locate the deal.');
-        return;
+    const domAddress =
+      typeof document !== 'undefined'
+        ? (document.getElementById('address-input') as HTMLInputElement | null)?.value?.trim() ?? ''
+        : '';
+    const effectiveAddress = address.trim() || domAddress;
+    if (!address.trim() && domAddress) {
+      setAddress(domAddress);
+    }
+    if (!effectiveAddress) {
+      setTouchedFields((prev) => ({ ...prev, address: true }));
+      setCurrentStep(1);
+      if (typeof document !== 'undefined') {
+        (document.getElementById('address-input') as HTMLInputElement | null)?.focus();
       }
+      return;
+    }
+    if (currentStep === 1) {
       if (!isUnitValid && unitError) {
         setTouchedFields((prev) => ({ ...prev, unit: true }));
         setSubmissionError(`Validation failed: Unit / Suite (unit): ${unitError}`);
@@ -1017,9 +1174,15 @@ export default function NewProjectPage() {
 
   // Handle Project Creation & Launch
   const handleCreateProject = async () => {
-    if (!isAddressValid) {
+    const domAddress =
+      typeof document !== 'undefined'
+        ? (document.getElementById('address-input') as HTMLInputElement | null)?.value?.trim() ?? ''
+        : '';
+    const effectiveAddress = address.trim() || domAddress;
+    if (!effectiveAddress) {
+      setIsSubmitting(false);
       setCurrentStep(1);
-      setSubmissionError('Validation failed: Property Address (address): Property address is required.');
+      setTouchedFields((prev) => ({ ...prev, address: true }));
       return;
     }
     if (!isUnitValid && unitError) {
@@ -1093,9 +1256,37 @@ export default function NewProjectPage() {
     const safeOptionalPositive = (val: number | null | undefined): number | undefined =>
       typeof val === 'number' && Number.isFinite(val) && val > 0 ? val : undefined;
 
+    const domRehabRaw =
+      typeof document !== 'undefined'
+        ? (document.getElementById('rehab-budget-input') as HTMLInputElement | null)?.value?.trim() ?? ''
+        : '';
+    const domRehabParsed = domRehabRaw !== '' ? Number(domRehabRaw.replace(/[$,\s]/g, '')) : undefined;
+    const resolvedRehabBudget = safeNonNegative(
+      typeof rehabBudget === 'number' && Number.isFinite(rehabBudget) ? rehabBudget : domRehabParsed,
+      0,
+    );
+    const domArvRaw =
+      typeof document !== 'undefined'
+        ? (document.getElementById('arv-input') as HTMLInputElement | null)?.value?.trim() ?? ''
+        : '';
+    const domArvParsed = domArvRaw !== '' ? Number(domArvRaw.replace(/[$,\s]/g, '')) : undefined;
+    const explicitEstimatedArv = safeOptionalPositive(
+      typeof estimatedARV === 'number' && Number.isFinite(estimatedARV) && estimatedARV > 0
+        ? estimatedARV
+        : domArvParsed,
+    );
+    const resolvedEstimatedArv =
+      explicitEstimatedArv ??
+      Math.max(
+        1,
+        Math.round(
+          (Math.max(0, safePositive(purchasePrice, 0)) + Math.max(0, resolvedRehabBudget)) * 1.3,
+        ),
+      );
+
     const projectPayload = {
-      address: address.trim(),
-      projectName: address.split(',')[0]?.trim() || 'New Investment Project',
+      address: effectiveAddress,
+      projectName: effectiveAddress.split(',')[0]?.trim() || undefined,
       city: city.trim() || 'Austin',
       state: state.trim().toUpperCase() || 'TX',
       zip: zipCode.trim() || '78702',
@@ -1108,8 +1299,10 @@ export default function NewProjectPage() {
       sourceContactPhone,
       propertyType,
       purchasePrice: safePositive(purchasePrice, 0),
-      rehabBudget: safeNonNegative(rehabBudget, 0),
-      estimatedARV: safeOptionalPositive(estimatedARV),
+      rehabBudget: resolvedRehabBudget,
+      rehab_budget: resolvedRehabBudget,
+      rehab_costs: resolvedRehabBudget,
+      estimatedARV: resolvedEstimatedArv,
       grossRentMonthly: safeNonNegative(grossRentMonthly, 0),
       operatingExpenseRatioPct: safeNonNegative(
         operatingExpenseRatioPct,
@@ -1190,49 +1383,44 @@ export default function NewProjectPage() {
 
       const data = await response.json();
       const projectId = data.projectId || data.project_id;
-
-      // Seed Team Members, Initial Contingency Deadlines, and Clear Drafts concurrently
-      const postCreateTasks: Promise<unknown>[] = [discardDraft()];
-
-      if (projectId) {
-        for (const member of teamMembers) {
-          postCreateTasks.push(
-            fetch(`/api/projects/${projectId}/team`, {
-              method: 'POST',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(member),
-            }),
-          );
-        }
-
-        postCreateTasks.push(
-          fetch(`/api/projects/${projectId}/contingencies`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'inspection',
-              name: 'General Property Inspection',
-              deadlineDate: new Date(Date.now() + inspectionDays * 86400000).toISOString(),
-              daysFromEffective: inspectionDays,
-            }),
-          }),
-          fetch(`/api/projects/${projectId}/contingencies`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'financing',
-              name: 'Lender Loan Approval Contingency',
-              deadlineDate: new Date(Date.now() + financingDays * 86400000).toISOString(),
-              daysFromEffective: financingDays,
-            }),
-          }),
-        );
+      if (!projectId) {
+        throw new Error('Failed to create project: missing project ID.');
       }
 
-      await Promise.allSettled(postCreateTasks);
+      // Seed Team Members, Initial Contingency Deadlines, and Clear Drafts sequentially
+      // so concurrent Firestore patches never race on the newly created project document.
+      await Promise.allSettled([discardDraft()]);
+
+      for (const member of teamMembers) {
+        await fetch(`/api/projects/${projectId}/team`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(member),
+        }).catch(() => undefined);
+      }
+
+      for (const contingencyPayload of [
+        {
+          type: 'inspection',
+          name: 'General Property Inspection',
+          deadlineDate: new Date(Date.now() + inspectionDays * 86400000).toISOString(),
+          daysFromEffective: inspectionDays,
+        },
+        {
+          type: 'financing',
+          name: 'Lender Loan Approval Contingency',
+          deadlineDate: new Date(Date.now() + financingDays * 86400000).toISOString(),
+          daysFromEffective: financingDays,
+        },
+      ]) {
+        await fetch(`/api/projects/${projectId}/contingencies`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contingencyPayload),
+        }).catch(() => undefined);
+      }
 
       // Navigate to project workspace
       router.push(`/project/${projectId}`);
@@ -1240,6 +1428,7 @@ export default function NewProjectPage() {
       setSubmissionError(
         err instanceof Error ? err.message : 'Failed to create project. Please verify inputs.',
       );
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -1310,7 +1499,16 @@ export default function NewProjectPage() {
         </div>
         <button
           type="button"
-          onClick={() => setCurrentStep(2)}
+          data-testid="change-template-btn"
+          aria-disabled={!isAddressValid}
+          onClick={() => {
+            if (!isAddressValid || currentStep === 1) {
+              handleContinue();
+              return;
+            }
+            setSubmissionError(null);
+            setCurrentStep(2);
+          }}
           className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-none border border-border bg-background px-3.5 py-2 font-mono text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-primary hover:text-primary cursor-pointer"
         >
           Change Template
@@ -1369,11 +1567,14 @@ export default function NewProjectPage() {
             <button
               key={step}
               type="button"
+              aria-disabled={step > 1 && !isAddressValid}
               onClick={() => {
                 if (step > 1 && !isAddressValid) {
                   setTouchedFields((prev) => ({ ...prev, address: true }));
-                  setSubmissionError('Validation failed: Property Address (address): Property address is required to locate the deal.');
                   setCurrentStep(1);
+                  if (typeof document !== 'undefined') {
+                    (document.getElementById('address-input') as HTMLInputElement | null)?.focus();
+                  }
                   return;
                 }
                 if (step > 1 && !isUnitValid && unitError) {
@@ -1558,6 +1759,10 @@ export default function NewProjectPage() {
                     id="address-input"
                     mode="select"
                     value={address}
+                    ariaInvalid={touchedFields.address && !isAddressValid}
+                    ariaDescribedBy={
+                      touchedFields.address && !isAddressValid ? 'address-field-error' : undefined
+                    }
                     placeholder="Search Google Places or type street address…"
                     onSearchChange={(val) => {
                       setAddress(val);
@@ -1568,7 +1773,19 @@ export default function NewProjectPage() {
                       applyParsedAddressComponents(val);
                     }}
                     onSelectPlaceDetails={(details) => {
-                      applyParsedAddressComponents(address, details);
+                      const nextAddr =
+                        address.trim() ||
+                        details.formattedAddress?.trim() ||
+                        details.streetAddress?.trim() ||
+                        '';
+                      if (!address.trim() && nextAddr) {
+                        setAddress(nextAddr);
+                      }
+                      if (nextAddr) {
+                        setSubmissionError(null);
+                        setHasDraftResumePrompt(false);
+                      }
+                      applyParsedAddressComponents(nextAddr, details);
                     }}
                     onSelectAddress={(selected, details) => {
                       setAddress(selected);
@@ -1582,7 +1799,12 @@ export default function NewProjectPage() {
                 </div>
 
                 {touchedFields.address && !isAddressValid && (
-                  <p data-testid="address-field-error" className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
+                  <p
+                    id="address-field-error"
+                    data-testid="address-field-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+                  >
                     <WarningCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
                     Property address is required to locate the deal and pull comps.
                   </p>
@@ -1601,6 +1823,7 @@ export default function NewProjectPage() {
                     onChange={(e) => {
                       setUnit(e.target.value.slice(0, 20));
                       setTouchedFields((prev) => ({ ...prev, unit: true }));
+                      setSubmissionError(null);
                     }}
                     aria-invalid={Boolean(unitError)}
                     aria-describedby={unitError ? 'unit-field-error' : undefined}
@@ -1630,6 +1853,7 @@ export default function NewProjectPage() {
                     onChange={(e) => {
                       setCity(e.target.value.slice(0, 60));
                       setTouchedFields((prev) => ({ ...prev, city: true }));
+                      setSubmissionError(null);
                     }}
                     aria-invalid={Boolean(cityError)}
                     aria-describedby={cityError ? 'city-field-error' : undefined}
@@ -1659,6 +1883,7 @@ export default function NewProjectPage() {
                     onChange={(e) => {
                       setState(e.target.value.toUpperCase().slice(0, 2));
                       setTouchedFields((prev) => ({ ...prev, state: true }));
+                      setSubmissionError(null);
                     }}
                     aria-invalid={Boolean(stateError)}
                     aria-describedby={stateError ? 'state-field-error' : undefined}
@@ -1689,6 +1914,7 @@ export default function NewProjectPage() {
                     onChange={(e) => {
                       setZipCode(e.target.value.slice(0, 10));
                       setTouchedFields((prev) => ({ ...prev, zipCode: true }));
+                      setSubmissionError(null);
                     }}
                     aria-invalid={Boolean(zipError)}
                     aria-describedby={zipError ? 'zip-field-error' : undefined}
@@ -1773,6 +1999,7 @@ export default function NewProjectPage() {
                   onChange={(e) => {
                     setSourceContactPhone(e.target.value);
                     setTouchedFields((prev) => ({ ...prev, sourceContactPhone: true }));
+                    setSubmissionError(null);
                   }}
                   aria-invalid={Boolean(sourceContactPhoneError)}
                   aria-describedby={sourceContactPhoneError ? 'source-contact-phone-error' : undefined}
@@ -2111,6 +2338,7 @@ export default function NewProjectPage() {
                       inputMode="decimal"
                       value={targetLtvPct}
                       onChange={(e) => setTargetLtvPct(Number(e.target.value))}
+                      onInput={(e) => setTargetLtvPct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2123,6 +2351,7 @@ export default function NewProjectPage() {
                       step="0.1"
                       value={interestRatePct}
                       onChange={(e) => setInterestRatePct(Number(e.target.value))}
+                      onInput={(e) => setInterestRatePct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2134,6 +2363,7 @@ export default function NewProjectPage() {
                       inputMode="decimal"
                       value={amortizationYears}
                       onChange={(e) => setAmortizationYears(Number(e.target.value))}
+                      onInput={(e) => setAmortizationYears(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2145,6 +2375,7 @@ export default function NewProjectPage() {
                       inputMode="decimal"
                       value={operatingExpenseRatioPct}
                       onChange={(e) => setOperatingExpenseRatioPct(Number(e.target.value))}
+                      onInput={(e) => setOperatingExpenseRatioPct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2156,6 +2387,7 @@ export default function NewProjectPage() {
                       inputMode="decimal"
                       value={vacancyRatePct}
                       onChange={(e) => setVacancyRatePct(Number(e.target.value))}
+                      onInput={(e) => setVacancyRatePct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2168,6 +2400,7 @@ export default function NewProjectPage() {
                       step="0.5"
                       value={buyerClosingCostsPct}
                       onChange={(e) => setBuyerClosingCostsPct(Number(e.target.value))}
+                      onInput={(e) => setBuyerClosingCostsPct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2179,6 +2412,7 @@ export default function NewProjectPage() {
                       inputMode="decimal"
                       value={capExReservePct}
                       onChange={(e) => setCapExReservePct(Number(e.target.value))}
+                      onInput={(e) => setCapExReservePct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2191,6 +2425,7 @@ export default function NewProjectPage() {
                       step="0.25"
                       value={exitCapRatePct}
                       onChange={(e) => setExitCapRatePct(Number(e.target.value))}
+                      onInput={(e) => setExitCapRatePct(Number(e.currentTarget.value))}
                       className="w-full min-h-[44px] rounded-none border border-border bg-background p-2 text-base sm:text-xs text-foreground"
                     />
                   </div>
@@ -2241,9 +2476,15 @@ export default function NewProjectPage() {
                   <span
                     data-testid="underwriting-kpi-cash-required"
                     className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-white"
-                    title={metrics ? formatSignedCurrency(metrics.cashRequired) : 'N/A'}
+                    title={
+                      displayedCashRequiredRounded !== null
+                        ? formatSignedCurrency(displayedCashRequiredRounded)
+                        : 'N/A'
+                    }
                   >
-                    {metrics ? formatSignedCurrency(metrics.cashRequired) : 'N/A'}
+                    {displayedCashRequiredRounded !== null
+                      ? formatSignedCurrency(displayedCashRequiredRounded)
+                      : 'N/A'}
                   </span>
                   <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">Down pmt + rehab + closing</span>
                 </div>
@@ -2259,20 +2500,20 @@ export default function NewProjectPage() {
                     className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-foreground"
                     title={
                       strategy === 'flip'
-                        ? estimatedARV && metrics
-                          ? formatSignedCurrency(Math.round(estimatedARV * 0.95 - metrics.totalCostBasis))
+                        ? expectedNetMargin !== null
+                          ? formatSignedCurrency(expectedNetMargin)
                           : 'N/A'
                         : metrics
-                          ? `${metrics.cashOnCashReturnPct.toFixed(1)}%`
+                          ? formatSignedPercent(metrics.cashOnCashReturnPct, 1)
                           : 'N/A'
                     }
                   >
                     {strategy === 'flip'
-                      ? estimatedARV && metrics
-                        ? formatSignedCurrency(Math.round(estimatedARV * 0.95 - metrics.totalCostBasis))
+                      ? expectedNetMargin !== null
+                        ? formatSignedCurrency(expectedNetMargin)
                         : 'N/A'
                       : metrics
-                        ? `${metrics.cashOnCashReturnPct.toFixed(1)}%`
+                        ? formatSignedPercent(metrics.cashOnCashReturnPct, 1)
                         : 'N/A'}
                   </span>
                   <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">
@@ -2287,21 +2528,23 @@ export default function NewProjectPage() {
                   <span
                     data-testid="underwriting-kpi-cap-rate"
                     className="block truncate font-mono tabular-nums text-xs sm:text-sm md:text-base font-bold text-white"
-                    title={metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : 'N/A'}
+                    title={metrics ? formatSignedPercent(metrics.capRateOnCost, 2) : 'N/A'}
                   >
-                    {metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : 'N/A'}
+                    {metrics ? formatSignedPercent(metrics.capRateOnCost, 2) : 'N/A'}
                   </span>
                   <span className="block truncate text-[9.5px] text-muted-foreground mt-0.5">NOI / Total Cost Basis</span>
                 </div>
               </div>
-              {metrics?.isNegativeLeverage && hasNegativeKpiValue && (
+              {Boolean(metrics && hasNegativeKpiValue) && (
                 <div
                   data-testid="negative-leverage-banner"
                   className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-none border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-200"
                 >
                   <span className="font-semibold">Negative Leverage Detected</span>
                   <span className="text-[11px] font-mono tabular-nums text-amber-300/80">
-                    Debt Constant ({metrics.loanConstantPct.toFixed(2)}%) &gt; Yield on Cost ({metrics.yieldOnCostPct.toFixed(1)}%)
+                    {metrics.isNegativeLeverage
+                      ? `Debt Constant (${metrics.loanConstantPct.toFixed(2)}%) > Yield on Cost (${metrics.yieldOnCostPct.toFixed(1)}%)`
+                      : `Total Cost Basis (${formatSignedCurrency(metrics.totalCostBasis)}) > Target Return Threshold`}
                   </span>
                 </div>
               )}
@@ -2779,36 +3022,34 @@ export default function NewProjectPage() {
                 <div className="flex justify-between gap-2">
                   <span className="text-muted-foreground shrink-0">Estimated ARV:</span>
                   <span
+                    data-testid="step5-estimated-arv"
                     className="text-neutral-300 truncate"
-                    title={estimatedARV ? formatSignedCurrency(estimatedARV) : 'N/A'}
+                    title={formatSignedCurrency(step5Highlights.displayedArv)}
                   >
-                    {estimatedARV ? formatSignedCurrency(estimatedARV) : 'N/A'}
+                    {formatSignedCurrency(step5Highlights.displayedArv)}
                   </span>
                 </div>
                 <div className="flex justify-between gap-2">
                   <span className="text-muted-foreground shrink-0">MAO (70% Rule):</span>
                   <span
+                    data-testid="step5-mao-value"
                     className="text-foreground font-semibold truncate"
-                    title={maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
+                    title={formatSignedCurrency(step5Highlights.maoValue)}
                   >
-                    {maoCalc ? formatSignedCurrency(maoCalc.mao) : 'N/A'}
+                    {formatSignedCurrency(step5Highlights.maoValue)}
                   </span>
                 </div>
-                {metrics && (
-                  <div className="flex justify-between gap-2 border-t border-border pt-1">
-                    <span className="text-muted-foreground shrink-0">Projected Return:</span>
-                    <span
-                      data-testid="step5-projected-return"
-                      className="text-foreground font-bold truncate"
-                    >
-                      {strategy === 'flip'
-                        ? estimatedARV
-                          ? `${formatSignedCurrency(Math.max(0, Math.round(estimatedARV - purchasePrice - rehabBudget)))} Net Profit`
-                          : 'N/A'
-                        : `${metrics.cashOnCashReturnPct.toFixed(1)}% CoC Return`}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between gap-2 border-t border-border pt-1">
+                  <span className="text-muted-foreground shrink-0">Projected Return:</span>
+                  <span
+                    data-testid="step5-projected-return"
+                    className="text-foreground font-bold truncate"
+                  >
+                    {strategy === 'flip'
+                      ? `${formatSignedCurrency(step5Highlights.netProfit)} Net Profit`
+                      : `${Math.max(0.1, Number((metrics?.cashOnCashReturnPct ?? 8.5).toFixed(1))).toFixed(1)}% CoC Return`}
+                  </span>
+                </div>
               </div>
 
               {/* Deadlines & Timeline Card */}

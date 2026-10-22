@@ -53,13 +53,13 @@ export function buildInlineSatelliteFallbackDataUri(
     <line x1="${cx - 140}" y1="0" x2="${cx - 140}" y2="${h}" stroke="${roadColor}" stroke-width="8" />
     <line x1="${cx + 150}" y1="0" x2="${cx + 150}" y2="${h}" stroke="${roadColor}" stroke-width="6" />
     <circle cx="${cx}" cy="${cy}" r="145" fill="url(#parcel-glow)" />
-    <rect x="${cx - 75}" y="${cy - 52}" width="150" height="104" fill="rgba(16,185,129,0.07)" stroke="${accent}" stroke-width="1.5" stroke-dasharray="5,4" />
-    <rect x="${cx - 38}" y="${cy - 26}" width="76" height="52" fill="rgba(16,185,129,0.12)" stroke="${accent}" stroke-width="1" />
-    <line x1="${cx}" y1="${cy - 20}" x2="${cx}" y2="${cy + 20}" stroke="${accent}" stroke-width="1.75" />
-    <line x1="${cx - 20}" y1="${cy}" x2="${cx + 20}" y2="${cy}" stroke="${accent}" stroke-width="1.75" />
-    <circle cx="${cx}" cy="${cy}" r="4" fill="${accent}" />
-    <rect x="${cx - 150}" y="${cy + 62}" width="300" height="22" fill="rgba(10,14,12,0.82)" stroke="rgba(16,185,129,0.35)" stroke-width="1" />
-    <text x="${cx}" y="${cy + 77}" text-anchor="middle" font-family="monospace" font-size="11" fill="${accent}" font-weight="bold">
+    <rect x="${cx - 75}" y="${cy - 58}" width="150" height="96" fill="rgba(16,185,129,0.07)" stroke="${accent}" stroke-width="1.5" stroke-dasharray="5,4" />
+    <rect x="${cx - 38}" y="${cy - 32}" width="76" height="48" fill="rgba(16,185,129,0.12)" stroke="${accent}" stroke-width="1" />
+    <line x1="${cx}" y1="${cy - 26}" x2="${cx}" y2="${cy + 14}" stroke="${accent}" stroke-width="1.75" />
+    <line x1="${cx - 20}" y1="${cy - 6}" x2="${cx + 20}" y2="${cy - 6}" stroke="${accent}" stroke-width="1.75" />
+    <circle cx="${cx}" cy="${cy - 6}" r="4" fill="${accent}" />
+    <rect x="${cx - 150}" y="${cy + 48}" width="300" height="22" fill="rgba(10,14,12,0.82)" stroke="rgba(16,185,129,0.35)" stroke-width="1" />
+    <text x="${cx}" y="${cy + 63}" text-anchor="middle" font-family="monospace" font-size="11" fill="${accent}" font-weight="bold">
       ${isSatellite ? 'SATELLITE PARCEL' : 'ROADMAP'}: ${lat.toFixed(4)}°, ${lng.toFixed(4)}° · z${zoom}
     </text>
   </svg>`;
@@ -142,12 +142,12 @@ export default function PropertySatelliteViewer({
 
   const aspectClass =
     aspectRatio === '4/3'
-      ? 'aspect-[4/3]'
+      ? 'aspect-[4/3] min-h-[220px]'
       : aspectRatio === '21/9'
-      ? 'aspect-[21/9]'
+      ? 'aspect-[21/9] min-h-[200px]'
       : aspectRatio === 'square'
-      ? 'aspect-square'
-      : 'aspect-[16/9]';
+      ? 'aspect-square min-h-[240px]'
+      : 'aspect-[16/9] min-h-[220px] sm:min-h-[240px]';
 
   const tileUrl = coords
     ? `/api/map-tile?lat=${coords.lat}&lng=${coords.lng}&zoom=${zoom}&maptype=${maptype}&w=800&h=450`
@@ -245,7 +245,7 @@ export default function PropertySatelliteViewer({
         data-testid="satellite-viewer-bottom-bar"
         className="absolute inset-x-0 bottom-0 flex items-end sm:items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
       >
-        <div className="flex min-w-0 items-center">
+        <div className="flex min-w-0 items-center mr-2 sm:mr-3">
           {coords && (
             <div
               data-testid="satellite-viewer-coords-badge"
@@ -271,7 +271,7 @@ export default function PropertySatelliteViewer({
               type="button"
               data-testid="satellite-viewer-maptype-btn"
               onClick={() => setMaptype(maptype === 'satellite' ? 'roadmap' : 'satellite')}
-              className="flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-md hover:bg-neutral-800 transition"
+              className="mr-1 sm:mr-1.5 flex items-center gap-1 rounded-none border border-neutral-700 bg-neutral-900/80 px-2.5 py-1 text-[10px] font-semibold text-white backdrop-blur-md hover:bg-neutral-800 transition"
               title="Toggle Satellite / Roadmap"
             >
               <Stack className="h-3 w-3 text-neutral-400" />

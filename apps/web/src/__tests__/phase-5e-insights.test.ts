@@ -2,10 +2,10 @@ import { handleInsightsGet, handlePortfolioMetricsGet } from '@paperworking/api'
 import { WEB_APP_STATUS } from '../index.js';
 import {
   formatMetricValue,
-  recalculateSeedProjectKpis,
   scorecardEntries,
   seedProjectsForInsights,
 } from '../../lib/insights/adapters.js';
+import { recalculateSeedProjectKpis } from '../../lib/insights/adapters.server.js';
 import {
   DEFAULT_PORTFOLIO_33_KPIS,
   money,

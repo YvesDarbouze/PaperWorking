@@ -38,7 +38,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     ],
     cta: 'Start Investor Trial',
     microcopy: '14-day trial · No charge until day 15 · Export your data anytime',
-    ctaHref: '/login?mode=signup&accountType=investor&redirectTo=/pricing',
+    ctaHref: '/signup?accountType=investor&redirectTo=/pricing',
   },
   {
     id: 'team',
@@ -61,7 +61,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     ],
     cta: 'Start Team Trial',
     microcopy: '14-day trial · No charge until day 15 · Export your data anytime',
-    ctaHref: '/login?mode=signup&accountType=investor&redirectTo=/pricing',
+    ctaHref: '/signup?accountType=investor&redirectTo=/pricing',
   },
   {
     id: 'vendor',
@@ -100,7 +100,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     ],
     cta: 'Join the Marketplace',
     microcopy: '14-day trial · No charge until day 15',
-    ctaHref: '/login?mode=signup&accountType=vendor&redirectTo=/vendor-portal',
+    ctaHref: '/signup?accountType=vendor&redirectTo=/vendor-portal',
   },
 ];
 

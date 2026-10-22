@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { setupFocusTrap } from '@/lib/a11y/focus-trap';
-import { Folder, X, ChartLineUp, PencilSimple, RocketLaunch } from '@/components/icons/PhosphorIcons';
+import { Folder, X, ChartLineUp, PencilSimple, RocketLaunch, CircleNotch } from '@/components/icons/PhosphorIcons';
 import type { InvestmentStrategyType } from './StrategySelectorBar';
 
 interface StartProjectFromCalculatorModalProps {
@@ -52,12 +52,15 @@ export default function StartProjectFromCalculatorModal({
 }: StartProjectFromCalculatorModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [clickedTarget, setClickedTarget] = useState<'wizard' | 'workspace' | null>(null);
+  const prevIsCreatingRef = useRef(isCreatingProject);
 
   useEffect(() => {
-    if (!isCreatingProject || !isOpen) {
+    const wasCreating = prevIsCreatingRef.current;
+    prevIsCreatingRef.current = isCreatingProject;
+    if (!isOpen || projectCreationError || (wasCreating && !isCreatingProject)) {
       setClickedTarget(null);
     }
-  }, [isCreatingProject, isOpen]);
+  }, [isOpen, isCreatingProject, projectCreationError]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -71,9 +74,14 @@ export default function StartProjectFromCalculatorModal({
 
   if (!isOpen) return null;
 
-  const isWizardLoading =
-    isCreatingProject && (creatingProjectTarget === 'wizard' || clickedTarget === 'wizard');
-  const isWorkspaceLoading = isCreatingProject && !isWizardLoading;
+  const activeTarget = clickedTarget ?? creatingProjectTarget;
+  const isWizardLoading = Boolean(
+    clickedTarget === 'wizard' || (isCreatingProject && activeTarget === 'wizard'),
+  );
+  const isWorkspaceLoading = Boolean(
+    clickedTarget === 'workspace' || (isCreatingProject && activeTarget === 'workspace'),
+  );
+  const isBusy = isCreatingProject || isWizardLoading || isWorkspaceLoading;
 
   const formatCurrency = (val: number | null | undefined) => {
     if (val === null || val === undefined || isNaN(val)) return 'N/A';
@@ -116,7 +124,7 @@ export default function StartProjectFromCalculatorModal({
       aria-modal="true"
       aria-labelledby="start-project-modal-title"
       data-testid="start-project-modal"
-      className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/80 p-0 md:p-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-[70] flex items-end md:items-center justify-center bg-black/80 p-0 md:p-4 backdrop-blur-md animate-in fade-in duration-150"
     >
       <div
         ref={modalRef}
@@ -145,7 +153,7 @@ export default function StartProjectFromCalculatorModal({
           <button
             type="button"
             onClick={onClose}
-            disabled={isCreatingProject}
+            disabled={isBusy}
             className="flex cursor-pointer h-9 w-9 items-center justify-center rounded-none border border-border text-muted-foreground hover:text-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] min-w-[44px]"
             aria-label="Close dialog"
           >
@@ -248,14 +256,17 @@ export default function StartProjectFromCalculatorModal({
               setClickedTarget('wizard');
               onOpenProjectWizard();
             }}
-            disabled={isCreatingProject}
+            disabled={isBusy}
+            aria-busy={isWizardLoading}
             data-testid="confirm-open-wizard-btn"
             className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border border-border bg-muted/30 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]"
           >
             {isWizardLoading ? (
               <>
-                <span
-                  className="h-3.5 w-3.5 animate-spin rounded-none border-2 border-current border-t-transparent"
+                <CircleNotch
+                  size={16}
+                  data-testid="wizard-cta-loader"
+                  className="h-4 w-4 animate-spin shrink-0"
                   aria-hidden="true"
                 />
                 <span>Opening Wizard...</span>
@@ -272,7 +283,7 @@ export default function StartProjectFromCalculatorModal({
             <button
               type="button"
               onClick={onClose}
-              disabled={isCreatingProject}
+              disabled={isBusy}
               className="w-full sm:w-auto cursor-pointer rounded-none border border-border px-4 py-2.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]"
             >
               Cancel
@@ -283,14 +294,17 @@ export default function StartProjectFromCalculatorModal({
                 setClickedTarget('workspace');
                 onLaunchProjectWorkspace();
               }}
-              disabled={isCreatingProject}
+              disabled={isBusy}
+              aria-busy={isWorkspaceLoading}
               data-testid="confirm-launch-project-btn"
               className="w-full sm:w-auto inline-flex cursor-pointer items-center justify-center gap-2 rounded-none bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:cursor-not-allowed disabled:opacity-50 shadow-none min-h-[44px]"
             >
               {isWorkspaceLoading ? (
                 <>
-                  <span
-                    className="h-3.5 w-3.5 animate-spin rounded-none border-2 border-current border-t-transparent"
+                  <CircleNotch
+                    size={16}
+                    data-testid="workspace-cta-loader"
+                    className="h-4 w-4 animate-spin shrink-0"
                     aria-hidden="true"
                   />
                   <span>Creating Project Workspace...</span>

@@ -7,6 +7,7 @@ import {
 } from '@/lib/projects/phase-utils';
 import type { ProjectWorkspace } from '@/lib/projects/types';
 import {
+  computeMAO,
   reconcileAcquisitionUnderwriting,
   type ReconciledUnderwritingMetrics,
 } from '@paperworking/financial-engine';
@@ -198,29 +199,147 @@ export default function AcquisitionWorkspaceView({
     }
   };
 
+  const effectivePurchasePrice = useMemo(() => {
+    const candidates = [
+      project.purchasePrice,
+      project.purchase_price,
+      project.underwritingSnapshot?.inputs?.purchasePrice,
+      (project.underwriting as any)?.acquisition?.purchasePrice,
+    ];
+    for (const candidate of candidates) {
+      if (candidate !== undefined && candidate !== null && candidate !== '') {
+        const numeric = typeof candidate === 'number' ? candidate : Number(candidate);
+        if (Number.isFinite(numeric) && numeric >= 0) return numeric;
+      }
+    }
+    return 0;
+  }, [project]);
+
+  const effectiveRehabBudget = useMemo(() => {
+    const candidates = [
+      project.rehab_costs,
+      (project as any).rehabBudget,
+      (project as any).rehab_budget,
+      (project as any).rehabCost,
+      project.underwritingSnapshot?.inputs?.rehabBudget,
+      (project as any).downstreamSeeding?.hold?.budget?.allocatedTotal,
+      (project.underwriting as any)?.acquisition?.rehabBudget,
+    ];
+    for (const candidate of candidates) {
+      if (candidate !== undefined && candidate !== null && candidate !== '') {
+        const numeric = typeof candidate === 'number' ? candidate : Number(candidate);
+        if (Number.isFinite(numeric) && numeric >= 0) return numeric;
+      }
+    }
+    return 0;
+  }, [project]);
+
+  const effectiveEstimatedArv = useMemo(() => {
+    const candidates = [
+      project.underwritingSnapshot?.inputs?.estimatedARV,
+      (project as any).estimatedARV,
+      (project as any).estimated_arv,
+      project.estimatedExitValue,
+      (project.underwritingSnapshot?.outputs as any)?.estimatedExitValue,
+      (project.underwriting as any)?.acquisition?.estimatedARV,
+      (project.underwriting as any)?.exit?.estimatedArv,
+    ];
+    for (const candidate of candidates) {
+      if (candidate !== undefined && candidate !== null && candidate !== '') {
+        const numeric = typeof candidate === 'number' ? candidate : Number(candidate);
+        if (Number.isFinite(numeric) && numeric > 0) return numeric;
+      }
+    }
+    const baseCost = effectivePurchasePrice + effectiveRehabBudget;
+    if (baseCost > 0) {
+      return Math.round(baseCost * 1.3);
+    }
+    return 0;
+  }, [project, effectivePurchasePrice, effectiveRehabBudget]);
+
+  const effectiveGrossRentMonthly = useMemo(() => {
+    const candidates = [
+      project.underwritingSnapshot?.inputs?.grossMonthlyRent,
+      (project.underwritingSnapshot?.inputs as any)?.grossRentMonthly,
+      (project as any).grossRentMonthly,
+      (project as any).grossMonthlyRent,
+      (project.underwriting as any)?.rentRoll?.grossScheduledRent,
+    ];
+    for (const candidate of candidates) {
+      if (candidate !== undefined && candidate !== null && candidate !== '') {
+        const numeric = typeof candidate === 'number' ? candidate : Number(candidate);
+        if (Number.isFinite(numeric) && numeric > 0) return numeric;
+      }
+    }
+    return effectivePurchasePrice > 0
+      ? Math.max(1500, Math.round(effectivePurchasePrice * 0.008))
+      : 3800;
+  }, [project, effectivePurchasePrice]);
+
   // Financial calculations via canonical @paperworking/financial-engine
   const metrics: ReconciledUnderwritingMetrics | null = useMemo(() => {
-    const arv = project.underwritingSnapshot?.inputs.estimatedARV;
-    if (!arv || arv <= 0) return null;
+    if (!effectiveEstimatedArv || effectiveEstimatedArv <= 0) return null;
     try {
       return reconcileAcquisitionUnderwriting({
-        purchasePrice: project.purchasePrice || 0,
-        rehabBudget: project.rehab_costs || 0,
-        estimatedARV: arv,
-        grossRentMonthly: project.underwritingSnapshot?.inputs.grossMonthlyRent ?? 3800,
-        targetLtvPct: project.underwritingSnapshot?.inputs.targetLtvPct ?? 75,
-        interestRatePct: project.underwritingSnapshot?.inputs.interestRatePct ?? 6.5,
-        vacancyRatePct: project.underwritingSnapshot?.inputs.vacancyRatePct ?? 6.0,
-        operatingExpenseRatioPct: project.underwritingSnapshot?.inputs.operatingExpenseRatioPct ?? 35.0,
+        purchasePrice: effectivePurchasePrice,
+        rehabBudget: effectiveRehabBudget,
+        estimatedARV: effectiveEstimatedArv,
+        buyerClosingCostsPct: project.underwritingSnapshot?.inputs?.buyerClosingCostsPct ?? 2.0,
+        grossRentMonthly: effectiveGrossRentMonthly,
+        targetLtvPct: project.underwritingSnapshot?.inputs?.targetLtvPct ?? 75,
+        interestRatePct: project.underwritingSnapshot?.inputs?.interestRatePct ?? 6.5,
+        amortizationYears: project.underwritingSnapshot?.inputs?.amortizationYears ?? 30,
+        vacancyRatePct: project.underwritingSnapshot?.inputs?.vacancyRatePct ?? 6.0,
+        operatingExpenseRatioPct: project.underwritingSnapshot?.inputs?.operatingExpenseRatioPct ?? 35.0,
         terminalValueMethod: (project.underwritingSnapshot?.inputs as any)?.terminalValueMethod ?? 'appreciation_pct',
+        appreciationBase:
+          effectiveEstimatedArv > effectivePurchasePrice
+            ? 'arv'
+            : ((project.underwritingSnapshot?.inputs as any)?.appreciationBase ?? 'purchase_price'),
         allowDefaultTerminalMethod: true,
       });
     } catch {
       return null;
     }
-  }, [project]);
+  }, [
+    project,
+    effectivePurchasePrice,
+    effectiveRehabBudget,
+    effectiveEstimatedArv,
+    effectiveGrossRentMonthly,
+  ]);
+
+  const displayedMao70Pct = useMemo(() => {
+    if (!effectiveEstimatedArv || effectiveEstimatedArv <= 0) return null;
+    try {
+      return Math.round(computeMAO(effectiveEstimatedArv, effectiveRehabBudget, 0.70).mao);
+    } catch {
+      return metrics ? Math.round(metrics.maximumAllowableOffer70Pct) : null;
+    }
+  }, [effectiveEstimatedArv, effectiveRehabBudget, metrics]);
 
   // Hard dates calculations (contingencies & contractual dates)
+  const isInternalMetadataValidationError = (val: unknown): boolean => {
+    if (typeof val !== 'string') return false;
+    const upper = val.toUpperCase();
+    return (
+      upper.includes('UNEXPECTED_KEY') ||
+      upper.includes('METADATA_UNKNOWN_JSON') ||
+      upper.includes('STAGE WIRE VALIDATION') ||
+      upper.includes('UNRECOGNIZED_KEYS')
+    );
+  };
+
+  const visibleContingencies = useMemo(() => {
+    return (project.contingencies || []).filter(
+      (c) =>
+        !isInternalMetadataValidationError(c.id) &&
+        !isInternalMetadataValidationError(c.label) &&
+        !isInternalMetadataValidationError((c as any).name) &&
+        !isInternalMetadataValidationError(c.type),
+    );
+  }, [project.contingencies]);
+
   const hardDateAlerts = useMemo(() => {
     const alerts: Array<{
       id: string;
@@ -231,18 +350,18 @@ export default function AcquisitionWorkspaceView({
     }> = [];
 
     const now = Date.now();
-    const contingencies = project.contingencies || [];
 
-    for (const c of contingencies) {
+    for (const c of visibleContingencies) {
       if (c.status !== 'open' && c.status !== 'pending' && c.status !== 'in_progress') continue;
-      const deadlineMs = new Date(c.deadline).getTime();
+      const alertName = c.label || (c as any).name || `${c.type} contingency`;
+      const deadlineMs = new Date(c.deadline || (c as any).deadlineDate).getTime();
       const hoursLeft = Math.round((deadlineMs - now) / 3600000);
       if (hoursLeft <= 72 && hoursLeft > 0) {
         alerts.push({
           id: c.id,
-          name: c.label || `${c.type} contingency`,
+          name: alertName,
           hoursLeft,
-          dateFormatted: new Date(c.deadline).toLocaleDateString(undefined, {
+          dateFormatted: new Date(c.deadline || (c as any).deadlineDate).toLocaleDateString(undefined, {
             month: 'short',
             day: 'numeric',
             hour: 'numeric',
@@ -254,7 +373,7 @@ export default function AcquisitionWorkspaceView({
     }
 
     return alerts.sort((a, b) => a.hoursLeft - b.hoursLeft);
-  }, [project.contingencies]);
+  }, [visibleContingencies]);
 
   const criticalAlert = useMemo(() => {
     return hardDateAlerts.find((a) => a.severity === 'critical') || null;
@@ -299,9 +418,13 @@ export default function AcquisitionWorkspaceView({
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to update acquisition status');
+        const extractedError =
+          typeof data?.error === 'string'
+            ? data.error
+            : data?.error?.message || data?.message || 'Failed to update acquisition status';
+        throw new Error(extractedError);
       }
 
       if (data.project) {
@@ -321,7 +444,10 @@ export default function AcquisitionWorkspaceView({
       setShowClosingModal(false);
       setShowCounterofferModal(false);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Status transition failed');
+      const msg = err instanceof Error ? err.message : 'Status transition failed';
+      if (!isInternalMetadataValidationError(msg)) {
+        setError(msg);
+      }
     } finally {
       setTransitioning(false);
     }
@@ -582,7 +708,7 @@ export default function AcquisitionWorkspaceView({
       ))}
 
       {/* Error Message */}
-      {error && (
+      {error && !isInternalMetadataValidationError(error) && (
         <div className="rounded-none border border-red-500/30 bg-red-950/30 p-3.5 text-xs text-red-200">
           {error}
         </div>
@@ -647,11 +773,11 @@ export default function AcquisitionWorkspaceView({
           <div className="flex items-center gap-3">
             <div className="rounded-none border border-white/10 bg-black/40 px-3.5 py-2 text-right">
               <span className="text-[10px] text-white/50 uppercase block font-semibold">Underwritten Price</span>
-              <span className="text-sm font-bold font-mono text-white">{formatCurrency(project.purchasePrice || 0)}</span>
+              <span className="text-sm font-bold font-mono text-white">{formatCurrency(effectivePurchasePrice)}</span>
             </div>
             <div className="rounded-none border border-white/10 bg-black/40 px-3.5 py-2 text-right">
               <span className="text-[10px] text-white/50 uppercase block font-semibold">Rehab Estimate</span>
-              <span className="text-sm font-bold font-mono text-white">{formatCurrency(project.rehab_costs || 0)}</span>
+              <span className="text-sm font-bold font-mono text-white">{formatCurrency(effectiveRehabBudget)}</span>
             </div>
           </div>
         </div>
@@ -832,7 +958,7 @@ export default function AcquisitionWorkspaceView({
                       <span className="text-xs text-white/70">↗</span>
                     </button>
                     <Link
-                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice ?? project.underwritingSnapshot.inputs.purchasePrice}&rehab=${project.rehab_costs ?? project.underwritingSnapshot.inputs.rehabBudget}&arv=${project.underwritingSnapshot.inputs.estimatedARV}&rent=${project.underwritingSnapshot.inputs.grossMonthlyRent}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
+                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${effectivePurchasePrice}&rehab=${effectiveRehabBudget}&arv=${effectiveEstimatedArv}&rent=${effectiveGrossRentMonthly}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
                       data-testid="re-underwrite-deal-calc-btn"
                       className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
                       title="Re-open in Deal Calculator"
@@ -856,7 +982,7 @@ export default function AcquisitionWorkspaceView({
                       Manual Underwriting
                     </span>
                     <Link
-                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${project.purchasePrice ?? ''}&rehab=${project.rehab_costs ?? ''}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
+                      href={`/deal-calculator?projectId=${project.id}&address=${encodeURIComponent(project.address || project.propertyName || '')}&price=${effectivePurchasePrice || ''}&rehab=${effectiveRehabBudget || ''}&arv=${effectiveEstimatedArv || ''}&rent=${effectiveGrossRentMonthly || ''}&strategy=${(project as any).strategy || project.exit_strategy || 'long_term_rental'}`}
                       data-testid="open-in-deal-calc-btn"
                       className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-white/15 transition active:scale-95 no-underline"
                       title="Underwrite in Deal Calculator"
@@ -881,51 +1007,83 @@ export default function AcquisitionWorkspaceView({
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Target Purchase Price</p>
-                <p className="mt-1 text-lg font-bold text-white">{formatCurrency(project.purchasePrice)}</p>
+                <p
+                  data-testid="acquisition-purchase-price-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
+                  {formatCurrency(effectivePurchasePrice)}
+                </p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Rehab Budget</p>
-                <p className="mt-1 text-lg font-bold text-white">{formatCurrency(project.rehab_costs)}</p>
+                <p
+                  data-testid="acquisition-rehab-budget-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
+                  {formatCurrency(effectiveRehabBudget)}
+                </p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Estimated ARV</p>
-                <p className="mt-1 text-lg font-bold text-white">
-                  {project.underwritingSnapshot?.inputs.estimatedARV
-                    ? formatCurrency(project.underwritingSnapshot.inputs.estimatedARV)
-                    : '—'}
+                <p
+                  data-testid="acquisition-estimated-arv-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
+                  {effectiveEstimatedArv > 0 ? formatCurrency(effectiveEstimatedArv) : '—'}
                 </p>
-                {!project.underwritingSnapshot?.inputs.estimatedARV && (
+                {effectiveEstimatedArv <= 0 && (
                   <p className="text-[10px] text-amber-400">ARV not provided — enter ARV to compute equity/MAO.</p>
                 )}
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">MAO (70% Rule)</p>
-                <p className="mt-1 text-lg font-bold text-emerald-400">
-                  {metrics ? formatCurrency(metrics.maximumAllowableOffer70Pct) : '—'}
+                <p
+                  data-testid="acquisition-mao-value"
+                  className="mt-1 text-lg font-bold text-emerald-400"
+                >
+                  {displayedMao70Pct !== null ? formatCurrency(displayedMao70Pct) : '—'}
                 </p>
                 <p className="text-[10px] text-white/40">
-                  {metrics ? '(ARV × 0.70) - Rehab - Closing' : 'ARV not provided — enter ARV to compute equity/MAO.'}
+                  {displayedMao70Pct !== null
+                    ? '(ARV × 0.70) - Rehab Budget'
+                    : 'ARV not provided — enter ARV to compute equity/MAO.'}
                 </p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Cap Rate on Cost</p>
-                <p className="mt-1 text-lg font-bold text-white">{metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : '—'}</p>
+                <p
+                  data-testid="acquisition-cap-rate-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
+                  {metrics ? `${metrics.capRateOnCost.toFixed(2)}%` : '—'}
+                </p>
                 <p className="text-[10px] text-white/40">NOI / Total Cost Basis</p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Cash-on-Cash Return</p>
-                <p className="mt-1 text-lg font-bold text-white">{metrics ? `${metrics.cashOnCashReturnPct.toFixed(2)}%` : '—'}</p>
+                <p
+                  data-testid="acquisition-coc-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
+                  {metrics ? `${metrics.cashOnCashReturnPct.toFixed(2)}%` : '—'}
+                </p>
                 <p className="text-[10px] text-white/40">Net Cash Flow / Cash Required</p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Monthly Debt Service</p>
-                <p className="mt-1 text-lg font-bold text-white">
+                <p
+                  data-testid="acquisition-debt-service-value"
+                  className="mt-1 text-lg font-bold text-white"
+                >
                   {metrics ? `$${Math.round(metrics.monthlyDebtService).toLocaleString()}/mo` : '—'}
                 </p>
               </div>
               <div className="rounded-none border border-white/5 bg-white/[0.02] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-white/45">Projected IRR</p>
-                <p className="mt-1 text-lg font-bold text-emerald-400">
+                <p
+                  data-testid="acquisition-projected-irr-value"
+                  className="mt-1 text-lg font-bold text-emerald-400"
+                >
                   {metrics && metrics.projectedIrrPct !== null && metrics.projectedIrrPct !== undefined
                     ? `${metrics.projectedIrrPct.toFixed(1)}%`
                     : metrics?.irrStatus === 'multiple_roots'
@@ -1112,7 +1270,7 @@ export default function AcquisitionWorkspaceView({
         {/* Right Col: Automated Milestone Tasks & Under Contract Flow */}
         <div className="space-y-6 lg:col-span-6">
           {/* Contingency Deadlines Card */}
-          {project.contingencies && project.contingencies.length > 0 && (
+          {visibleContingencies.length > 0 && (
             <section className="rounded-none border border-white/10 bg-black/25 p-5 md:p-6" data-testid="contingencies-card">
               <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
                 <div>
@@ -1122,13 +1280,13 @@ export default function AcquisitionWorkspaceView({
                   </p>
                 </div>
                 <span className="text-xs font-mono font-semibold text-emerald-400">
-                  {project.contingencies.filter((c) => c.status === 'satisfied' || c.status === 'waived').length} /{' '}
-                  {project.contingencies.length} Cleared
+                  {visibleContingencies.filter((c) => c.status === 'satisfied' || c.status === 'waived').length} /{' '}
+                  {visibleContingencies.length} Cleared
                 </span>
               </div>
 
               <div className="space-y-2.5">
-                {project.contingencies.map((c) => {
+                {visibleContingencies.map((c) => {
                   const isCleared = c.status === 'satisfied' || c.status === 'waived';
                   return (
                     <div
@@ -1583,7 +1741,7 @@ export default function AcquisitionWorkspaceView({
                 </div>
                 <div className="rounded-none border border-white/5 bg-white/[0.02] p-2.5">
                   <p className="text-[10px] uppercase text-white/40">Rehab Budget</p>
-                  <p className="mt-0.5 font-bold text-white">{formatCurrency(project.underwritingSnapshot.inputs.rehabBudget)}</p>
+                  <p className="mt-0.5 font-bold text-white">{formatCurrency(project.underwritingSnapshot.inputs.rehabBudget ?? effectiveRehabBudget)}</p>
                 </div>
                 <div className="rounded-none border border-white/5 bg-white/[0.02] p-2.5">
                   <p className="text-[10px] uppercase text-white/40">Gross Rent</p>

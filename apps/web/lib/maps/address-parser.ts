@@ -317,6 +317,7 @@ export function parseAddressComponents(
     const isLikelyCitySegment = (segment: string): boolean => {
       const trimmed = segment.trim();
       if (trimmed.length < 2) return false;
+      if (/^[A-Z]{2}$/.test(trimmed)) return false;
       if (unitDesignatorRegex.test(trimmed)) return false;
       return /^[A-Za-z][A-Za-z\s.'-]*[A-Za-z.]$/.test(trimmed);
     };

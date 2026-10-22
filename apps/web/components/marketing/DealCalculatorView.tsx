@@ -708,10 +708,28 @@ export default function DealCalculatorView({
     }
   };
 
+  const handleOpenStartProjectModal = () => {
+    setIsCreatingProject(false);
+    setCreatingProjectTarget(null);
+    setProjectCreationError(null);
+    setShowStartProjectModal(true);
+  };
+
+  const handleOpenProjectWizard = () => {
+    setCreatingProjectTarget('wizard');
+    void handleAcceptProjectPrompt(false);
+  };
+
+  const handleLaunchProjectWorkspace = () => {
+    setCreatingProjectTarget('workspace');
+    void handleAcceptProjectPrompt(true);
+  };
+
   // "Yes" path: promotes deal to Project with full mapping per Spec 5.2
   const handleAcceptProjectPrompt = async (directToWorkspace: boolean = false) => {
+    const targetMode: 'wizard' | 'workspace' = directToWorkspace ? 'workspace' : 'wizard';
+    setCreatingProjectTarget(targetMode);
     setIsCreatingProject(true);
-    setCreatingProjectTarget(directToWorkspace ? 'workspace' : 'wizard');
     setProjectCreationError(null);
 
     const resolvedAddress = inputs.address?.trim() || DEFAULT_INPUTS.address;
@@ -789,24 +807,26 @@ export default function DealCalculatorView({
       } catch {
         // continue
       }
-      router.push(`/project/${existingProjectId}`);
-      return;
-    }
-
-    try {
-      // 1. Real atomic promotion API call (Requirement 4 & satisfies deal-calculator-auth-gate test)
-      const res = await fetch('/api/projects/promote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(promotePayload),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        createdProjectId = data.projectId || data.project?.id;
+      if (directToWorkspace) {
+        router.push(`/project/${existingProjectId}`);
+        return;
       }
-    } catch {
-      // Fallback continues
+    } else {
+      try {
+        // 1. Real atomic promotion API call (Requirement 4 & satisfies deal-calculator-auth-gate test)
+        const res = await fetch('/api/projects/promote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(promotePayload),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          createdProjectId = data.projectId || data.project?.id;
+        }
+      } catch {
+        // Fallback continues
+      }
     }
 
     // 2. Also seed wizard draft store at Step 5 Review
@@ -957,7 +977,7 @@ export default function DealCalculatorView({
             <button
               type="button"
               data-testid="start-project-from-calculator-btn"
-              onClick={() => setShowStartProjectModal(true)}
+              onClick={handleOpenStartProjectModal}
               className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-none border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20 hover:text-white min-h-[44px]"
             >
               <RocketLaunch className="h-4 w-4 text-emerald-400" weight="bold" />
@@ -1232,8 +1252,8 @@ export default function DealCalculatorView({
               )}
 
               {/* Satellite Parcel Screencap */}
-              <div className="pt-2">
-                <div className="flex items-center justify-between mb-2">
+              <div className="pt-2 pb-1">
+                <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                     <Globe className="h-3.5 w-3.5 text-foreground" weight="bold" />
                     <span>Satellite Aerial Parcel Screencap</span>
@@ -2980,7 +3000,7 @@ export default function DealCalculatorView({
                   </p>
                   <button
                     type="button"
-                    onClick={() => setShowStartProjectModal(true)}
+                    onClick={handleOpenStartProjectModal}
                     disabled={isCreatingProject}
                     className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-none bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:cursor-not-allowed min-h-[44px]"
                   >
@@ -3297,6 +3317,7 @@ export default function DealCalculatorView({
         isOpen={showStartProjectModal}
         onClose={() => {
           setShowStartProjectModal(false);
+          setIsCreatingProject(false);
           setCreatingProjectTarget(null);
         }}
         address={inputs.address}
@@ -3315,8 +3336,8 @@ export default function DealCalculatorView({
         isCreatingProject={isCreatingProject}
         creatingProjectTarget={creatingProjectTarget}
         projectCreationError={projectCreationError}
-        onLaunchProjectWorkspace={() => handleAcceptProjectPrompt(true)}
-        onOpenProjectWizard={() => handleAcceptProjectPrompt(false)}
+        onLaunchProjectWorkspace={handleLaunchProjectWorkspace}
+        onOpenProjectWizard={handleOpenProjectWizard}
       />
 
       {/* 9. Itemized Closing Costs Modal */}

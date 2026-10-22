@@ -54,6 +54,17 @@ function formatCurrency(val: number): string {
   }).format(val);
 }
 
+function isInternalMetadataValidationError(val: unknown): boolean {
+  if (typeof val !== 'string') return false;
+  const upper = val.toUpperCase();
+  return (
+    upper.includes('UNEXPECTED_KEY') ||
+    upper.includes('METADATA_UNKNOWN_JSON') ||
+    upper.includes('STAGE WIRE VALIDATION') ||
+    upper.includes('UNRECOGNIZED_KEYS')
+  );
+}
+
 export default function AcquisitionPipelineBoard({
   projects,
   onProjectUpdated,
@@ -100,6 +111,13 @@ export default function AcquisitionPipelineBoard({
     };
 
     for (const p of projects) {
+      if (
+        isInternalMetadataValidationError(p.id) ||
+        isInternalMetadataValidationError(p.propertyName) ||
+        isInternalMetadataValidationError(p.address)
+      ) {
+        continue;
+      }
       if (p.isArchived || p.acquisitionStatus === 'dead' || p.deadRecord) {
         map.dead.push(p);
       } else {
@@ -137,8 +155,8 @@ export default function AcquisitionPipelineBoard({
     setErrorMessage(null);
 
     try {
-      const res = await fetch(`/api/projects/${project.id}/acquisition/stage`, {
-        method: 'POST',
+      const res = await fetch(`/api/projects/${project.id}/acquisition-status`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           targetStatus,
@@ -146,9 +164,13 @@ export default function AcquisitionPipelineBoard({
         }),
       });
 
-      const body = await res.json();
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(body.error || 'Failed to update pipeline stage');
+        const extractedError =
+          typeof body?.error === 'string'
+            ? body.error
+            : body?.error?.message || body?.message || 'Failed to update pipeline stage';
+        throw new Error(extractedError);
       }
 
       if (
@@ -181,7 +203,10 @@ export default function AcquisitionPipelineBoard({
       setShowDeadModal(false);
       setActiveProject(null);
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Stage transition error');
+      const msg = err instanceof Error ? err.message : 'Stage transition error';
+      if (!isInternalMetadataValidationError(msg)) {
+        setErrorMessage(msg);
+      }
     } finally {
       setTransitioning(false);
     }
@@ -261,7 +286,7 @@ export default function AcquisitionPipelineBoard({
       )}
 
       {/* Error Alert Modal */}
-      {errorMessage && (
+      {errorMessage && !isInternalMetadataValidationError(errorMessage) && (
         <div
           role="alert"
           className="flex items-center justify-between rounded-none border border-destructive/40 bg-destructive/10 p-4 text-xs sm:text-sm text-destructive shadow-sm"

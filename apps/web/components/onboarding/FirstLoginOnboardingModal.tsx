@@ -317,9 +317,9 @@ export function FirstLoginOnboardingModal({
             </span>
             <div
               data-testid="onboarding-identity-row"
-              className="mt-3 flex flex-wrap sm:flex-nowrap items-end gap-4"
+              className="mt-3 flex items-end gap-2.5 sm:gap-4"
             >
-              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-none border border-neutral-700 bg-neutral-800 text-sm font-bold text-neutral-200">
+              <div className="relative flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center overflow-hidden rounded-none border border-neutral-700 bg-neutral-800 text-sm font-bold text-neutral-200">
                 {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
@@ -334,8 +334,8 @@ export function FirstLoginOnboardingModal({
                   </span>
                 )}
               </div>
-              <div className="flex-1 min-w-[180px] space-y-1.5">
-                <label htmlFor="onboarding-display-name" className="text-xs text-neutral-300 block">Your Name</label>
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <label htmlFor="onboarding-display-name" className="block text-xs leading-4 text-neutral-300">Your Name</label>
                 <input
                   id="onboarding-display-name"
                   data-testid="onboarding-display-name-input"
@@ -343,14 +343,14 @@ export function FirstLoginOnboardingModal({
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Investor or Principal Name"
-                  className="h-11 min-h-[44px] w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none"
+                  className="block h-11 min-h-[44px] w-full rounded-none border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-base md:text-xs text-neutral-100 placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none"
                 />
               </div>
-              <div className="shrink-0 self-end">
+              <div className="flex shrink-0 self-end">
                 <label
                   htmlFor="onboarding-avatar-upload"
                   data-testid="onboarding-change-photo-btn"
-                  className="h-11 min-h-[44px] self-end cursor-pointer rounded-none border border-neutral-800 bg-neutral-900 px-3 py-2 text-[11px] font-medium text-neutral-300 hover:bg-neutral-800 transition inline-flex items-center justify-center whitespace-nowrap"
+                  className="flex h-11 min-h-[44px] self-end cursor-pointer items-center justify-center whitespace-nowrap rounded-none border border-neutral-800 bg-neutral-900 px-3 text-xs font-medium leading-none text-neutral-300 transition hover:bg-neutral-800"
                 >
                   Change Photo
                   <input

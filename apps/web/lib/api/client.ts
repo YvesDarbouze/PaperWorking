@@ -75,8 +75,13 @@ export async function apiFetch(
 
   if (response.status === 401 && !skipAuthRedirect && typeof window !== 'undefined') {
     const currentPathname = window.location.pathname;
-    // Carve-out 2: Do not redirect if already on /login
-    if (!currentPathname.startsWith('/login')) {
+    // Carve-out 2: Do not redirect if already on an auth page (/login, /signup, /register, /forgot-password)
+    if (
+      !currentPathname.startsWith('/login') &&
+      !currentPathname.startsWith('/signup') &&
+      !currentPathname.startsWith('/register') &&
+      !currentPathname.startsWith('/forgot-password')
+    ) {
       if (!isRedirectingToLogin) {
         isRedirectingToLogin = true;
         try {
